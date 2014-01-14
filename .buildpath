@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry kind="con" path="org.eclipse.dltk.USER_LIBRARY/phalcon-tool"/>
+	<buildpathentry kind="src" path="public"/>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
+	<buildpathentry kind="src" path="app/plugins"/>
+	<buildpathentry kind="con" path="org.eclipse.dltk.USER_LIBRARY/phalconPHP"/>
+	<buildpathentry kind="src" path="app/models"/>
+	<buildpathentry kind="con" path="org.eclipse.dltk.USER_LIBRARY/phalcon-tools"/>
+	<buildpathentry kind="src" path="cache/volt"/>
+	<buildpathentry kind="src" path="app/controllers"/>
+	<buildpathentry kind="src" path="app/library"/>
+</buildpath>

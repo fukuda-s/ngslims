@@ -1,0 +1,114 @@
+@charset "UTF-8";
+
+/* CSS Document */
+
+/* Table td colors */
+
+table td#dup_w {
+	color: #FFFFFF;
+	border-width: 0 1px 0 1px;
+}
+
+table td#dup_b {
+	color: #00CCFF;
+	border-width: 0 1px 0 1px;
+}
+
+.list-group-item:hover#ReportSidebar {
+	background-color: #eeeeee;
+}
+
+.panel-info > .panel-heading:hover#OwnerList {
+	background-color: #B6CFDC;
+}
+
+.panel-success > .panel-heading:hover#StepList {
+	background-color: #C5D8BC;
+}
+
+.panel-warning > .panel-heading:hover#ProjectList {
+	background-color: #D5D3BD;
+}
+
+.tube {
+	min-height: 20px;
+	padding: 5px 20px 5px 20px;
+	margin: 4px 50px 4px 50px;
+	color: #333333;
+	background-color: #F5F5F5;
+	border: 1px solid #dddddd;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.tube-active {
+	color: #468847;
+	border-color: #d6e9c6;
+	background-color: #dff0d8;
+}
+
+.tube-active:hover {
+	background-color: #C5D8BC;
+}
+
+.tube-inactive {
+	display: none;
+	color: #7C7494;
+	border-color: #B2A7D4;
+	background-color: #D8D1EE;
+}
+
+.tube-inactive:hover {
+	background-color: #A398C4;
+}
+
+.tube-highlight {
+	min-height: 32px;
+	border-color: #D6E3D8;
+	background-color: #F2FFF2;
+}
+
+.tube-group {
+	margin: 30px 0 30px 0;
+}
+
+#SampleHolder .tube-active.ui-selectee.ui-selecting,
+#SampleHolder .tube-active.ui-selectee.ui-selected {
+	background-color: #C5D8BC;
+}
+
+#SampleHolder .tube-inactive.ui-selectee.ui-selecting,
+#SampleHolder .tube-inactive.ui-selectee.ui-selected {
+	background-color: #ACA4C5;
+}
+
+.panel-body#IceBox {
+	min-height: 300px;
+	height: auto;
+}
+
+#IceBox .tube {
+	min-height: 15px;
+	padding: 3px 5px 3px 5px;
+	margin: 2px 10px 2px 10px;
+	font-size: small;
+
+}
+
+#IceBox .tube-active {
+	background-color: #C5D8BC;
+}
+
+#IceBox .tube-inactive {
+	background-color: #A398C4;
+}
+
+#IceBox .close {
+	/*font-size: small;*/
+    line-height: 15px;
+}
+
+.panel-body#IceBox +.panel-footer {
+	min-height: 45px;
+}
