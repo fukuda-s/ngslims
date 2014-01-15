@@ -1,7 +1,7 @@
 <?php
 use Phalcon\Tag;
 
-class ProjectsamplesController extends ControllerBase {
+class TrackerProjectSamplesController extends ControllerBase {
 
 	public function initialize() {
 		$this->view->setTemplateAfter('main');
@@ -14,7 +14,7 @@ class ProjectsamplesController extends ControllerBase {
 				"int"
 		));
 		// $this->flash->success(var_dump($users));
-		$this->flash->success($project_id);
+		// $this->flash->success($project_id);
 
 		$samples = Samples::find(array (
 				"project_id=:project_id:",
@@ -24,9 +24,10 @@ class ProjectsamplesController extends ControllerBase {
 		));
 		$this->view->setVar('samples', $samples);
 
-		$project = $samples [0]->Projects;
+		$project = $samples[0]->Projects;
 		$this->view->setVar('project', $project);
 
-		$this->flash->success($project->users->name . " " . $project->name);
+		// $this->flash->success($project->users->name . " " . $project->name);
+		// $this->flash->success(var_dump($samples[0]->seqlibs[0]->oligobarcodeb));
 	}
 }

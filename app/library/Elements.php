@@ -68,13 +68,16 @@ class Elements extends Phalcon\Mvc\User\Component {
 
 	private $_trackerSideMenu = array (
 			'Project Overview' => array (
+					'controller' => 'tracker',
 					'action' => 'project'
 			),
 			'Experiment View' => array (
+					'controller' => 'tracker',
 					'action' => 'experiment'
 			),
 			'hr',
 			'Protocol Setting' => array (
+					'controller' => 'tracker',
 					'action' => 'protocol'
 			)
 	);
@@ -87,13 +90,13 @@ class Elements extends Phalcon\Mvc\User\Component {
 	public function getMenu() {
 		$auth = $this->session->get('auth');
 		if ( $auth ) {
-			$this->_headerMenu ['pull-right'] ['session'] = array (
+			$this->_headerMenu['pull-right']['session'] = array (
 					'caption' => 'Log Out',
 					'action' => 'end'
 			);
 		} else {
-			unset($this->_headerMenu ['pull-left'] ['invoices']);
-			unset($this->_headerMenu ['pull-left'] ['tracker']);
+			unset($this->_headerMenu['pull-left']['invoices']);
+			unset($this->_headerMenu['pull-left']['tracker']);
 		}
 
 		echo '<div class="collapse navbar-collapse target">';
@@ -106,7 +109,7 @@ class Elements extends Phalcon\Mvc\User\Component {
 				} else {
 					echo '<li>';
 				}
-				echo Phalcon\Tag::linkTo($controller . '/' . $option ['action'], $option ['caption']);
+				echo Phalcon\Tag::linkTo($controller . '/' . $option['action'], $option['caption']);
 				echo '</li>';
 			}
 			echo '</ul>';
@@ -119,12 +122,12 @@ class Elements extends Phalcon\Mvc\User\Component {
 		$actionName = $this->view->getActionName();
 		echo '<ul class="nav nav-tabs">';
 		foreach ( $this->_tabs as $caption => $option ) {
-			if ( $option ['controller'] == $controllerName && ($option ['action'] == $actionName || $option ['any']) ) {
+			if ( $option['controller'] == $controllerName && ($option['action'] == $actionName || $option['any']) ) {
 				echo '<li class="active">';
 			} else {
 				echo '<li>';
 			}
-			echo Phalcon\Tag::linkTo($option ['controller'] . '/' . $option ['action'], $caption), '<li>';
+			echo Phalcon\Tag::linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
 		}
 		echo '</ul>';
 	}
@@ -133,18 +136,19 @@ class Elements extends Phalcon\Mvc\User\Component {
 	 * Bulids side menu for Sample Tracker
 	 */
 	public function getTrackerSideMenu() {
+		$controllerName = $this->view->getControllerName();
 		$actionName = $this->view->getActionName();
 		echo '<ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="100" data-target="#">';
 		foreach ( $this->_trackerSideMenu as $caption => $option ) {
 			if ( $caption == 'hr' ) {
 				echo '<hr />';
 				continue;
-			} elseif ( $option ['action'] == $actionName ) {
+			} elseif ( $option['controller'] == $controllerName && ($option['action'] == $actionName) ) {
 				echo '<li class="active">';
 			} else {
 				echo '<li>';
 			}
-			echo Phalcon\Tag::linkTo('tracker/' . $option ['action'], $caption), '<li>';
+			echo Phalcon\Tag::linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
 		}
 		echo '</ul>';
 	}
@@ -165,7 +169,10 @@ class Elements extends Phalcon\Mvc\User\Component {
 			echo '<li class="list-group-item">';
 			echo '	<div class="row">';
 			echo '		<div class="col-md-8">';
-			echo '			<a href="./projectSamples.php?idProject=83&amp;projectOwner=Aihara&amp;projectName=Brain_tumor">' . $project->name . '</a>';
+			echo Phalcon\Tag::linkTo(array (
+					"trackerProjectSamples/index/" . $project->id,
+					$project->name
+			));
 			echo '		</div>';
 			echo '		<div class="col-md-1">';
 			echo '		</div>';

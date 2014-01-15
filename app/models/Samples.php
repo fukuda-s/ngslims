@@ -246,6 +246,8 @@ class Samples extends \Phalcon\Mvc\Model {
 		$this->hasOne('organism_id', 'Organisms', 'id');
 		$this->hasOne('project_id', 'Projects', 'id');
 		$this->hasOne('request_id', 'Requests', 'id');
-		$this->belongsTo('id', 'SeqLibs', 'sample_id');
+		$this->hasOne('sample_type_id', 'SampleTypes', 'id');
+
+		$this->hasMany('id', 'SeqLibs', 'sample_id');
 	}
 }

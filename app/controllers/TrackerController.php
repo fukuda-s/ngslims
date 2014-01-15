@@ -11,6 +11,7 @@ class TrackerController extends ControllerBase {
 	}
 
 	public function indexAction() {
+		// return $this->forward("trackerProjects/piList");
 	}
 
 	public function projectAction() {
@@ -31,7 +32,7 @@ class TrackerController extends ControllerBase {
 				GROUP BY (u.id)';
 		$users = $this->modelsManager->executeQuery($phql);
 
-		//$this->flash->success(var_dump($users));
+		// $this->flash->success(var_dump($users));
 		$this->view->setVar('users', $users);
 	}
 

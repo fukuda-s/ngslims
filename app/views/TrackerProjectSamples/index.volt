@@ -1,7 +1,4 @@
 {{ content() }}
-<p>
-<h1>Tracker Project Samples</h1>
-</p>
 
 <div class="row">
   <div class="col-md-12">
@@ -30,21 +27,23 @@
         </tr>
       </thead>
       <tbody>
-      {% for sample in samples %}
-      <tr id="sample_id_{{ sample.id }}">
-      	<td>{{ sample.name }}</td>
-      	<td>{{ sample.sample_type.name }}</td>
-      	<td></td>
-      	<td></td>
-      	<td>{{ sample.oligobarcodeA.name }}</td>
-      	<td>{{ sample.oligobarcodeA.barcode_seq }}</td>
-      	<td>{{ sample.oligobarcodeB.name }}</td>
-      	<td>{{ sample.oligobarcodeB.barcode_seq }}</td>
-      	<td></td>
-      	<td></td>
-      	<td></td>
-      </tr>
-      {% endfor %}
+        {% for sample in samples %}
+        {% for seqlib in sample.seqlibs %}
+        <tr id="sample_id_{{ sample.id }}">
+          <td>{{ sample.name }}</td>
+          <td>{{ sample.sampletypes.name }}</td>
+          <td></td>
+          <td>{{ seqlib.name }}</td>
+          <td>{{ seqlib.oligobarcodea.name }}</td>
+          <td>{{ seqlib.oligobarcodea.barcode_seq }}</td>
+          <td>{{ seqlib.oligobarcodeb.name }}</td>
+          <td>{{ seqlib.oligobarcodeb.barcode_seq }}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
       </tbody>
     </table>
   </div>
