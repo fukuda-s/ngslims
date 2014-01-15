@@ -116,18 +116,8 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 		return $this;
 	}
 
-	public function setOligobarcodeaSeq( $oligobarcodeA_seq ) {
-		$this->oligobarcodeA_seq = $oligobarcodeA_seq;
-		return $this;
-	}
-
 	public function setOligobarcodebId( $oligobarcodeB_id ) {
 		$this->oligobarcodeB_id = $oligobarcodeB_id;
-		return $this;
-	}
-
-	public function setOligobarcodebSeq( $oligobarcodeB_seq ) {
-		$this->oligobarcodeB_seq = $oligobarcodeB_seq;
 		return $this;
 	}
 
@@ -180,16 +170,8 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 		return $this->oligobarcodeA_id;
 	}
 
-	public function getOligobarcodeaSeq() {
-		return $this->oligobarcodeA_seq;
-	}
-
 	public function getOligobarcodebId() {
 		return $this->oligobarcodeB_id;
-	}
-
-	public function getOligobarcodebSeq() {
-		return $this->oligobarcodeB_seq;
 	}
 
 	public function getBioanalyserChipCode() {

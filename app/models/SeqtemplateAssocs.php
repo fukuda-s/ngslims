@@ -32,6 +32,18 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model {
 	 */
 	public $assoc_vol;
 
+	/**
+	 *
+	 * @var integer
+	 */
+	public $reads_total;
+
+	/**
+	 *
+	 * @var integer
+	 */
+	public $reads_passed_filter;
+
 	public function setId( $id ) {
 		$this->id = $id;
 		return $this;
@@ -75,5 +87,20 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model {
 
 	public function getAssocVol() {
 		return $this->assoc_vol;
+	}
+
+	/**
+	 * Independent Column Mapping.
+	 */
+	public function columnMap() {
+		return array (
+				'id' => 'id',
+				'seqtemplate_id' => 'seqtemplate_id',
+				'seqlib_id' => 'seqlib_id',
+				'assoc_factor' => 'assoc_factor',
+				'assoc_vol' => 'assoc_vol',
+				'reads_total' => 'reads_total',
+				'reads_passed_filter' => 'reads_passed_filter'
+		);
 	}
 }

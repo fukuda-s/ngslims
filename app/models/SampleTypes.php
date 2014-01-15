@@ -9,25 +9,25 @@ class SampleTypes extends \Phalcon\Mvc\Model
      * @var integer
      */
     public $id;
-     
+
     /**
      *
      * @var string
      */
     public $name;
-     
+
     /**
      *
      * @var string
      */
-    public $code_nucleotide_type;
-     
+    public $nucleotide_type;
+
     /**
      *
      * @var integer
      */
     public $sort_order;
-     
+
     /**
      *
      * @var string
@@ -43,9 +43,9 @@ class SampleTypes extends \Phalcon\Mvc\Model
         $this->name = $name;
         return $this;
     }
-    public function setCodeNucleotideType($code_nucleotide_type)
+    public function setNucleotideType($nucleotide_type)
     {
-        $this->code_nucleotide_type = $code_nucleotide_type;
+        $this->nucleotide_type = $nucleotide_type;
         return $this;
     }
     public function setSortOrder($sort_order)
@@ -66,9 +66,9 @@ class SampleTypes extends \Phalcon\Mvc\Model
     {
         return $this->name;
     }
-    public function getCodeNucleotideType()
+    public function getNucleotideType()
     {
-        return $this->code_nucleotide_type;
+        return $this->nucleotide_type;
     }
     public function getSortOrder()
     {
