@@ -28,6 +28,6 @@ class TrackerProjectSamplesController extends ControllerBase {
 		$this->view->setVar('project', $project);
 
 		// $this->flash->success($project->users->name . " " . $project->name);
-		// $this->flash->success(var_dump($samples[0]->seqlibs[0]->oligobarcodeb));
+		//$this->flash->success(var_dump($samples[0]->seqlibs[0]->seqtemplates[0]));
 	}
 }

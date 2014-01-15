@@ -28,21 +28,31 @@
       </thead>
       <tbody>
         {% for sample in samples %}
-        {% for seqlib in sample.seqlibs %}
+          {% for seqlib in sample.seqlibs %}
+            {% for seqtemplate in seqlib.seqtemplates %}
         <tr id="sample_id_{{ sample.id }}">
           <td>{{ sample.name }}</td>
           <td>{{ sample.sampletypes.name }}</td>
-          <td></td>
+          <td>{{ seqtemplate.name }}</td>
           <td>{{ seqlib.name }}</td>
           <td>{{ seqlib.oligobarcodea.name }}</td>
           <td>{{ seqlib.oligobarcodea.barcode_seq }}</td>
           <td>{{ seqlib.oligobarcodeb.name }}</td>
           <td>{{ seqlib.oligobarcodeb.barcode_seq }}</td>
+          {% if sample.qual_date is defined %}
+          <td>{{ date('Y-m-d', strtotime(sample.qual_date)) }}</td>
+          {% else %}
           <td></td>
+          {% endif %}
+          {% if seqlib.create_at is defined %}
+          <td>{{ date('Y-m-d', strtotime(seqlib.create_at)) }}</td>
+          {% else %}
           <td></td>
+          {% endif %}
           <td></td>
         </tr>
-        {% endfor %}
+            {% endfor %}
+          {% endfor %}
         {% endfor %}
       </tbody>
     </table>

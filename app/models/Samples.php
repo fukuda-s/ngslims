@@ -90,6 +90,12 @@ class Samples extends \Phalcon\Mvc\Model {
 	 *
 	 * @var string
 	 */
+	public $qual_date;
+
+	/**
+	 *
+	 * @var string
+	 */
 	public $create_at;
 
 	/**
@@ -168,6 +174,11 @@ class Samples extends \Phalcon\Mvc\Model {
 		return $this;
 	}
 
+	public function setQualDate( $qual_date ) {
+		$this->qual_date = $qual_date;
+		return $this;
+	}
+
 	public function setCreateAt( $create_at ) {
 		$this->create_at = $create_at;
 		return $this;
@@ -232,6 +243,10 @@ class Samples extends \Phalcon\Mvc\Model {
 
 	public function getQualFragmentSize() {
 		return $this->qual_fragment_size;
+	}
+
+	public function getQualDate() {
+		return $this->qual_date;
 	}
 
 	public function getCreateAt() {

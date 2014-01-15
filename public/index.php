@@ -83,6 +83,11 @@ try {
 			"compiledPath" => "../cache/volt/"
 		));
 
+		$compiler = $volt->getCompiler();
+
+		//This binds the function name 'shuffle' in Volt to the PHP function 'str_shuffle'
+		$compiler->addFunction('strtotime', 'strtotime');
+
 		return $volt;
 	}, true);
 

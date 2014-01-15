@@ -42,7 +42,8 @@ class Security extends Plugin
 				'products' => array('index', 'search', 'new', 'edit', 'save', 'create', 'delete'),
 				'producttypes' => array('index', 'search', 'new', 'edit', 'save', 'create', 'delete'),
 				'invoices' => array('index', 'profile'),
-				'tracker' => array('index', 'project', 'experiment', 'protocol')
+				'tracker' => array('index', 'project', 'experiment', 'protocol'),
+				'trackerProjectSamples' => array('index')
 			);
 			foreach ($privateResources as $resource => $actions) {
 				$acl->addResource(new Phalcon\Acl\Resource($resource), $actions);
