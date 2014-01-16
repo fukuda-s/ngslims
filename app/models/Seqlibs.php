@@ -40,21 +40,9 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 
 	/**
 	 *
-	 * @var string
-	 */
-	public $oligobarcodeA_seq;
-
-	/**
-	 *
 	 * @var integer
 	 */
 	public $oligobarcodeB_id;
-
-	/**
-	 *
-	 * @var string
-	 */
-	public $oligobarcodeB_seq;
 
 	/**
 	 *
@@ -192,6 +180,23 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 
 	public function getCreateAt() {
 		return $this->create_at;
+	}
+
+	public function columnMap() {
+		return array (
+				'id' => 'id',
+				'name' => 'name',
+				'sample_id' => 'sample_id',
+				'request_id' => 'request_id',
+				'seqlib_protocol_id' => 'seqlib_protocol_id',
+				'oligobarcodeA_id' => 'oligobarcodeA_id',
+				'oligobarcodeB_id' => 'oligobarcodeB_id',
+				'bioanalyser_chip_code' => 'bioanalyser_chip_code',
+				'concentration' => 'concentration',
+				'stock_seqlib_volume' => 'stock_seqlib_volume',
+				'fragment_size' => 'fragment_size',
+				'create_at' => 'create_at'
+		);
 	}
 
 	public function initialize() {

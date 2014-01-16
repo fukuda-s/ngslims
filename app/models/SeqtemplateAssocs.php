@@ -69,6 +69,16 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model {
 		return $this;
 	}
 
+	public function setReadsTotal( $reads_total ) {
+		$this->reads_total = $reads_total;
+		return $this;
+	}
+
+	public function setReadsPassedFilter( $reads_passed_filter ) {
+		$this->reads_passed_filter = $reads_passed_filter;
+		return $this;
+	}
+
 	public function getId() {
 		return $this->id;
 	}
@@ -89,9 +99,14 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model {
 		return $this->assoc_vol;
 	}
 
-	/**
-	 * Independent Column Mapping.
-	 */
+	public function getReadsTotal() {
+		return $this->reads_total;
+	}
+
+	public function getReadsPassedFilter() {
+		return $this->reads_passed_filter;
+	}
+
 	public function columnMap() {
 		return array (
 				'id' => 'id',
