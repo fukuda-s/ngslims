@@ -1,6 +1,6 @@
 <?php
-use Phalcon\Tag, ngsLIMS\Models\Project;
-use Phalcon\Acl;
+use Phalcon\Tag,
+	Phalcon\Acl;
 
 class TrackerController extends ControllerBase {
 
