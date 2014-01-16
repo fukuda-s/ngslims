@@ -1,4 +1,5 @@
 <?php
+use Phalcon\Tag;
 
 /**
  * Elements
@@ -109,7 +110,7 @@ class Elements extends Phalcon\Mvc\User\Component {
 				} else {
 					echo '<li>';
 				}
-				echo Phalcon\Tag::linkTo($controller . '/' . $option['action'], $option['caption']);
+				echo Tag::linkTo($controller . '/' . $option['action'], $option['caption']);
 				echo '</li>';
 			}
 			echo '</ul>';
@@ -127,7 +128,7 @@ class Elements extends Phalcon\Mvc\User\Component {
 			} else {
 				echo '<li>';
 			}
-			echo Phalcon\Tag::linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
+			echo Tag::linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
 		}
 		echo '</ul>';
 	}
@@ -139,6 +140,7 @@ class Elements extends Phalcon\Mvc\User\Component {
 		$controllerName = $this->view->getControllerName();
 		$actionName = $this->view->getActionName();
 		echo '<ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="100" data-target="#">';
+		// echo '<ul class="nav nav-pills nav-stacked">';
 		foreach ( $this->_trackerSideMenu as $caption => $option ) {
 			if ( $caption == 'hr' ) {
 				echo '<hr />';
@@ -148,7 +150,7 @@ class Elements extends Phalcon\Mvc\User\Component {
 			} else {
 				echo '<li>';
 			}
-			echo Phalcon\Tag::linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
+			echo Tag::linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
 		}
 		echo '</ul>';
 	}
@@ -169,7 +171,7 @@ class Elements extends Phalcon\Mvc\User\Component {
 			echo '<li class="list-group-item">';
 			echo '	<div class="row">';
 			echo '		<div class="col-md-8">';
-			echo Phalcon\Tag::linkTo(array (
+			echo Tag::linkTo(array (
 					"trackerProjectSamples/index/" . $project->id,
 					$project->name
 			));
