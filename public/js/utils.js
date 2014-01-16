@@ -61,6 +61,9 @@ $(document).ready(function() {
 	$("div.profile .alert").hide();
 });
 
+/*
+ * Change cheveron icon with toggle panel
+ */
 function toggleChevron(e) {
 	$(e.target).parent().prev('.panel-heading').find("i.indicator")
 			.toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
@@ -68,12 +71,18 @@ function toggleChevron(e) {
 $('#projectOverview').on('hidden.bs.collapse', toggleChevron);
 $('#projectOverview').on('shown.bs.collapse', toggleChevron);
 
-$(function() {
+/*
+ * Tooltip
+ */
+$(document).ready(function() {
 	$('a[rel=tooltip]').tooltip({
 		container : 'body'
 	});
 });
 
+/*
+ * DataTables
+ */
 $(document).ready(function() {
 	$('#sampleInfo_table').dataTable({
 		"sScrollY" : "400px",
