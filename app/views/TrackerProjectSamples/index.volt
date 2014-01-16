@@ -30,6 +30,7 @@
         {% for sample in samples %}
           {% for seqlib in sample.seqlibs %}
             {% for seqtemplate in seqlib.seqtemplates %}
+              {% for seqlane in seqtemplate.seqlanes %}
         <tr id="sample_id_{{ sample.id }}">
           <td>{{ sample.name }}</td>
           <td>{{ sample.sampletypes.name }}</td>
@@ -49,8 +50,13 @@
           {% else %}
           <td></td>
           {% endif %}
+          {% if seqlane.last_cycle_date is defined %}
+          <td>{{ date('Y-m-d', strtotime(seqlane.last_cycle_date)) }}</td>
+          {% else %}
           <td></td>
+          {% endif %}
         </tr>
+              {% endfor %}
             {% endfor %}
           {% endfor %}
         {% endfor %}
