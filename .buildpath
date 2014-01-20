@@ -7,7 +7,6 @@
 	<buildpathentry kind="con" path="org.eclipse.dltk.USER_LIBRARY/phalconPHP"/>
 	<buildpathentry kind="src" path="app/models"/>
 	<buildpathentry kind="con" path="org.eclipse.dltk.USER_LIBRARY/phalcon-tools"/>
-	<buildpathentry kind="src" path="cache/volt"/>
 	<buildpathentry kind="src" path="app/controllers"/>
 	<buildpathentry kind="src" path="app/library"/>
 </buildpath>
