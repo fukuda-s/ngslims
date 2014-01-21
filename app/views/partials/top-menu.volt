@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-inverse" role="navigation">
   <div class="navbar-header">
     <button class="navbar-toggle" data-toggle="collapse" data-target=".target">
       <span class="icon-bar"></span>
@@ -8,7 +8,7 @@
     <a class="navbar-brand" href="">ngsLIMS</a>
   </div>
   <div class="collapse navbar-collapse target">
-    {{ elements.getMenu() }}
+  	{{ elements.getMenu() }}
     <form class="navbar-form navbar-left" role="search" action="report.php">
       <div class="form-group">
         <input method="get" name="search_l" type="text" class="form-control" placeholder="Sample Search" />

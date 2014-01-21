@@ -1,5 +1,4 @@
 {% include 'partials/top-menu.volt' %}
-
 <div class="container">
   {{ content() }}
   <hr>
