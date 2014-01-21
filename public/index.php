@@ -85,7 +85,7 @@ try {
 
 		$compiler = $volt->getCompiler();
 
-		//This binds the function name 'shuffle' in Volt to the PHP function 'str_shuffle'
+		//This binds the function name 'strtotime' in Volt to the PHP function 'strtotime'
 		$compiler->addFunction('strtotime', 'strtotime');
 
 		return $volt;
