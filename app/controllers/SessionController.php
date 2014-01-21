@@ -84,7 +84,7 @@ class SessionController extends ControllerBase
             if ($user != false) {
                 $this->_registerSession($user);
                 $this->flash->success('Welcome ' . $user->name);
-                return $this->forward('invoices/index');
+                return $this->forward('tracker/index');
             }
 
             $username = $this->request->getPost('email', 'alphanum');
@@ -92,7 +92,7 @@ class SessionController extends ControllerBase
             if ($user != false) {
                 $this->_registerSession($user);
                 $this->flash->success('Welcome ' . $user->name);
-                return $this->forward('invoices/index');
+                return $this->forward('tracker/index');
             }
 
             $this->flash->error('Wrong email/password');
