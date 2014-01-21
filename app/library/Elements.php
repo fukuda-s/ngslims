@@ -100,7 +100,6 @@ class Elements extends Phalcon\Mvc\User\Component {
 			unset($this->_headerMenu['pull-left']['tracker']);
 		}
 
-		echo '<div class="collapse navbar-collapse target">';
 		$controllerName = $this->view->getControllerName();
 		foreach ( $this->_headerMenu as $position => $menu ) {
 			echo '<ul class="nav navbar-nav ', $position, '">';
