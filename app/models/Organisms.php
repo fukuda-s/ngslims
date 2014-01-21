@@ -22,6 +22,12 @@ class Organisms extends \Phalcon\Mvc\Model {
 
 	/**
 	 *
+	 * @var integer
+	 */
+	public $sort_order;
+
+	/**
+	 *
 	 * @var string
 	 */
 	public $active;
@@ -34,6 +40,7 @@ class Organisms extends \Phalcon\Mvc\Model {
 				'id' => 'id',
 				'name' => 'name',
 				'taxonomy' => 'taxonomy',
+				'sort_order' => 'sort_order',
 				'active' => 'active'
 		);
 	}

@@ -1,6 +1,5 @@
 <?php
-use Phalcon\Tag,
-	Phalcon\Acl;
+use Phalcon\Tag, Phalcon\Acl;
 
 class TrackerController extends ControllerBase {
 

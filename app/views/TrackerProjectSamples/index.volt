@@ -3,10 +3,14 @@
 <div class="row">
   <div class="col-md-12">
     <ol class="breadcrumb">
-      <li><a href="#">{{ project.users.name }} </a></li>
-      <li><a href="#">{{ project.name }} </a></li>
+      <li><a href="">{{ project.users.name }} </a></li>
+      <li><a href="">{{ project.name }} </a></li>
       <li class="active">Samples</li>
     </ol>
+    <div align="right">
+    {{ link_to("trackerProjectSamples/editSamples/" ~ project.id, "Edit Sample Info >>", "class": "btn btn-primary") }}
+	</div>
+	<hr>
     <table class="table table-bordered table-hover table-condensed" id="sampleInfo_table">
       <thead>
         <tr>
