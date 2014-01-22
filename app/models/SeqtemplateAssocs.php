@@ -33,18 +33,6 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model {
 	public $assoc_vol;
 
 	/**
-	 *
-	 * @var integer
-	 */
-	public $reads_total;
-
-	/**
-	 *
-	 * @var integer
-	 */
-	public $reads_passed_filter;
-
-	/**
 	 * Independent Column Mapping.
 	 */
 	public function columnMap() {
@@ -53,9 +41,7 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model {
 				'seqtemplate_id' => 'seqtemplate_id',
 				'seqlib_id' => 'seqlib_id',
 				'assoc_factor' => 'assoc_factor',
-				'assoc_vol' => 'assoc_vol',
-				'reads_total' => 'reads_total',
-				'reads_passed_filter' => 'reads_passed_filter'
+				'assoc_vol' => 'assoc_vol'
 		);
 	}
 }
