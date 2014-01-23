@@ -18,7 +18,7 @@ class OligobarcodeSchemeAllows extends \Phalcon\Mvc\Model {
 	 *
 	 * @var integer
 	 */
-	public $seqlib_protocol_id;
+	public $protocol_id;
 
 	/**
 	 *
@@ -33,7 +33,7 @@ class OligobarcodeSchemeAllows extends \Phalcon\Mvc\Model {
 		return array (
 				'id' => 'id',
 				'oligobarcode_scheme_id' => 'oligobarcode_scheme_id',
-				'seqlib_protocol_id' => 'seqlib_protocol_id',
+				'protocol_id' => 'protocol_id',
 				'has_oligobarcodeB' => 'has_oligobarcodeB'
 		);
 	}

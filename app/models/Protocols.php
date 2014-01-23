@@ -1,6 +1,6 @@
 <?php
 
-class SeqlibProtocols extends \Phalcon\Mvc\Model {
+class Protocols extends \Phalcon\Mvc\Model {
 
 	/**
 	 *

@@ -30,7 +30,7 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 	 *
 	 * @var integer
 	 */
-	public $seqlib_protocol_id;
+	public $protocol_id;
 
 	/**
 	 *
@@ -83,7 +83,7 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 				'name' => 'name',
 				'sample_id' => 'sample_id',
 				'request_id' => 'request_id',
-				'seqlib_protocol_id' => 'seqlib_protocol_id',
+				'protocol_id' => 'protocol_id',
 				'oligobarcodeA_id' => 'oligobarcodeA_id',
 				'oligobarcodeB_id' => 'oligobarcodeB_id',
 				'bioanalyser_chip_code' => 'bioanalyser_chip_code',
@@ -97,7 +97,7 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 	public function initialize() {
 		$this->belongsTo('sample_id', 'Samples', 'id');
 		$this->belongsTo('request_id', 'Requests', 'id');
-		$this->belongsTo('seqlib_protocol_id', 'Protocols', 'id');
+		$this->belongsTo('protocol_id', 'Protocols', 'id');
 		$this->belongsTo('oligobarcodeA_id', 'Oligobarcodes', 'id', array (
 				'alias' => 'OligobarcodeA'
 		));
