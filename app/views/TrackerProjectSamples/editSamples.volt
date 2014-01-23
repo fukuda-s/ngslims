@@ -1,14 +1,19 @@
 <div class="row">
   <div class="col-md-12">
     <ol class="breadcrumb">
-      <li><a href="">{{ project.users.name }} </a></li>
-      <li><a href="">{{ project.name }} </a></li>
-      <li class="active">Samples</li>
+      <li>{{ link_to("tracker/project", "Project Overview") }}</li>
+      <li>{{ project.users.name }}</li>
+      <li class="active">{{ project.name }}</li>
     </ol>
     {{ content() }}
     <div align="left">{{ link_to("trackerProjectSamples/index/" ~ project.id, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
     <hr>
     {% include 'partials/handsontable-toolbar.volt' %}
+    <ul class="nav nav-tabs">
+      <li class="active">{{ link_to("trackerProjectSamples/editSamples/" ~ project.id, "Samples") }}</li>
+      <li>{{ link_to("trackerProjectSamples/editSeqlibs/" ~ project.id, "SeqLibs") }}</li>
+      <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ project.id, "SeqLanes") }}</li>
+    </ul>
     <div id="handsontable-body"></div>
   </div>
 </div>
@@ -35,7 +40,7 @@ $(document).ready(function() {
  	}
 
  	$.getJSON(
- 	  '/ngsLIMS/sampletypes/loadjson',
+ 	  '{{ url("sampletypes/loadjson") }}',
  	  {},
        function (data, status, xhr) {
          getSampleTypeAr(data);
@@ -55,7 +60,7 @@ $(document).ready(function() {
  	}
 
  	$.getJSON(
- 	  '/ngsLIMS/organisms/loadjson',
+ 	  '{{ url("organisms/loadjson") }}',
  	  {},
        function (data, status, xhr) {
          getOrganismAr(data);
@@ -101,12 +106,12 @@ $(document).ready(function() {
 		          	{ data : "qual_amount", data : 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
 		          	{ data : "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' }
 		          ],
-		          minSpareCols: 0,
-		          minSpareRows: 0,
-		          contextMenu: true,
-		          columnSorting: true,
-		          manualColumnResize: true,
-		          afterChange: function (changes, source) {
+		minSpareCols: 0,
+		minSpareRows: 0,
+		contextMenu: true,
+		columnSorting: true,
+		manualColumnResize: true,
+		afterChange: function (changes, source) {
 		        	  if (source === 'loadData') {
 		        		  return; // don't save this change
 		        	  }
@@ -124,7 +129,7 @@ $(document).ready(function() {
 		        	  if ($('#handsontable-autosave').find('input').is(':checked')) {
 		        		  clearTimeout(autosaveNotification);
 		        		  $.ajax({
-		        			  url: "/ngsLIMS/trackerProjectSamples/saveSamples",
+		        			  url: '{{ url("trackerProjectSamples/saveSamples") }}',
 		        			  dataType: "json",
 		        			  type: "POST",
 		        			  data: {data: handsontable.getData(), changes: changes} // returns "data" as all data and "changes" as changed data
@@ -148,7 +153,7 @@ $(document).ready(function() {
 
 	function loadData() {
 		$.ajax({
-			url: "/ngsLIMS/samples/loadjson/{{ project.id }}",
+			url: '{{ url("samples/loadjson/") ~ project.id }}',
 			dataType: 'json',
 			type: 'POST',
 			data: {
@@ -166,7 +171,7 @@ $(document).ready(function() {
 	$toolbar.find('#save').click(function () {
 		//alert("save! "+handsontable.getData());
 		$.ajax({
-			url: "/ngsLIMS/trackerProjectSamples/saveSamples",
+			url: '{{ url("trackerProjectSamples/saveSamples") }}',
 			data: {data: handsontable.getData(), changes: isDirtyAr }, // returns all cells
 			dataType: 'json',
 			type: 'POST'

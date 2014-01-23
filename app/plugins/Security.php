@@ -70,6 +70,7 @@ class Security extends Plugin {
 					),
 					'trackerProjectSamples' => array (
 							'index',
+							'loadSamples',
 							'editSamples',
 							'saveSamples',
 							'editSeqlibs',

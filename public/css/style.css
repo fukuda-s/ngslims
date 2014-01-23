@@ -4,12 +4,12 @@
 
 /* Table td colors */
 
-table td#dup_w {
+table td.dup_w {
 	color: #FFFFFF;
 	border-width: 0 1px 0 1px;
 }
 
-table td#dup_b {
+table td.dup_b {
 	color: #00CCFF;
 	border-width: 0 1px 0 1px;
 }

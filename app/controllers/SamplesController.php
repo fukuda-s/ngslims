@@ -20,7 +20,7 @@ class SamplesController extends ControllerBase {
 				));
 
 				$samples = Samples::find(array (
-						"project_id=:project_id:",
+						"project_id = :project_id:",
 						'bind' => array (
 								'project_id' => $project_id
 						)

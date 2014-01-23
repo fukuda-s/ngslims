@@ -80,13 +80,3 @@ $(document).ready(function() {
 	});
 });
 
-/*
- * DataTables
- */
-$(document).ready(function() {
-	$('#sampleInfo_table').dataTable({
-		"sScrollY" : "400px",
-		"bPaginate" : false,
-		"bScrollCollapse" : true
-	});
-});

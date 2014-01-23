@@ -135,4 +135,8 @@ class Seqlanes extends \Phalcon\Mvc\Model {
 				'read2_clusters_passed_filter' => 'read2_clusters_passed_filter'
 		);
 	}
+
+	public function initialize() {
+		$this->belongsTo('flowcell_id', 'Flowcells', 'id');
+	}
 }
