@@ -10,14 +10,14 @@
     <hr>
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
-      <li class="active">{{ link_to("trackerProjectSamples/editSamples/" ~ project.id, "Samples") }}</li>
-      <li>{{ link_to("trackerProjectSamples/editSeqlibs/" ~ project.id, "SeqLibs") }}</li>
+      <li>{{ link_to("trackerProjectSamples/editSamples/" ~ project.id, "Samples") }}</li>
+      <li class="active">{{ link_to("trackerProjectSamples/editSeqlibs/" ~ project.id, "SeqLibs") }}</li>
       <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ project.id, "SeqLanes") }}</li>
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
       </button>
     </ul>
-    <div id="handsontable-editSampls-body" style="height: 400px; overflow: auto"></div>
+    <div id="handsontable-editSeqlibs-body" style="height: 400px; overflow: auto"></div>
   </div>
 </div>
 <script>
@@ -25,48 +25,54 @@
  * Construct Handsontable
  */
 // Make handsontable renderer and dropdown lists
-var sampleTypeAr = new Array();
-var organismAr = new Array();
+var sampleNameAr = new Array();
+var oligobarcodeAr = new Array();
 
 $(document).ready(function() {
 
- 	function getSampleTypeAr (data) {
+ 	function getSampleNameAr (data) {
  		//console.log("stringified:"+JSON.stringify(data));
  		var parseAr = JSON.parse(JSON.stringify(data));
  		//alert(parseAr);
  		$.each( parseAr, function(key, value) {
  			//alert(value["id"]+" : "+value["name"]);
- 			var sample_type_id = value["id"];
- 			var sample_type_name   = value["name"];
- 			sampleTypeAr[sample_type_id] = sample_type_name;
+ 			var sample_id = value["id"];
+ 			var sample_name = value["name"];
+ 			sampleNameAr[sample_id] = sample_name;
  		});
  	}
 
- 	$.getJSON(
- 	  '{{ url("sampletypes/loadjson") }}',
- 	  {},
-       function (data, status, xhr) {
-         getSampleTypeAr(data);
- 	  }
- 	);
+	$.ajax({
+		url: '{{ url("samples/loadjson/") ~ project.id }}',
+		dataType: 'json',
+		type: 'POST',
+		data: {
+		}
+	})
+	.done( function (data) {
+		//alert(data);
+		//alert(location.href);
+		getSampleNameAr(data);
+	});
 
- 	function getOrganismAr (data) {
+ 	function getOligobarcodeAr (data) {
  		//console.log("stringified:"+JSON.stringify(data));
  		var parseAr = JSON.parse(JSON.stringify(data));
  		//alert(parseAr);
  		$.each( parseAr, function(key, value) {
  			//alert(value["id"]+" : "+value["name"]);
- 			var organism_id = value["id"];
- 			var organism_name   = value["name"];
- 			organismAr[organism_id] = organism_name;
+ 			var oligobarcode_id = value["id"];
+ 			var oligobarcode_name   = value["name"];
+ 			var oligobarcode_seq   = value["barcode_seq"];
+ 			oligobarcodeAr[oligobarcode_id] = oligobarcode_name + " " + oligobarcode_seq;
  		});
  	}
 
  	$.getJSON(
- 	  '{{ url("organisms/loadjson") }}',
+ 	  '{{ url("oligobarcodes/loadjson") }}',
  	  {},
        function (data, status, xhr) {
-         getOrganismAr(data);
+         getOligobarcodeAr(data);
  	  }
  	);
 
@@ -74,20 +80,18 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 
-	var sampleTypeRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+	var sampleNameRenderer = function (instance, td, row, col, prop, value, cellProperties) {
 		Handsontable.TextCell.renderer.apply(this, arguments);
-		//alert("renderer: "+sampleTypeAr[value]);
-		$(td).text(sampleTypeAr[value]);
+		$(td).text(sampleNameAr[value]);
 	};
 
-	var organismRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+	var oligobarcodeRenderer = function (instance, td, row, col, prop, value, cellProperties) {
 		Handsontable.TextCell.renderer.apply(this, arguments);
-		//alert("renderer: "+sampleTypeAr[value]);
-		$(td).text(organismAr[value]);
+		$(td).text(oligobarcodeAr[value]);
 	};
 
 	// Construct handsontable
-	var $container = $("#handsontable-editSampls-body");
+	var $container = $("#handsontable-editSeqlibs-body");
 	var $console = $("#handsontable-console");
 	var $toolbar = $("#handsontable-toolbar");
 	var autosaveNotification = new String();
@@ -95,25 +99,22 @@ $(document).ready(function() {
 	$container.handsontable({
 		stretchH: 'all',
 		rowHeaders: true,
+		columns: [
+		          	{ data : "name", title: "Seqlib Name", readOnly: true },
+		          	{ data : "sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer },
+		          	{ data : "protocol_id", title: "Protocol" },
+		          	{ data : "oligobarcodeA_id", title: "OligoBarcode A", renderer: oligobarcodeRenderer },
+		          	{ data : "oligobarcodeB_id", title: "OligoBarcode B", renderer: oligobarcodeRenderer },
+		          	{ data : "concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
+		          	{ data : "stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
+		          	{ data : "fragmentsize", title: "Fragment Size", type: 'numeric' },
+		          	{ data : "create_at", title: "Seqlib Date", type: 'date', dateFormat: 'yy-mm-dd' }
+		          ],
 		minSpareCols: 0,
 		minSpareRows: 0,
 		contextMenu: true,
 		columnSorting: true,
 		manualColumnResize: true,
-		columns: [
-		          	{ data : "name", title: "Sample Name", readOnly: true },
-		          	{ data : "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer },
-		          	{ data : "organism_id", title: "Organism", readOnly: true, renderer: organismRenderer, source: organismRenderer },
-		          	{ data : "qual_concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
-		          	{ data : "qual_od260280", title: "A260/A280", type: 'numeric', format: '0.00' },
-		          	{ data : "qual_od260230", title: "A260/A230", type: 'numeric', format: '0.00' },
-		          	{ data : "qual_RIN", title: "RIN", type: 'numeric', format: '0.00' },
-		          	{ data : "qual_fragmentsize", title: "Fragment Size", type: 'numeric' },
-		          	{ data : "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000' },
-		          	{ data : "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
-		          	{ data : "qual_amount", data : 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
-		          	{ data : "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' }
-		          ],
 		afterChange: function (changes, source) {
 		        	  if (source === 'loadData') {
 		        		  return; // don't save this change
@@ -132,7 +133,7 @@ $(document).ready(function() {
 		        	  if ($('#handsontable-autosave').find('input').is(':checked')) {
 		        		  clearTimeout(autosaveNotification);
 		        		  $.ajax({
-		        			  url: '{{ url("trackerProjectSamples/saveSamples") }}',
+		        			  url: '{{ url("trackerProjectSamples/saveSeqlibs") }}',
 		        			  dataType: "json",
 		        			  type: "POST",
 		        			  data: {data: handsontable.getData(), changes: changes} // returns "data" as all data and "changes" as changed data
@@ -156,7 +157,7 @@ $(document).ready(function() {
 
 	function loadData() {
 		$.ajax({
-			url: '{{ url("samples/loadjson/") ~ project.id }}',
+			url: '{{ url("seqlibs/loadjson/") ~ project.id }}',
 			dataType: 'json',
 			type: 'POST',
 			data: {
@@ -174,7 +175,7 @@ $(document).ready(function() {
 	$toolbar.find('#save').click(function () {
 		//alert("save! "+handsontable.getData());
 		$.ajax({
-			url: '{{ url("trackerProjectSamples/saveSamples") }}',
+			url: '{{ url("trackerProjectSamples/saveSeqlibs") }}',
 			data: {data: handsontable.getData(), changes: isDirtyAr }, // returns all cells
 			dataType: 'json',
 			type: 'POST'
