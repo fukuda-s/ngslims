@@ -70,6 +70,10 @@ class Security extends Plugin {
 					),
 					'trackerProjectSamples' => array (
 							'index',
+							'showTableSamples',
+							'showPanelSamples',
+							'showPanelSeqlibs',
+							'showPanelSeqlanes',
 							'loadSamples',
 							'editSamples',
 							'saveSamples',
@@ -84,7 +88,13 @@ class Security extends Plugin {
 					'organisms' => array (
 							'loadjson'
 					),
+					'oligobarcodes' => array (
+							'loadjson'
+					),
 					'samples' => array (
+							'loadjson'
+					),
+					'seqlibs' => array (
 							'loadjson'
 					)
 			);

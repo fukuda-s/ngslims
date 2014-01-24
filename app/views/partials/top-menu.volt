@@ -5,11 +5,11 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="">ngsLIMS</a>
+    {{ link_to("/index", "ngsLIMS", "class": "navbar-brand") }}
   </div>
   <div class="collapse navbar-collapse target">
   	{{ elements.getMenu() }}
-    <form class="navbar-form navbar-left" role="search" action="report.php">
+    <form class="navbar-form navbar-right" role="search" action="report.php">
       <div class="form-group">
         <input method="get" name="search_l" type="text" class="form-control" placeholder="Sample Search" />
       </div>

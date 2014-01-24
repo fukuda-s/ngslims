@@ -15,9 +15,8 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="panel panel-default">
     <div id="addNewPI" class="panel-body panel-collapse collapse">
+      <h4>Add New Project User</h4>
       <form class="form-horizontal" role="form">
         <div class="form-group">
           <label for="inputLastName" class="col-sm-2 control-label">Last Name</label>

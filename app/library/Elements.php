@@ -10,14 +10,25 @@ class Elements extends Phalcon\Mvc\User\Component {
 
 	private $_headerMenu = array (
 			'pull-left' => array (
+					/*
 					'index' => array (
 							'caption' => 'Home',
+							'action' => 'index'
+					),
+					*/
+					'order' => array (
+							'caption' => 'Order',
 							'action' => 'index'
 					),
 					'tracker' => array (
 							'caption' => 'Tracker',
 							'action' => 'index'
 					),
+					'report' => array (
+							'caption' => 'Report',
+							'action' => 'index'
+					),
+					/*
 					'invoices' => array (
 							'caption' => 'Invoices',
 							'action' => 'index'
@@ -30,10 +41,15 @@ class Elements extends Phalcon\Mvc\User\Component {
 							'caption' => 'Contact',
 							'action' => 'index'
 					)
+					*/
 			),
 			'pull-right' => array (
 					'session' => array (
 							'caption' => 'Log In/Sign Up',
+							'action' => 'index'
+					),
+					'about' => array (
+							'caption' => 'About',
 							'action' => 'index'
 					)
 			)
@@ -97,6 +113,7 @@ class Elements extends Phalcon\Mvc\User\Component {
 			);
 		} else {
 			unset($this->_headerMenu['pull-left']['invoices']);
+			unset($this->_headerMenu['pull-left']['order']);
 			unset($this->_headerMenu['pull-left']['tracker']);
 		}
 
@@ -171,7 +188,7 @@ class Elements extends Phalcon\Mvc\User\Component {
 			echo '	<div class="row">';
 			echo '		<div class="col-md-8">';
 			echo Tag::linkTo(array (
-					"trackerProjectSamples/index/" . $project->id,
+					"trackerProjectSamples/showTableSamples/" . $project->id,
 					$project->name
 			));
 			echo '		</div>';
