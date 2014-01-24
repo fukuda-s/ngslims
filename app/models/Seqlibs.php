@@ -24,7 +24,7 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 	 *
 	 * @var integer
 	 */
-	public $request_id;
+	public $project_id;
 
 	/**
 	 *
@@ -82,7 +82,7 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 				'id' => 'id',
 				'name' => 'name',
 				'sample_id' => 'sample_id',
-				'request_id' => 'request_id',
+				'project_id' => 'project_id',
 				'protocol_id' => 'protocol_id',
 				'oligobarcodeA_id' => 'oligobarcodeA_id',
 				'oligobarcodeB_id' => 'oligobarcodeB_id',
@@ -96,7 +96,7 @@ class Seqlibs extends \Phalcon\Mvc\Model {
 
 	public function initialize() {
 		$this->belongsTo('sample_id', 'Samples', 'id');
-		$this->belongsTo('request_id', 'Requests', 'id');
+		$this->belongsTo('project_id', 'Projects', 'id');
 		$this->belongsTo('protocol_id', 'Protocols', 'id');
 		$this->belongsTo('oligobarcodeA_id', 'Oligobarcodes', 'id', array (
 				'alias' => 'OligobarcodeA'
