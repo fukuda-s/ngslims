@@ -67,9 +67,12 @@ $(document).ready(function() {
 function toggleChevron(e) {
 	$(e.target).parent().prev('.panel-heading').find("i.indicator")
 			.toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
-}
-$('#projectOverview').on('hidden.bs.collapse', toggleChevron);
-$('#projectOverview').on('shown.bs.collapse', toggleChevron);
+};
+
+$(document).ready(function() {
+	$('#projectOverview').on('hidden.bs.collapse', toggleChevron);
+	$('#projectOverview').on('shown.bs.collapse', toggleChevron);
+});
 
 /*
  * Tooltip
@@ -79,4 +82,3 @@ $(document).ready(function() {
 		container : 'body'
 	});
 });
-
