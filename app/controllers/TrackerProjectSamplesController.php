@@ -10,7 +10,11 @@ class TrackerProjectSamplesController extends ControllerBase {
 		parent::initialize();
 	}
 
-	public function indexAction( $project_id ) {
+	public function indexAction() {
+		echo "Index of TrackerProjectSamples";
+	}
+
+	public function showTableSamplesAction( $project_id ) {
 		$project_id = $this->filter->sanitize($project_id, array (
 				"int"
 		));
@@ -58,22 +62,42 @@ class TrackerProjectSamplesController extends ControllerBase {
 				'project_id' => $project_id
 		));
 		$this->view->setVar('datas', $datas);
-		//$this->flash->success(var_dump($data));
+		// $this->flash->success(var_dump($data));
 
 		/*
-		 * Get Project table from related $samples[0], because all sample array has same Project.
+		 * Get Project table
 		 */
-		$project = $samples[0]->Projects;
-		$this->view->setVar('project', $project);
+		$this->view->setVar('project', Projects::findFirstById($project_id));
 
 		// $this->flash->success($project->users->name . " " . $project->name);
 		// $this->flash->success(var_dump($samples[0]->seqlibs[0]->seqtemplates[0]));
+	}
+
+	public function showPanelSamplesAction( $project_id ) {
+		$project_id = $this->filter->sanitize($project_id, array (
+				"int"
+		));
+	}
+
+	public function showPanelSeqlibsAction( $project_id ) {
+		$project_id = $this->filter->sanitize($project_id, array (
+				"int"
+		));
+	}
+
+	public function showPanelSeqlanesAction( $project_id ) {
+		$project_id = $this->filter->sanitize($project_id, array (
+				"int"
+		));
 	}
 
 	public function editSamplesAction( $project_id ) {
 		$project_id = $this->filter->sanitize($project_id, array (
 				"int"
 		));
+		/*
+		 * Get Project table
+		 */
 		$this->view->setVar('project', Projects::findFirstById($project_id));
 		// $this->flash->success("TEST");
 	}
@@ -89,10 +113,14 @@ class TrackerProjectSamplesController extends ControllerBase {
 					$changes = $request->getPost('changes');
 					$data = $request->getPost('data');
 
+					/*
+					 * $changes has array [["row number from 0", "row name", "before value", "changed value"]] ex.)[["3","qual_od260230","","1"]]
+					 */
 					foreach ( $changes as $key => $value ) {
 						$rowNumToChange = $value[0];
 						$colNameToChange = $value[1];
 						$valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
+						// Get sample_id from $data
 						$sample_id = $data[$rowNumToChange]["id"];
 
 						$samples = Samples::findFirst("id = $sample_id");
