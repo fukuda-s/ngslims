@@ -14,6 +14,7 @@ table td.dup_b {
 	border-width: 0 1px 0 1px;
 }
 
+/* Custom hover style for sidebar */
 .list-group-item:hover#ReportSidebar {
 	background-color: #eeeeee;
 }
@@ -29,6 +30,10 @@ table td.dup_b {
 .panel-warning > .panel-heading:hover#ProjectList {
 	background-color: #D5D3BD;
 }
+
+/*
+ * Custom style tube
+ */
 
 .tube {
 	min-height: 20px;
