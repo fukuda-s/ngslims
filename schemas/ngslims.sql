@@ -417,7 +417,7 @@ CREATE TABLE `seqlibs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `sample_id` int(11) NOT NULL,
-  `request_id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
   `protocol_id` int(11) DEFAULT NULL,
   `oligobarcodeA_id` int(11) DEFAULT NULL,
   `oligobarcodeB_id` int(11) DEFAULT NULL,
@@ -431,12 +431,12 @@ CREATE TABLE `seqlibs` (
   KEY `fk_seqlibs_oligobarcodeA_idx` (`oligobarcodeA_id`),
   KEY `fk_seqlibs_oligobarcodeB_idx` (`oligobarcodeB_id`),
   KEY `fk_seqlibs_samples_idx` (`sample_id`),
-  KEY `fk_seqlibs_requests_idx` (`request_id`),
+  KEY `fk_seqlibs_projects_idx` (`project_id`),
   KEY `fk_seqlibs_protocols_idx` (`protocol_id`),
-  CONSTRAINT `fk_seqlibs_protocols` FOREIGN KEY (`protocol_id`) REFERENCES `protocols` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_seqlibs_oligobarcodeA` FOREIGN KEY (`oligobarcodeA_id`) REFERENCES `oligobarcodes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_seqlibs_oligobarcodeB` FOREIGN KEY (`oligobarcodeB_id`) REFERENCES `oligobarcodes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_seqlibs_requests` FOREIGN KEY (`request_id`) REFERENCES `requests` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seqlibs_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seqlibs_protocols` FOREIGN KEY (`protocol_id`) REFERENCES `protocols` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_seqlibs_samples` FOREIGN KEY (`sample_id`) REFERENCES `samples` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=4096 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -484,6 +484,28 @@ CREATE TABLE `seqtemplates` (
   PRIMARY KEY (`id`),
   KEY `name_idx` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1024 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `step_entries`
+--
+
+DROP TABLE IF EXISTS `step_entries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `step_entries` (
+  `id` int(11) NOT NULL,
+  `sample_id` int(11) DEFAULT NULL,
+  `step_id` int(11) DEFAULT NULL,
+  `start_at` datetime DEFAULT NULL,
+  `finish_at` datetime DEFAULT NULL,
+  `note` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_step_entries_samples_idx` (`sample_id`),
+  KEY `fk_step_entries_steps_idx` (`step_id`),
+  CONSTRAINT `fk_step_entries_samples` FOREIGN KEY (`sample_id`) REFERENCES `samples` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_step_entries_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -549,4 +571,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-23 16:30:21
+-- Dump completed on 2014-01-24 13:55:00
