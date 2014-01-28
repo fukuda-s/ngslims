@@ -27,7 +27,7 @@ class TrackerController extends ControllerBase {
 					Projects p,
 					Samples s
 				WHERE
-					u.id = p.user_id AND p.id = s.project_id
+					u.id = p.pi_user_id AND p.id = s.project_id
 				GROUP BY (u.id)';
 		$users = $this->modelsManager->executeQuery($phql);
 

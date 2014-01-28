@@ -26,6 +26,12 @@ class Projects extends \Phalcon\Mvc\Model {
 	 */
 	public $user_id;
 
+    /**
+     *
+     * @var integer
+     */
+    public $pi_user_id;
+
 	/**
 	 *
 	 * @var string
@@ -47,6 +53,7 @@ class Projects extends \Phalcon\Mvc\Model {
 				'lab_id' => 'lab_id',
 				'name' => 'name',
 				'user_id' => 'user_id',
+                'pi_user_id' => 'pi_user_id',
 				'create_at' => 'create_at',
 				'description' => 'description'
 		);
@@ -54,7 +61,12 @@ class Projects extends \Phalcon\Mvc\Model {
 
 	public function initialize() {
 		$this->belongsTo('lab_id', 'Labs', 'id');
-		$this->belongsTo('user_id', 'Users', 'id');
+		$this->belongsTo('user_id', 'Users', 'id', array(
+            "alias" => "Users"
+        ));
+        $this->belongsTo('pi_user_id', 'Users', 'id', array(
+            "alias" => "PIs"
+        ));
 
 		$this->hasMany('id', 'Samples', 'project_id');
 	}
