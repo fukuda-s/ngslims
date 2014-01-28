@@ -48,7 +48,7 @@ class InvoicesController extends ControllerBase
             $user->email = $email;
             if ($user->save() == false) {
                 foreach ($user->getMessages() as $message) {
-                    $this->flash->error((string) $message);
+                    $this->flash->error((string)$message);
                 }
             } else {
                 $this->flash->success('Your profile information was updated successfully');

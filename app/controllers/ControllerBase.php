@@ -8,13 +8,14 @@ class ControllerBase extends Phalcon\Mvc\Controller
         Phalcon\Tag::prependTitle('ngsLIMS | ');
     }
 
-    protected function forward($uri){
-    	$uriParts = explode('/', $uri);
-    	return $this->dispatcher->forward(
-    		array(
-    			'controller' => $uriParts[0],
-    			'action' => $uriParts[1]
-    		)
-    	);
+    protected function forward($uri)
+    {
+        $uriParts = explode('/', $uri);
+        return $this->dispatcher->forward(
+            array(
+                'controller' => $uriParts[0],
+                'action' => $uriParts[1]
+            )
+        );
     }
 }

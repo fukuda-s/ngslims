@@ -101,7 +101,7 @@ class ProductsController extends ControllerBase
         if (!$products->save()) {
 
             foreach ($products->getMessages() as $message) {
-                $this->flash->error((string) $message);
+                $this->flash->error((string)$message);
             }
             return $this->forward("products/new");
 
@@ -121,7 +121,7 @@ class ProductsController extends ControllerBase
         $id = $request->getPost("id", "int");
         $products = Products::findFirst("id='$id'");
         if ($products == false) {
-            $this->flash->error("products does not exist ".$id);
+            $this->flash->error("products does not exist " . $id);
             return $this->forward("products/index");
         }
 
@@ -135,7 +135,7 @@ class ProductsController extends ControllerBase
 
         if (!$products->save()) {
             foreach ($products->getMessages() as $message) {
-                $this->flash->error((string) $message);
+                $this->flash->error((string)$message);
             }
 
             return $this->forward("products/edit/" . $products->id);
@@ -157,7 +157,7 @@ class ProductsController extends ControllerBase
 
         if (!$products->delete()) {
             foreach ($products->getMessages() as $message) {
-                $this->flash->error((string) $message);
+                $this->flash->error((string)$message);
             }
             return $this->forward("products/search");
         } else {

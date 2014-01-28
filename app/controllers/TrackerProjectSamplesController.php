@@ -2,25 +2,29 @@
 use Phalcon\Tag;
 use Phalcon\Logger\Formatter\Json;
 
-class TrackerProjectSamplesController extends ControllerBase {
+class TrackerProjectSamplesController extends ControllerBase
+{
 
-	public function initialize() {
-		$this->view->setTemplateAfter('main');
-		Tag::setTitle('Manage your product samples');
-		parent::initialize();
-	}
+    public function initialize()
+    {
+        $this->view->setTemplateAfter('main');
+        Tag::setTitle('Manage your product samples');
+        parent::initialize();
+    }
 
-	public function indexAction() {
-		echo "Index of TrackerProjectSamples";
-	}
+    public function indexAction()
+    {
+        echo "Index of TrackerProjectSamples";
+    }
 
-	public function showTableSamplesAction( $project_id ) {
-		$project_id = $this->filter->sanitize($project_id, array (
-				"int"
-		));
-		// $this->flash->success($project_id);
+    public function showTableSamplesAction($project_id)
+    {
+        $project_id = $this->filter->sanitize($project_id, array(
+            "int"
+        ));
+        // $this->flash->success($project_id);
 
-		$phql = 'SELECT
+        $phql = 'SELECT
 					s.id AS sample_id,
 					s.name AS sample_name,
 					st.name AS sample_type,
@@ -58,168 +62,177 @@ class TrackerProjectSamplesController extends ControllerBase {
 				WHERE
 					s.project_id = :project_id:
 				';
-		$datas = $this->modelsManager->executeQuery($phql, array (
-				'project_id' => $project_id
-		));
-		$this->view->setVar('datas', $datas);
-		// $this->flash->success(var_dump($data));
+        $datas = $this->modelsManager->executeQuery($phql, array(
+            'project_id' => $project_id
+        ));
+        $this->view->setVar('datas', $datas);
+        // $this->flash->success(var_dump($data));
 
-		/*
-		 * Get Project table
-		 */
-		$this->view->setVar('project', Projects::findFirstById($project_id));
+        /*
+         * Get Project table
+         */
+        $this->view->setVar('project', Projects::findFirstById($project_id));
 
-		// $this->flash->success($project->users->name . " " . $project->name);
-		// $this->flash->success(var_dump($samples[0]->seqlibs[0]->seqtemplates[0]));
-	}
+        // $this->flash->success($project->users->name . " " . $project->name);
+        // $this->flash->success(var_dump($samples[0]->seqlibs[0]->seqtemplates[0]));
+    }
 
-	public function showPanelSamplesAction( $project_id ) {
-		$project_id = $this->filter->sanitize($project_id, array (
-				"int"
-		));
-	}
+    public function showPanelSamplesAction($project_id)
+    {
+        $project_id = $this->filter->sanitize($project_id, array(
+            "int"
+        ));
+    }
 
-	public function showPanelSeqlibsAction( $project_id ) {
-		$project_id = $this->filter->sanitize($project_id, array (
-				"int"
-		));
-	}
+    public function showPanelSeqlibsAction($project_id)
+    {
+        $project_id = $this->filter->sanitize($project_id, array(
+            "int"
+        ));
+    }
 
-	public function showPanelSeqlanesAction( $project_id ) {
-		$project_id = $this->filter->sanitize($project_id, array (
-				"int"
-		));
-	}
+    public function showPanelSeqlanesAction($project_id)
+    {
+        $project_id = $this->filter->sanitize($project_id, array(
+            "int"
+        ));
+    }
 
-	public function editSamplesAction( $project_id ) {
-		$project_id = $this->filter->sanitize($project_id, array (
-				"int"
-		));
-		/*
-		 * Get Project table
-		 */
-		$this->view->setVar('project', Projects::findFirstById($project_id));
-		// $this->flash->success("TEST");
-	}
+    public function editSamplesAction($project_id)
+    {
+        $project_id = $this->filter->sanitize($project_id, array(
+            "int"
+        ));
+        /*
+         * Get Project table
+         */
+        $this->view->setVar('project', Projects::findFirstById($project_id));
+        // $this->flash->success("TEST");
+    }
 
-	public function saveSamplesAction() {
-		$this->view->disable();
-		$request = new \Phalcon\Http\Request();
-		// Check whether the request was made with method POST
-		if ( $request->isPost() == true ) {
-			// Check whether the request was made with Ajax
-			if ( $request->isAjax() == true ) {
-				if ( $request->hasPost('data') && $request->hasPost('changes') ) {
-					$changes = $request->getPost('changes');
-					$data = $request->getPost('data');
+    public function saveSamplesAction()
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                if ($request->hasPost('data') && $request->hasPost('changes')) {
+                    $changes = $request->getPost('changes');
+                    $data = $request->getPost('data');
 
-					/*
-					 * $changes has array [["row number from 0", "row name", "before value", "changed value"]] ex.)[["3","qual_od260230","","1"]]
-					 */
-					foreach ( $changes as $key => $value ) {
-						$rowNumToChange = $value[0];
-						$colNameToChange = $value[1];
-						$valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
-						// Get sample_id from $data
-						$sample_id = $data[$rowNumToChange]["id"];
+                    /*
+                     * $changes has array [["row number from 0", "row name", "before value", "changed value"]] ex.)[["3","qual_od260230","","1"]]
+                     */
+                    foreach ($changes as $key => $value) {
+                        $rowNumToChange = $value[0];
+                        $colNameToChange = $value[1];
+                        $valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
+                        // Get sample_id from $data
+                        $sample_id = $data[$rowNumToChange]["id"];
 
-						$samples = Samples::findFirst("id = $sample_id");
-						$samples->$colNameToChange = $valueToChange;
-						if ( ! $samples->save() ) {
-							foreach ( $samples->getMessages() as $message ) {
-								$this->flash->error((string) $message);
-							}
-							return;
-						}
-					}
-					// Something return is necessary for frontend jQuery Ajax to find success or fail.
-					echo json_encode($changes);
-				}
-			}
-		}
-	}
+                        $samples = Samples::findFirst("id = $sample_id");
+                        $samples->$colNameToChange = $valueToChange;
+                        if (!$samples->save()) {
+                            foreach ($samples->getMessages() as $message) {
+                                $this->flash->error((string)$message);
+                            }
+                            return;
+                        }
+                    }
+                    // Something return is necessary for frontend jQuery Ajax to find success or fail.
+                    echo json_encode($changes);
+                }
+            }
+        }
+    }
 
-	public function editSeqlibsAction( $project_id ) {
-		$project_id = $this->filter->sanitize($project_id, array (
-				"int"
-		));
-		$this->view->setVar('project', Projects::findFirstById($project_id));
-		// $this->flash->success("TEST");
-	}
+    public function editSeqlibsAction($project_id)
+    {
+        $project_id = $this->filter->sanitize($project_id, array(
+            "int"
+        ));
+        $this->view->setVar('project', Projects::findFirstById($project_id));
+        // $this->flash->success("TEST");
+    }
 
-	public function saveSeqlibsAction() {
-		$this->view->disable();
-		$request = new \Phalcon\Http\Request();
-		// Check whether the request was made with method POST
-		if ( $request->isPost() == true ) {
-			// Check whether the request was made with Ajax
-			if ( $request->isAjax() == true ) {
-				// echo "Request was made using POST and AJAX";
-				if ( $request->hasPost('data') && $request->hasPost('changes') ) {
-					$changes = $request->getPost('changes');
-					$data = $request->getPost('data');
+    public function saveSeqlibsAction()
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                // echo "Request was made using POST and AJAX";
+                if ($request->hasPost('data') && $request->hasPost('changes')) {
+                    $changes = $request->getPost('changes');
+                    $data = $request->getPost('data');
 
-					foreach ( $changes as $key => $value ) {
-						$rowNumToChange = $value[0];
-						$colNameToChange = $value[1];
-						$valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
-						$sample_id = $data[$rowNumToChange]["id"];
+                    foreach ($changes as $key => $value) {
+                        $rowNumToChange = $value[0];
+                        $colNameToChange = $value[1];
+                        $valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
+                        $sample_id = $data[$rowNumToChange]["id"];
 
-						$samples = Samples::findFirst("id = $sample_id");
-						$samples->$colNameToChange = $valueToChange;
-						if ( ! $samples->save() ) {
-							foreach ( $samples->getMessages() as $message ) {
-								$this->flash->error((string) $message);
-							}
-							return;
-						}
-					}
-					// Something return is necessary for frontend jQuery Ajax to find success or fail.
-					echo json_encode($changes);
-				}
-			}
-		}
-	}
+                        $samples = Samples::findFirst("id = $sample_id");
+                        $samples->$colNameToChange = $valueToChange;
+                        if (!$samples->save()) {
+                            foreach ($samples->getMessages() as $message) {
+                                $this->flash->error((string)$message);
+                            }
+                            return;
+                        }
+                    }
+                    // Something return is necessary for frontend jQuery Ajax to find success or fail.
+                    echo json_encode($changes);
+                }
+            }
+        }
+    }
 
-	public function editSeqlanesAction( $project_id ) {
-		$project_id = $this->filter->sanitize($project_id, array (
-				"int"
-		));
-		$this->view->setVar('project', Projects::findFirstById($project_id));
-		// $this->flash->success("TEST");
-	}
+    public function editSeqlanesAction($project_id)
+    {
+        $project_id = $this->filter->sanitize($project_id, array(
+            "int"
+        ));
+        $this->view->setVar('project', Projects::findFirstById($project_id));
+        // $this->flash->success("TEST");
+    }
 
-	public function saveSeqlanesAction() {
-		$this->view->disable();
-		$request = new \Phalcon\Http\Request();
-		// Check whether the request was made with method POST
-		if ( $request->isPost() == true ) {
-			// Check whether the request was made with Ajax
-			if ( $request->isAjax() == true ) {
-				// echo "Request was made using POST and AJAX";
-				if ( $request->hasPost('data') && $request->hasPost('changes') ) {
-					$changes = $request->getPost('changes');
-					$data = $request->getPost('data');
+    public function saveSeqlanesAction()
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                // echo "Request was made using POST and AJAX";
+                if ($request->hasPost('data') && $request->hasPost('changes')) {
+                    $changes = $request->getPost('changes');
+                    $data = $request->getPost('data');
 
-					foreach ( $changes as $key => $value ) {
-						$rowNumToChange = $value[0];
-						$colNameToChange = $value[1];
-						$valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
-						$sample_id = $data[$rowNumToChange]["id"];
+                    foreach ($changes as $key => $value) {
+                        $rowNumToChange = $value[0];
+                        $colNameToChange = $value[1];
+                        $valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
+                        $sample_id = $data[$rowNumToChange]["id"];
 
-						$samples = Samples::findFirst("id = $sample_id");
-						$samples->$colNameToChange = $valueToChange;
-						if ( ! $samples->save() ) {
-							foreach ( $samples->getMessages() as $message ) {
-								$this->flash->error((string) $message);
-							}
-							return;
-						}
-					}
-					// Something return is necessary for frontend jQuery Ajax to find success or fail.
-					echo json_encode($changes);
-				}
-			}
-		}
-	}
+                        $samples = Samples::findFirst("id = $sample_id");
+                        $samples->$colNameToChange = $valueToChange;
+                        if (!$samples->save()) {
+                            foreach ($samples->getMessages() as $message) {
+                                $this->flash->error((string)$message);
+                            }
+                            return;
+                        }
+                    }
+                    // Something return is necessary for frontend jQuery Ajax to find success or fail.
+                    echo json_encode($changes);
+                }
+            }
+        }
+    }
 }

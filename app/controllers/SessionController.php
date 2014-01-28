@@ -44,7 +44,7 @@ class SessionController extends ControllerBase
             $user->active = 'Y';
             if ($user->save() == false) {
                 foreach ($user->getMessages() as $message) {
-                    $this->flash->error((string) $message);
+                    $this->flash->error((string)$message);
                 }
             } else {
                 Tag::setDefault('email', '');

@@ -87,7 +87,7 @@ class ProductTypesController extends ControllerBase
 
         if (!$producttypes->save()) {
             foreach ($producttypes->getMessages() as $message) {
-                $this->flash->error((string) $message);
+                $this->flash->error((string)$message);
             }
             return $this->forward("producttypes/new");
         } else {
@@ -114,7 +114,7 @@ class ProductTypesController extends ControllerBase
 
         if (!$producttypes->save()) {
             foreach ($producttypes->getMessages() as $message) {
-                $this->flash->error((string) $message);
+                $this->flash->error((string)$message);
             }
             return $this->forward("producttypes/edit/" . $producttypes->id);
         } else {
@@ -136,7 +136,7 @@ class ProductTypesController extends ControllerBase
 
         if (!$producttypes->delete()) {
             foreach ($producttypes->getMessages() as $message) {
-                $this->flash->error((string) $message);
+                $this->flash->error((string)$message);
             }
             return $this->forward("producttypes/search");
         } else {

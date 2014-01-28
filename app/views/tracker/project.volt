@@ -1,5 +1,5 @@
 {{ content() }} {% for user in users %} {% if loop.first %}
-<div class="panel-group" id="projectOverview">
+  <div class="panel-group" id="projectOverview">
   <div class="panel panel-default">
     <div class="panel-heading">
       <div class="row">
@@ -17,23 +17,27 @@
     </div>
     <div id="addNewPI" class="panel-body panel-collapse collapse">
       <h4>Add New Project User</h4>
+
       <form class="form-horizontal" role="form">
         <div class="form-group">
           <label for="inputLastName" class="col-sm-2 control-label">Last Name</label>
+
           <div class="col-sm-10">
-            <input type="text" class="form-control" id="inputLastName" placeholder="Last Name" />
+            <input type="text" class="form-control" id="inputLastName" placeholder="Last Name"/>
           </div>
         </div>
         <div class="form-group">
           <label for="inputFirstName" class="col-sm-2 control-label">First Name</label>
+
           <div class="col-sm-10">
-            <input type="text" class="form-control" id="inputFirstName" placeholder="First Name" />
+            <input type="text" class="form-control" id="inputFirstName" placeholder="First Name"/>
           </div>
         </div>
         <div class="form-group">
           <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+
           <div class="col-sm-10">
-            <input type="email" class="form-control" id="inputEmail" placeholder="Email" />
+            <input type="email" class="form-control" id="inputEmail" placeholder="Email"/>
           </div>
         </div>
         <div class="form-group">
@@ -44,7 +48,7 @@
       </form>
     </div>
   </div>
-  {% endif %}
+{% endif %}
   <div class="panel panel-info">
     <div class="panel-heading" data-toggle="collapse" href="#user_id_{{ user.id }}" id="OwnerList">
       <h4 class="panel-title">
@@ -59,8 +63,9 @@
             <span class="badge">{{ user.sample_count }}</span>
           </div>
           <div class="col-md-2">
-            <a href="#" rel="tooltip" data-placement="right" data-original-title="Edit PI name"><i class="glyphicon glyphicon-pencil"></i></a> <i
-              class="indicator glyphicon glyphicon-chevron-right pull-right"></i>
+            <a href="#" rel="tooltip" data-placement="right" data-original-title="Edit PI name"><i
+                  class="glyphicon glyphicon-pencil"></i></a> <i
+                class="indicator glyphicon glyphicon-chevron-right pull-right"></i>
           </div>
 
       </h4>
@@ -74,7 +79,10 @@
           <div id="addNewProject" class="panel-body panel-collapse collapse">
             <form class="form-inline" role="form">
               <div class="form-group">
-                <label class="sr-only" for="inputProjectName">Project Name</label> <input type="text" class="form-control" id="inputProjectName" placeholder="Project Name" />
+                <label class="sr-only" for="inputProjectName">Project Name</label> <input type="text"
+                                                                                          class="form-control"
+                                                                                          id="inputProjectName"
+                                                                                          placeholder="Project Name"/>
               </div>
               <button type="submit" class="btn btn-default">Submit</button>
             </form>
@@ -85,5 +93,5 @@
     </ul>
   </div>
   {% if loop.last %}
-</div>
-{% endif %} {% else %} No projects are recorded {% endfor %}
+    </div>
+  {% endif %} {% else %} No projects are recorded {% endfor %}

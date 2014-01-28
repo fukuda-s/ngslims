@@ -7,25 +7,26 @@
       <li>{{ project.users.name }}</li>
       <li class="active">{{ project.name }}</li>
     </ol>
-    <div align="right">{{ link_to("trackerProjectSamples/editSamples/" ~ project.id, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
+    <div
+        align="right">{{ link_to("trackerProjectSamples/editSamples/" ~ project.id, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
     <hr>
     <table class="table table-bordered table-hover table-condensed" id="sampleInfo_table">
       <thead>
-        <tr>
-          <th>Sample Name</th>
-          <th>Sample Type</th>
-          <th>Multiplex Lib Name</th>
-          <th>Lib Name</th>
-          <th>Index A</th>
-          <th>Index Seq A</th>
-          <th>Index B</th>
-          <th>Index Seq B</th>
-          <th>Flowcell</th>
-          <th>Lane #</th>
-          <th>QC Date</th>
-          <th>Lib Date</th>
-          <th>Last Cycle Date</th>
-        </tr>
+      <tr>
+        <th>Sample Name</th>
+        <th>Sample Type</th>
+        <th>Multiplex Lib Name</th>
+        <th>Lib Name</th>
+        <th>Index A</th>
+        <th>Index Seq A</th>
+        <th>Index B</th>
+        <th>Index Seq B</th>
+        <th>Flowcell</th>
+        <th>Lane #</th>
+        <th>QC Date</th>
+        <th>Lib Date</th>
+        <th>Last Cycle Date</th>
+      </tr>
       </thead>
       <tbody>
       {% for data in datas %}
@@ -40,21 +41,21 @@
           <td>{{ data.oligobarcodeB_seq }}</td>
           <td>{{ data.flowcell_name }}</td>
           <td>{{ data.seqlane_num }}</td>
-        {% if data.qual_date is defined %}
-          <td>{{ date('Y-m-d', strtotime(data.qual_date)) }}</td>
-        {% else %}
-          <td></td>
-        {% endif %}
-        {% if data.seqlib_date is defined %}
-          <td>{{ date('Y-m-d', strtotime(data.seqlib_date)) }}</td>
-        {% else %}
-          <td></td>
-        {% endif %}
-        {% if data.last_cycle_date is defined %}
-          <td>{{ date('Y-m-d', strtotime(data.last_cycle_date)) }}</td>
-        {% else %}
-          <td></td>
-        {% endif %}
+          {% if data.qual_date is defined %}
+            <td>{{ date('Y-m-d', strtotime(data.qual_date)) }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+          {% if data.seqlib_date is defined %}
+            <td>{{ date('Y-m-d', strtotime(data.seqlib_date)) }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+          {% if data.last_cycle_date is defined %}
+            <td>{{ date('Y-m-d', strtotime(data.last_cycle_date)) }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
         </tr>
       {% endfor %}
       </tbody>
@@ -62,14 +63,14 @@
   </div>
 </div>
 <script>
-/*
- * DataTables
- */
-$(document).ready(function() {
-	$('#sampleInfo_table').dataTable({
-		"sScrollY" : "600px",
-		"bPaginate" : false,
-		"bScrollCollapse" : true
-	});
-});
+  /*
+   * DataTables
+   */
+  $(document).ready(function () {
+    $('#sampleInfo_table').dataTable({
+      "sScrollY": "600px",
+      "bPaginate": false,
+      "bScrollCollapse": true
+    });
+  });
 </script>

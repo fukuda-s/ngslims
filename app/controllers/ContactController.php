@@ -28,7 +28,7 @@ class ContactController extends ControllerBase
             $contact->created_at = new Phalcon\Db\RawValue('now()');
             if ($contact->save() == false) {
                 foreach ($contact->getMessages() as $message) {
-                    $this->flash->error((string) $message);
+                    $this->flash->error((string)$message);
                 }
             } else {
                 $this->flash->success('Thanks, We will contact you in the next few hours');

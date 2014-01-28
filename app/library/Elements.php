@@ -155,7 +155,7 @@ class Elements extends Phalcon\Mvc\User\Component {
 	public function getTrackerSideMenu() {
 		$controllerName = $this->view->getControllerName();
 		$actionName = $this->view->getActionName();
-		echo '<ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="100" data-target="#">';
+		echo '<ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="50" data-target="#">';
 		// echo '<ul class="nav nav-pills nav-stacked">';
 		foreach ( $this->_trackerSideMenu as $caption => $option ) {
 			if ( $caption == 'hr' ) {
