@@ -69,6 +69,7 @@ class Security extends Plugin
                     'index',
                     'newOrder',
                     'userSelectList',
+                    'projectSelectList',
                     'confirm'
                 ),
                 'tracker' => array(
