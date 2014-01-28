@@ -11,7 +11,7 @@
   {{ stylesheet_link('css/font-awesome.css') }}
   {{ stylesheet_link('css/style.css') }}
   {{ javascript_include('js/jquery/jquery-2.1.0.min.js') }}
-  {{ javascript_include('js/jquery-ui/jquery-ui-1.10.4.custom.min.js') }}
+  {{ javascript_include('js/jquery-ui/jquery-ui-1.10.4.min.js') }}
   {{ javascript_include('bootstrap/js/bootstrap.js') }}
   {{ javascript_include('js/dataTables/jquery.dataTables.js') }}
   {{ javascript_include('js/handsontable/jquery.handsontable.full.js') }}
