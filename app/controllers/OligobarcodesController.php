@@ -21,7 +21,7 @@ class OligobarcodesController extends ControllerBase
 
                 $oligobarcodes = Oligobarcodes::find(array(
                     "active = 'Y'",
-                    "order" => "sort_order"
+                    "order" => "sort_order IS NULL ASC, sort_order ASC"
                 ));
                 echo json_encode($oligobarcodes->toArray());
             }

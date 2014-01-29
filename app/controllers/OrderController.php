@@ -19,7 +19,15 @@ class OrderController extends ControllerBase
     public function newOrderAction()
     {
         $this->view->setVar('labs', Labs::find("active = 'Y'"));
-        $auth = $this->session->get('auth');
+        $this->view->setVar('sampletypes', SampleTypes::find(array(
+            "active = 'Y'",
+            "order" => "sort_order IS NULL ASC, sort_order ASC"
+        )));
+        $this->view->setVar('organisms', Organisms::find(array(
+            "active = 'Y'",
+            "order" => "sort_order IS NULL ASC, sort_order ASC"
+        )));
+        //$auth = $this->session->get('auth');
     }
 
     public function userSelectListAction($lab_id)

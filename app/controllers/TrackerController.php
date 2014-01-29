@@ -42,7 +42,10 @@ class TrackerController extends ControllerBase
     public function experimentAction()
     {
         Tag::appendTitle(' | Experiments ');
-        $this->view->setVar('steps', Steps::find(array("active = 'Y'", "order" => "sort_order")));
+        $this->view->setVar('steps', Steps::find(array(
+            "active = 'Y'",
+            "order" => "sort_order IS NULL ASC, sort_order ASC"
+        )));
     }
 
     public function protocolAction()

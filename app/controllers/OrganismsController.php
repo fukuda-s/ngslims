@@ -21,7 +21,7 @@ class OrganismsController extends ControllerBase
 
                 $organisms = Organisms::find(array(
                     "active = 'Y'",
-                    "order" => "sort_order"
+                    "order" => "sort_order IS NULL ASC, sort_order ASC"
                 ));
                 echo json_encode($organisms->toArray());
             }
