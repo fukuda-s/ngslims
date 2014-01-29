@@ -1,20 +1,8 @@
 <?php
 
 
-class InstrumentTypes extends \Phalcon\Mvc\Model
+class Platforms extends \Phalcon\Mvc\Model
 {
-
-    /**
-     *
-     * @var integer
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     */
-    public $name;
 
     /**
      *
@@ -24,9 +12,9 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var integer
+     * @var string
      */
-    public $sort_order;
+    public $description;
 
     /**
      *
@@ -40,10 +28,8 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
     public function columnMap()
     {
         return array(
-            'id' => 'id',
-            'name' => 'name',
             'platform_code' => 'platform_code',
-            'sort_order' => 'sort_order',
+            'description' => 'description',
             'active' => 'active'
         );
     }

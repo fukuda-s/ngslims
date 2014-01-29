@@ -1,54 +1,65 @@
 <?php
 
-class Steps extends \Phalcon\Mvc\Model {
 
-	/**
-	 *
-	 * @var integer
-	 */
-	public $id;
+class Steps extends \Phalcon\Mvc\Model
+{
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $name;
+    /**
+     *
+     * @var integer
+     */
+    public $id;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $step_phase_code;
+    /**
+     *
+     * @var string
+     */
+    public $name;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $nucleotide_type;
+    /**
+     *
+     * @var string
+     */
+    public $step_phase_code;
 
-	/**
-	 *
-	 * @var integer
-	 */
-	public $sort_order;
+    /**
+     *
+     * @var string
+     */
+    public $platform_code;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $active;
+    /**
+     *
+     * @var string
+     */
+    public $nucleotide_type;
 
-	/**
-	 * Independent Column Mapping.
-	 */
-	public function columnMap() {
-		return array (
-				'id' => 'id',
-				'name' => 'name',
-				'step_phase_code' => 'step_phase_code',
-				'nucleotide_type' => 'nucleotide_type',
-				'sort_order' => 'sort_order',
-				'active' => 'active'
-		);
-	}
+    /**
+     *
+     * @var integer
+     */
+    public $sort_order;
+
+    /**
+     *
+     * @var string
+     */
+    public $active;
+
+    /**
+     * Independent Column Mapping.
+     */
+    public function columnMap()
+    {
+        return array(
+            'id' => 'id',
+            'name' => 'name',
+            'step_phase_code' => 'step_phase_code',
+            'platform_code' => 'platform_code',
+            'nucleotide_type' => 'nucleotide_type',
+            'sort_order' => 'sort_order',
+            'active' => 'active'
+        );
+    }
+
 }
