@@ -2,86 +2,91 @@
 use Phalcon\Mvc\Model\Validator\Email as EmailValidator;
 use Phalcon\Mvc\Model\Validator\Uniqueness as UniquenessValidator;
 
-class Users extends \Phalcon\Mvc\Model {
+class Users extends \Phalcon\Mvc\Model
+{
 
-	/**
-	 *
-	 * @var integer
-	 */
-	public $id;
+    /**
+     *
+     * @var integer
+     */
+    public $id;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $username;
+    /**
+     *
+     * @var string
+     */
+    public $username;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $password;
+    /**
+     *
+     * @var string
+     */
+    public $password;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $name;
+    /**
+     *
+     * @var string
+     */
+    public $name;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $email;
+    /**
+     *
+     * @var string
+     */
+    public $email;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $created_at;
+    /**
+     *
+     * @var string
+     */
+    public $created_at;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $active;
+    /**
+     *
+     * @var string
+     */
+    public $active;
 
-	public function validation() {
-		$this->validate(new EmailValidator(array (
-				'field' => 'email'
-		)));
-		$this->validate(new UniquenessValidator(array (
-				'field' => 'email',
-				'message' => 'Sorry, The email was registered by another user'
-		)));
-		$this->validate(new UniquenessValidator(array (
-				'field' => 'username',
-				'message' => 'Sorry, That username is already taken'
-		)));
-		if ( $this->validationHasFailed() == true ) {
-			return false;
-		}
-	}
+    public function validation()
+    {
+        $this->validate(new EmailValidator(array(
+            'field' => 'email'
+        )));
+        $this->validate(new UniquenessValidator(array(
+            'field' => 'email',
+            'message' => 'Sorry, The email was registered by another user'
+        )));
+        $this->validate(new UniquenessValidator(array(
+            'field' => 'username',
+            'message' => 'Sorry, That username is already taken'
+        )));
+        if ($this->validationHasFailed() == true) {
+            return false;
+        }
+    }
 
-	public function getSource() {
-		return 'users';
-	}
+    public function getSource()
+    {
+        return 'users';
+    }
 
-	public function columnMap() {
-		return array (
-				'id' => 'id',
-				'username' => 'username',
-				'password' => 'password',
-				'name' => 'name',
-				'email' => 'email',
-				'created_at' => 'created_at',
-				'active' => 'active'
-		);
-	}
+    public function columnMap()
+    {
+        return array(
+            'id' => 'id',
+            'username' => 'username',
+            'password' => 'password',
+            'name' => 'name',
+            'email' => 'email',
+            'created_at' => 'created_at',
+            'active' => 'active'
+        );
+    }
 
-	public function initialize() {
-		$this->hasMany('id', 'Projects', 'user_id');
-		$this->hasMany('id', 'Requests', 'user_id');
-		$this->hasMany('id', 'Samples', 'user_id');
-	}
+    public function initialize()
+    {
+        $this->hasMany('id', 'Projects', 'user_id');
+        $this->hasMany('id', 'Requests', 'user_id');
+        $this->hasMany('id', 'Samples', 'user_id');
+    }
 }

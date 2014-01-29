@@ -30,8 +30,8 @@ class Products extends Phalcon\Mvc\Model
     public function initialize()
     {
         $this->belongsTo('product_types_id', 'ProductTypes', 'id', array(
-		'reusable' => true
-	));
+            'reusable' => true
+        ));
     }
 
 }

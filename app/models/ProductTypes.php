@@ -15,9 +15,9 @@ class ProductTypes extends Phalcon\Mvc\Model
     public function initialize()
     {
         $this->hasMany('id', 'Products', 'product_types_id', array(
-        	'foreignKey' => array(
-        		'message' => 'Product Type cannot be deleted because it\'s used on Products'
-        	)
+            'foreignKey' => array(
+                'message' => 'Product Type cannot be deleted because it\'s used on Products'
+            )
         ));
     }
 }

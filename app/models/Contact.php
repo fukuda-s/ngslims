@@ -3,14 +3,14 @@
 class Contact extends Phalcon\Mvc\Model
 {
 
-	public $id;
+    public $id;
 
-	public $name;
+    public $name;
 
-	public $email;
+    public $email;
 
-	public $comments;
+    public $comments;
 
-	public $created_at;
+    public $created_at;
 
 }
