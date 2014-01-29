@@ -43,4 +43,9 @@ class SampleTypes extends \Phalcon\Mvc\Model
             'active' => 'active'
         );
     }
+
+    public function initialize()
+    {
+        $this->hasMany('nucleotide_type', 'Steps', 'nucleotide_type');
+    }
 }
