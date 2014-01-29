@@ -1,40 +1,51 @@
 <?php
 
-class OligobarcodeSchemes extends \Phalcon\Mvc\Model {
 
-	/**
-	 *
-	 * @var integer
-	 */
-	public $id;
+class OligobarcodeSchemes extends \Phalcon\Mvc\Model
+{
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $name;
+    /**
+     *
+     * @var integer
+     */
+    public $id;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $description;
+    /**
+     *
+     * @var string
+     */
+    public $name;
 
-	/**
-	 *
-	 * @var string
-	 */
-	public $active;
+    /**
+     *
+     * @var string
+     */
+    public $description;
 
-	/**
-	 * Independent Column Mapping.
-	 */
-	public function columnMap() {
-		return array (
-				'id' => 'id',
-				'name' => 'name',
-				'description' => 'description',
-				'active' => 'active'
-		);
-	}
+    /**
+     *
+     * @var string
+     */
+    public $is_oligobarcodeB;
+
+    /**
+     *
+     * @var string
+     */
+    public $active;
+
+    /**
+     * Independent Column Mapping.
+     */
+    public function columnMap()
+    {
+        return array(
+            'id' => 'id',
+            'name' => 'name',
+            'description' => 'description',
+            'is_oligobarcodeB' => 'is_oligobarcodeB',
+            'active' => 'active'
+        );
+    }
+
 }
