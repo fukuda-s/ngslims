@@ -70,6 +70,11 @@ class Security extends Plugin
                     'newOrder',
                     'userSelectList',
                     'projectSelectList',
+                    'stepSelectList',
+                    'protocolSelectList',
+                    'instrumentTypeSelectList',
+                    'seqRunTypeSelectList',
+                    'orderSetSession',
                     'confirm'
                 ),
                 'tracker' => array(

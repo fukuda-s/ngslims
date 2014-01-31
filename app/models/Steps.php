@@ -64,4 +64,9 @@ class Steps extends \Phalcon\Mvc\Model
         );
     }
 
+    public function initialize()
+    {
+        $this->hasMany('platform_code', 'InstrumentTypes', 'platform_code');
+    }
+
 }

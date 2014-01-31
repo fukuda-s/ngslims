@@ -23,6 +23,12 @@ class SeqRunmodeTypes extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $sort_order;
+
+    /**
+     *
      * @var string
      */
     public $active;
@@ -36,6 +42,7 @@ class SeqRunmodeTypes extends \Phalcon\Mvc\Model
             'id' => 'id',
             'name' => 'name',
             'lane_per_flowcell' => 'lane_per_flowcell',
+            'sort_order' => 'sort_order',
             'active' => 'active'
         );
     }
