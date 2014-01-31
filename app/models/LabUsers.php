@@ -29,6 +29,7 @@ class LabUsers extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->belongsTo('lab_id', 'Labs', 'id');
         $this->belongsTo('user_id', 'Users', 'id');
     }
 }

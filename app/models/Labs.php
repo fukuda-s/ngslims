@@ -1,5 +1,8 @@
 <?php
 
+
+use Phalcon\Mvc\Model\Validator\Email as Email;
+
 class Labs extends \Phalcon\Mvc\Model
 {
 
@@ -73,4 +76,24 @@ class Labs extends \Phalcon\Mvc\Model
             return false;
         }
     }
+
+    /**
+     * Independent Column Mapping.
+     */
+    public function columnMap()
+    {
+        return array(
+            'id' => 'id',
+            'name' => 'name',
+            'department' => 'department',
+            'zipcode' => 'zipcode',
+            'address1' => 'address1',
+            'address2' => 'address2',
+            'phone' => 'phone',
+            'fax' => 'fax',
+            'email' => 'email',
+            'active' => 'active'
+        );
+    }
+
 }
