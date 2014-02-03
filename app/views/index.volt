@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   {{ get_title() }}
   {{ stylesheet_link('bootstrap/css/bootstrap.css') }}
-  {{ stylesheet_link('css/jquery-ui.custom.css') }}
+  {{ stylesheet_link('css/jquery-ui.css') }}
   {{ stylesheet_link('css/dataTables.bootstrap.css') }}
   {{ stylesheet_link('css/jquery.handsontable.full.css') }}
   {{ stylesheet_link('css/jquery.handsontable.bootstrap.css') }}
