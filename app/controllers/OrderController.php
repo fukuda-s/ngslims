@@ -18,6 +18,7 @@ class OrderController extends ControllerBase
 
     public function newOrderAction()
     {
+        // @TODO Should be filter labs which should have lab_users
         $this->view->setVar('labs', Labs::find("active = 'Y'"));
         $this->view->setVar('sampletypes', SampleTypes::find(array(
             "active = 'Y'",
@@ -130,7 +131,7 @@ class OrderController extends ControllerBase
                 if ($sample_type_id === '@') {
                     echo '<label for="step_id" class="control-label">Experiment Step</label>';
                     echo '<select id="step_id" class="form-control input-sm" disabled>';
-                    echo '<option value="@"Sample Type is necessary...</option>';
+                    echo '<option value="@">Sample Type is necessary...</option>';
                     echo '</select>';
                     return;
                 }
@@ -172,7 +173,7 @@ class OrderController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 //return disabled select list when upper level select list has been reset.
-                if ($step_id === undefined || $step_id === '@') {
+                if ($step_id === '@') {
                     echo '<label for="protocol_id" class="control-label">Protocol</label>';
                     echo '<select id="protocol_id" class="form-control input-sm" disabled>';
                     echo '<option value="@">Experiment Step is necessary...</option>';
@@ -216,7 +217,7 @@ class OrderController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 //return disabled select list when upper level select list has been reset.
-                if ($step_id === undefined || $step_id === '@') {
+                if ($step_id === '@') {
                     echo '<label for="instrument_type_id">Instrument Type</label>';
                     echo '<select id="instrument_type_id" class="form-control input-sm" disabled>';
                     echo '<option value="@">Experiment Step necessary...</option>';
@@ -274,8 +275,9 @@ class OrderController extends ControllerBase
                     if (!isset($seq_runmode_types_uniq[$seq_runmode_type->id])) {
                         echo '<label class="radio-inline">';
                         echo $this->tag->radioField(array(
-                            "seq_runmode_type_id",
-                            value => $seq_runmode_type->id
+                            "seq_runmode_type_id_".$seq_runmode_type->id,
+                            "name" => "seq_runmode_type_id",
+                            "value" => $seq_runmode_type->id
                         ));
                         echo $seq_runmode_type->name;
                         echo '</label>';
@@ -297,8 +299,9 @@ class OrderController extends ControllerBase
                     if (!isset($seq_runread_types_uniq[$seq_runread_type->id])) {
                         echo '<label class="radio-inline">';
                         echo $this->tag->radioField(array(
-                            "seq_runread_type_id",
-                            value => $seq_runread_type->id
+                            "seq_runread_type_id_".$seq_runread_type->id,
+                            "name" => "seq_runread_type_id",
+                            "value" => $seq_runread_type->id
                         ));
                         echo $seq_runread_type->name;
                         echo '</label>';
@@ -321,8 +324,9 @@ class OrderController extends ControllerBase
                     if (!isset($seq_runcycle_types_uniq[$seq_runcycle_type->id])) {
                         echo '<label class="radio-inline">';
                         echo $this->tag->radioField(array(
-                            "seq_runcycle_type_id",
-                            value => $seq_runcycle_type->id
+                            "seq_runcycle_type_id_".$seq_runcycle_type->id,
+                            "name" => "seq_runcycle_type_id",
+                            "value" => $seq_runcycle_type->id
                         ));
                         echo $seq_runcycle_type->name;
                         echo '</label>';
