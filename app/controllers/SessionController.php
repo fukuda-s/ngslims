@@ -37,7 +37,8 @@ class SessionController extends ControllerBase
 
             $user = new Users();
             $user->username = $username;
-            $user->password = sha1($password);
+            //$user->password = sha1($password);
+            $user->password = $this->security->hash($password);
             $user->name = $name;
             $user->email = $email;
             $user->created_at = new Phalcon\Db\RawValue('now()');
@@ -70,7 +71,6 @@ class SessionController extends ControllerBase
 
     /**
      * This actions receive the input from the login form
-     *
      */
     public function startAction()
     {
@@ -78,21 +78,25 @@ class SessionController extends ControllerBase
             $email = $this->request->getPost('email', 'email');
 
             $password = $this->request->getPost('password');
-            $password = sha1($password);
+            //$password = sha1($password);
 
-            $user = Users::findFirst("email='$email' AND password='$password' AND active='Y'");
+            $user = Users::findFirst("email='$email' AND active='Y'");
             if ($user != false) {
-                $this->_registerSession($user);
-                $this->flash->success('Welcome ' . $user->name);
-                return $this->forward('tracker/index');
+                if ($this->security->checkHash($password, $user->password)) {
+                    $this->_registerSession($user);
+                    $this->flash->success('Welcome ' . $user->name);
+                    return $this->forward('tracker/index');
+                }
             }
 
             $username = $this->request->getPost('email', 'alphanum');
-            $user = Users::findFirst("username='$username' AND password='$password' AND active='Y'");
+            $user = Users::findFirst("username='$username' AND active='Y'");
             if ($user != false) {
-                $this->_registerSession($user);
-                $this->flash->success('Welcome ' . $user->name);
-                return $this->forward('tracker/index');
+                if ($this->security->checkHash($password, $user->password)) {
+                    $this->_registerSession($user);
+                    $this->flash->success('Welcome ' . $user->name);
+                    return $this->forward('tracker/index');
+                }
             }
 
             $this->flash->error('Wrong email/password');
