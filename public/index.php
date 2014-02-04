@@ -128,13 +128,15 @@ try {
 	/**
 	 * Register the flash service with custom CSS classes
 	 */
-	$di->set('flash', function(){
-		return new Phalcon\Flash\Direct(array(
-			'error' => 'alert alert-warning',
-			'success' => 'alert alert-success',
-			'notice' => 'alert alert-info',
-		));
-	});
+    $di->set('flash', function(){
+        $flash = new \Phalcon\Flash\Direct(array(
+            'success' => 'alert alert-success',
+            'notice' => 'alert alert-info',
+            'warning' => 'alert alert-warning',
+            'error' => 'alert alert-danger'
+        ));
+        return $flash;
+    });
 
 	/**
 	 * Register a user component
