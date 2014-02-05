@@ -8,6 +8,13 @@ class OrderController extends ControllerBase
     {
         $this->view->setTemplateAfter('main');
         Tag::setTitle('New Experiment Order');
+
+        if (!$this->session->has('seqlib_undecided')) {
+            $this->session->set('seqlib_undecided', (object)array("id" => 0, "name" => "false"));
+        }
+        if (!$this->session->has('seqrun_undecided')) {
+            $this->session->set('seqrun_undecided', (object)array("id" => 0, "name" => "false"));
+        }
         parent::initialize();
     }
 
@@ -54,7 +61,7 @@ class OrderController extends ControllerBase
             $this->view->setVar('seqrun_undecided', $this->session->get('seqrun_undecided'));
         } else {
             $this->session->set('seqrun_undecided', (object)array("id" => 0, "name" => "false"));
-            $this->view->setVar('seqrun_undecided', $this->session->get('seqrun_undecidedd'));
+            $this->view->setVar('seqrun_undecided', $this->session->get('seqrun_undecided'));
         }
     }
 
@@ -323,14 +330,26 @@ class OrderController extends ControllerBase
                 echo '<label for="seq_runmode_type_id">Run Mode</label><br>';
                 foreach ($seq_runmode_types as $seq_runmode_type) {
                     if (!isset($seq_runmode_types_uniq[$seq_runmode_type->id])) {
-                        echo '<label class="radio-inline">';
-                        echo $this->tag->radioField(array(
-                            "seq_runmode_type_id_" . $seq_runmode_type->id,
-                            "name" => "seq_runmode_type_id",
-                            "value" => $seq_runmode_type->id
-                        ));
-                        echo $seq_runmode_type->name;
-                        echo '</label>';
+                        if ($this->session->has('seq_runmode_type') && $seq_runmode_type->id == $this->session->get('seq_runmode_type')->id) {
+                            echo '<label class="radio-inline">';
+                            echo $this->tag->radioField(array(
+                                "seq_runmode_type_id_" . $seq_runmode_type->id,
+                                "name" => "seq_runmode_type_id",
+                                "value" => $seq_runmode_type->id,
+                                "checked" => "checked"
+                            ));
+                            echo $seq_runmode_type->name;
+                            echo '</label>';
+                        } else {
+                            echo '<label class="radio-inline">';
+                            echo $this->tag->radioField(array(
+                                "seq_runmode_type_id_" . $seq_runmode_type->id,
+                                "name" => "seq_runmode_type_id",
+                                "value" => $seq_runmode_type->id
+                            ));
+                            echo $seq_runmode_type->name;
+                            echo '</label>';
+                        }
                         $seq_runmode_types_uniq[$seq_runmode_type->id] = true;
                     }
                 }
@@ -347,14 +366,26 @@ class OrderController extends ControllerBase
                 echo '<label for="seq_runread_type_id">Read Type</label><br>';
                 foreach ($seq_runread_types as $seq_runread_type) {
                     if (!isset($seq_runread_types_uniq[$seq_runread_type->id])) {
-                        echo '<label class="radio-inline">';
-                        echo $this->tag->radioField(array(
-                            "seq_runread_type_id_" . $seq_runread_type->id,
-                            "name" => "seq_runread_type_id",
-                            "value" => $seq_runread_type->id
-                        ));
-                        echo $seq_runread_type->name;
-                        echo '</label>';
+                        if ($this->session->has('seq_runread_type') && $seq_runread_type->id == $this->session->get('seq_runread_type')->id) {
+                            echo '<label class="radio-inline">';
+                            echo $this->tag->radioField(array(
+                                "seq_runread_type_id_" . $seq_runread_type->id,
+                                "name" => "seq_runread_type_id",
+                                "value" => $seq_runread_type->id,
+                                'checked' => 'checked'
+                            ));
+                            echo $seq_runread_type->name;
+                            echo '</label>';
+                        } else {
+                            echo '<label class="radio-inline">';
+                            echo $this->tag->radioField(array(
+                                "seq_runread_type_id_" . $seq_runread_type->id,
+                                "name" => "seq_runread_type_id",
+                                "value" => $seq_runread_type->id
+                            ));
+                            echo $seq_runread_type->name;
+                            echo '</label>';
+                        }
                         $seq_runread_types_uniq[$seq_runread_type->id] = true;
                     }
                 }
@@ -372,14 +403,26 @@ class OrderController extends ControllerBase
                 echo '<label for="seq_runcycle_type_id">Read Cycle</label><br>';
                 foreach ($seq_runcycle_types as $seq_runcycle_type) {
                     if (!isset($seq_runcycle_types_uniq[$seq_runcycle_type->id])) {
-                        echo '<label class="radio-inline">';
-                        echo $this->tag->radioField(array(
-                            "seq_runcycle_type_id_" . $seq_runcycle_type->id,
-                            "name" => "seq_runcycle_type_id",
-                            "value" => $seq_runcycle_type->id
-                        ));
-                        echo $seq_runcycle_type->name;
-                        echo '</label>';
+                        if ($this->session->has('seq_runcycle_type') && $seq_runcycle_type->id == $this->session->get('seq_runcycle_type')->id) {
+                            echo '<label class="radio-inline">';
+                            echo $this->tag->radioField(array(
+                                "seq_runcycle_type_id_" . $seq_runcycle_type->id,
+                                "name" => "seq_runcycle_type_id",
+                                "value" => $seq_runcycle_type->id,
+                                'checked' => 'checked'
+                            ));
+                            echo $seq_runcycle_type->name;
+                            echo '</label>';
+                        } else {
+                            echo '<label class="radio-inline">';
+                            echo $this->tag->radioField(array(
+                                "seq_runcycle_type_id_" . $seq_runcycle_type->id,
+                                "name" => "seq_runcycle_type_id",
+                                "value" => $seq_runcycle_type->id
+                            ));
+                            echo $seq_runcycle_type->name;
+                            echo '</label>';
+                        }
                         $seq_runcycle_types_uniq[$seq_runcycle_type->id] = true;
                     }
                 }
@@ -401,12 +444,12 @@ class OrderController extends ControllerBase
                 $name = $this->filter->sanitize($name, array("string"));
 
                 if (is_null($column) || is_null($id) || is_null($name)) {
-                    $this->flashSession->error("Model: " . $column . ", id: " . $id . ", name: " . $name);
+                    //$this->flashSession->error("Model: " . $column . ", id: " . $id . ", name: " . $name);
                     return;
                 } else {
                     $data = (object)array("id" => $id, "name" => $name);
                     $this->session->set($column, $data);
-                    $this->flashSession->error(var_dump($this->session->get($column)));
+                    //$this->flashSession->error(var_dump($this->session->get($column)));
                 }
 
             }
@@ -415,8 +458,9 @@ class OrderController extends ControllerBase
 
     public function confirmAction()
     {
+
         if (!$this->session->has('lab')) {
-            $this->flashSession->error("Please select Lab");
+            $this->flashSession->warning("Please select Lab");
             return $this->response->redirect("order/newOrder");
         } else {
             $this->view->setVar('lab', $this->session->get('lab'));

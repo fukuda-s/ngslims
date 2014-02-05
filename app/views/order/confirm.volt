@@ -1,6 +1,5 @@
 {{ content() }}
 <div class="col-md-12">
-  <div class="alert alert-danger"><?php $this->flashSession->output() ?></div>
   <div class="panel panel-default">
     <div class="panel-heading">
       Your Order

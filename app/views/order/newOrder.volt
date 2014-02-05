@@ -1,7 +1,6 @@
 {{ content() }}
 <div class="col-md-9">
-  <div id="flash"></div>
-  <div class="alert alert-danger"><?php $this->flashSession->output() ?></div>
+  {{ flashSession.output() }}
   <div class="panel panel-default">
     <div class="panel-heading">User & Project</div>
     <div class="panel-body">
@@ -167,12 +166,14 @@
       </li>
       <li class="list-group-item text-info">Seqlib & Multiplex
         <ul id="seqlib_selected" class="text-muted">
+          <li id="seqlib_undecided_selected" class="text-warning" style="display: none;">Undecided</li>
           <li id="step_name_selected" style="display: none;"></li>
           <li id="protocol_name_selected" style="display: none;"></li>
         </ul>
       </li>
       <li class="list-group-item text-info">Sequencing
         <ul id="seqrun_selected" class="text-muted">
+          <li id="seqrun_undecided_selected" class="text-warning" style="display: none;">Undecided</li>
           <li id="instrument_type_name_selected" style="display: none;"></li>
           <li id="seq_runmode_type_name_selected" style="display: none;"></li>
           <li id="seq_runread_type_name_selected" style="display: none;"></li>
@@ -181,6 +182,7 @@
       </li>
       <li class="list-group-item text-info">Pipeline
         <ul id="pipeline_selected" class="text-muted">
+          <li id="pipeline_undecided" class="text-warning" style="display: none;">Undecided</li>
         </ul>
       </li>
     </ul>
@@ -201,7 +203,7 @@ $(document).ready(function () {
   $('#new_order_summary').stick_in_parent();
 
   /*
-   * Build function to set selected values to session.
+   * Function to set selected values to session.
    */
   function setOrderSessionVal(column, id, name) {
     $.ajax({
@@ -213,7 +215,16 @@ $(document).ready(function () {
         });
   }
 
+  /*
+   * Get select list via ajax from OrderController.php
+   * To use this function, all "id" values should be named with rule as follows.
+   * - (class) : (id)
+   * - div.form-group : <column>_select
+   * - select.form-control : <column>_id
+   * - li(in #new_order_summary): <column>_name_selected
+   */
   function getSelectList(column, key) {
+    //Make upper camel name for controller
     var columnUpperCamel = column.
         replace(
         /_./g,
@@ -227,8 +238,10 @@ $(document).ready(function () {
       type: 'POST'
     })
         .done(function (data) {
+          //rewrite select list by ajax data
           $('#' + column + '_select').html(data);
 
+          //set on change action to rewrite right-side summary when the select list will be changed
           $('#' + column + '_id').on('change', function () {
             var id_selected = $(this).val();
             var name_selected = $('option:selected', this).text();
@@ -261,6 +274,78 @@ $(document).ready(function () {
     });
   }
 
+  /*
+   * Build function to get seq run type radio buttons from selected instrument_type_id.
+   * These select lists are cascaded as follows.
+   * (Cascaded column should be changed when parent column has been changed.)
+   *
+   *  + Lab & User
+   *    lab_id -> pi_user_id (lab_id) -> project_id (pi_user_id)
+   *  + Sample
+   *    + sample_type_id
+   *    + organism_id
+   *  + Sequence Library & Multiplex
+   *    + step_id (sample_type_id)
+   *    + protocol_id
+   *  + Sequence Run
+   *    + instrument_id (step_id)
+   *    + seq_runmode_type_id (instrument_id)
+   *    + seq_runread_type_id (instrument_id)
+   *    + seq_runcycle_type_id (instrument_id)
+   *
+   */
+  function getSeqRunTypeList(instrument_type_id) {
+    $.ajax({
+      url: '{{ url('order/seqRunTypeSelectList/')}}' + instrument_type_id + '/',
+      dataType: 'html',
+      type: 'POST'
+    })
+        .done(function (data) {
+          $('#seq_run_type_select').html(data);
+
+          //Change seq_runmode_type_name_selected value on right side summary with selected values
+          $("input:radio[name='seq_runmode_type_id']").on('change', function () {
+            var seq_runmode_type_id_selected = $(this).filter(':checked').val();
+            var seq_runmode_type_name_selected = $(this).filter(':checked').parent('label').text();
+            $('#seq_runmode_type_name_selected').show('normal').text(seq_runmode_type_name_selected);
+
+            //Set selected seq_runmode_type to session values.
+            setOrderSessionVal('seq_runmode_type', seq_runmode_type_id_selected, seq_runmode_type_name_selected);
+          });
+
+          //Change seq_runread_type_name_selected value on right side summary with selected values
+          $("input:radio[name='seq_runread_type_id']").on('change', function () {
+            var seq_runread_type_id_selected = $(this).filter(':checked').val();
+            var seq_runread_type_name_selected = $(this).filter(':checked').parent('label').text();
+            $('#seq_runread_type_name_selected').show('normal').text(seq_runread_type_name_selected);
+
+            //Set selected seq_runread_type to session values.
+            setOrderSessionVal('seq_runread_type', seq_runread_type_id_selected, seq_runread_type_name_selected);
+          });
+
+          //Change seq_runcycle_type_name_selected value on right side summary with selected values
+          $("input:radio[name='seq_runcycle_type_id']").on('change', function () {
+            var seq_runcycle_type_id_selected = $(this).filter(':checked').val();
+            var seq_runcycle_type_name_selected = $(this).filter(':checked').parent('label').text();
+            $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+
+            //Set selected seq_runcycle_type to session values.
+            setOrderSessionVal('seq_runcycle_type', seq_runcycle_type_id_selected, seq_runcycle_type_name_selected);
+          });
+
+          var seq_runmode_type_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked');
+          var seq_runmode_type_name_selected = seq_runmode_type_selected.parent('label').text();
+          $('#seq_runmode_type_name_selected').show('normal').text(seq_runmode_type_name_selected);
+
+          var seq_runread_type_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked');
+          var seq_runread_type_name_selected = seq_runread_type_selected.parent('label').text();
+          $('#seq_runread_type_name_selected').show('normal').text(seq_runread_type_name_selected);
+
+          var seq_runcycle_type_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
+          var seq_runcycle_type_name_selected = seq_runcycle_type_selected.parent('label').text();
+          $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+        });
+  }
 
   /*
    * Build function to get instrument type list from selected step_id.
@@ -274,15 +359,26 @@ $(document).ready(function () {
         .done(function (data) {
           $('#instrument_type_select').html(data);
 
-          setSelectChangedVals('instrument_type', new Array('seq_run_type'));
+          //setSelectChangedVals('instrument_type', new Array('seq_run_type'));
+          $('#instrument_type_id').on('change', function () {
+            var instrument_type_id_selected = $(this).val();
+            var instrument_type_name_selected = $('option:selected', this).text();
+            $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
 
-          //Change instrument_type_name_selected value on right side summary with selected values
+            //Set selected step to session values.
+            setOrderSessionVal('instrument_type', instrument_type_id_selected, instrument_type_name_selected);
+
+            //Refresh seq_rune_select when instrument_type_id is changed
+            getSeqRunTypeList(instrument_type_id_selected);
+          });
+
+          //Refresh instrument_type_name_selected value on right side summary with selected values
           var instrument_type_selected = $('#instrument_type_id').find('option:selected');
           var instrument_type_id_selected = instrument_type_selected.val();
           var instrument_type_name_selected = instrument_type_selected.text();
           $('#instrument_type_name_selected').show('normal').text(instrument_type_name_selected);
 
-          getSelectList('seq_run_type', instrument_type_id_selected);
+          getSeqRunTypeList(instrument_type_id_selected);
         });
   }
 
@@ -320,7 +416,7 @@ $(document).ready(function () {
           $('#step_name_selected').hide().show('normal').text(step_name_selected);
 
           getSelectList('protocol', step_id_selected);
-          getSelectList('instrument_type', step_id_selected);
+          getInstrumentTypeList(step_id_selected);
         });
   }
 
@@ -354,28 +450,6 @@ $(document).ready(function () {
         });
   }
 
-  /*
-   * Check session values exist.
-   */
-  $(function () {
-    if ($('#lab_id').val() !== '@') {
-      var lab_id_selected = $('#lab_id').val();
-      var lab_name_selected = $('option:selected', this).text();
-      $('#lab_name_selected').show('normal').text(lab_name_selected);
-      getUserSelectList(lab_id_selected);
-    }
-    if ($('#sample_type_id').val() !== '@') {
-      getStepSelectList($('#sample_type_id').val());
-
-      //Change sample_type_name_selected value on right side summary with selected values
-      var sample_type_name_selected = $('#sample_type_id').find('option:selected').text();
-      $('#sample_type_name_selected').show('normal').text(sample_type_name_selected);
-
-      //Change organism_name_selected value on right side summary with selected values
-      var organism_name_selected = $('#organism_id').find('option:selected').text();
-      $('#organism_name_selected').show('normal').text(organism_name_selected);
-    }
-  });
 
   /*
    * Change child select list and right-side summary when parent select list is changed
@@ -432,48 +506,99 @@ $(document).ready(function () {
     setOrderSessionVal('protocol', protocol_id_selected, protocol_name_selected);
   });
 
-  /* Sequencing Run */
-  //Change seq_runmode_type_name_selected value on right side summary with selected values
-  $("input:radio[name='seq_runmode_type_id']").on('change', function () {
-    var seq_runmode_type_id_selected = $(this).filter(':checked').val();
-    var seq_runmode_type_name_selected = $(this).filter(':checked').parent('label').text();
-    $('#seq_runmode_type_name_selected').show('normal').text(seq_runmode_type_name_selected);
-
-    //Set selected seq_runmode_type to session values.
-    setOrderSessionVal('seq_runmode_type', seq_runmode_type_id_selected, seq_runmode_type_name_selected);
-  });
-
-  //Change seq_runread_type_name_selected value on right side summary with selected values
-  $("input:radio[name='seq_runread_type_id']").on('change', function () {
-    var seq_runread_type_id_selected = $(this).filter(':checked').val();
-    var seq_runread_type_name_selected = $(this).filter(':checked').parent('label').text();
-    $('#seq_runread_type_name_selected').show('normal').text(seq_runread_type_name_selected);
-
-    //Set selected seq_runread_type to session values.
-    setOrderSessionVal('seq_runread_type', seq_runread_type_id_selected, seq_runread_type_name_selected);
-  });
-
-  //Change seq_runcycle_type_name_selected value on right side summary with selected values
-  $("input:radio[name='seq_runcycle_type_id']").on('change', function () {
-    var seq_runcycle_type_id_selected = $(this).filter(':checked').val();
-    var seq_runcycle_type_name_selected = $(this).filter(':checked').parent('label').text();
-    $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
-
-    //Set selected seq_runcycle_type to session values.
-    setOrderSessionVal('seq_runcycle_type', seq_runcycle_type_id_selected, seq_runcycle_type_name_selected);
-  });
 
   /*
-   * Control modal-project
+   * Set control for "Undecided" check box
    */
-  $('#modal-project').on('shown.bs.modal', function (event) {
-    var lab_id_selected = $('#lab_id').find('option:selected').text();
-    event.target.find('#lab_id_selected').text('Find it!');
+  var seqrun_selected = $('#seqrun_selected');
+  $('#seqrun-undecided').change(function () {
+    if ($(this).prop('checked')) {
+      $('#instrument_type_name_selected').hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
+
+      $("#seqrun_undecided_selected").show('normal');
+      //$("#pipeline_undecided_selected").show('normal');
+    } else {
+      $("#seqrun_undecided_selected").hide();
+      //$("#pipeline_undecided_selected").hide();
+
+      var instrument_type_selected = $('#instrument_type_id').find('option:selected');
+      var instrument_type_name_selected = instrument_type_selected.text();
+      $('#instrument_type_name_selected').show('normal').text(instrument_type_name_selected);
+
+      var seq_runmode_type_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked');
+      var seq_runmode_type_name_selected = seq_runmode_type_selected.parent('label').text();
+      $('#seq_runmode_type_name_selected').show('normal').text(seq_runmode_type_name_selected);
+
+      var seq_runread_type_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked');
+      var seq_runread_type_name_selected = seq_runread_type_selected.parent('label').text();
+      $('#seq_runread_type_name_selected').show('normal').text(seq_runread_type_name_selected);
+
+      var seq_runcycle_type_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
+      var seq_runcycle_type_name_selected = seq_runcycle_type_selected.parent('label').text();
+      $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+    }
+    //Set selected seqrun-undecided to session values.
+    setOrderSessionVal('seqrun_undecided', 0, $(this).prop('checked'));
+    //Set selected pipeline-undecided to session values.
+    //setOrderSessionVal('pipeline-undecided', 0, $(this).prop('checked'));
   });
 
-  /*
-   * Control 'Undecided' checkbox action
-   */
+  var seqlib_selected = $('#seqlib_selected');
+  $('#seqlib-undecided').change(function () {
+    if ($(this).prop('checked')) {
+      $('#instrument_type_name_selected').hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
+      $("#seqlib_undecided_selected").show('normal');
+
+      $('#step_name_selected').hide();
+      $('#protocol_name_selected').hide();
+      $("#seqrun_undecided_selected").show('normal');
+      //$("#pipeline_undecided_selected").show('normal');
+    } else {
+      $("#seqlib_undecided_selected").hide();
+
+      //Restore right-side summary if #seqlib-undecided is un-checked
+      var step_selected = $('#step_id').find('option:selected');
+      var step_name_selected = step_selected.text();
+      $('#step_name_selected').hide().show('normal').text(step_name_selected);
+      console.log("onchange " + step_name_selected);
+
+      var protocol_selected = $('#protocol_id').find('option:selected');
+      var protocol_name_selected = protocol_selected.text();
+      $('#protocol_name_selected').hide().show('normal').text(protocol_name_selected);
+
+
+      $("#seqrun_undecided_selected").hide();
+
+      var instrument_type_selected = $('#instrument_type_id').find('option:selected');
+      var instrument_type_name_selected = instrument_type_selected.text();
+      $('#instrument_type_name_selected').show('normal').text(instrument_type_name_selected);
+
+      var seq_runmode_type_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked');
+      var seq_runmode_type_name_selected = seq_runmode_type_selected.parent('label').text();
+      $('#seq_runmode_type_name_selected').show('normal').text(seq_runmode_type_name_selected);
+
+      var seq_runread_type_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked');
+      var seq_runread_type_name_selected = seq_runread_type_selected.parent('label').text();
+      $('#seq_runread_type_name_selected').show('normal').text(seq_runread_type_name_selected);
+
+      var seq_runcycle_type_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
+      var seq_runcycle_type_name_selected = seq_runcycle_type_selected.parent('label').text();
+      $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+    }
+    //Set selected seqlib_undecided to session values.
+    setOrderSessionVal('seqlib_undecided', 0, $(this).prop('checked'));
+    //Set selected seqrun_undecided to session values.
+    setOrderSessionVal('seqrun_undecided', 0, $(this).prop('checked'));
+    //Set selected pipeline-undecided to session values.
+    //setOrderSessionVal('pipeline-undecided', 0, $(this).prop('checked'));
+  });
+
   // @TODO pipeline select control
   /*
    var pipeline_selected_content;
@@ -490,46 +615,110 @@ $(document).ready(function () {
    });
    */
 
-  var seqrun_selected_content;
-  var seqrun_selected = $('#seqrun_selected');
-  $('#seqrun-undecided').change(function () {
-    if ($(this).prop('checked')) {
-      seqrun_selected_content = seqrun_selected.html();
-      seqrun_selected.html('<li class="text-warning">Undecided</li>');
-      //pipeline_selected.html('<li class='text-warning'>Undecided</li>');
-    } else {
-      seqrun_selected.html(seqrun_selected_content);
-      //pipeline_selected.html(pipeline_selected_content);
-    }
-    //Set selected seqrun-undecided to session values.
-    setOrderSessionVal('seqrun_undecided', 0, $(this).prop('checked'));
-    //Set selected pipeline-undecided to session values.
-    //setOrderSessionVal('pipeline-undecided', 0, $(this).prop('checked'));
+  /*
+   * Control modal-project
+   */
+  $('#modal-project').on('shown.bs.modal', function (event) {
+    var lab_id_selected = $('#lab_id').find('option:selected').text();
+    event.target.find('#lab_id_selected').text('Find it!');
   });
 
-  var seqlib_selected_content;
-  var seqlib_selected = $('#seqlib_selected');
-  $('#seqlib-undecided').change(function () {
-    if ($(this).prop('checked')) {
-      //Remove from right-side summary if #seqlib-undecided is checked
-      seqlib_selected_content = seqlib_selected.html();
-      seqlib_selected.html('<li class="text-warning">Undecided</li>');
-      seqrun_selected_content = seqrun_selected.html();
-      seqrun_selected.html('<li class="text-warning">Undecided</li>');
-      //pipeline_selected.html('<li class='text-warning'>Undecided</li>');
-    } else {
-      //Restore right-side summary if #seqlib-undecided is un-checked
-      seqlib_selected.html(seqlib_selected_content);
-      seqrun_selected.html(seqrun_selected_content);
-      //pipeline_selected.html(pipeline_selected_content);
+  /*
+   * Check session values.
+   * Some select list should be rewrite when cascaded (parent) value has session value
+   */
+  $(function () {
+    var lab_selected = $('#lab_id').find('option:selected');
+    var lab_id_selected = lab_selected.val();
+    var lab_name_selected = lab_selected.text();
+    if (lab_selected.val() !== '@') {
+      $('#lab_name_selected').show('normal').text(lab_name_selected);
+      getUserSelectList(lab_id_selected);
     }
-    //Set selected seqlib_undecided to session values.
-    setOrderSessionVal('seqlib_undecided', 0, $(this).prop('checked'));
-    //Set selected seqrun_undecided to session values.
-    setOrderSessionVal('seqrun_undecided', 0, $(this).prop('checked'));
-    //Set selected pipeline-undecided to session values.
-    //setOrderSessionVal('pipeline-undecided', 0, $(this).prop('checked'));
+
+    var sample_type_selected = $('#sample_type_id').find('option:selected');
+    var sample_type_id_selected = sample_type_selected.val();
+    var sample_type_name_selected = sample_type_selected.text();
+    if (sample_type_id_selected !== '@') {
+      getStepSelectList(sample_type_id_selected);
+
+      //Change sample_type_name_selected value on right side summary with selected values
+      $('#sample_type_name_selected').show('normal').text(sample_type_name_selected);
+    }
+
+    var seqrun_selected = $('#seqrun_selected');
+    if ($('#seqrun-undecided').prop('checked')) {
+      //Remove from right-side summary
+      $('#instrument_type_name_selected').hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
+      $("#seqrun_undecided_selected").show('normal');
+    } else {
+      $("#seqrun_undecided_selected").hide();
+
+      var instrument_type_selected = $('#instrument_type_id').find('option:selected');
+      var instrument_type_name_selected = instrument_type_selected.text();
+      $('#instrument_type_name_selected').show('normal').text(instrument_type_name_selected);
+
+      var seq_runmode_type_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked');
+      var seq_runmode_type_name_selected = seq_runmode_type_selected.parent('label').text();
+      $('#seq_runmode_type_name_selected').show('normal').text(seq_runmode_type_name_selected);
+
+      var seq_runread_type_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked');
+      var seq_runread_type_name_selected = seq_runread_type_selected.parent('label').text();
+      $('#seq_runread_type_name_selected').show('normal').text(seq_runread_type_name_selected);
+
+      var seq_runcycle_type_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
+      var seq_runcycle_type_name_selected = seq_runcycle_type_selected.parent('label').text();
+      $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+    }
+
+    if ($('#seqlib-undecided').prop('checked')) {
+      //Remove from right-side summary
+      $('#instrument_type_name_selected').hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
+      $("#seqlib_undecided_selected").show('normal');
+
+      $('#step_name_selected').hide();
+      $('#protocol_name_selected').hide();
+      $("#seqrun_undecided_selected").show('normal');
+      //$("#pipeline_undecided_selected").show('normal');
+    } else {
+      $("#seqlib_undecided_selected").hide();
+
+      //Restore right-side summary if #seqlib-undecided is un-checked
+      var step_selected = $('#step_id').find('option:selected');
+      var step_name_selected = step_selected.text();
+      $('#step_name_selected').hide().show('normal').text(step_name_selected);
+
+      var protocol_selected = $('#protocol_id').find('option:selected');
+      var protocol_name_selected = protocol_selected.text();
+      $('#protocol_name_selected').hide().show('normal').text(protocol_name_selected);
+
+
+      $("#seqrun_undecided_selected").hide();
+
+      var instrument_type_selected = $('#instrument_type_id').find('option:selected');
+      var instrument_type_name_selected = instrument_type_selected.text();
+      $('#instrument_type_name_selected').show('normal').text(instrument_type_name_selected);
+
+      var seq_runmode_type_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked');
+      var seq_runmode_type_name_selected = seq_runmode_type_selected.parent('label').text();
+      $('#seq_runmode_type_name_selected').show('normal').text(seq_runmode_type_name_selected);
+
+      var seq_runread_type_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked');
+      var seq_runread_type_name_selected = seq_runread_type_selected.parent('label').text();
+      $('#seq_runread_type_name_selected').show('normal').text(seq_runread_type_name_selected);
+
+      var seq_runcycle_type_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
+      var seq_runcycle_type_name_selected = seq_runcycle_type_selected.parent('label').text();
+      $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+    }
   });
+
 
   /*
    * Build Handsontable
