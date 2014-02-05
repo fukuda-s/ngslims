@@ -138,6 +138,19 @@ try {
         return $flash;
     });
 
+    /**
+     * Register the flash service with custom CSS classes
+     */
+    $di->set('flashSession', function(){
+        $flash = new Phalcon\Flash\Session(array(
+            'success' => 'alert alert-success',
+            'notice' => 'alert alert-info',
+            'warning' => 'alert alert-warning',
+            'error' => 'alert alert-danger'
+        ));
+        return $flash;
+    });
+
 	/**
 	 * Register a user component
 	 */
