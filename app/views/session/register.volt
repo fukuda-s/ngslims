@@ -1,7 +1,7 @@
 {{ content() }}
 
 <div class="page-header">
-  <h2>Register for INVO</h2>
+  <h2>Register for ngsLIMS</h2>
 </div>
 
 {{ form('session/register', 'id': 'registerForm', 'class': 'form-horizontal', 'onbeforesubmit': 'return false') }}
