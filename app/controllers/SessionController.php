@@ -31,7 +31,7 @@ class SessionController extends ControllerBase
             $repeatPassword = $this->request->getPost('repeatPassword');
 
             if ($password != $repeatPassword) {
-                $this->flash->error('Passwords are diferent');
+                $this->flash->error('Passwords are different');
                 return false;
             }
 
@@ -85,7 +85,7 @@ class SessionController extends ControllerBase
                 if ($this->security->checkHash($password, $user->password)) {
                     $this->_registerSession($user);
                     $this->flash->success('Welcome ' . $user->name);
-                    return $this->forward('tracker/index');
+                    return $this->forward('order/index');
                 }
             }
 
@@ -95,7 +95,7 @@ class SessionController extends ControllerBase
                 if ($this->security->checkHash($password, $user->password)) {
                     $this->_registerSession($user);
                     $this->flash->success('Welcome ' . $user->name);
-                    return $this->forward('tracker/index');
+                    return $this->forward('order/index');
                 }
             }
 
