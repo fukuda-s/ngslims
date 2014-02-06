@@ -16,6 +16,7 @@
         <ul id="sample_selected" class="text-muted">
           <li id="sample_type_name_selected">{{ sample_type.name }}</li>
           <li id="organism_name_selected">{{ organism.name }}</li>
+          <li id="sample_count">{{ sample_count }} sample(s)</li>
         </ul>
       </li>
       <li class="list-group-item text-info">Seqlib & Multiplex

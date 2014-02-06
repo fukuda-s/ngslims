@@ -75,6 +75,7 @@ class Security extends Plugin
                     'instrumentTypeSelectList',
                     'seqRunTypeSelectList',
                     'orderSetSession',
+                    'loadSessionSampleData',
                     'confirm'
                 ),
                 'tracker' => array(

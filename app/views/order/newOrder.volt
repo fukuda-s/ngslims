@@ -1,6 +1,7 @@
 {{ content() }}
 <div class="col-md-9">
   {{ flashSession.output() }}
+  <div id="flash"></div>
   <div class="panel panel-default">
     <div class="panel-heading">User & Project</div>
     <div class="panel-body">
@@ -66,7 +67,7 @@
         <!-- /.navbar-collapse -->
       </nav>
       <!-- /Handsontable toolbar -->
-      <div id="handsontable-sample"></div>
+      <div id="handsontable-orderSamples-body"></div>
     </div>
   </div>
   <div class="panel panel-default">
@@ -148,31 +149,31 @@
   </div>
 </div>
 <div class="col-md-3" id="new_order_summary">
-  <div class="panel panel-default">
+  <div class="panel panel-default" data-offset-top="50" data-spy="affix">
     <div class="panel-heading">Summary</div>
     <ul class="list-group">
       <li class="list-group-item text-info">User & Project
-        <ul id="user_project_selected" class="text-muted">
+        <ul class="text-muted">
           <li id="lab_name_selected" style="display: none;"></li>
           <li id="pi_user_name_selected" style="display: none;"></li>
           <li id="project_name_selected" style="display: none;"></li>
         </ul>
       </li>
       <li class="list-group-item text-info">Sample
-        <ul id="sample_selected" class="text-muted">
+        <ul class="text-muted">
           <li id="sample_type_name_selected" style="display: none;"></li>
           <li id="organism_name_selected" style="display: none;"></li>
         </ul>
       </li>
       <li class="list-group-item text-info">Seqlib & Multiplex
-        <ul id="seqlib_selected" class="text-muted">
+        <ul class="text-muted">
           <li id="seqlib_undecided_selected" class="text-warning" style="display: none;">Undecided</li>
           <li id="step_name_selected" style="display: none;"></li>
           <li id="protocol_name_selected" style="display: none;"></li>
         </ul>
       </li>
       <li class="list-group-item text-info">Sequencing
-        <ul id="seqrun_selected" class="text-muted">
+        <ul class="text-muted">
           <li id="seqrun_undecided_selected" class="text-warning" style="display: none;">Undecided</li>
           <li id="instrument_type_name_selected" style="display: none;"></li>
           <li id="seq_runmode_type_name_selected" style="display: none;"></li>
@@ -181,7 +182,7 @@
         </ul>
       </li>
       <li class="list-group-item text-info">Pipeline
-        <ul id="pipeline_selected" class="text-muted">
+        <ul class="text-muted">
           <li id="pipeline_undecided" class="text-warning" style="display: none;">Undecided</li>
         </ul>
       </li>
@@ -200,7 +201,7 @@ $(document).ready(function () {
   /*
    * Fix cart on top
    */
-  $('#new_order_summary').stick_in_parent();
+  //$('#new_order_summary').stick_in_parent();
 
   /*
    * Function to set selected values to session.
@@ -510,7 +511,6 @@ $(document).ready(function () {
   /*
    * Set control for "Undecided" check box
    */
-  var seqrun_selected = $('#seqrun_selected');
   $('#seqrun-undecided').change(function () {
     if ($(this).prop('checked')) {
       $('#instrument_type_name_selected').hide();
@@ -546,7 +546,6 @@ $(document).ready(function () {
     //setOrderSessionVal('pipeline-undecided', 0, $(this).prop('checked'));
   });
 
-  var seqlib_selected = $('#seqlib_selected');
   $('#seqlib-undecided').change(function () {
     if ($(this).prop('checked')) {
       $('#instrument_type_name_selected').hide();
@@ -557,6 +556,7 @@ $(document).ready(function () {
 
       $('#step_name_selected').hide();
       $('#protocol_name_selected').hide();
+
       $("#seqrun_undecided_selected").show('normal');
       //$("#pipeline_undecided_selected").show('normal');
     } else {
@@ -646,7 +646,7 @@ $(document).ready(function () {
       $('#sample_type_name_selected').show('normal').text(sample_type_name_selected);
     }
 
-    var seqrun_selected = $('#seqrun_selected');
+    var instrument_type_id_selected = $('#instrument_type_id').val();
     if ($('#seqrun-undecided').prop('checked')) {
       //Remove from right-side summary
       $('#instrument_type_name_selected').hide();
@@ -654,6 +654,12 @@ $(document).ready(function () {
       $('#seq_runread_type_name_selected').hide();
       $('#seq_runcycle_type_name_selected').hide();
       $("#seqrun_undecided_selected").show('normal');
+    } else if (instrument_type_id_selected == '@') {
+      //Remove from right-side summary
+      $("#seqrun_undecided_selected").hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
     } else {
       $("#seqrun_undecided_selected").hide();
 
@@ -674,6 +680,7 @@ $(document).ready(function () {
       $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
     }
 
+    var step_id_selected = $('#step_id').val();
     if ($('#seqlib-undecided').prop('checked')) {
       //Remove from right-side summary
       $('#instrument_type_name_selected').hide();
@@ -685,6 +692,18 @@ $(document).ready(function () {
       $('#step_name_selected').hide();
       $('#protocol_name_selected').hide();
       $("#seqrun_undecided_selected").show('normal');
+      //$("#pipeline_undecided_selected").show('normal');
+    } else if (step_id_selected === '@') {
+      //Remove from right-side summary
+      $('#instrument_type_name_selected').hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
+      $("#seqlib_undecided_selected").hide();
+
+      $('#step_name_selected').hide();
+      $('#protocol_name_selected').hide();
+      $("#seqrun_undecided_selected").hide();
       //$("#pipeline_undecided_selected").show('normal');
     } else {
       $("#seqlib_undecided_selected").hide();
@@ -719,14 +738,14 @@ $(document).ready(function () {
     }
   });
 
-
   /*
    * Build Handsontable
    */
-  var $container = $('#handsontable-sample');
+  var $container = $('#handsontable-orderSamples-body');
   var $console = $('#handsontable-console');
   var $toolbar = $('#handsontable-toolbar');
   var isDirtyAr = [];
+
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,
@@ -734,8 +753,21 @@ $(document).ready(function () {
     minSpareRows: 1,
     columnSorting: true,
     manualColumnResize: true,
+    data: [],
+    dataSchema: {
+      name: null,
+      qual_concentration: null,
+      qual_od260280: null,
+      qual_od260230: null,
+      qual_RIN: null,
+      qual_fragmentsize: null,
+      qual_nanodrop_conc: null,
+      qual_volume: null,
+      qual_amount: null,
+      qual_date: null
+    },
     columns: [
-      { data: 'name', title: 'Sample Name' },
+      { data: 'name', title: 'Sample Name'},
       { data: 'qual_concentration', title: 'Conc. (ng/uL)', type: 'numeric', format: '0.000' },
       { data: 'qual_od260280', title: 'A260/A280', type: 'numeric', format: '0.00' },
       { data: 'qual_od260230', title: 'A260/A230', type: 'numeric', format: '0.00' },
@@ -743,7 +775,7 @@ $(document).ready(function () {
       { data: 'qual_fragmentsize', title: 'Fragment Size', type: 'numeric' },
       { data: 'qual_nanodrop_conc', title: 'Conc. (ng/uL) (NanoDrop)', type: 'numeric', format: '0.000' },
       { data: 'qual_volume', title: 'Volume (uL)', type: 'numeric', format: '0.00' },
-      { data: 'qual_amount', data: 0, title: 'Total (ng)', type: 'numeric', format: '0.00' },
+      { data: 'qual_amount', title: 'Total (ng)', type: 'numeric', format: '0.00' },
       { data: 'qual_date', title: 'QC Date', type: 'date', dateFormat: 'yy-mm-dd' }
     ],
     afterChange: function (changes, source) {
@@ -759,12 +791,35 @@ $(document).ready(function () {
         $.each(changes, function (key, value) {
           isDirtyAr.push(value);
         });
+
+        var sample_data_array = $container.handsontable('getData');
+        sample_data_array.pop(); //pop because last row is always null because of "minSpareRows: 1" option of handsontable.
+        var sample_data = JSON.stringify(sample_data_array);
+        setOrderSessionVal('sample', 0, sample_data);
+        //console.log(source);
+        //console.log(sample_data);
       }
     }
 
   });
-
   var handsontable = $container.data('handsontable');
+
+  function loadData() {
+    $.ajax({
+      url: '{{ url("order/loadSessionSampleData") }}',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+      }
+    })
+        .done(function (data) {
+          //alert(data);
+          //alert(location.href);
+          $container.handsontable("loadData", data);
+        });
+  }
+
+  loadData(); // loading data at first.
 
   //Build 'Undo' function on toolbar
   $toolbar.find('#undo').click(function () {

@@ -443,13 +443,16 @@ class OrderController extends ControllerBase
                 $id = $this->filter->sanitize($id, array("int"));
                 $name = $this->filter->sanitize($name, array("string"));
 
-                if (is_null($column) || is_null($id) || is_null($name)) {
-                    //$this->flashSession->error("Model: " . $column . ", id: " . $id . ", name: " . $name);
+                if (is_null($column)) {
+                    $this->flashSession->error("Model: " . $column . ", id: " . $id . ", name: " . $name);
+                    return;
+                } else if (!is_numeric($id) || empty($name)) {
+                    $this->session->remove($column);
                     return;
                 } else {
                     $data = (object)array("id" => $id, "name" => $name);
                     $this->session->set($column, $data);
-                    //$this->flashSession->error(var_dump($this->session->get($column)));
+                    echo var_dump($this->session->get($column));
                 }
 
             }
@@ -459,37 +462,39 @@ class OrderController extends ControllerBase
     public function confirmAction()
     {
 
+        $warning = 0; // @TODO How to know flashSession is exist or not?
+
         if (!$this->session->has('lab')) {
             $this->flashSession->warning("Please select Lab");
-            return $this->response->redirect("order/newOrder");
+            $warning++;
         } else {
             $this->view->setVar('lab', $this->session->get('lab'));
         }
 
         if (!$this->session->has('pi_user')) {
             $this->flashSession->warning("Please select PI");
-            return $this->response->redirect("order/newOrder");
+            $warning++;
         } else {
             $this->view->setVar('pi_user', $this->session->get('pi_user'));
         }
 
         if (!$this->session->has('project')) {
             $this->flashSession->warning("Please select Project");
-            return $this->response->redirect("order/newOrder");
+            $warning++;
         } else {
             $this->view->setVar('project', $this->session->get('project'));
         }
 
         if (!$this->session->has('sample_type')) {
             $this->flashSession->warning("Please select Sample Type");
-            return $this->response->redirect("order/newOrder");
+            $warning++;
         } else {
             $this->view->setVar('sample_type', $this->session->get('sample_type'));
         }
 
         if (!$this->session->has('organism')) {
             $this->flashSession->warning("Please select Organism");
-            return $this->response->redirect("order/newOrder");
+            $warning++;
         } else {
             $this->view->setVar('organism', $this->session->get('organism'));
         }
@@ -499,14 +504,14 @@ class OrderController extends ControllerBase
         if ($seqlib_undecided->name === "false") {
             if (!$this->session->has('step')) {
                 $this->flashSession->warning("Please select Experiment Step");
-                return $this->response->redirect("order/newOrder");
+                $warning++;
             } else {
                 $this->view->setVar('step', $this->session->get('step'));
             }
 
             if (!$this->session->has('protocol')) {
                 $this->flashSession->warning("Please select Experiment Protocol");
-                return $this->response->redirect("order/newOrder");
+                $warning++;
             } else {
                 $this->view->setVar('protocol', $this->session->get('protocol'));
             }
@@ -518,31 +523,99 @@ class OrderController extends ControllerBase
         if ($seqrun_undecided->name === "false") {
             if (!$this->session->has('instrument_type')) {
                 $this->flashSession->warning("Please select Instrument Type");
-                return $this->response->redirect("order/newOrder");
+                $warning++;
             } else {
                 $this->view->setVar('instrument_type', $this->session->get('instrument_type'));
             }
 
             if (!$this->session->has('seq_runmode_type')) {
                 $this->flashSession->warning("Please select Seq Run Mode");
-                return $this->response->redirect("order/newOrder");
+                $warning++;
             } else {
                 $this->view->setVar('seq_runmode_type', $this->session->get('seq_runmode_type'));
             }
 
             if (!$this->session->has('seq_runread_type')) {
                 $this->flashSession->warning("Please select Seq Read Type");
-                return $this->response->redirect("order/newOrder");
+                $warning++;
             } else {
                 $this->view->setVar('seq_runread_type', $this->session->get('seq_runread_type'));
             }
 
             if (!$this->session->has('seq_runcycle_type')) {
                 $this->flashSession->warning("Please select Seq Read Type");
-                return $this->response->redirect("order/newOrder");
+                $warning++;
             } else {
                 $this->view->setVar('seq_runcycle_type', $this->session->get('seq_runcycle_type'));
             }
         }
+
+        if (!$this->session->has('sample')) {
+            $this->flashSession->warning("Please input Sample information");
+            $warning++;
+        } else {
+            $sample_data_str = str_replace('&#34;', '"', $this->session->get('sample')->name);
+            $sample_data = json_decode($sample_data_str, false);
+            //var_dump($sample_data);
+            $name = array();
+            $name_exception = 0;
+            $count = 0;
+            foreach ($sample_data as $row) {
+                $count++;
+                if (is_null($row->name)) {
+                    $this->flashSession->warning("Please input Sample Name at line " . $count);
+                    $warning++;
+                    $name_exception++;
+                }
+                $name[] = $row->name;
+            }
+            $this->view->setVar('sample_count', $count);
+
+            if ($name_exception < 1) {
+                $name_count = array_count_values($name);
+                //var_dump(array_count_values($name));
+                $duplicated = 0;
+                foreach ($name_count as $name => $count) {
+                    if ($count > 1) {
+                        $this->flashSession->warning("Sample Name \"" . $name . "\" is duplicated " . $count . " times. Please input unique Sample Name.");
+                        $warning++;
+                        $duplicated++;
+                    }
+                }
+
+                if ($duplicated > 0) {
+                    return $this->response->redirect("order/newOrder");
+                }
+            } else {
+                return $this->response->redirect("order/newOrder");
+            }
+
+        }
+
+        //var_dump($warning);
+        if ($warning > 0) {
+            $this->flashSession->error($warning . " error(s).");
+            return $this->response->redirect("order/newOrder");
+        }
+
+    }
+
+    public function loadSessionSampleDataAction()
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                if (!$this->session->has('sample')) {
+                    return;
+                } else {
+                    $sample_data_str = str_replace('&#34;', '"', $this->session->get('sample')->name);
+                    echo $sample_data_str;
+                }
+            }
+        }
     }
 }
+

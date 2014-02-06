@@ -18,7 +18,7 @@
         <span class="fa fa-expand"></span>
       </button>
     </ul>
-    <div id="handsontable-editSampls-body" style="height: 400px; overflow: auto"></div>
+    <div id="handsontable-editSamples-body" style="height: 400px; overflow: auto"></div>
   </div>
 </div>
 <script>
@@ -88,7 +88,7 @@ $(document).ready(function () {
   };
 
   // Construct handsontable
-  var $container = $("#handsontable-editSampls-body");
+  var $container = $("#handsontable-editSamples-body");
   var $console = $("#handsontable-console");
   var $toolbar = $("#handsontable-toolbar");
   var autosaveNotification = new String();
@@ -129,6 +129,8 @@ $(document).ready(function () {
           isDirtyAr.push(value);
         });
       }
+
+      console.log(JSON.stringify(handsontable.getData()));
 
       if ($('#handsontable-autosave').find('input').is(':checked')) {
         clearTimeout(autosaveNotification);
