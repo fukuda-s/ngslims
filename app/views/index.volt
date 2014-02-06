@@ -15,7 +15,6 @@
   {{ javascript_include('bootstrap/js/bootstrap.js') }}
   {{ javascript_include('js/dataTables/jquery.dataTables.js') }}
   {{ javascript_include('js/handsontable/jquery.handsontable.full.js') }}
-  {{ javascript_include('js/sticky-kit/jquery.sticky-kit.js') }}
   {{ javascript_include('js/utils.js') }}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Laboratory Information Management System for NGS Laboratory">
