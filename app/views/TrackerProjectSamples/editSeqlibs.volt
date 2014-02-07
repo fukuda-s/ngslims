@@ -109,7 +109,7 @@ $(document).ready(function () {
       { data: "concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
       { data: "stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
       { data: "fragmentsize", title: "Fragment Size", type: 'numeric' },
-      { data: "create_at", title: "Seqlib Date", type: 'date', dateFormat: 'yy-mm-dd' }
+      { data: "created_at", title: "Seqlib Date", type: 'date', dateFormat: 'yy-mm-dd' }
     ],
     minSpareCols: 0,
     minSpareRows: 0,
