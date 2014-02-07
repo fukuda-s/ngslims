@@ -60,9 +60,9 @@ class Requests extends \Phalcon\Mvc\Model
     {
         $this->addBehavior(new Timestampable(
             array(
-                'beforeCreate' => array(
+                'beforeValidationOnCreate' => array(
                     'field' => 'created_at',
-                    'format' => 'Y-m-d'
+                    'format' => 'Y-m-d H:i:s'
                 )
             )
         ));
