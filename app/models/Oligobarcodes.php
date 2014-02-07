@@ -1,5 +1,7 @@
 <?php
 
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
+
 class Oligobarcodes extends \Phalcon\Mvc\Model
 {
 
@@ -39,6 +41,10 @@ class Oligobarcodes extends \Phalcon\Mvc\Model
      */
     public $active;
 
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     /**
      * Independent Column Mapping.
      */
@@ -52,5 +58,15 @@ class Oligobarcodes extends \Phalcon\Mvc\Model
             'sort_order' => 'sort_order',
             'active' => 'active'
         );
+    }
+
+    public function initialize()
+    {
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => Oligobarcodes::NOT_ACTIVE
+            )
+        ));
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
-use Phalcon\Mvc\Model\Behavior\Timestampable;
+use Phalcon\Mvc\Model\Behavior\Timestampable,
+    Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class Protocols extends \Phalcon\Mvc\Model
 {
@@ -41,6 +42,10 @@ class Protocols extends \Phalcon\Mvc\Model
      */
     public $active;
 
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     /**
      * Independent Column Mapping.
      */
@@ -64,6 +69,13 @@ class Protocols extends \Phalcon\Mvc\Model
                     'field' => 'created_at',
                     'format' => 'Y-m-d'
                 )
+            )
+        ));
+
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => Protocols::NOT_ACTIVE
             )
         ));
     }

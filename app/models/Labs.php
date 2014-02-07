@@ -2,6 +2,7 @@
 
 
 use Phalcon\Mvc\Model\Validator\Email as Email;
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class Labs extends \Phalcon\Mvc\Model
 {
@@ -66,6 +67,10 @@ class Labs extends \Phalcon\Mvc\Model
      */
     public $active;
 
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     public function validation()
     {
         $this->validate(new Email(array(
@@ -94,6 +99,16 @@ class Labs extends \Phalcon\Mvc\Model
             'email' => 'email',
             'active' => 'active'
         );
+    }
+
+    public function initialize()
+    {
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => Labs::NOT_ACTIVE
+            )
+        ));
     }
 
 }

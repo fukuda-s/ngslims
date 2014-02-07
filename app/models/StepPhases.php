@@ -1,5 +1,7 @@
 <?php
 
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
+
 class StepPhases extends \Phalcon\Mvc\Model
 {
 
@@ -21,6 +23,10 @@ class StepPhases extends \Phalcon\Mvc\Model
      */
     public $active;
 
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     /**
      * Independent Column Mapping.
      */
@@ -31,5 +37,15 @@ class StepPhases extends \Phalcon\Mvc\Model
             'sort_order' => 'sort_order',
             'active' => 'active'
         );
+    }
+
+    public function initialize()
+    {
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => StepPhases::NOT_ACTIVE
+            )
+        ));
     }
 }

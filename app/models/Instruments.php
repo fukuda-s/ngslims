@@ -1,5 +1,7 @@
 <?php
 
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
+
 class Instruments extends \Phalcon\Mvc\Model
 {
 
@@ -39,6 +41,10 @@ class Instruments extends \Phalcon\Mvc\Model
      */
     public $active;
 
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     /**
      * Independent Column Mapping.
      */
@@ -52,5 +58,15 @@ class Instruments extends \Phalcon\Mvc\Model
             'instrument_type_id' => 'instrument_type_id',
             'active' => 'active'
         );
+    }
+
+    public function initialize()
+    {
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => Instruments::NOT_ACTIVE
+            )
+        ));
     }
 }

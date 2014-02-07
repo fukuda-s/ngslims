@@ -1,7 +1,6 @@
 <?php
 
-
-
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class SeqRunTypeAllows extends \Phalcon\Mvc\Model
 {
@@ -35,7 +34,11 @@ class SeqRunTypeAllows extends \Phalcon\Mvc\Model
      * @var string
      */
     public $active;
-     
+
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     /**
      * Independent Column Mapping.
      */
@@ -48,6 +51,16 @@ class SeqRunTypeAllows extends \Phalcon\Mvc\Model
             'seq_runcycle_type_id' => 'seq_runcycle_type_id', 
             'active' => 'active'
         );
+    }
+
+    public function initialize()
+    {
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => SeqRunTypeAllows::NOT_ACTIVE
+            )
+        ));
     }
 
 }

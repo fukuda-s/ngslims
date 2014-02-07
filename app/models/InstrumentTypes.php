@@ -1,5 +1,6 @@
 <?php
 
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class InstrumentTypes extends \Phalcon\Mvc\Model
 {
@@ -34,6 +35,10 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
      */
     public $active;
 
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     /**
      * Independent Column Mapping.
      */
@@ -53,6 +58,13 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
         $this->hasManyToMany("id", "SeqRunTypeAllows", "instrument_type_id", "seq_runmode_type_id", "SeqRunmodeTypes", "id");
         $this->hasManyToMany("id", "SeqRunTypeAllows", "instrument_type_id", "seq_runread_type_id", "SeqRunreadTypes", "id");
         $this->hasManyToMany("id", "SeqRunTypeAllows", "instrument_type_id", "seq_runcycle_type_id", "SeqRuncycleTypes", "id");
+
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => InstrumentTypes::NOT_ACTIVE
+            )
+        ));
     }
 
 }

@@ -1,7 +1,6 @@
 <?php
 
-
-
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class Steps extends \Phalcon\Mvc\Model
 {
@@ -48,6 +47,10 @@ class Steps extends \Phalcon\Mvc\Model
      */
     public $active;
 
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     /**
      * Independent Column Mapping.
      */
@@ -67,6 +70,13 @@ class Steps extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->hasMany('platform_code', 'InstrumentTypes', 'platform_code');
+
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => Steps::NOT_ACTIVE
+            )
+        ));
     }
 
 }

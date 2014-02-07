@@ -1,6 +1,7 @@
 <?php
 use Phalcon\Mvc\Model\Validator\Email as EmailValidator;
 use Phalcon\Mvc\Model\Validator\Uniqueness as UniquenessValidator;
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class Users extends \Phalcon\Mvc\Model
 {
@@ -47,6 +48,10 @@ class Users extends \Phalcon\Mvc\Model
      */
     public $active;
 
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     public function validation()
     {
         $this->validate(new EmailValidator(array(
@@ -88,5 +93,12 @@ class Users extends \Phalcon\Mvc\Model
         $this->hasMany('id', 'Projects', 'user_id');
         $this->hasMany('id', 'Requests', 'user_id');
         $this->hasMany('id', 'Samples', 'user_id');
+
+        $this->addBehavior(new SoftDelete(
+            [
+                'field' => 'active',
+                'value' => Users::NOT_ACTIVE
+            ]
+        ));
     }
 }
