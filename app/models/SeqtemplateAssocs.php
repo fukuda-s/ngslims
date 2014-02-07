@@ -1,5 +1,7 @@
 <?php
 
+use Phalcon\Mvc\Model\Behavior\Timestampable;
+
 class SeqtemplateAssocs extends \Phalcon\Mvc\Model
 {
 
@@ -50,7 +52,7 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->hasMany("id", "Seqlanes", "seqtemplate_id");
-        
+
         $this->addBehavior(new Timestampable(
             array(
                 'beforeCreate' => array(

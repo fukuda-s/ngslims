@@ -1,5 +1,6 @@
 <?php
 
+use Phalcon\Mvc\Model\Behavior\Timestampable;
 
 class Protocols extends \Phalcon\Mvc\Model
 {

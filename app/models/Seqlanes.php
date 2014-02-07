@@ -1,5 +1,7 @@
 <?php
 
+use Phalcon\Mvc\Model\Behavior\Timestampable;
+
 class Seqlanes extends \Phalcon\Mvc\Model
 {
 
