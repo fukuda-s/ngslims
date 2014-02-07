@@ -112,6 +112,12 @@ class Seqlanes extends \Phalcon\Mvc\Model
     public $read2_clusters_passed_filter;
 
     /**
+     *
+     * @var string
+     */
+    public $created_at;
+
+    /**
      * Independent Column Mapping.
      */
     public function columnMap()
@@ -134,12 +140,22 @@ class Seqlanes extends \Phalcon\Mvc\Model
             'read1_clusters_total' => 'read1_clusters_total',
             'read1_clusters_passed_filter' => 'read1_clusters_passed_filter',
             'read2_clusters_total' => 'read2_clusters_total',
-            'read2_clusters_passed_filter' => 'read2_clusters_passed_filter'
+            'read2_clusters_passed_filter' => 'read2_clusters_passed_filter',
+            'created_at' => 'created_at'
         );
     }
 
     public function initialize()
     {
         $this->belongsTo('flowcell_id', 'Flowcells', 'id');
+
+        $this->addBehavior(new Timestampable(
+            array(
+                'beforeCreate' => array(
+                    'field' => 'created_at',
+                    'format' => 'Y-m-d'
+                )
+            )
+        ));
     }
 }

@@ -39,7 +39,7 @@ class TrackerProjectSamplesController extends ControllerBase
 					fc.name AS flowcell_name,
 					slane.number AS seqlane_num,
 					s.qual_date AS qual_date,
-					slib.create_at AS seqlib_date,
+					slib.finished_at AS seqlib_date,
 					slane.last_cycle_date AS last_cycle_date
 				 FROM
 					Samples s

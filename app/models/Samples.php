@@ -97,7 +97,7 @@ class Samples extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $create_at;
+    public $created_at;
 
     /**
      *
@@ -128,7 +128,7 @@ class Samples extends \Phalcon\Mvc\Model
             'qual_nanodrop_conc' => 'qual_nanodrop_conc',
             'qual_fragment_size' => 'qual_fragment_size',
             'qual_date' => 'qual_date',
-            'create_at' => 'create_at',
+            'created_at' => 'created_at',
             'description' => 'description'
         );
     }
@@ -141,5 +141,14 @@ class Samples extends \Phalcon\Mvc\Model
         $this->hasOne('sample_type_id', 'SampleTypes', 'id');
 
         $this->hasMany('id', 'SeqLibs', 'sample_id');
+
+        $this->addBehavior(new Timestampable(
+            array(
+                'beforeCreate' => array(
+                    'field' => 'created_at',
+                    'format' => 'Y-m-d'
+                )
+            )
+        ));
     }
 }

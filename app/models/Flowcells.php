@@ -61,7 +61,7 @@ class Flowcells extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $create_at;
+    public $created_at;
 
     /**
      *
@@ -84,8 +84,20 @@ class Flowcells extends \Phalcon\Mvc\Model
             'instrument_id' => 'instrument_id',
             'side' => 'side',
             'dirname' => 'dirname',
-            'create_at' => 'create_at',
+            'created_at' => 'created_at',
             'notes' => 'notes'
         );
+    }
+
+    public function initialize()
+    {
+        $this->addBehavior(new Timestampable(
+            array(
+                'beforeCreate' => array(
+                    'field' => 'created_at',
+                    'format' => 'Y-m-d'
+                )
+            )
+        ));
     }
 }

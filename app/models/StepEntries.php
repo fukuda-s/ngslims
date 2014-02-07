@@ -26,13 +26,19 @@ class StepEntries extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $start_at;
+    public $started_at;
 
     /**
      *
      * @var string
      */
-    public $finish_at;
+    public $finished_at;
+
+    /**
+     *
+     * @var string
+     */
+    public $created_at;
 
     /**
      *
@@ -49,8 +55,9 @@ class StepEntries extends \Phalcon\Mvc\Model
             'id' => 'id',
             'sample_id' => 'sample_id',
             'step_id' => 'step_id',
-            'start_at' => 'start_at',
-            'finish_at' => 'finish_at',
+            'started_at' => 'started_at',
+            'finished_at' => 'finished_at',
+            'created_at' => 'created_at',
             'note' => 'note'
         );
     }

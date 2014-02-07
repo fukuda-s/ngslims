@@ -37,7 +37,7 @@ class Projects extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $create_at;
+    public $created_at;
 
     /**
      *
@@ -56,7 +56,7 @@ class Projects extends \Phalcon\Mvc\Model
             'name' => 'name',
             'user_id' => 'user_id',
             'pi_user_id' => 'pi_user_id',
-            'create_at' => 'create_at',
+            'created_at' => 'created_at',
             'description' => 'description'
         );
     }
@@ -72,5 +72,14 @@ class Projects extends \Phalcon\Mvc\Model
         ));
 
         $this->hasMany('id', 'Samples', 'project_id');
+
+        $this->addBehavior(new Timestampable(
+            array(
+                'beforeCreate' => array(
+                    'field' => 'created_at',
+                    'format' => 'Y-m-d'
+                )
+            )
+        ));
     }
 }

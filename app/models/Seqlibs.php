@@ -73,7 +73,19 @@ class Seqlibs extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $create_at;
+    public $started_at;
+
+    /**
+     *
+     * @var string
+     */
+    public $finished_at;
+
+    /**
+     *
+     * @var string
+     */
+    public $created_at;
 
     /**
      * Independent Column Mapping.
@@ -92,7 +104,9 @@ class Seqlibs extends \Phalcon\Mvc\Model
             'concentration' => 'concentration',
             'stock_seqlib_volume' => 'stock_seqlib_volume',
             'fragment_size' => 'fragment_size',
-            'create_at' => 'create_at'
+            'started_at' => 'started_at',
+            'finished_at' => 'finished_at',
+            'created_at' => 'created_at'
         );
     }
 
@@ -108,5 +122,14 @@ class Seqlibs extends \Phalcon\Mvc\Model
             'alias' => 'OligobarcodeB'
         ));
         $this->hasManyToMany("id", "SeqtemplateAssocs", "seqlib_id", "seqtemplate_id", "Seqtemplates", "id");
+
+        $this->addBehavior(new Timestampable(
+            array(
+                'beforeCreate' => array(
+                    'field' => 'created_at',
+                    'format' => 'Y-m-d'
+                )
+            )
+        ));
     }
 }

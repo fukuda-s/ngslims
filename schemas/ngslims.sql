@@ -16,14 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `ngslims`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `ngslims` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `ngslims`;
-
---
 -- Table structure for table `flowcells`
 --
 
@@ -34,20 +26,23 @@ CREATE TABLE `flowcells` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `seq_runmode_type_id` int(11) NOT NULL,
+  `seq_runread_type_id` int(11) NOT NULL,
   `seq_runcycle_type_id` int(11) NOT NULL,
   `run_number` int(11) NOT NULL,
   `instrument_id` int(11) NOT NULL,
   `side` char(1) NOT NULL,
   `dirname` varchar(200) DEFAULT NULL,
-  `create_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
   `notes` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_flowcells_instruments_idx` (`instrument_id`),
   KEY `fk_flowcells_seq_runcycle_types_idx` (`seq_runcycle_type_id`),
   KEY `fk_flowcells_seq_runmode_types_idx` (`seq_runmode_type_id`),
+  KEY `fk_flowcells_seq_runread_types_idx` (`seq_runread_type_id`),
   CONSTRAINT `fk_flowcells_instruments` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_flowcells_seq_runcycle_types` FOREIGN KEY (`seq_runcycle_type_id`) REFERENCES `seq_runcycle_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_flowcells_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_flowcells_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_flowcells_seq_runread_types` FOREIGN KEY (`seq_runread_type_id`) REFERENCES `seq_runread_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -232,7 +227,7 @@ CREATE TABLE `projects` (
   `lab_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `pi_user_id` int(11) NOT NULL,
-  `create_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_projects_labs_idx` (`lab_id`),
@@ -254,7 +249,7 @@ CREATE TABLE `protocols` (
   `name` varchar(45) NOT NULL,
   `description` varchar(200) DEFAULT NULL,
   `step_id` int(11) NOT NULL,
-  `create_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
   `active` char(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_protocols_steps_idx` (`step_id`),
@@ -274,7 +269,7 @@ CREATE TABLE `requests` (
   `project_id` int(11) NOT NULL,
   `lab_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `create_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_requests_projects_idx` (`project_id`),
@@ -363,7 +358,7 @@ CREATE TABLE `samples` (
   `qual_nanodrop_conc` decimal(8,3) unsigned DEFAULT NULL,
   `qual_fragment_size` int(11) unsigned DEFAULT NULL,
   `qual_date` datetime DEFAULT NULL,
-  `create_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `samples_name_idx` (`name`),
@@ -376,6 +371,31 @@ CREATE TABLE `samples` (
   CONSTRAINT `fk_samples_requests` FOREIGN KEY (`request_id`) REFERENCES `requests` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_sample_types` FOREIGN KEY (`sample_type_id`) REFERENCES `sample_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=3606 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `seq_run_type_allows`
+--
+
+DROP TABLE IF EXISTS `seq_run_type_allows`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `seq_run_type_allows` (
+  `instrument_type_id` int(11) NOT NULL,
+  `seq_runmode_type_id` int(11) NOT NULL,
+  `seq_runread_type_id` int(11) NOT NULL,
+  `seq_runcycle_type_id` int(11) NOT NULL,
+  `active` char(1) NOT NULL,
+  PRIMARY KEY (`instrument_type_id`,`seq_runmode_type_id`,`seq_runread_type_id`,`seq_runcycle_type_id`),
+  KEY `fk_seq_runcycle_type_allows_seq_runcycle_types_idx` (`seq_runcycle_type_id`),
+  KEY `fk_seq_runcycle_type_allows_instrument_types_idx` (`instrument_type_id`),
+  KEY `fk_seq_runcycle_type_allows_seq_runmode_types_idx` (`seq_runmode_type_id`),
+  KEY `fk_seq_runcycle_type_allows_seq_runread_types_idx` (`seq_runread_type_id`),
+  CONSTRAINT `fk_seq_runcycle_type_allows_instrument_types` FOREIGN KEY (`instrument_type_id`) REFERENCES `instrument_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seq_runcycle_type_allows_seq_runcycle_types` FOREIGN KEY (`seq_runcycle_type_id`) REFERENCES `seq_runcycle_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seq_runcycle_type_allows_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seq_runcycle_type_allows_seq_runread_types` FOREIGN KEY (`seq_runread_type_id`) REFERENCES `seq_runread_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -405,9 +425,26 @@ CREATE TABLE `seq_runmode_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `lane_per_flowcell` int(11) NOT NULL,
+  `sort_order` varchar(45) DEFAULT NULL,
   `active` char(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `seq_runread_types`
+--
+
+DROP TABLE IF EXISTS `seq_runread_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `seq_runread_types` (
+  `id` int(11) NOT NULL,
+  `name` varchar(45) NOT NULL,
+  `sort_order` int(11) DEFAULT NULL,
+  `active` char(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -436,6 +473,7 @@ CREATE TABLE `seqlanes` (
   `read1_clusters_passed_filter` bigint(20) DEFAULT NULL,
   `read2_clusters_total` bigint(20) DEFAULT NULL,
   `read2_clusters_passed_filter` bigint(20) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_seqlanes_flowcells_idx` (`flowcell_id`),
   KEY `fk_seqlanes_seqtemplates_idx` (`seqtemplate_id`),
@@ -463,7 +501,9 @@ CREATE TABLE `seqlibs` (
   `concentration` decimal(8,3) unsigned DEFAULT NULL,
   `stock_seqlib_volume` decimal(8,3) unsigned DEFAULT NULL,
   `fragment_size` int(11) unsigned DEFAULT NULL,
-  `create_at` datetime DEFAULT NULL,
+  `started_at` datetime DEFAULT NULL,
+  `finished_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `seqlibs_name_idx` (`name`),
   KEY `fk_seqlibs_oligobarcodeA_idx` (`oligobarcodeA_id`),
@@ -518,7 +558,9 @@ CREATE TABLE `seqtemplates` (
   `final_conc` decimal(8,3) unsigned DEFAULT NULL,
   `final_dw_vol` decimal(8,3) unsigned DEFAULT NULL,
   `final_vol` decimal(8,3) unsigned DEFAULT NULL,
-  `create_at` datetime NOT NULL,
+  `started_at` datetime DEFAULT NULL,
+  `finished_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `name_idx` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1024 DEFAULT CHARSET=utf8;
@@ -535,8 +577,9 @@ CREATE TABLE `step_entries` (
   `id` int(11) NOT NULL,
   `sample_id` int(11) NOT NULL,
   `step_id` int(11) NOT NULL,
-  `start_at` datetime DEFAULT NULL,
-  `finish_at` datetime DEFAULT NULL,
+  `started_at` datetime DEFAULT NULL,
+  `finished_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
   `note` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_step_entries_samples_idx` (`sample_id`),
@@ -612,4 +655,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-01-29 15:49:14
+-- Dump completed on 2014-02-07 14:19:26

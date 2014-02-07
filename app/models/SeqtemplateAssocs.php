@@ -46,4 +46,18 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model
             'assoc_vol' => 'assoc_vol'
         );
     }
+
+    public function initialize()
+    {
+        $this->hasMany("id", "Seqlanes", "seqtemplate_id");
+        
+        $this->addBehavior(new Timestampable(
+            array(
+                'beforeCreate' => array(
+                    'field' => 'created_at',
+                    'format' => 'Y-m-d'
+                )
+            )
+        ));
+    }
 }

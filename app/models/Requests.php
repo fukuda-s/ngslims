@@ -31,7 +31,7 @@ class Requests extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $create_at;
+    public $created_at;
 
     /**
      *
@@ -49,8 +49,20 @@ class Requests extends \Phalcon\Mvc\Model
             'project_id' => 'project_id',
             'lab_id' => 'lab_id',
             'user_id' => 'user_id',
-            'create_at' => 'create_at',
+            'created_at' => 'created_at',
             'description' => 'description'
         );
+    }
+
+    public function initialize()
+    {
+        $this->addBehavior(new Timestampable(
+            array(
+                'beforeCreate' => array(
+                    'field' => 'created_at',
+                    'format' => 'Y-m-d'
+                )
+            )
+        ));
     }
 }
