@@ -2,7 +2,7 @@
 
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
-class SeqRunTypeAllows extends \Phalcon\Mvc\Model
+class SeqRunTypeSchemes extends \Phalcon\Mvc\Model
 {
 
     /**
@@ -58,7 +58,7 @@ class SeqRunTypeAllows extends \Phalcon\Mvc\Model
         $this->addBehavior(new SoftDelete(
             array(
                 'field' => 'active',
-                'value' => SeqRunTypeAllows::NOT_ACTIVE
+                'value' => SeqRunTypeSchemes::NOT_ACTIVE
             )
         ));
     }

@@ -55,9 +55,9 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
-        $this->hasManyToMany("id", "SeqRunTypeAllows", "instrument_type_id", "seq_runmode_type_id", "SeqRunmodeTypes", "id");
-        $this->hasManyToMany("id", "SeqRunTypeAllows", "instrument_type_id", "seq_runread_type_id", "SeqRunreadTypes", "id");
-        $this->hasManyToMany("id", "SeqRunTypeAllows", "instrument_type_id", "seq_runcycle_type_id", "SeqRuncycleTypes", "id");
+        $this->hasManyToMany("id", "SeqRunTypeSchemes", "instrument_type_id", "seq_runmode_type_id", "SeqRunmodeTypes", "id");
+        $this->hasManyToMany("id", "SeqRunTypeSchemes", "instrument_type_id", "seq_runread_type_id", "SeqRunreadTypes", "id");
+        $this->hasManyToMany("id", "SeqRunTypeSchemes", "instrument_type_id", "seq_runcycle_type_id", "SeqRuncycleTypes", "id");
 
         $this->addBehavior(new SoftDelete(
             array(
