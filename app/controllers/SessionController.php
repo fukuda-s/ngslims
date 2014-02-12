@@ -85,7 +85,7 @@ class SessionController extends ControllerBase
                 if ($this->security->checkHash($password, $user->password)) {
                     $this->_registerSession($user);
                     $this->flash->success('Welcome ' . $user->name);
-                    return $this->forward('order/index');
+                    return $this->forward('index');
                 }
             }
 
@@ -95,7 +95,7 @@ class SessionController extends ControllerBase
                 if ($this->security->checkHash($password, $user->password)) {
                     $this->_registerSession($user);
                     $this->flash->success('Welcome ' . $user->name);
-                    return $this->forward('order/index');
+                    return $this->forward('index');
                 }
             }
 

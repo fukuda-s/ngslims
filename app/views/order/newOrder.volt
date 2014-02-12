@@ -38,6 +38,15 @@
         </label>
         {{ select('organism_id', organisms, 'using': ['id', 'name'], 'useEmpty': true, 'emptyText': 'Please, choose Organism...', 'emptyValue': '@', 'class': 'form-control input-sm') }}
       </div>
+      <div id="qc_inside_select" class="form-group">
+        <label for="qc_inside">QC Inside?</label><br>
+        <label class="radio-inline">
+          {{ radio_field('qc_inside', 'value':'true', 'id':'qc_inside_yes', 'name':'qc_inside') }}Yes
+        </label>
+        <label class="radio-inline">
+          {{ radio_field('qc_inside', 'value':'false', 'id':'qc_inside_no', 'name':'qc_inside') }}No
+        </label>
+      </div>
       <!-- Handsontable toolbar -->
       <nav class="navbar navbar-default" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -71,7 +80,6 @@
     </div>
   </div>
   <div class="panel panel-default">
-    {{ seqlib_undecided.id ~ seqlib_undecided.name }}
     <div class="panel-heading">Sequence Library & Multiplex
       <div class="checkbox-inline pull-right">
         <label>
@@ -99,7 +107,6 @@
   </div>
   <div
       class="panel panel-default seqlib-undecide-toggle-target collapse {% if seqlib_undecided.name === "false" %}in{% endif %}">
-    {{ seqrun_undecided.id ~ seqrun_undecided.name }}
     <div class="panel-heading">Sequencing Run
       <div class="checkbox-inline pull-right">
         <label>
@@ -163,6 +170,7 @@
         <ul class="text-muted">
           <li id="sample_type_name_selected" style="display: none;"></li>
           <li id="organism_name_selected" style="display: none;"></li>
+          <li id="qc_inside_selected" style="display: none;"></li>
         </ul>
       </li>
       <li class="list-group-item text-info">Seqlib & Multiplex
@@ -208,8 +216,10 @@ $(document).ready(function () {
    */
   function setOrderSessionVal(column, id, name) {
     $.ajax({
-      url: '{{ url('order/orderSetSession/')}}' + column + '/' + id + '/' + name + '/',
-      type: 'POST'
+      url: '{{ url('order/orderSetSession/')}}',
+      dataType: 'html',
+      type: 'POST',
+      data: { column: column, id: id, name: name}
     })
         .done(function (data) {
           $('#flash').html(data);
@@ -248,7 +258,7 @@ $(document).ready(function () {
             var name_selected = $('option:selected', this).text();
             $('#' + column + '_name_selected').hide().show('normal').text(name_selected);
 
-            //Set selected pi_user to session values.
+            //Set selected value to session values.
             setOrderSessionVal(column, id_selected, name_selected);
           });
 
@@ -264,10 +274,9 @@ $(document).ready(function () {
       var name_selected = $('option:selected', this).text();
       $('#' + selector + '_name_selected').hide().show('normal').text(name_selected);
 
-      //Set selected pi_user to session values.
+      //Set selected value to session values.
       setOrderSessionVal(selector, id_selected, name_selected);
 
-      //Refresh project_select when pi_user_id is changed
       for (var key in followSelects) {
         getSelectList(followSelects[key], id_selected);
       }
@@ -446,6 +455,9 @@ $(document).ready(function () {
           //Change pi_user_name_selected value on right side summary with first value (current user's name has been set).
           $('#pi_user_name_selected').show('normal').text(pi_user_name_selected);
 
+          //Change pi_user_name on project_modal
+          $("#modal_project_pi_user_name").text(pi_user_name_selected);
+
           //Set selected pi_user to session values.
           setOrderSessionVal('pi_user', pi_user_id_selected, pi_user_name_selected);
         });
@@ -456,11 +468,14 @@ $(document).ready(function () {
    * Change child select list and right-side summary when parent select list is changed
    */
   /* User & Project */
-  //Change lab_id_selected value on right side summary with selected values
+//Change lab_id_selected value on right side summary with selected values
   $('#lab_id').on('change', function () {
     var lab_id_selected = $(this).val();
     var lab_name_selected = $('option:selected', this).text();
     $('#lab_name_selected').show('normal').text(lab_name_selected);
+
+    //Change lab_name on project_modal
+    $("#modal_project_lab_name").text(lab_name_selected);
 
     //Set selected lab to session values.
     setOrderSessionVal('lab', lab_id_selected, lab_name_selected);
@@ -471,7 +486,7 @@ $(document).ready(function () {
   });
 
   /* Sample */
-  //Change sample_type_selected value on right side summary with selected values
+//Change sample_type_selected value on right side summary with selected values
   $('#sample_type_id').on('change', function () {
     var sample_type_id_selected = $(this).val();
     var sample_type_name_selected = $('option:selected', this).text();
@@ -486,7 +501,7 @@ $(document).ready(function () {
 
   });
 
-  //Change organism_selected value on right side summary with selected values
+//Change organism_selected value on right side summary with selected values
   $('#organism_id').on('change', function () {
     var organism_id_selected = $(this).val();
     var organism_name_selected = $('option:selected', this).text();
@@ -496,8 +511,18 @@ $(document).ready(function () {
     setOrderSessionVal('organism', organism_id_selected, organism_name_selected);
   });
 
+//Change qc_inside_select value on right side summary with selected values
+  $("input:radio[name='qc_inside']").on('change', function () {
+    var qc_inside_value_selected = $(this).filter(':checked').val();
+    var qc_inside_name_selected = $(this).filter(':checked').parent('label').text();
+    $('#qc_inside_selected').show('normal').text('QC Inside?: '+qc_inside_name_selected);
+
+    //Set selected seq_runcycle_type to session values.
+    setOrderSessionVal('qc_inside', 0, qc_inside_value_selected);
+  });
+
   /* Sequence Library & Multiplex */
-  //Change protocol_name_selected value on right side summary with selected values
+//Change protocol_name_selected value on right side summary with selected values
   $('#protocol_id').on('change', function () {
     var protocol_id_selected = $(this).val();
     var protocol_name_selected = $('option:selected', this).text();
@@ -599,7 +624,7 @@ $(document).ready(function () {
     //setOrderSessionVal('pipeline-undecided', 0, $(this).prop('checked'));
   });
 
-  // @TODO pipeline select control
+// @TODO pipeline select control
   /*
    var pipeline_selected_content;
    pipeline_selected = $('#pipeline_selected');
@@ -633,6 +658,10 @@ $(document).ready(function () {
     var lab_name_selected = lab_selected.text();
     if (lab_selected.val() !== '@') {
       $('#lab_name_selected').show('normal').text(lab_name_selected);
+
+      //Change lab_name on project_modal
+      $("#modal_project_lab_name").text(lab_name_selected);
+
       getUserSelectList(lab_id_selected);
     }
 
@@ -645,6 +674,9 @@ $(document).ready(function () {
       //Change sample_type_name_selected value on right side summary with selected values
       $('#sample_type_name_selected').show('normal').text(sample_type_name_selected);
     }
+
+    var qc_inside_name_selected = $("input:radio[name='qc_inside']").filter(':checked').parent('label').text();
+    $('#qc_inside_selected').show('normal').text('QC Inside?: '+qc_inside_name_selected);
 
     var instrument_type_id_selected = $('#instrument_type_id').val();
     if ($('#seqrun-undecided').prop('checked')) {
@@ -744,8 +776,8 @@ $(document).ready(function () {
   var $container = $('#handsontable-orderSamples-body');
   var $console = $('#handsontable-console');
   var $toolbar = $('#handsontable-toolbar');
-  var isDirtyAr = [];
-
+  var sample_name_validator_fn = function (value, callback) {
+  }
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,
@@ -767,7 +799,7 @@ $(document).ready(function () {
       qual_date: null
     },
     columns: [
-      { data: 'name', title: 'Sample Name'},
+      { data: 'name', title: 'Sample Name', type: 'text'},
       { data: 'qual_concentration', title: 'Conc. (ng/uL)', type: 'numeric', format: '0.000' },
       { data: 'qual_od260280', title: 'A260/A280', type: 'numeric', format: '0.00' },
       { data: 'qual_od260230', title: 'A260/A230', type: 'numeric', format: '0.00' },
@@ -783,14 +815,10 @@ $(document).ready(function () {
         // don't save this change
       }
       else {
-        // Enable 'Save', 'Undo' link on toolbar above of table
-        // after edit.
-        // alert('afterEdit');
+        // Enable 'Save', 'Undo' link on toolbar above of table after edit.
+        //alert('afterChange');
         $toolbar.find('#save, #undo, #clear').removeClass('disabled');
         $console.text('Click Save to save data to server').removeClass().addClass('alert alert-info');
-        $.each(changes, function (key, value) {
-          isDirtyAr.push(value);
-        });
 
         var sample_data_array = $container.handsontable('getData');
         sample_data_array.pop(); //pop because last row is always null because of "minSpareRows: 1" option of handsontable.
@@ -802,6 +830,7 @@ $(document).ready(function () {
     }
 
   });
+
   var handsontable = $container.data('handsontable');
 
   function loadData() {
@@ -821,7 +850,7 @@ $(document).ready(function () {
 
   loadData(); // loading data at first.
 
-  //Build 'Undo' function on toolbar
+//Build 'Undo' function on toolbar
   $toolbar.find('#undo').click(function () {
     // alert('undo! '+handsontable.isUndoAvailable()+'
     // '+handsontable.isRedoAvailable())
@@ -840,7 +869,7 @@ $(document).ready(function () {
     }
   });
 
-  //Build 'Redo' function on toolbar
+//Build 'Redo' function on toolbar
   $toolbar.find('#redo').click(function () {
     // alert('redo! '+handsontable.isUndoAvailable()+'
     // '+handsontable.isRedoAvailable());
@@ -866,5 +895,6 @@ $(document).ready(function () {
   });
 
 
-});
+})
+;
 </script>

@@ -143,6 +143,7 @@ class Samples extends \Phalcon\Mvc\Model
         $this->hasOne('sample_type_id', 'SampleTypes', 'id');
 
         $this->hasMany('id', 'SeqLibs', 'sample_id');
+        $this->hasMany('id', 'StepEntries', 'sample_id');
 
         $this->addBehavior(new Timestampable(
             array(

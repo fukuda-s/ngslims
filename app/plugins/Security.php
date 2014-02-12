@@ -76,12 +76,16 @@ class Security extends Plugin
                     'seqRunTypeSelectList',
                     'orderSetSession',
                     'loadSessionSampleData',
-                    'confirm'
+                    'saveProject',
+                    'confirm',
+                    'checkout'
                 ),
                 'tracker' => array(
                     'index',
                     'project',
-                    'experiment',
+                    'qcExperiment',
+                    'seqlibExperiment',
+                    'sequence',
                     'protocol'
                 ),
                 'trackerProjectSamples' => array(

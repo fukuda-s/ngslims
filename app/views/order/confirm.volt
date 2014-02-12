@@ -20,7 +20,6 @@
         </ul>
       </li>
       <li class="list-group-item text-info">Seqlib & Multiplex
-        {{ seqlib_undecided.id ~ seqlib_undecided.name}}
         <ul id="seqlib_selected" class="text-muted">
           {% if seqlib_undecided.name === "true" %}
             <li class="text-warning">Undecided</li>
@@ -31,7 +30,6 @@
         </ul>
       </li>
       <li class="list-group-item text-info">Sequencing
-        {{ seqrun_undecided.id ~ seqrun_undecided.name}}
         <ul id="seqrun_selected" class="text-muted">
           {% if seqrun_undecided.name === "true" %}
             <li class="text-warning">Undecided</li>
@@ -52,7 +50,7 @@
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default" id="checkout"
                 onclick="location.href='{{ url("order/newOrder") }}'"><span
-              class="glyphicon glyphicon-chevron-left"></span> Back To Order
+              class="glyphicon glyphicon-chevron-left"></span> Back To Order Form
         </button>
         <button type="button" class="btn btn-default" id="saveorder"
                 onclick="location.href='{{ url("order/saveOrder") }}'"><span
