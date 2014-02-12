@@ -82,7 +82,7 @@ CREATE TABLE `instruments` (
   PRIMARY KEY (`id`),
   KEY `fk_instruments_instrument_types_idx` (`instrument_type_id`),
   CONSTRAINT `fk_instruments_instrument_types` FOREIGN KEY (`instrument_type_id`) REFERENCES `instrument_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,7 +97,6 @@ CREATE TABLE `lab_users` (
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`lab_id`,`user_id`),
   KEY `fk_lab_users_users_idx` (`user_id`),
-  KEY `fk_lab_users_labs_idx` (`lab_id`),
   CONSTRAINT `fk_lab_users_labs` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_lab_users_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -249,6 +248,8 @@ CREATE TABLE `protocols` (
   `name` varchar(45) NOT NULL,
   `description` varchar(200) DEFAULT NULL,
   `step_id` int(11) NOT NULL,
+  `min_multiplex_number` int(11) NOT NULL,
+  `max_multiplex_number` int(11) NOT NULL,
   `created_at` datetime NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
@@ -374,28 +375,29 @@ CREATE TABLE `samples` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `seq_run_type_allows`
+-- Table structure for table `seq_run_type_schemes`
 --
 
-DROP TABLE IF EXISTS `seq_run_type_allows`;
+DROP TABLE IF EXISTS `seq_run_type_schemes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `seq_run_type_allows` (
+CREATE TABLE `seq_run_type_schemes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `instrument_type_id` int(11) NOT NULL,
   `seq_runmode_type_id` int(11) NOT NULL,
   `seq_runread_type_id` int(11) NOT NULL,
   `seq_runcycle_type_id` int(11) NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`instrument_type_id`,`seq_runmode_type_id`,`seq_runread_type_id`,`seq_runcycle_type_id`),
-  KEY `fk_seq_runcycle_type_allows_seq_runcycle_types_idx` (`seq_runcycle_type_id`),
-  KEY `fk_seq_runcycle_type_allows_instrument_types_idx` (`instrument_type_id`),
-  KEY `fk_seq_runcycle_type_allows_seq_runmode_types_idx` (`seq_runmode_type_id`),
-  KEY `fk_seq_runcycle_type_allows_seq_runread_types_idx` (`seq_runread_type_id`),
-  CONSTRAINT `fk_seq_runcycle_type_allows_instrument_types` FOREIGN KEY (`instrument_type_id`) REFERENCES `instrument_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_seq_runcycle_type_allows_seq_runcycle_types` FOREIGN KEY (`seq_runcycle_type_id`) REFERENCES `seq_runcycle_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_seq_runcycle_type_allows_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_seq_runcycle_type_allows_seq_runread_types` FOREIGN KEY (`seq_runread_type_id`) REFERENCES `seq_runread_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`,`instrument_type_id`,`seq_runmode_type_id`,`seq_runread_type_id`,`seq_runcycle_type_id`),
+  KEY `seq_run_type_schemes_seq_runcycle_types_idx` (`seq_runcycle_type_id`),
+  KEY `seq_run_type_schemes_seq_runmode_types_idx` (`seq_runmode_type_id`),
+  KEY `seq_run_type_schemes_seq_runread_types_idx` (`seq_runread_type_id`),
+  KEY `seq_run_type_schemes_instrument_types_idx` (`instrument_type_id`),
+  CONSTRAINT `seq_run_type_schemes_instrument_types` FOREIGN KEY (`instrument_type_id`) REFERENCES `instrument_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `seq_run_type_schemes_seq_runcycle_types` FOREIGN KEY (`seq_runcycle_type_id`) REFERENCES `seq_runcycle_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `seq_run_type_schemes_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `seq_run_type_schemes_seq_runread_types` FOREIGN KEY (`seq_runread_type_id`) REFERENCES `seq_runread_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -444,7 +446,7 @@ CREATE TABLE `seq_runread_types` (
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -576,7 +578,10 @@ DROP TABLE IF EXISTS `step_entries`;
 CREATE TABLE `step_entries` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sample_id` int(11) NOT NULL,
+  `step_phase_code` varchar(10) NOT NULL,
   `step_id` int(11) NOT NULL,
+  `protocol_id` int(11) DEFAULT NULL,
+  `seq_run_type_scheme_id` int(11) DEFAULT NULL,
   `started_at` datetime DEFAULT NULL,
   `finished_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
@@ -585,7 +590,7 @@ CREATE TABLE `step_entries` (
   KEY `fk_step_entries_samples_idx` (`sample_id`),
   KEY `fk_step_entries_steps_idx` (`step_id`),
   CONSTRAINT `fk_step_entries_samples` FOREIGN KEY (`sample_id`) REFERENCES `samples` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_step_entries_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_step_entries_steps_idx` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -655,4 +660,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-07 15:18:11
+-- Dump completed on 2014-02-12 15:50:59

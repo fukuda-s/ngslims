@@ -32,6 +32,24 @@ class Protocols extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $min_multiplex_number;
+
+    /**
+     *
+     * @var integer
+     */
+    public $max_multiplex_number;
+
+    /**
+     *
+     * @var integer
+     */
+    public $protocol_id;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -56,6 +74,9 @@ class Protocols extends \Phalcon\Mvc\Model
             'name' => 'name',
             'description' => 'description',
             'step_id' => 'step_id',
+            'protocol_id' => 'protocol_id',
+            'min_multiplex_number' => 'min_multiplex_number',
+            'max_multiplex_number' => 'max_multiplex_number',
             'created_at' => 'created_at',
             'active' => 'active'
         );
