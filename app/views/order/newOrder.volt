@@ -457,6 +457,10 @@ $(document).ready(function () {
 
           //Change pi_user_name on project_modal
           $("#modal_project_pi_user_name").text(pi_user_name_selected);
+          $('#pi_user_id').on('change', function() {
+            var pi_user_name_selected = $('option:selected', this).text();
+            $("#modal_project_pi_user_name").text(pi_user_name_selected);
+          });
 
           //Set selected pi_user to session values.
           setOrderSessionVal('pi_user', pi_user_id_selected, pi_user_name_selected);
