@@ -13,6 +13,12 @@ class StepPhases extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var string
+     */
+    public $description;
+
+    /**
+     *
      * @var integer
      */
     public $sort_order;
@@ -34,6 +40,7 @@ class StepPhases extends \Phalcon\Mvc\Model
     {
         return array(
             'step_phase_code' => 'step_phase_code',
+            'description' => 'description',
             'sort_order' => 'sort_order',
             'active' => 'active'
         );
