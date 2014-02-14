@@ -28,7 +28,13 @@ class Users extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $name;
+    public $firstname;
+
+    /**
+     *
+     * @var string
+     */
+    public $lastname;
 
     /**
      *
@@ -47,6 +53,20 @@ class Users extends \Phalcon\Mvc\Model
      * @var string
      */
     public $active;
+
+    protected $name;
+
+    public function getName() {
+        if ( $this->firstname && $this->lastname ) {
+            return $this->lastname . ', ' . $this->firstname;
+        }
+        elseif ( $this->firstname ) {
+            return $this->firstname;
+        }
+        elseif ( $this->lastname ) {
+            return $this->lastname;
+        }
+    }
 
     const ACTIVE = 'Y';
 
@@ -82,6 +102,8 @@ class Users extends \Phalcon\Mvc\Model
             'username' => 'username',
             'password' => 'password',
             'name' => 'name',
+            'firstname' => 'firstname',
+            'lastname' => 'lastname',
             'email' => 'email',
             'created_at' => 'created_at',
             'active' => 'active'

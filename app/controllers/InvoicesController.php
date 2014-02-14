@@ -35,16 +35,20 @@ class InvoicesController extends ControllerBase
         $request = $this->request;
 
         if (!$request->isPost()) {
-            Tag::setDefault('name', $user->name);
+            Tag::setDefault('firstname', $user->firstname);
+            Tag::setDefault('lastname', $user->lastname);
             Tag::setDefault('email', $user->email);
         } else {
 
-            $name = $request->getPost('name', 'string');
+            $firstname = $request->getPost('firstname', 'string');
+            $lastname = $request->getPost('lastname', 'string');
             $email = $request->getPost('email', 'email');
 
-            $name = strip_tags($name);
+            $firstname = strip_tags($firstname);
+            $lastname = strip_tags($lastname);
 
-            $user->name = $name;
+            $user->firstname = $firstname;
+            $user->lastname = $lastname;
             $user->email = $email;
             if ($user->save() == false) {
                 foreach ($user->getMessages() as $message) {

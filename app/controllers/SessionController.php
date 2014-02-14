@@ -24,7 +24,8 @@ class SessionController extends ControllerBase
         $request = $this->request;
         if ($request->isPost()) {
 
-            $name = $request->getPost('name', array('string', 'striptags'));
+            $firstname = $request->getPost('firstname', array('string', 'striptags'));
+            $lastname = $request->getPost('lastname', array('string', 'striptags'));
             $username = $request->getPost('username', 'alphanum');
             $email = $request->getPost('email', 'email');
             $password = $request->getPost('password');
@@ -39,7 +40,8 @@ class SessionController extends ControllerBase
             $user->username = $username;
             //$user->password = sha1($password);
             $user->password = $this->security->hash($password);
-            $user->name = $name;
+            $user->firstname = $firstname;
+            $user->lastname = $lastname;
             $user->email = $email;
             $user->created_at = new Phalcon\Db\RawValue('now()');
             $user->active = 'Y';
@@ -65,7 +67,8 @@ class SessionController extends ControllerBase
     {
         $this->session->set('auth', array(
             'id' => $user->id,
-            'name' => $user->name
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname
         ));
     }
 
@@ -84,7 +87,7 @@ class SessionController extends ControllerBase
             if ($user != false) {
                 if ($this->security->checkHash($password, $user->password)) {
                     $this->_registerSession($user);
-                    $this->flash->success('Welcome ' . $user->name);
+                    $this->flash->success('Welcome ' . $user->firstname . ' ' . $user->lastname);
                     return $this->forward('index');
                 }
             }
@@ -94,7 +97,7 @@ class SessionController extends ControllerBase
             if ($user != false) {
                 if ($this->security->checkHash($password, $user->password)) {
                     $this->_registerSession($user);
-                    $this->flash->success('Welcome ' . $user->name);
+                    $this->flash->success('Welcome ' . $user->firstname . ' ' . $user->lastname);
                     return $this->forward('index');
                 }
             }
