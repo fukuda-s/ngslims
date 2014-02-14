@@ -92,7 +92,9 @@ class OrderController extends ControllerBase
                 $phql = "
                     SELECT
                       u.id,
-                      u.name
+                      u.firstname,
+                      u.lastname,
+                      CONCAT(u.lastname, ', ', u.firstname) AS name
                     FROM
                       Users u, LabUsers lu
                     WHERE
@@ -105,7 +107,6 @@ class OrderController extends ControllerBase
                 $users = $this->modelsManager->executeQuery($phql, array(
                     'lab_id' => $lab_id
                 ));
-
 
                 //Set default value from session value
                 if ($this->session->has('pi_user')) {

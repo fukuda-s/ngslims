@@ -1,5 +1,5 @@
 {{ content() }}
-<div class="col-md-9">
+<div class="col-sm-9">
   {{ flashSession.output() }}
   <div id="flash"></div>
   <div class="panel panel-default">
@@ -155,7 +155,7 @@
     </div>
   </div>
 </div>
-<div class="col-md-3" id="new_order_summary">
+<div class="col-sm-3" id="new_order_summary">
   <div class="panel panel-default" data-offset-top="50" data-spy="affix">
     <div class="panel-heading">Summary</div>
     <ul class="list-group">
@@ -458,8 +458,12 @@ $(document).ready(function () {
           //Change pi_user_name on project_modal
           $("#modal_project_pi_user_name").text(pi_user_name_selected);
           $('#pi_user_id').on('change', function() {
+            var pi_user_id_selected = $('option:selected', this).val();
             var pi_user_name_selected = $('option:selected', this).text();
             $("#modal_project_pi_user_name").text(pi_user_name_selected);
+            getSelectList('project', pi_user_id_selected);
+            setOrderSessionVal('pi_user', pi_user_id_selected, pi_user_name_selected);
+            setOrderSessionVal('project', '@', '');
           });
 
           //Set selected pi_user to session values.
