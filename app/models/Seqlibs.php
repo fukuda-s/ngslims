@@ -125,6 +125,8 @@ class Seqlibs extends \Phalcon\Mvc\Model
         ));
         $this->hasManyToMany("id", "SeqtemplateAssocs", "seqlib_id", "seqtemplate_id", "Seqtemplates", "id");
 
+        $this->hasMany('id', 'StepEntries', 'seqlib_id');
+
         $this->addBehavior(new Timestampable(
             array(
                 'beforeValidationOnCreate' => array(
