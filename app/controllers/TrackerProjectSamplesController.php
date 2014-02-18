@@ -98,7 +98,7 @@ class TrackerProjectSamplesController extends ControllerBase
         ));
     }
 
-    public function editSamplesAction($project_id)
+    public function editSamplesAction($type, $step_id, $project_id)
     {
         $project_id = $this->filter->sanitize($project_id, array(
             "int"
@@ -107,7 +107,12 @@ class TrackerProjectSamplesController extends ControllerBase
          * Get Project table
          */
         $this->view->setVar('project', Projects::findFirstById($project_id));
-        // $this->flash->success("TEST");
+        $this->view->setVar('type', $type);
+        if ( $type == 'SHOW' && $step_id == 0 ){
+            $this->view->setVar('step', (object)array('id' => 0));
+        } else {
+            $this->view->setVar('step', Steps::findFirstById($step_id));
+        }
     }
 
     public function saveSamplesAction()
@@ -132,7 +137,7 @@ class TrackerProjectSamplesController extends ControllerBase
                         // Get sample_id from $data
                         $sample_id = $data[$rowNumToChange]["id"];
 
-                        $samples = Samples::findFirst("id = $sample_id");
+                        $samples = Samples::findFirstById($sample_id);
                         $samples->$colNameToChange = $valueToChange;
                         if (!$samples->save()) {
                             foreach ($samples->getMessages() as $message) {
@@ -148,13 +153,18 @@ class TrackerProjectSamplesController extends ControllerBase
         }
     }
 
-    public function editSeqlibsAction($project_id)
+    public function editSeqlibsAction($type, $step_id, $project_id)
     {
         $project_id = $this->filter->sanitize($project_id, array(
             "int"
         ));
         $this->view->setVar('project', Projects::findFirstById($project_id));
-        // $this->flash->success("TEST");
+        $this->view->setVar('type', $type);
+        if ( $type == 'SHOW' && $step_id == 0 ){
+            $this->view->setVar('step', (object)array('id' => 0));
+        } else {
+            $this->view->setVar('step', Steps::findFirstById($step_id));
+        }
     }
 
     public function saveSeqlibsAction()
@@ -170,16 +180,27 @@ class TrackerProjectSamplesController extends ControllerBase
                     $changes = $request->getPost('changes');
                     $data = $request->getPost('data');
 
+
                     foreach ($changes as $key => $value) {
                         $rowNumToChange = $value[0];
                         $colNameToChange = $value[1];
-                        $valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
-                        $sample_id = $data[$rowNumToChange]["id"];
+                        $valueToChange = $value[3];
+                        $seqlib_id = $data[$rowNumToChange]["id"];
 
-                        $samples = Samples::findFirst("id = $sample_id");
-                        $samples->$colNameToChange = $valueToChange;
-                        if (!$samples->save()) {
-                            foreach ($samples->getMessages() as $message) {
+                        $seqlibs = Seqlibs::findFirstById($seqlib_id);
+                        if ( $colNameToChange === 'protocol_id') {
+                            $protocol = Protocols::findFirst(array(
+                                "name = :name:",
+                                'bind' => array(
+                                    'name' => $valueToChange
+                                )
+                            ));
+                            $seqlibs->protocol_id = $protocol->id;
+                        } else {
+                            $seqlibs->$colNameToChange = $valueToChange;
+                        }
+                        if (!$seqlibs->save()) {
+                            foreach ($seqlibs->getMessages() as $message) {
                                 $this->flash->error((string)$message);
                             }
                             return;
@@ -192,13 +213,18 @@ class TrackerProjectSamplesController extends ControllerBase
         }
     }
 
-    public function editSeqlanesAction($project_id)
+    public function editSeqlanesAction($type, $step_id, $project_id)
     {
         $project_id = $this->filter->sanitize($project_id, array(
             "int"
         ));
         $this->view->setVar('project', Projects::findFirstById($project_id));
-        // $this->flash->success("TEST");
+        $this->view->setVar('type', $type);
+        if ( $type == 'SHOW' && $step_id == 0 ){
+            $this->view->setVar('step', (object)array('id' => 0));
+        } else {
+            $this->view->setVar('step', Steps::findFirstById($step_id));
+        }
     }
 
     public function saveSeqlanesAction()

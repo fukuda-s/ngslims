@@ -1,14 +1,14 @@
 <?php
 
-class SampleTypesController extends ControllerBase
+class ProtocolsController extends ControllerBase
 {
 
     public function indexAction()
     {
-        echo "This is index of SampleTypesController";
+        echo "This is index of ProtocolsController";
     }
 
-    public function loadjsonAction()
+    public function loadjsonAction($step_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -18,11 +18,13 @@ class SampleTypesController extends ControllerBase
             if ($request->isAjax() == true) {
                 // echo "Request was made using POST and AJAX";
 
-                $sampletypes = SampleTypes::find(array(
-                    "active = 'Y'",
-                    "order" => "sort_order IS NULL ASC, sort_order ASC"
+                $protocols = Protocols::find(array(
+                    "step_id = :step_id: AND active = 'Y'",
+                    'bind' => array(
+                        'step_id' => $step_id
+                    )
                 ));
-                echo json_encode($sampletypes->toArray());
+                echo json_encode($protocols->toArray());
             }
         }
     }

@@ -83,8 +83,8 @@ class Security extends Plugin
                 'tracker' => array(
                     'index',
                     'project',
-                    'qcExperiment',
-                    'seqlibExperiment',
+                    'experiments',
+                    'experimentDetails',
                     'sequence',
                     'protocol'
                 ),
@@ -109,6 +109,9 @@ class Security extends Plugin
                     'loadjson'
                 ),
                 'oligobarcodes' => array(
+                    'loadjson'
+                ),
+                'protocols' => array(
                     'loadjson'
                 ),
                 'samples' => array(

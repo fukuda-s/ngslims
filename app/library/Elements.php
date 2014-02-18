@@ -87,24 +87,34 @@ class Elements extends Phalcon\Mvc\User\Component
     private $_trackerSideMenu = array(
         'Project Overview' => array(
             'controller' => 'tracker',
-            'action' => 'project'
+            'action' => 'project',
+            'param' => ''
         ),
         'QC Experiment View' => array(
             'controller' => 'tracker',
-            'action' => 'qcExperiment'
+            'action' => 'experiments',
+            'param' => 'QC'
+        ),
+        'SeqLib Experiment View' => array(
+            'controller' => 'tracker',
+            'action' => 'experiments',
+            'param' => 'PREP'
         ),
         'Indexing and Multiplexing View' => array(
             'controller' => 'tracker',
-            'action' => 'seqlibExperiment'
+            'action' => 'experiments',
+            'param' => 'MULTIPLEX'
         ),
         'Sequencing View' => array(
             'controller' => 'tracker',
-            'action' => 'sequence'
+            'action' => 'sequence',
+            'param' => ''
         ),
         'hr',
         'Protocol Setting' => array(
             'controller' => 'tracker',
-            'action' => 'protocol'
+            'action' => 'protocol',
+            'param' => ''
         )
     );
 
@@ -167,31 +177,43 @@ class Elements extends Phalcon\Mvc\User\Component
     {
         $controllerName = $this->view->getControllerName();
         $actionName = $this->view->getActionName();
+        $paramName = '';
+        if ($this->view->getParams()) {
+            $paramName = $this->view->getParams()[0];
+        }
         echo '<ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="50" data-target="#">';
-        // echo '<ul class="nav nav-pills nav-stacked">';
         foreach ($this->_trackerSideMenu as $caption => $option) {
             if ($caption == 'hr') {
                 echo '<hr />';
                 continue;
-            } elseif ($option['controller'] == $controllerName && ($option['action'] == $actionName)) {
-                echo '<li class="active">';
+            } elseif ($paramName != '') {
+                if ($option['controller'] == $controllerName && ($option['action'] == $actionName) && $option['param'] == $paramName) {
+                    echo '<li class="active">';
+                } else {
+                    echo '<li>';
+                }
             } else {
-                echo '<li>';
+                if ($option['controller'] == $controllerName && ($option['action'] == $actionName)) {
+                    echo '<li class="active">';
+                } else {
+                    echo '<li>';
+                }
             }
-            echo Tag::linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
+
+            echo Tag::linkTo($option['controller'] . '/' . $option['action'] . '/' . $option['param'], $caption), '<li>';
         }
         echo '</ul>';
     }
 
     /*
-     * Build Tracker Project List Items
+     * Build Tracker Project List Items for Project Summary
      */
-    public function getTrackerProjectList($user_id)
+    public function getTrackerProjectSummaryProjectList($pi_user_id)
     {
         $projects = Projects::find(array(
-            "user_id=:user_id:",
+            "pi_user_id = :pi_user_id:",
             'bind' => array(
-                'user_id' => $user_id
+                'pi_user_id' => $pi_user_id
             )
         ));
         // $this->flash->success(var_dump($projects));
@@ -209,6 +231,60 @@ class Elements extends Phalcon\Mvc\User\Component
             echo '		</div>';
             echo '		<div class="col-md-1">';
             echo '			<span class="badge">' . Samples::count("project_id = $project->id") . '</span>';
+            echo '		</div>';
+            echo '		<div class="col-md-2">';
+            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Import Excel file"><i class="glyphicon glyphicon-import"></i></a>';
+            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Export Excel file"><i class="glyphicon glyphicon-export"></i></a>';
+            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Edit Project name"><i class="glyphicon glyphicon-pencil"></i></a>';
+            echo '		</div>';
+            echo '	</div>';
+            echo '</li>';
+        }
+    }
+
+    /*
+    * Build Tracker Project List Items for Experiment Detail
+    */
+    private $_stepPhaseCodeAction = array(
+        'QC' => array(
+            'edit' => 'editSamples'
+        ),
+        'PREP' => array(
+            'edit' => 'editSeqlibs'
+        )
+    );
+
+    public function getTrackerExperimentDetailProjectList($pi_user_id, $nucleotide_type, $step_phase_code, $step_id)
+    {
+        $projects = Projects::find(array(
+            "pi_user_id = :pi_user_id:",
+            'bind' => array(
+                'pi_user_id' => $pi_user_id
+            )
+        ));
+        // $this->flash->success(var_dump($projects));
+        foreach ($projects as $project) {
+            // $this->flash->success(var_dump($project));
+            $sample_count = Samples::query()
+                ->join('SampleTypes', 'st.id = Samples.sample_type_id', 'st')
+                ->where("project_id = $project->id AND st.nucleotide_type = '$nucleotide_type'")
+                ->execute()
+                ->count();
+            if (!$sample_count) {
+                continue;
+            }
+            echo '<li class="list-group-item">';
+            echo '	<div class="row">';
+            echo '		<div class="col-md-8">';
+            echo Tag::linkTo(array(
+                "trackerProjectSamples/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id,
+                $project->name
+            ));
+            echo '		</div>';
+            echo '		<div class="col-md-1">';
+            echo '		</div>';
+            echo '		<div class="col-md-1">';
+            echo '			<span class="badge">' . $sample_count . '</span>';
             echo '		</div>';
             echo '		<div class="col-md-2">';
             echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Import Excel file"><i class="glyphicon glyphicon-import"></i></a>';

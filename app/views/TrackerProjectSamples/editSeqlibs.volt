@@ -1,19 +1,12 @@
 <div class="row">
   <div class="col-md-12">
-    <ol class="breadcrumb">
-      <li>{{ link_to("tracker/project", "Project Overview") }}</li>
-      <li>{{ project.users.name }}</li>
-      <li class="active">{{ project.name }}</li>
-    </ol>
-    {{ content() }}
-    <div
-        align="left">{{ link_to("trackerProjectSamples/showTableSamples/" ~ project.id, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
+    {{ partial('partials/trackerProjectSamples-header') }}
     <hr>
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
-      <li>{{ link_to("trackerProjectSamples/editSamples/" ~ project.id, "Samples") }}</li>
-      <li class="active">{{ link_to("trackerProjectSamples/editSeqlibs/" ~ project.id, "SeqLibs") }}</li>
-      <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ project.id, "SeqLanes") }}</li>
+      <li>{{ link_to("trackerProjectSamples/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
+      <li class="active">{{ link_to("trackerProjectSamples/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
+      <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
       </button>
@@ -26,8 +19,10 @@
  * Construct Handsontable
  */
 // Make handsontable renderer and dropdown lists
-var sampleNameAr = new Array();
-var oligobarcodeAr = new Array();
+var sampleNameAr = [];
+var oligobarcodeAr = [];
+var protocolAr = [];
+var protocolDrop = [];
 
 $(document).ready(function () {
 
@@ -55,6 +50,27 @@ $(document).ready(function () {
         //alert(location.href);
         getSampleNameAr(data);
       });
+
+  function getProtocolAr(data) {
+    //console.log("stringified:"+JSON.stringify(data));
+    var parseAr = JSON.parse(JSON.stringify(data));
+    //alert(parseAr);
+    $.each(parseAr, function (key, value) {
+      //alert(value["id"]+" : "+value["name"]);
+      var protocol_id = value["id"];
+      var protocol_name = value["name"];
+      protocolAr[protocol_id] = protocol_name;
+      protocolDrop.push(value["name"]);
+    });
+  }
+
+  $.getJSON(
+      '{{ url("protocols/loadjson/") ~ step.id }}',
+      {},
+      function (data, status, xhr) {
+        getProtocolAr(data);
+      }
+  );
 
   function getOligobarcodeAr(data) {
     //console.log("stringified:"+JSON.stringify(data));
@@ -91,25 +107,33 @@ $(document).ready(function () {
     $(td).text(oligobarcodeAr[value]);
   };
 
+  var protocolRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+    Handsontable.TextCell.renderer.apply(this, arguments);
+    $(td).text(protocolAr[value]);
+  };
+
+
   // Construct handsontable
   var $container = $("#handsontable-editSeqlibs-body");
   var $console = $("#handsontable-console");
   var $toolbar = $("#handsontable-toolbar");
-  var autosaveNotification = new String();
-  var isDirtyAr = new Array();
+  var autosaveNotification = String();
+  var isDirtyAr = [];
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,
+    colWidths: [80, 50, 150, 80, 80, , , , 90, 90],
     columns: [
       { data: "name", title: "Seqlib Name", readOnly: true },
       { data: "sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer },
-      { data: "protocol_id", title: "Protocol" },
+      { data: "protocol_id", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer },
       { data: "oligobarcodeA_id", title: "OligoBarcode A", renderer: oligobarcodeRenderer },
       { data: "oligobarcodeB_id", title: "OligoBarcode B", renderer: oligobarcodeRenderer },
       { data: "concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
       { data: "stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
       { data: "fragmentsize", title: "Fragment Size", type: 'numeric' },
-      { data: "created_at", title: "Seqlib Date", type: 'date', dateFormat: 'yy-mm-dd' }
+      { data: "started_at", title: "Started Date", type: 'date', dateFormat: 'yy-mm-dd' },
+      { data: "finished_at", title: "Finished Date", type: 'date', dateFormat: 'yy-mm-dd' }
     ],
     minSpareCols: 0,
     minSpareRows: 0,
@@ -181,13 +205,13 @@ $(document).ready(function () {
       dataType: 'json',
       type: 'POST'
     })
-        .done(function (data, status, xhr) {
+        .done(function () {
           //alert(status.toString());
           $console.text('Save success').removeClass().addClass("alert alert-success");
           $toolbar.find("#save").addClass("disabled");
           isDirtyAr.length = 0;
         })
-        .fail(function (xhr, status, error) {
+        .fail(function (error) {
           //alert(status.toString());
           $console.text('Save error').removeClass().addClass("alert alert-danger");
         });

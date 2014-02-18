@@ -71,6 +71,7 @@ class Steps extends \Phalcon\Mvc\Model
     {
         $this->belongsTo('nucleotide_type', 'SampleTypes', 'nucleotide_type');
         $this->hasMany('platform_code', 'InstrumentTypes', 'platform_code');
+        $this->hasOne('step_phase_code', 'StepPhases', 'step_phase_code');
 
         $this->addBehavior(new SoftDelete(
             array(

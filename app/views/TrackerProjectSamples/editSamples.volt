@@ -1,19 +1,12 @@
 <div class="row">
   <div class="col-md-12">
-    <ol class="breadcrumb">
-      <li>{{ link_to("tracker/project", "Project Overview") }}</li>
-      <li>{{ project.users.name }}</li>
-      <li class="active">{{ project.name }}</li>
-    </ol>
-    {{ content() }}
-    <div
-        align="left">{{ link_to("trackerProjectSamples/showTableSamples/" ~ project.id, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
+    {{ partial('partials/trackerProjectSamples-header') }}
     <hr>
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
-      <li class="active">{{ link_to("trackerProjectSamples/editSamples/" ~ project.id, "Samples") }}</li>
-      <li>{{ link_to("trackerProjectSamples/editSeqlibs/" ~ project.id, "SeqLibs") }}</li>
-      <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ project.id, "SeqLanes") }}</li>
+      <li class="active">{{ link_to("trackerProjectSamples/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
+      <li>{{ link_to("trackerProjectSamples/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
+      <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
       </button>

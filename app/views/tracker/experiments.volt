@@ -40,17 +40,6 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="inputCodeStepPhase" class="col-sm-2 control-label">Step Phase</label>
-
-            <div class="col-sm-10">
-              <select class="form-control">
-                <option>QC</option>
-                <option>PREP</option>
-                <option>MULTIPLEX</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <button type="submit" class="btn btn-default">Submit</button>
             </div>
@@ -64,13 +53,22 @@
     <div class="panel-heading" id="StepList">
       <h4 class="panel-title">
         <div class="row">
-          <div class="col-md-8">{{ step.name }}</div>
+          <div class="col-md-8">{{ link_to("tracker/experimentDetails/" ~ step.id, step.name) }}</div>
+          {% if step.step_phase_code === 'QC' %}
           <div class="col-md-1">
-            <span class="badge">0</span>
+            <span class="badge">{{ step.sample_project_count }}</span>
           </div>
           <div class="col-md-1">
-            <span class="badge">0</span>
+            <span class="badge">{{ step.sample_count }}</span>
           </div>
+          {% elseif step.step_phase_code === 'PREP' %}
+            <div class="col-md-1">
+              <span class="badge">{{ step.seqlib_project_count }}</span>
+            </div>
+            <div class="col-md-1">
+              <span class="badge">{{ step.seqlib_count }}</span>
+            </div>
+          {% endif %}
           <div class="col-md-2">
             <a rel="tooltip" data-placement="right" data-original-title="Configure Experiment Step"> <i
                   class="glyphicon glyphicon-pencil pull-right"></i>

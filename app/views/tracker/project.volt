@@ -1,4 +1,4 @@
-{{ content() }} {% for user in users %} {% if loop.first %}
+{{ content() }} {% for user in pi_users %} {% if loop.first %}
   <div class="panel-group" id="projectOverview">
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -88,7 +88,7 @@
             </form>
           </div>
         </div>
-        {{ elements.getTrackerProjectList( user.id ) }}
+        {{ elements.getTrackerProjectSummaryProjectList( user.id ) }}
       </div>
     </ul>
   </div>

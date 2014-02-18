@@ -4,11 +4,11 @@
   <div class="col-md-12">
     <ol class="breadcrumb">
       <li>{{ link_to("tracker/project", "Project Overview") }}</li>
-      <li>{{ project.users.name }}</li>
+      <li>{{ project.users.getName() }}</li>
       <li class="active">{{ project.name }}</li>
     </ol>
     <div
-        align="right">{{ link_to("trackerProjectSamples/editSamples/" ~ project.id, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
+        align="right">{{ link_to("trackerProjectSamples/editSamples/SHOW/0/" ~ project.id, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
     <hr>
     <table class="table table-bordered table-hover table-condensed" id="sampleInfo_table">
       <thead>
