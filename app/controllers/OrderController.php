@@ -704,8 +704,9 @@ class OrderController extends ControllerBase
         $step_lib = Steps::FindFirst($this->session->get('step')->id);
 
         $samples = array();
-        $step_entries = array();
+        $qc_step_entries = array();
         $seqlibs = array();
+        $seqlib_step_entries = array();
 
         $i = 0;
         foreach ($sample_data_arr as $sample_data) {
@@ -728,27 +729,30 @@ class OrderController extends ControllerBase
 
             if ($qc_inside_val === "true") {
                 //Set QC step to StepEntries
-                $step_entries[0] = new StepEntries();
-                $step_entries[0]->step_id = $step_qc->id;
-                $step_entries[0]->step_phase_code = $step_qc->step_phase_code;
+                $qc_step_entries[0] = new StepEntries();
+                $qc_step_entries[0]->step_id = $step_qc->id;
+                $qc_step_entries[0]->step_phase_code = $step_qc->step_phase_code;
 
             }
             if ($this->session->get('seqlib_undecided')->name === "false") {
                 //Set PREP step to StepEntries
-                $step_entries[1] = new StepEntries();
-                $step_entries[1]->step_id = $step_lib->id;
-                $step_entries[1]->step_phase_code = $step_lib->step_phase_code;
-                $step_entries[1]->protocol_id = $this->session->get('protocol')->id;
+                $seqlib_step_entries[0] = new StepEntries();
+                $seqlib_step_entries[0]->step_id = $step_lib->id;
+                $seqlib_step_entries[0]->step_phase_code = $step_lib->step_phase_code;
+                $seqlib_step_entries[0]->protocol_id = $this->session->get('protocol')->id;
 
                 //Set data to Seqlibs
                 $seqlibs[0] = new Seqlibs();
                 $seqlibs[0]->name = $sample_data->name . '_' . date(Ymd);
                 $seqlibs[0]->project_id = $requests->project_id;
                 $seqlibs[0]->protocol_id = $this->session->get('protocol')->id;
+
+                // Tied (seqlib) StepEntries to Seqlibs
+                $seqlibs[0]->StepEntries = $seqlib_step_entries[0];
             }
 
             // Tied StepEntries and Seqlibs to Samples with has-many relation (They will be saved with Samples, and Samples will be saved with Requests)
-            $samples[$i]->StepEntries = $step_entries;
+            $samples[$i]->StepEntries = $qc_step_entries;
             $samples[$i]->Seqlibs = $seqlibs;
             $i++;
         }
@@ -764,11 +768,26 @@ class OrderController extends ControllerBase
             }
         } else {
             $this->flashSession->notice("Request " . $requests->id . " has been recorded.");
+            // Remove session which has been saved.
+            $this->session->remove('lab');
+            $this->session->remove('pi_user');
+            $this->session->remove('project');
+            $this->session->remove('sample_type');
+            $this->session->remove('organism');
+            $this->session->remove('qc_inside');
+            $this->session->remove('sample');
+            $this->session->remove('seqlib_undecided');
+            $this->session->remove('step');
+            $this->session->remove('protocol');
+            $this->session->remove('seqrun_undecided');
+            $this->session->remove('seq_runmode_type');
+            $this->session->remove('seq_runread_type');
+            $this->session->remove('seq_runcycle_type');
         }
 
         // Input into step_entries
 
-        // @TODO Remove session which saved.
+        // @TODO Remove session which has been saved.
         return $this->response->redirect("order/index");
     }
 
