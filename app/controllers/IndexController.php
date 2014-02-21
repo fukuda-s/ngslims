@@ -13,6 +13,7 @@ class IndexController extends ControllerBase
     {
         if (!$this->request->isPost()) {
             $this->flash->notice('ngsLIMS is under construction. Thanks');
+            $this->view->setVar('login', is_array($this->session->get('auth')));
         }
     }
 }
