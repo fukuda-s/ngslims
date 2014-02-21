@@ -90,6 +90,7 @@ class Elements extends Phalcon\Mvc\User\Component
             'action' => 'project',
             'param' => ''
         ),
+        'hr1' => array(),
         'QC Experiment View' => array(
             'controller' => 'tracker',
             'action' => 'experiments',
@@ -110,7 +111,7 @@ class Elements extends Phalcon\Mvc\User\Component
             'action' => 'sequence',
             'param' => ''
         ),
-        'hr',
+        'hr2' => array(),
         'Protocol Setting' => array(
             'controller' => 'tracker',
             'action' => 'protocol',
@@ -183,7 +184,7 @@ class Elements extends Phalcon\Mvc\User\Component
         }
         echo '<ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="50" data-target="#">';
         foreach ($this->_trackerSideMenu as $caption => $option) {
-            if ($caption == 'hr') {
+            if (preg_match("/^hr/", $caption)) {
                 echo '<hr />';
                 continue;
             } elseif ($paramName != '') {

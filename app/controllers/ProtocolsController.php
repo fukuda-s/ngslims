@@ -8,7 +8,7 @@ class ProtocolsController extends ControllerBase
         echo "This is index of ProtocolsController";
     }
 
-    public function loadjsonAction($step_id)
+    public function loadjsonAction($step_id = 0)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -18,12 +18,19 @@ class ProtocolsController extends ControllerBase
             if ($request->isAjax() == true) {
                 // echo "Request was made using POST and AJAX";
 
-                $protocols = Protocols::find(array(
-                    "step_id = :step_id: AND active = 'Y'",
-                    'bind' => array(
-                        'step_id' => $step_id
-                    )
-                ));
+                if ($step_id == 0) { //Case in type=SHOW
+                    $protocols = Protocols::find(array(
+                        "active = 'Y'",
+                    ));
+
+                } else {
+                    $protocols = Protocols::find(array(
+                        "step_id = :step_id: AND active = 'Y'",
+                        'bind' => array(
+                            'step_id' => $step_id
+                        )
+                    ));
+                }
                 echo json_encode($protocols->toArray());
             }
         }

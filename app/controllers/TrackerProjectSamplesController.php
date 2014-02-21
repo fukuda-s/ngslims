@@ -208,7 +208,7 @@ class TrackerProjectSamplesController extends ControllerBase
         ));
         $this->view->setVar('project', Projects::findFirstById($project_id));
         $this->view->setVar('type', $type);
-        if ($type == 'SHOW' && $step_id == 0) {
+        if ($type == 'SHOW') {
             $this->view->setVar('step', (object)array('id' => 0));
         } else {
             $this->view->setVar('step', Steps::findFirstById($step_id));
