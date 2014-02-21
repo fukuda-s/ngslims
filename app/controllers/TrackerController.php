@@ -85,36 +85,69 @@ class TrackerController extends ControllerBase
         //$this->view->setLayout('main');
         Tag::appendTitle(' | Experiments ');
 
+        $this->filter->sanitize($step_id, array("int"));
+
         $step = Steps::findFirst($step_id);
         $this->view->setVar('step', $step);
 
-        $this->filter->sanitize($step_id, array("int"));
-        $phql = "
-            SELECT
-                COUNT(DISTINCT s2.project_id) AS project_count,
-                COUNT(DISTINCT s2.id) AS sample_count,
-                COUNT(DISTINCT s.id) AS sample_count_nucleotide_type,
-                u.id,
-                u.firstname,
-                u.lastname,
-                CONCAT(u.lastname, ', ', u.firstname) AS name
-            FROM
-                Users u
-                    LEFT JOIN
-                Projects p ON p.pi_user_id = u.id
-                    JOIN
-                Samples s ON s.project_id = p.id
-                    LEFT JOIN
-                SampleTypes st ON st.id = s.sample_type_id
-                    JOIN
-                Steps stp ON stp.nucleotide_type = st.nucleotide_type AND st.nucleotide_type = :nucleotide_type:
-                    LEFT JOIN
-                StepEntries ste ON ste.sample_id = s.id AND ste.step_id = :step_id:
-                    LEFT JOIN
-                samples s2 ON s2.id = ste.sample_id
-            GROUP BY u.id
-            ORDER BY sample_count DESC, u.name ASC
-        ";
+        $step_phase_code = $step->step_phase_code;
+        if ( $step_phase_code === 'QC') {
+            $phql = "
+                SELECT
+                    COUNT(DISTINCT s2.project_id) AS project_count,
+                    COUNT(DISTINCT s2.id) AS sample_count,
+                    COUNT(DISTINCT s.id) AS sample_count_nucleotide_type,
+                    u.id,
+                    u.firstname,
+                    u.lastname,
+                    CONCAT(u.lastname, ', ', u.firstname) AS name
+                FROM
+                    Users u
+                        LEFT JOIN
+                    Projects p ON p.pi_user_id = u.id
+                        JOIN
+                    Samples s ON s.project_id = p.id
+                        LEFT JOIN
+                    SampleTypes st ON st.id = s.sample_type_id
+                        JOIN
+                    Steps stp ON stp.nucleotide_type = st.nucleotide_type AND st.nucleotide_type = :nucleotide_type:
+                        LEFT JOIN
+                    StepEntries ste ON ste.sample_id = s.id AND ste.step_id = :step_id:
+                        LEFT JOIN
+                    Samples s2 ON s2.id = ste.sample_id
+                GROUP BY u.id
+                ORDER BY sample_count DESC, u.lastname ASC
+            ";
+        } elseif ( $step_phase_code === 'PREP') {
+            $phql = "
+                SELECT
+                    COUNT(DISTINCT sl2.project_id) AS project_count,
+                    COUNT(DISTINCT sl2.id) AS sample_count,
+                    COUNT(DISTINCT s.id) AS sample_count_nucleotide_type,
+                    u.id,
+                    u.firstname,
+                    u.lastname,
+                    CONCAT(u.lastname, ', ', u.firstname) AS name
+                FROM
+                    Users u
+                        LEFT JOIN
+                    Projects p ON p.pi_user_id = u.id
+                        JOIN
+                    Seqlibs sl ON sl.project_id = p.id
+                        JOIN
+                    Samples s ON s.id = sl.sample_id
+                        JOIN
+                    SampleTypes st ON st.id = s.sample_type_id
+                        JOIN
+                    Steps stp ON stp.nucleotide_type = st.nucleotide_type AND st.nucleotide_type = :nucleotide_type:
+                        LEFT JOIN
+                    StepEntries ste ON ste.seqlib_id = sl.id AND ste.step_id = :step_id:
+                        LEFT JOIN
+                    Seqlibs sl2 ON sl2.id = ste.seqlib_id
+                GROUP BY u.id
+                ORDER BY sample_count DESC, u.lastname ASC
+            ";
+        }
         $pi_users = $this->modelsManager->executeQuery($phql, array(
             'step_id' => $step_id,
             'nucleotide_type' => $step->nucleotide_type

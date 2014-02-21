@@ -108,7 +108,7 @@ class TrackerProjectSamplesController extends ControllerBase
          */
         $this->view->setVar('project', Projects::findFirstById($project_id));
         $this->view->setVar('type', $type);
-        if ( $type == 'SHOW' && $step_id == 0 ){
+        if ($type == 'SHOW' && $step_id == 0) {
             $this->view->setVar('step', (object)array('id' => 0));
         } else {
             $this->view->setVar('step', Steps::findFirstById($step_id));
@@ -130,22 +130,70 @@ class TrackerProjectSamplesController extends ControllerBase
                     /*
                      * $changes has array [["row number from 0", "row name", "before value", "changed value"]] ex.)[["3","qual_od260230","","1"]]
                      */
+                    $i = 0;
                     foreach ($changes as $key => $value) {
                         $rowNumToChange = $value[0];
                         $colNameToChange = $value[1];
-                        $valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
+                        $valueChangeFrom = $value[2];
+                        $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
                         // Get sample_id from $data
                         $sample_id = $data[$rowNumToChange]["id"];
+                        $sample = Samples::findFirstById($sample_id);
 
-                        $samples = Samples::findFirstById($sample_id);
-                        $samples->$colNameToChange = $valueToChange;
-                        if (!$samples->save()) {
-                            foreach ($samples->getMessages() as $message) {
-                                $this->flash->error((string)$message);
+
+                        if ($colNameToChange == 'to_prep_protocol_name') {
+                            continue; //Skip for to_prep_protocol_name
+                        } elseif ($colNameToChange === 'to_prep' && $valueChangeTo === 'true') {
+                            //Set up protocol values
+                            $protocol_name = $data[$rowNumToChange]["to_prep_protocol_name"];
+                            $protocol = Protocols::findFirst(array(
+                                "name = :name:",
+                                'bind' => array(
+                                    'name' => $protocol_name
+                                )
+                            ));
+                            if (!$protocol) {
+                                $this->flashSession->error("Please select Protocol if you need to create new seqlibs.");
+                                return;
                             }
-                            return;
+
+                            //Set PREP step to StepEntries
+                            $seqlib_step_entries[0] = new StepEntries();
+                            $seqlib_step_entries[0]->step_id = $protocol->step_id;
+                            $seqlib_step_entries[0]->step_phase_code = $protocol->getSteps()->step_phase_code; //Should be 'PREP'
+                            $seqlib_step_entries[0]->protocol_id = $protocol->id;
+
+                            //Set data to Seqlibs
+                            $seqlib = new Seqlibs();
+                            $seqlib->name = $sample->name . '_' . date("Ymd");
+                            $seqlib->sample_id = $sample_id;
+                            $seqlib->project_id = $sample->project_id;
+                            $seqlib->protocol_id = $protocol->id;
+
+                            // Tied (seqlib) StepEntries to Seqlibs
+                            $seqlib->StepEntries = $seqlib_step_entries[0];
+
+                            if (!$seqlib->save()) {
+                                foreach ($seqlib->getMessages() as $message) {
+                                    $this->flashSession->error((string)$message);
+                                }
+                                return;
+                            } else {
+                                $this->flashSession->success($seqlib->name." is saved.");
+                            }
+
+
+                        } else {
+                            $sample->$colNameToChange = $valueChangeTo;
+                            if (!$sample->save()) {
+                                foreach ($sample->getMessages() as $message) {
+                                    $this->flashSession->error((string)$message);
+                                }
+                                return;
+                            }
                         }
                     }
+
                     // Something return is necessary for frontend jQuery Ajax to find success or fail.
                     echo json_encode($changes);
                 }
@@ -160,7 +208,7 @@ class TrackerProjectSamplesController extends ControllerBase
         ));
         $this->view->setVar('project', Projects::findFirstById($project_id));
         $this->view->setVar('type', $type);
-        if ( $type == 'SHOW' && $step_id == 0 ){
+        if ($type == 'SHOW' && $step_id == 0) {
             $this->view->setVar('step', (object)array('id' => 0));
         } else {
             $this->view->setVar('step', Steps::findFirstById($step_id));
@@ -184,21 +232,40 @@ class TrackerProjectSamplesController extends ControllerBase
                     foreach ($changes as $key => $value) {
                         $rowNumToChange = $value[0];
                         $colNameToChange = $value[1];
-                        $valueToChange = $value[3];
+                        $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
                         $seqlib_id = $data[$rowNumToChange]["id"];
 
                         $seqlibs = Seqlibs::findFirstById($seqlib_id);
-                        if ( $colNameToChange === 'protocol_id') {
+                        if ($colNameToChange === 'protocol_id') {
                             $protocol = Protocols::findFirst(array(
                                 "name = :name:",
                                 'bind' => array(
-                                    'name' => $valueToChange
+                                    'name' => $valueChangeTo
                                 )
                             ));
                             $seqlibs->protocol_id = $protocol->id;
+                        } elseif (preg_match("/^oligobarcode[AB]_id$/", $colNameToChange, $columnName)) {
+                            $oligobarcodeStr = preg_split("/ : /", $valueChangeTo);
+                            if (count($oligobarcodeStr) > 1) { //Case if oligobarcode_id selected null (then $valueToChange should be blank).
+                                $oligobarcode_name = $oligobarcodeStr[0];
+                                $oligobarcode_seq = $oligobarcodeStr[1];
+                                $oligobarcode = Oligobarcodes::findFirst(array(
+                                    "name = :name: AND barcode_seq = :barcode_seq:",
+                                    'bind' => array(
+                                        'name' => $oligobarcode_name,
+                                        'barcode_seq' => $oligobarcode_seq
+                                    )
+                                ));
+
+                                $seqlibs->$columnName[0] = $oligobarcode->id;
+                            } else {
+                                $seqlibs->$columnName[0] = null;
+                            }
                         } else {
-                            $seqlibs->$colNameToChange = $valueToChange;
+                            $seqlibs->$colNameToChange = $valueChangeTo;
                         }
+
+                        // @TODO Validation should be added. started_date <= finished_date
                         if (!$seqlibs->save()) {
                             foreach ($seqlibs->getMessages() as $message) {
                                 $this->flash->error((string)$message);
@@ -220,7 +287,7 @@ class TrackerProjectSamplesController extends ControllerBase
         ));
         $this->view->setVar('project', Projects::findFirstById($project_id));
         $this->view->setVar('type', $type);
-        if ( $type == 'SHOW' && $step_id == 0 ){
+        if ($type == 'SHOW' && $step_id == 0) {
             $this->view->setVar('step', (object)array('id' => 0));
         } else {
             $this->view->setVar('step', Steps::findFirstById($step_id));
@@ -243,7 +310,7 @@ class TrackerProjectSamplesController extends ControllerBase
                     foreach ($changes as $key => $value) {
                         $rowNumToChange = $value[0];
                         $colNameToChange = $value[1];
-                        $valueToChange = (intval($value[3]) === 0) ? NULL : $value[3];
+                        $valueToChange = (empty($value[3])) ? NULL : $value[3];
                         $sample_id = $data[$rowNumToChange]["id"];
 
                         $samples = Samples::findFirst("id = $sample_id");

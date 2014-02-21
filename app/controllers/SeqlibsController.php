@@ -9,7 +9,7 @@ class SeqlibsController extends ControllerBase
         echo "This is index of SeqlibsController";
     }
 
-    public function loadjsonAction($project_id)
+    public function loadjsonAction($step_id, $project_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -18,16 +18,30 @@ class SeqlibsController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 // echo "Request was made using POST and AJAX";
+                $step_id = $this->filter->sanitize($step_id, array(
+                    "int"
+                ));
                 $project_id = $this->filter->sanitize($project_id, array(
                     "int"
                 ));
 
-                $seqlibs = Seqlibs::find(array(
-                    "project_id = :project_id:",
-                    'bind' => array(
-                        'project_id' => $project_id
-                    )
-                ));
+                if ($step_id == 0) { //Case that requested from editSamples Action
+                    $seqlibs = Seqlibs::find(array(
+                        "project_id = :project_id:",
+                        'bind' => array(
+                            'project_id' => $project_id
+                        )
+                    ));
+                } else {
+                    $seqlibs = $this->modelsManager->createBuilder()
+                        ->from('Seqlibs')
+                        ->join('Protocols', 'p.id = Seqlibs.protocol_id', 'p')
+                        ->join('Steps', 'stp.id = p.step_id', 'stp')
+                        ->where('Seqlibs.project_id = :project_id:', array('project_id' => $project_id))
+                        ->andWhere('stp.id = :step_id:', array('step_id' => $step_id))
+                        ->getQuery()
+                        ->execute();
+                }
                 //echo json_encode($this->handsontableHelper->getValuesArr($samples->toArray()));
                 echo json_encode($seqlibs->toArray());
             }

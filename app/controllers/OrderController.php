@@ -743,7 +743,7 @@ class OrderController extends ControllerBase
 
                 //Set data to Seqlibs
                 $seqlibs[0] = new Seqlibs();
-                $seqlibs[0]->name = $sample_data->name . '_' . date(Ymd);
+                $seqlibs[0]->name = $sample_data->name . '_' . date("Ymd");
                 $seqlibs[0]->project_id = $requests->project_id;
                 $seqlibs[0]->protocol_id = $this->session->get('protocol')->id;
 

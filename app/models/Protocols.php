@@ -44,12 +44,6 @@ class Protocols extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var integer
-     */
-    public $protocol_id;
-
-    /**
-     *
      * @var string
      */
     public $created_at;
@@ -74,7 +68,6 @@ class Protocols extends \Phalcon\Mvc\Model
             'name' => 'name',
             'description' => 'description',
             'step_id' => 'step_id',
-            'protocol_id' => 'protocol_id',
             'min_multiplex_number' => 'min_multiplex_number',
             'max_multiplex_number' => 'max_multiplex_number',
             'created_at' => 'created_at',
@@ -84,6 +77,8 @@ class Protocols extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasOne('step_id', 'Steps', 'id');
+
         $this->addBehavior(new Timestampable(
             array(
                 'beforeValidationOnCreate' => array(

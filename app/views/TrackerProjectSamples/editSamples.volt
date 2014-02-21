@@ -2,11 +2,16 @@
   <div class="col-md-12">
     {{ partial('partials/trackerProjectSamples-header') }}
     <hr>
+    {{ flashSession.output() }}
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
       <li class="active">{{ link_to("trackerProjectSamples/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
-      <li>{{ link_to("trackerProjectSamples/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
-      <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
+      {% if type !== 'QC' %}
+        <li>{{ link_to("trackerProjectSamples/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
+        {% if type !== 'PREP' %}
+          <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
+        {% endif %}
+      {% endif %}
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
       </button>
@@ -19,8 +24,10 @@
  * Construct Handsontable
  */
 // Make handsontable renderer and dropdown lists
-var sampleTypeAr = new Array();
-var organismAr = new Array();
+var sampleTypeAr = [];
+var organismAr = [];
+var protocolAr = [];
+var protocolDrop = [];
 
 $(document).ready(function () {
 
@@ -64,9 +71,27 @@ $(document).ready(function () {
       }
   );
 
-});
+  function getProtocolAr(data) {
+    //console.log("stringified:"+JSON.stringify(data));
+    var parseAr = JSON.parse(JSON.stringify(data));
+    //alert(parseAr);
+    $.each(parseAr, function (key, value) {
+      //alert(value["id"]+" : "+value["name"]);
+      var protocol_id = value["id"];
+      var protocol_name = value["name"];
+      protocolAr[protocol_id] = protocol_name;
+      protocolDrop.push(value["name"]);
+    });
+  }
 
-$(document).ready(function () {
+  $.getJSON(
+      '{{ url("protocols/loadjson/") ~ step.id }}',
+      {},
+      function (data, status, xhr) {
+        getProtocolAr(data);
+      }
+  );
+
 
   var sampleTypeRenderer = function (instance, td, row, col, prop, value, cellProperties) {
     Handsontable.TextCell.renderer.apply(this, arguments);
@@ -78,6 +103,11 @@ $(document).ready(function () {
     Handsontable.TextCell.renderer.apply(this, arguments);
     //alert("renderer: "+sampleTypeAr[value]);
     $(td).text(organismAr[value]);
+  };
+
+  var protocolRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+    Handsontable.TextCell.renderer.apply(this, arguments);
+    $(td).text(protocolAr[value]);
   };
 
   // Construct handsontable
@@ -106,7 +136,9 @@ $(document).ready(function () {
       { data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000' },
       { data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
       { data: "qual_amount", data: 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
-      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' }
+      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' },
+      { data: "to_prep", title: "Create New SeqLib", type: 'checkbox' },
+      { data: "to_prep_protocol_name", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer }
     ],
     afterChange: function (changes, source) {
       if (source === 'loadData') {
@@ -123,7 +155,7 @@ $(document).ready(function () {
         });
       }
 
-      console.log(JSON.stringify(handsontable.getData()));
+      //console.log(JSON.stringify(handsontable.getData()));
 
       if ($('#handsontable-autosave').find('input').is(':checked')) {
         clearTimeout(autosaveNotification);
@@ -152,7 +184,7 @@ $(document).ready(function () {
 
   function loadData() {
     $.ajax({
-      url: '{{ url("samples/loadjson/") ~ project.id }}',
+      url: '{{ url("samples/loadjson/") ~ step.id ~ '/' ~ project.id }}',
       dataType: 'json',
       type: 'POST',
       data: {
@@ -161,6 +193,10 @@ $(document).ready(function () {
         .done(function (data) {
           //alert(data);
           //alert(location.href);
+          $.each(data, function(key, value) {
+            value["to_prep"] = "false";
+            value["to_prep_protocol_name"] = '';
+          });
           $container.handsontable("loadData", data);
         });
   }

@@ -6,7 +6,9 @@
     <ul class="nav nav-tabs">
       <li>{{ link_to("trackerProjectSamples/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
       <li class="active">{{ link_to("trackerProjectSamples/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
-      <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
+      {% if type !== 'PREP' %}
+        <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
+      {% endif %}
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
       </button>
@@ -20,7 +22,10 @@
  */
 // Make handsontable renderer and dropdown lists
 var sampleNameAr = [];
-var oligobarcodeAr = [];
+var oligobarcodeAAr = [];
+var oligobarcodeBAr = [];
+var oligobarcodeADrop = [];
+var oligobarcodeBDrop = [];
 var protocolAr = [];
 var protocolDrop = [];
 
@@ -39,7 +44,7 @@ $(document).ready(function () {
   }
 
   $.ajax({
-    url: '{{ url("samples/loadjson/") ~ project.id }}',
+    url: '{{ url("samples/loadjson/0/") ~ project.id }}',
     dataType: 'json',
     type: 'POST',
     data: {
@@ -76,35 +81,52 @@ $(document).ready(function () {
     //console.log("stringified:"+JSON.stringify(data));
     var parseAr = JSON.parse(JSON.stringify(data));
     //alert(parseAr);
+    oligobarcodeAAr.length = 0;
+    oligobarcodeADrop.length = 0;
+    oligobarcodeBAr.length = 0;
+    oligobarcodeBDrop.length = 0;
+
+    oligobarcodeADrop.push(''); //Add Blank for first line on select
+    oligobarcodeBDrop.push(''); //Add Blank for first line on select
     $.each(parseAr, function (key, value) {
       //alert(value["id"]+" : "+value["name"]);
       var oligobarcode_id = value["id"];
       var oligobarcode_name = value["name"];
       var oligobarcode_seq = value["barcode_seq"];
-      oligobarcodeAr[oligobarcode_id] = oligobarcode_name + " " + oligobarcode_seq;
+      var is_oligobarcodeB = value["is_oligobarcodeB"];
+      if (is_oligobarcodeB !== 'Y') {
+        oligobarcodeAAr[oligobarcode_id] = oligobarcode_name + " : " + oligobarcode_seq;
+        oligobarcodeADrop.push(oligobarcode_name + " : " + oligobarcode_seq);
+      } else {
+        oligobarcodeBAr[oligobarcode_id] = oligobarcode_name + " : " + oligobarcode_seq;
+        oligobarcodeBDrop.push(oligobarcode_name + " : " + oligobarcode_seq);
+      }
     });
   }
 
-  $.getJSON(
-      '{{ url("oligobarcodes/loadjson") }}',
-      {},
-      function (data, status, xhr) {
+  $.ajax({
+    url: '{{ url("oligobarcodes/loadjson/") }}',
+    dataType: "json",
+    type: "POST",
+    data: { protocol_id: 0 }
+  })
+      .done(function (data, status, xhr) {
         getOligobarcodeAr(data);
-      }
-  );
-
-});
-
-$(document).ready(function () {
+      });
 
   var sampleNameRenderer = function (instance, td, row, col, prop, value, cellProperties) {
     Handsontable.TextCell.renderer.apply(this, arguments);
     $(td).text(sampleNameAr[value]);
   };
 
-  var oligobarcodeRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+  var oligobarcodeARenderer = function (instance, td, row, col, prop, value, cellProperties) {
     Handsontable.TextCell.renderer.apply(this, arguments);
-    $(td).text(oligobarcodeAr[value]);
+    $(td).text(oligobarcodeAAr[value]);
+  };
+
+  var oligobarcodeBRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+    Handsontable.TextCell.renderer.apply(this, arguments);
+    $(td).text(oligobarcodeBAr[value]);
   };
 
   var protocolRenderer = function (instance, td, row, col, prop, value, cellProperties) {
@@ -124,11 +146,11 @@ $(document).ready(function () {
     rowHeaders: true,
     colWidths: [80, 50, 150, 80, 80, , , , 90, 90],
     columns: [
-      { data: "name", title: "Seqlib Name", readOnly: true },
+      { data: "name", title: "Seqlib Name" },
       { data: "sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer },
       { data: "protocol_id", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer },
-      { data: "oligobarcodeA_id", title: "OligoBarcode A", renderer: oligobarcodeRenderer },
-      { data: "oligobarcodeB_id", title: "OligoBarcode B", renderer: oligobarcodeRenderer },
+      { data: "oligobarcodeA_id", title: "OligoBarcode A", type: "dropdown", source: oligobarcodeADrop, renderer: oligobarcodeARenderer },
+      { data: "oligobarcodeB_id", title: "OligoBarcode B", type: "dropdown", source: oligobarcodeBDrop, renderer: oligobarcodeBRenderer },
       { data: "concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
       { data: "stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
       { data: "fragmentsize", title: "Fragment Size", type: 'numeric' },
@@ -176,13 +198,29 @@ $(document).ready(function () {
             });
       }
 
+    },
+    afterSelectionEnd: function (r, c, r2, c2) {
+      if (c >= 3 && c <= 4) {
+        var protocol_id = handsontable.getData(r, 2, r, 2).toString();
+        $.ajax({
+          url: '{{ url("oligobarcodes/loadjson/") }}',
+          dataType: "json",
+          type: "POST",
+          data: { protocol_id: protocol_id }
+        })
+            .done(function (data, status, xhr) {
+              getOligobarcodeAr(data);
+            });
+
+        console.log(protocol_id);
+      }
     }
   });
   var handsontable = $container.data('handsontable');
 
   function loadData() {
     $.ajax({
-      url: '{{ url("seqlibs/loadjson/") ~ project.id }}',
+      url: '{{ url("seqlibs/loadjson/") ~ step.id ~ '/' ~ project.id }}',
       dataType: 'json',
       type: 'POST',
       data: {
