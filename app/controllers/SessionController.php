@@ -78,6 +78,8 @@ class SessionController extends ControllerBase
     public function startAction()
     {
         if ($this->request->isPost()) {
+            $this->view->setVar('login', is_array($this->session->get('auth')));
+
             $email = $this->request->getPost('email', 'email');
 
             $password = $this->request->getPost('password');

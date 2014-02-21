@@ -3,10 +3,11 @@
 <div class="jumbotron">
   <h1>Welcome to ngsLIMS</h1>
 
-  <p>ngsLIMS is a revolutionary application to create invoices online for free.
-    Receive online payments from your clients and improve your cash flow</p>
+  <p>ngsLIMS is a revolutionary application to create laboratory information online.</p>
 
-  <p>{{ link_to('session/register', 'Try it for Free &raquo;', 'class': 'btn btn-primary btn-large btn-success') }}</p>
+  {% if login != 1 %}
+    <p>{{ link_to('session/register', 'Register Account &raquo;', 'class': 'btn btn-primary btn-large btn-success') }}</p>
+  {% endif %}
 </div>
 
 <div class="row">
