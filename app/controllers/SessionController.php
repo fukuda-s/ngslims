@@ -78,7 +78,6 @@ class SessionController extends ControllerBase
     public function startAction()
     {
         if ($this->request->isPost()) {
-            $this->view->setVar('login', is_array($this->session->get('auth')));
 
             $email = $this->request->getPost('email', 'email');
 
@@ -90,6 +89,8 @@ class SessionController extends ControllerBase
                 if ($this->security->checkHash($password, $user->password)) {
                     $this->_registerSession($user);
                     $this->flash->success('Welcome ' . $user->firstname . ' ' . $user->lastname);
+
+                    $this->view->setVar('login', is_array($this->session->get('auth')));
                     return $this->forward('index');
                 }
             }
@@ -100,6 +101,8 @@ class SessionController extends ControllerBase
                 if ($this->security->checkHash($password, $user->password)) {
                     $this->_registerSession($user);
                     $this->flash->success('Welcome ' . $user->firstname . ' ' . $user->lastname);
+
+                    $this->view->setVar('login', is_array($this->session->get('auth')));
                     return $this->forward('index');
                 }
             }
