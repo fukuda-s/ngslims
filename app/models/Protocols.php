@@ -46,6 +46,12 @@ class Protocols extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    public $next_step_phase_code;
+
+    /**
+     *
+     * @var string
+     */
     public $created_at;
 
     /**
@@ -70,6 +76,7 @@ class Protocols extends \Phalcon\Mvc\Model
             'step_id' => 'step_id',
             'min_multiplex_number' => 'min_multiplex_number',
             'max_multiplex_number' => 'max_multiplex_number',
+            'next_step_phase_code' => 'next_step_phase_code',
             'created_at' => 'created_at',
             'active' => 'active'
         );

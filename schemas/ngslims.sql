@@ -43,7 +43,7 @@ CREATE TABLE `flowcells` (
   CONSTRAINT `fk_flowcells_seq_runcycle_types` FOREIGN KEY (`seq_runcycle_type_id`) REFERENCES `seq_runcycle_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_flowcells_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_flowcells_seq_runread_types` FOREIGN KEY (`seq_runread_type_id`) REFERENCES `seq_runread_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,7 +141,7 @@ CREATE TABLE `oligobarcode_scheme_allows` (
   KEY `fk_oligobarcode_scheme_allows_protocols_idx` (`protocol_id`),
   CONSTRAINT `fk_oligobarcode_scheme_allows_oligobarcode_schemes` FOREIGN KEY (`oligobarcode_scheme_id`) REFERENCES `oligobarcode_schemes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_oligobarcode_scheme_allows_protocols` FOREIGN KEY (`protocol_id`) REFERENCES `protocols` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -233,7 +233,7 @@ CREATE TABLE `projects` (
   KEY `fk_projects_users_idx` (`user_id`),
   CONSTRAINT `fk_projects_labs` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_projects_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -250,13 +250,16 @@ CREATE TABLE `protocols` (
   `step_id` int(11) NOT NULL,
   `min_multiplex_number` int(11) NOT NULL,
   `max_multiplex_number` int(11) NOT NULL,
+  `next_step_phase_code` varchar(45) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   UNIQUE KEY `protocols_name_UNIQUE` (`name`),
   KEY `fk_protocols_steps_idx` (`step_id`),
-  CONSTRAINT `fk_protocols_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
+  KEY `fk_protocols_step_phases_idx` (`next_step_phase_code`),
+  CONSTRAINT `fk_protocols_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_protocols_step_phases` FOREIGN KEY (`next_step_phase_code`) REFERENCES `step_phases` (`step_phase_code`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -280,7 +283,7 @@ CREATE TABLE `requests` (
   CONSTRAINT `fk_requests_labs` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_requests_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_requests_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=269 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=282 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -372,7 +375,7 @@ CREATE TABLE `samples` (
   CONSTRAINT `fk_samples_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_requests` FOREIGN KEY (`request_id`) REFERENCES `requests` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_sample_types` FOREIGN KEY (`sample_type_id`) REFERENCES `sample_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3621 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3909 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -482,7 +485,7 @@ CREATE TABLE `seqlanes` (
   KEY `fk_seqlanes_seqtemplates_idx` (`seqtemplate_id`),
   CONSTRAINT `fk_seqlanes_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_seqlanes_seqtemplates` FOREIGN KEY (`seqtemplate_id`) REFERENCES `seqtemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1024 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2048 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -519,7 +522,7 @@ CREATE TABLE `seqlibs` (
   CONSTRAINT `fk_seqlibs_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_seqlibs_protocols` FOREIGN KEY (`protocol_id`) REFERENCES `protocols` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_seqlibs_samples` FOREIGN KEY (`sample_id`) REFERENCES `samples` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4105 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4096 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -592,7 +595,7 @@ CREATE TABLE `step_entries` (
   KEY `fk_step_entries_steps_idx` (`step_id`),
   CONSTRAINT `fk_step_entries_samples` FOREIGN KEY (`sample_id`) REFERENCES `samples` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_steps_idx` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -603,7 +606,7 @@ DROP TABLE IF EXISTS `step_phases`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `step_phases` (
-  `step_phase_code` varchar(10) NOT NULL,
+  `step_phase_code` varchar(20) NOT NULL,
   `description` varchar(100) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
@@ -621,7 +624,7 @@ DROP TABLE IF EXISTS `steps`;
 CREATE TABLE `steps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
-  `step_phase_code` varchar(10) NOT NULL,
+  `step_phase_code` varchar(20) NOT NULL,
   `platform_code` varchar(20) NOT NULL,
   `nucleotide_type` varchar(45) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
@@ -631,7 +634,7 @@ CREATE TABLE `steps` (
   KEY `fk_steps_platforms_idx` (`platform_code`),
   CONSTRAINT `fk_steps_platforms` FOREIGN KEY (`platform_code`) REFERENCES `platforms` (`platform_code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_steps_step_phases` FOREIGN KEY (`step_phase_code`) REFERENCES `step_phases` (`step_phase_code`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -651,7 +654,7 @@ CREATE TABLE `users` (
   `created_at` datetime NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -663,4 +666,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-18 12:06:41
+-- Dump completed on 2014-02-25 12:23:33
