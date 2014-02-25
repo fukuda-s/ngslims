@@ -20,19 +20,7 @@ class Flowcells extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
-    public $seq_runmode_type_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $seq_runread_type_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $seq_runcycle_type_id;
+    public $seq_run_type_scheme_id;
 
     /**
      *
@@ -78,9 +66,7 @@ class Flowcells extends \Phalcon\Mvc\Model
         return array(
             'id' => 'id',
             'name' => 'name',
-            'seq_runmode_type_id' => 'seq_runmode_type_id',
-            'seq_runread_type_id' => 'seq_runread_type_id',
-            'seq_runcycle_type_id' => 'seq_runcycle_type_id',
+            'seq_run_type_scheme_id' => 'seq_run_type_scheme_id',
             'run_number' => 'run_number',
             'instrument_id' => 'instrument_id',
             'side' => 'side',

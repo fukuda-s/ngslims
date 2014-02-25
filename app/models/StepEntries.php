@@ -25,6 +25,18 @@ class StepEntries extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $seqtemplate_id;
+
+    /**
+     *
+     * @var integer
+     */
+    public $flowcell_id;
+
+    /**
+     *
      * @var string
      */
     public $step_phase_code;
@@ -40,12 +52,6 @@ class StepEntries extends \Phalcon\Mvc\Model
      * @var integer
      */
     public $protocol_id;
-
-    /**
-     *
-     * @var integer
-     */
-    public $seq_run_type_scheme_id;
 
     /**
      *
@@ -74,10 +80,11 @@ class StepEntries extends \Phalcon\Mvc\Model
             'id' => 'id',
             'sample_id' => 'sample_id',
             'seqlib_id' => 'seqlib_id',
+            'seqtemplate_id' => 'seqtemplate_id',
+            'flowcell_id' => 'flowcell_id',
             'step_id' => 'step_id',
             'step_phase_code' => 'step_phase_code',
             'protocol_id' => 'protocol_id',
-            'seq_run_type_scheme_id' => 'seq_run_type_scheme_id',
             'created_at' => 'created_at',
             'status' => 'status',
             'note' => 'note'

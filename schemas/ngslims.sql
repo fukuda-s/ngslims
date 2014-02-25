@@ -25,9 +25,7 @@ DROP TABLE IF EXISTS `flowcells`;
 CREATE TABLE `flowcells` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `seq_runmode_type_id` int(11) NOT NULL,
-  `seq_runread_type_id` int(11) NOT NULL,
-  `seq_runcycle_type_id` int(11) NOT NULL,
+  `seq_run_type_scheme_id` int(11) NOT NULL,
   `run_number` int(11) NOT NULL,
   `instrument_id` int(11) NOT NULL,
   `side` char(1) NOT NULL,
@@ -36,13 +34,9 @@ CREATE TABLE `flowcells` (
   `notes` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_flowcells_instruments_idx` (`instrument_id`),
-  KEY `fk_flowcells_seq_runcycle_types_idx` (`seq_runcycle_type_id`),
-  KEY `fk_flowcells_seq_runmode_types_idx` (`seq_runmode_type_id`),
-  KEY `fk_flowcells_seq_runread_types_idx` (`seq_runread_type_id`),
-  CONSTRAINT `fk_flowcells_instruments` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_flowcells_seq_runcycle_types` FOREIGN KEY (`seq_runcycle_type_id`) REFERENCES `seq_runcycle_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_flowcells_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_flowcells_seq_runread_types` FOREIGN KEY (`seq_runread_type_id`) REFERENCES `seq_runread_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_flowcells_seq_run_type_schemes_idx` (`seq_run_type_scheme_id`),
+  CONSTRAINT `fk_flowcells_seq_run_type_schemes` FOREIGN KEY (`seq_run_type_scheme_id`) REFERENCES `seq_run_type_schemes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_flowcells_instruments` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -233,7 +227,7 @@ CREATE TABLE `projects` (
   KEY `fk_projects_users_idx` (`user_id`),
   CONSTRAINT `fk_projects_labs` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_projects_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -283,7 +277,7 @@ CREATE TABLE `requests` (
   CONSTRAINT `fk_requests_labs` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_requests_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_requests_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=282 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=283 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -375,7 +369,7 @@ CREATE TABLE `samples` (
   CONSTRAINT `fk_samples_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_requests` FOREIGN KEY (`request_id`) REFERENCES `requests` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_sample_types` FOREIGN KEY (`sample_type_id`) REFERENCES `sample_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3909 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3912 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -522,7 +516,7 @@ CREATE TABLE `seqlibs` (
   CONSTRAINT `fk_seqlibs_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_seqlibs_protocols` FOREIGN KEY (`protocol_id`) REFERENCES `protocols` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_seqlibs_samples` FOREIGN KEY (`sample_id`) REFERENCES `samples` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4096 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4099 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -583,19 +577,26 @@ CREATE TABLE `step_entries` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sample_id` int(11) DEFAULT NULL,
   `seqlib_id` int(11) DEFAULT NULL,
+  `seqtemplate_id` int(11) DEFAULT NULL,
+  `flowcell_id` int(11) DEFAULT NULL,
   `step_phase_code` varchar(10) NOT NULL,
   `step_id` int(11) NOT NULL,
   `protocol_id` int(11) DEFAULT NULL,
-  `seq_run_type_scheme_id` int(11) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `note` varchar(200) DEFAULT NULL,
   `status` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_step_entries_samples_idx` (`sample_id`),
+  KEY `fk_step_entries_seqlibs_idx` (`seqlib_id`),
+  KEY `fk_step_entries_seqtemplates_idx` (`seqtemplate_id`),
+  KEY `fk_step_entries_flowcells_idx` (`flowcell_id`),
   KEY `fk_step_entries_steps_idx` (`step_id`),
+  CONSTRAINT `fk_step_entries_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_samples` FOREIGN KEY (`sample_id`) REFERENCES `samples` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_step_entries_steps_idx` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT `fk_step_entries_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_step_entries_seqtemplates` FOREIGN KEY (`seqtemplate_id`) REFERENCES `seqtemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_step_entries_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -666,4 +667,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-25 12:23:33
+-- Dump completed on 2014-02-25 16:27:01
