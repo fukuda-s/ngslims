@@ -106,6 +106,11 @@ class Elements extends Phalcon\Mvc\User\Component
             'action' => 'experiments',
             'param' => 'MULTIPLEX'
         ),
+        'Dual Indexing and Multiplexing View' => array(
+            'controller' => 'tracker',
+            'action' => 'experiments',
+            'param' => 'DUALMULTIPLEX'
+        ),
         'Sequencing View' => array(
             'controller' => 'tracker',
             'action' => 'sequence',
@@ -264,36 +269,40 @@ class Elements extends Phalcon\Mvc\User\Component
             )
         ));
         // $this->flash->success(var_dump($projects));
-        foreach ($projects as $project) {
-            // $this->flash->success(var_dump($project));
-            $sample_count = Samples::query()
-                ->join('SampleTypes', 'st.id = Samples.sample_type_id', 'st')
-                ->where("project_id = $project->id AND st.nucleotide_type = '$nucleotide_type'")
-                ->execute()
-                ->count();
-            if (!$sample_count) {
-                continue;
+        if ($step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
+            echo '<p>test</p>';
+        } else {
+            foreach ($projects as $project) {
+                // $this->flash->success(var_dump($project));
+                $sample_count = Samples::query()
+                    ->join('SampleTypes', 'st.id = Samples.sample_type_id', 'st')
+                    ->where("project_id = $project->id AND st.nucleotide_type = '$nucleotide_type'")
+                    ->execute()
+                    ->count();
+                if (!$sample_count) {
+                    continue;
+                }
+                echo '<li class="list-group-item">';
+                echo '	<div class="row">';
+                echo '		<div class="col-md-8">';
+                echo Tag::linkTo(array(
+                    "trackerProjectSamples/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id,
+                    $project->name
+                ));
+                echo '		</div>';
+                echo '		<div class="col-md-1">';
+                echo '		</div>';
+                echo '		<div class="col-md-1">';
+                echo '			<span class="badge">' . $sample_count . '</span>';
+                echo '		</div>';
+                echo '		<div class="col-md-2">';
+                echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Import Excel file"><i class="glyphicon glyphicon-import"></i></a>';
+                echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Export Excel file"><i class="glyphicon glyphicon-export"></i></a>';
+                echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Edit Project name"><i class="glyphicon glyphicon-pencil"></i></a>';
+                echo '		</div>';
+                echo '	</div>';
+                echo '</li>';
             }
-            echo '<li class="list-group-item">';
-            echo '	<div class="row">';
-            echo '		<div class="col-md-8">';
-            echo Tag::linkTo(array(
-                "trackerProjectSamples/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id,
-                $project->name
-            ));
-            echo '		</div>';
-            echo '		<div class="col-md-1">';
-            echo '		</div>';
-            echo '		<div class="col-md-1">';
-            echo '			<span class="badge">' . $sample_count . '</span>';
-            echo '		</div>';
-            echo '		<div class="col-md-2">';
-            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Import Excel file"><i class="glyphicon glyphicon-import"></i></a>';
-            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Export Excel file"><i class="glyphicon glyphicon-export"></i></a>';
-            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Edit Project name"><i class="glyphicon glyphicon-pencil"></i></a>';
-            echo '		</div>';
-            echo '	</div>';
-            echo '</li>';
         }
     }
 }

@@ -8,6 +8,7 @@ class ProtocolsController extends ControllerBase
         echo "This is index of ProtocolsController";
     }
 
+    // @TODO $step_id default value should be checked at previous (in javascript) steps.
     public function loadjsonAction($step_id = 0)
     {
         $this->view->disable();

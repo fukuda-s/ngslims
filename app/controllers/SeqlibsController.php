@@ -26,21 +26,31 @@ class SeqlibsController extends ControllerBase
                 ));
 
                 if ($step_id == 0) { //Case that requested from editSamples Action
-                    $seqlibs = Seqlibs::find(array(
-                        "project_id = :project_id:",
-                        'bind' => array(
-                            'project_id' => $project_id
-                        )
+                    $phql = "
+                        SELECT sl.*,
+                               se.*
+                        FROM SeqLibs sl
+                        LEFT JOIN StepEntries se ON se.seqlib_id = sl.id
+                        WHERE sl.project_id = :project_id:
+                    ";
+                    $seqlibs = $this->modelsManager->executeQuery($phql, array(
+                        'project_id' => $project_id
                     ));
                 } else {
-                    $seqlibs = $this->modelsManager->createBuilder()
-                        ->from('Seqlibs')
-                        ->join('Protocols', 'p.id = Seqlibs.protocol_id', 'p')
-                        ->join('Steps', 'stp.id = p.step_id', 'stp')
-                        ->where('Seqlibs.project_id = :project_id:', array('project_id' => $project_id))
-                        ->andWhere('stp.id = :step_id:', array('step_id' => $step_id))
-                        ->getQuery()
-                        ->execute();
+                    $phql = "
+                        SELECT sl.*,
+                               se.*
+                        FROM SeqLibs sl
+                        JOIN Protocols p ON p.id = sl.protocol_id
+                        JOIN Steps stp ON stp.id = p.step_id
+                        LEFT JOIN StepEntries se ON se.seqlib_id = sl.id
+                        WHERE sl.project_id = :project_id:
+                        AND stp.id = :step_id:
+                    ";
+                    $seqlibs = $this->modelsManager->executeQuery($phql, array(
+                        'project_id' => $project_id,
+                        'step_id' => $step_id
+                    ));
                 }
                 //echo json_encode($this->handsontableHelper->getValuesArr($samples->toArray()));
                 echo json_encode($seqlibs->toArray());

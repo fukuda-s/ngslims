@@ -179,7 +179,7 @@ class TrackerProjectSamplesController extends ControllerBase
                                 }
                                 return;
                             } else {
-                                $this->flashSession->success($seqlib->name." is saved.");
+                                $this->flashSession->success($seqlib->name . " is saved.");
                             }
 
 
@@ -203,6 +203,9 @@ class TrackerProjectSamplesController extends ControllerBase
 
     public function editSeqlibsAction($type, $step_id, $project_id)
     {
+        $step_id = $this->filter->sanitize($step_id, array(
+            "int"
+        ));
         $project_id = $this->filter->sanitize($project_id, array(
             "int"
         ));
@@ -231,19 +234,43 @@ class TrackerProjectSamplesController extends ControllerBase
 
                     foreach ($changes as $key => $value) {
                         $rowNumToChange = $value[0];
-                        $colNameToChange = $value[1];
-                        $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
-                        $seqlib_id = $data[$rowNumToChange]["id"];
+                        $colStrToChange = preg_split('/\./', $value[1]);
+                        $tblNameToChange = $colStrToChange[0];
+                        $colNameToChange = $colStrToChange[1];
 
-                        $seqlibs = Seqlibs::findFirstById($seqlib_id);
+                        $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
+                        $seqlib_id = $data[$rowNumToChange]['sl']['id']; //'sl' is alias of Seqlibs on SeqlibsController->loadjson()
+
+                        $seqlib = Seqlibs::findFirstById($seqlib_id);
+
+                        //Set up StepEntries for this seqlib with PREP step
+                        $seqlib_step_entries = StepEntries::findFirst(array(
+                            "seqlib_id = :seqlib_id:",
+                            'bind' => array(
+                                'seqlib_id' => $seqlib_id
+                            )
+                        ));
+                        $seqlib_protocol = $seqlib->getProtocols();
+                        if(!$seqlib_step_entries){
+                            $seqlib_step_entries = new StepEntries();
+                            $seqlib_step_entries->seqlib_id = $seqlib->id;
+                            $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
+                            $seqlib_step_entries->step_phase_code = $seqlib_protocol->getSteps()->step_phase_code; //Should be 'PREP'
+                            $seqlib_step_entries->protocol_id = $seqlib->protocol_id;
+                        }
+
                         if ($colNameToChange === 'protocol_id') {
-                            $protocol = Protocols::findFirst(array(
+                            $seqlib_protocol = Protocols::findFirst(array(
                                 "name = :name:",
                                 'bind' => array(
                                     'name' => $valueChangeTo
                                 )
                             ));
-                            $seqlibs->protocol_id = $protocol->id;
+                            $seqlib->protocol_id = $seqlib_protocol->id;
+                            $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
+                            $seqlib_step_entries->step_phase_code = $seqlib_protocol->step_phase_code; //Should be 'PREP'
+                            $seqlib_step_entries->protocol_id = $seqlib_protocol->id;
+
                         } elseif (preg_match("/^oligobarcode[AB]_id$/", $colNameToChange, $columnName)) {
                             $oligobarcodeStr = preg_split("/ : /", $valueChangeTo);
                             if (count($oligobarcodeStr) > 1) { //Case if oligobarcode_id selected null (then $valueToChange should be blank).
@@ -257,17 +284,27 @@ class TrackerProjectSamplesController extends ControllerBase
                                     )
                                 ));
 
-                                $seqlibs->$columnName[0] = $oligobarcode->id;
+                                $seqlib->$columnName[0] = $oligobarcode->id;
                             } else {
-                                $seqlibs->$columnName[0] = null;
+                                $seqlib->$columnName[0] = null;
                             }
+                        } elseif( $tblNameToChange === 'se') { //'se' is alias of StepEntries on SeqlibsController->loadjson()
+                            $seqlib_step_entries->$colNameToChange = $valueChangeTo;
                         } else {
-                            $seqlibs->$colNameToChange = $valueChangeTo;
+                            $seqlib->$colNameToChange = $valueChangeTo;
+                        }
+
+                        // @TODO Is it possible to tie $seqlib_step_entries to $seqlib and save (update) at onetime?
+                        if (!$seqlib_step_entries->save()) {
+                            foreach ($seqlib->getMessages() as $message) {
+                                $this->flash->error((string)$message);
+                            }
+                            return;
                         }
 
                         // @TODO Validation should be added. started_date <= finished_date
-                        if (!$seqlibs->save()) {
-                            foreach ($seqlibs->getMessages() as $message) {
+                        if (!$seqlib->save()) {
+                            foreach ($seqlib->getMessages() as $message) {
                                 $this->flash->error((string)$message);
                             }
                             return;

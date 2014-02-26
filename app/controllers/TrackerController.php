@@ -96,7 +96,8 @@ class TrackerController extends ControllerBase
                 SELECT
                     COUNT(DISTINCT s2.project_id) AS project_count,
                     COUNT(DISTINCT s2.id) AS sample_count,
-                    COUNT(DISTINCT s.id) AS sample_count_nucleotide_type,
+                    COUNT(DISTINCT s.project_id) AS project_count_all,
+                    COUNT(DISTINCT s.id) AS sample_count_all,
                     u.id,
                     u.firstname,
                     u.lastname,
@@ -118,11 +119,16 @@ class TrackerController extends ControllerBase
                 GROUP BY u.id
                 ORDER BY sample_count DESC, u.lastname ASC
             ";
+            $pi_users = $this->modelsManager->executeQuery($phql, array(
+                'step_id' => $step_id,
+                'nucleotide_type' => $step->nucleotide_type
+            ));
         } elseif ( $step_phase_code === 'PREP') {
             $phql = "
                 SELECT
                     COUNT(DISTINCT sl2.project_id) AS project_count,
                     COUNT(DISTINCT sl2.id) AS sample_count,
+                    COUNT(DISTINCT s.project_id) AS project_count_all,
                     COUNT(DISTINCT s.id) AS sample_count_nucleotide_type,
                     u.id,
                     u.firstname,
@@ -147,11 +153,41 @@ class TrackerController extends ControllerBase
                 GROUP BY u.id
                 ORDER BY sample_count DESC, u.lastname ASC
             ";
+            $pi_users = $this->modelsManager->executeQuery($phql, array(
+                'step_id' => $step_id,
+                'nucleotide_type' => $step->nucleotide_type
+            ));
+        } elseif ( $step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
+            $phql = "
+                SELECT
+                    COUNT(DISTINCT CASE WHEN se.status = 'Completed' THEN sl2.project_id ELSE NULL END) AS project_count,
+                    COUNT(DISTINCT CASE WHEN se.status = 'Completed' THEN sl2.id ELSE NULL END) AS sample_count,
+                    COUNT(DISTINCT sl.project_id) AS project_count_all,
+                    COUNT(DISTINCT sl.id) AS sample_count_all,
+                    u.id,
+                    u.firstname,
+                    u.lastname,
+                    CONCAT(u.lastname, ', ', u.firstname) AS name
+                FROM
+                    Users u
+                        LEFT JOIN
+                    Projects p ON p.pi_user_id = u.id
+                        JOIN
+                    Seqlibs sl ON sl.project_id = p.id
+                        LEFT JOIN
+                    Protocols pt ON pt.id = sl.protocol_id
+                        AND pt.next_step_phase_code = 'MULTIPLEX'
+                        LEFT JOIN
+                    Seqlibs sl2 ON sl2.project_id = p.id
+                        LEFT JOIN
+                    Step_Entries se ON se.seqlib_id = sl2.id
+                GROUP BY u.id
+                ORDER BY sample_count DESC , u.lastname ASC
+            ";
+            $pi_users = $this->modelsManager->executeQuery($phql, array(
+                'next_step_phase_code' => $step_phase_code
+            ));
         }
-        $pi_users = $this->modelsManager->executeQuery($phql, array(
-            'step_id' => $step_id,
-            'nucleotide_type' => $step->nucleotide_type
-        ));
 
         // $this->flash->success(var_dump($pi_users));
         $this->view->setVar('pi_users', $pi_users);
