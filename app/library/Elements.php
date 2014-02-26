@@ -269,19 +269,45 @@ class Elements extends Phalcon\Mvc\User\Component
             )
         ));
         // $this->flash->success(var_dump($projects));
-        if ($step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
-            echo '<p>test</p>';
-        } else {
-            foreach ($projects as $project) {
-                // $this->flash->success(var_dump($project));
+        foreach ($projects as $project) {
+            // $this->flash->success(var_dump($project));
+            // @TODO Should be counted 'active' (in-completed on StepEntries).
+            if ($step_phase_code === 'MULTIPLEX' or $step_phase_code === 'DUALMULTIPLEX') {
+                $sample_count = Samples::query()
+                    ->where("project_id = $project->id")
+                    ->execute()
+                    ->count();
+            } else {
                 $sample_count = Samples::query()
                     ->join('SampleTypes', 'st.id = Samples.sample_type_id', 'st')
                     ->where("project_id = $project->id AND st.nucleotide_type = '$nucleotide_type'")
                     ->execute()
                     ->count();
-                if (!$sample_count) {
-                    continue;
-                }
+            }
+
+            if (!$sample_count) {
+                continue;
+            }
+            if ($step_phase_code === 'MULTIPLEX' or $step_phase_code === 'DUALMULTIPLEX') {
+                echo '  <div class="panel panel-warning">';
+                echo '      <div class="panel panel-heading" onclick="showTubeSeqLibs('.$step_id.', '.$project->id.')">';
+                echo '      	<div class="row">';
+                echo '	        	<div class="col-md-8">';
+                echo '                  <div>' . $project->name . '</div>';
+                echo '      		</div>';
+                echo '	        	<div class="col-md-1">';
+                echo '	        	</div>';
+                echo '	        	<div class="col-md-1">';
+                echo '		        	<span class="badge">' . $sample_count . '</span>';
+                echo '	        	</div>';
+                echo '      		<div class="col-md-2">';
+                echo '              </div>';
+                echo '      	</div>';
+                echo '     	</div>';
+                echo '      <div id="seqlib-tube-list-project-id-'.$project->id.'">';
+                echo '     	</div>';
+                echo ' 	</div>';
+            } else {
                 echo '<li class="list-group-item">';
                 echo '	<div class="row">';
                 echo '		<div class="col-md-8">';

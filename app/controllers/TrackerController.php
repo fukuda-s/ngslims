@@ -62,7 +62,7 @@ class TrackerController extends ControllerBase
                 Steps st
                     LEFT JOIN
                 StepEntries ste ON ste.step_id = st.id
-                      AND ste.status IS NULL
+                      AND ( ste.status != 'Completed' OR ste.status IS NULL )
                     LEFT JOIN
                 Samples s ON s.id = ste.sample_id
                     LEFT JOIN
@@ -91,7 +91,7 @@ class TrackerController extends ControllerBase
         $this->view->setVar('step', $step);
 
         $step_phase_code = $step->step_phase_code;
-        if ( $step_phase_code === 'QC') {
+        if ($step_phase_code === 'QC') {
             $phql = "
                 SELECT
                     COUNT(DISTINCT s2.project_id) AS project_count,
@@ -111,9 +111,12 @@ class TrackerController extends ControllerBase
                         LEFT JOIN
                     SampleTypes st ON st.id = s.sample_type_id
                         JOIN
-                    Steps stp ON stp.nucleotide_type = st.nucleotide_type AND st.nucleotide_type = :nucleotide_type:
+                    Steps stp ON stp.nucleotide_type = st.nucleotide_type
+                          AND st.nucleotide_type = :nucleotide_type:
                         LEFT JOIN
-                    StepEntries ste ON ste.sample_id = s.id AND ste.step_id = :step_id:
+                    StepEntries ste ON ste.sample_id = s.id
+                          AND ste.step_id = :step_id:
+                          AND ( ste.status != 'Completed' OR ste.status IS NULL )
                         LEFT JOIN
                     Samples s2 ON s2.id = ste.sample_id
                 GROUP BY u.id
@@ -123,13 +126,13 @@ class TrackerController extends ControllerBase
                 'step_id' => $step_id,
                 'nucleotide_type' => $step->nucleotide_type
             ));
-        } elseif ( $step_phase_code === 'PREP') {
+        } elseif ($step_phase_code === 'PREP') {
             $phql = "
                 SELECT
                     COUNT(DISTINCT sl2.project_id) AS project_count,
                     COUNT(DISTINCT sl2.id) AS sample_count,
                     COUNT(DISTINCT s.project_id) AS project_count_all,
-                    COUNT(DISTINCT s.id) AS sample_count_nucleotide_type,
+                    COUNT(DISTINCT s.id) AS sample_count_all,
                     u.id,
                     u.firstname,
                     u.lastname,
@@ -145,9 +148,12 @@ class TrackerController extends ControllerBase
                         JOIN
                     SampleTypes st ON st.id = s.sample_type_id
                         JOIN
-                    Steps stp ON stp.nucleotide_type = st.nucleotide_type AND st.nucleotide_type = :nucleotide_type:
+                    Steps stp ON stp.nucleotide_type = st.nucleotide_type
+                          AND st.nucleotide_type = :nucleotide_type:
                         LEFT JOIN
-                    StepEntries ste ON ste.seqlib_id = sl.id AND ste.step_id = :step_id:
+                    StepEntries ste ON ste.seqlib_id = sl.id
+                          AND ste.step_id = :step_id:
+                          AND ( ste.status != 'Completed' OR ste.status IS NULL )
                         LEFT JOIN
                     Seqlibs sl2 ON sl2.id = ste.seqlib_id
                 GROUP BY u.id
@@ -157,11 +163,11 @@ class TrackerController extends ControllerBase
                 'step_id' => $step_id,
                 'nucleotide_type' => $step->nucleotide_type
             ));
-        } elseif ( $step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
+        } elseif ($step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
             $phql = "
                 SELECT
-                    COUNT(DISTINCT CASE WHEN se.status = 'Completed' THEN sl2.project_id ELSE NULL END) AS project_count,
-                    COUNT(DISTINCT CASE WHEN se.status = 'Completed' THEN sl2.id ELSE NULL END) AS sample_count,
+                    COUNT(DISTINCT sl2.project_id) AS project_count,
+                    COUNT(DISTINCT sl2.id) AS sample_count,
                     COUNT(DISTINCT sl.project_id) AS project_count_all,
                     COUNT(DISTINCT sl.id) AS sample_count_all,
                     u.id,
@@ -174,15 +180,15 @@ class TrackerController extends ControllerBase
                     Projects p ON p.pi_user_id = u.id
                         JOIN
                     Seqlibs sl ON sl.project_id = p.id
-                        LEFT JOIN
+                        JOIN
                     Protocols pt ON pt.id = sl.protocol_id
-                        AND pt.next_step_phase_code = 'MULTIPLEX'
+                        AND pt.next_step_phase_code = :next_step_phase_code:
                         LEFT JOIN
-                    Seqlibs sl2 ON sl2.project_id = p.id
+                    StepEntries se ON se.seqlib_id = sl.id AND se.status = 'Completed'
                         LEFT JOIN
-                    Step_Entries se ON se.seqlib_id = sl2.id
+                    Seqlibs sl2 ON sl2.id = se.seqlib_id
                 GROUP BY u.id
-                ORDER BY sample_count DESC , u.lastname ASC
+                ORDER BY sample_count DESC, u.lastname ASC
             ";
             $pi_users = $this->modelsManager->executeQuery($phql, array(
                 'next_step_phase_code' => $step_phase_code
@@ -192,6 +198,7 @@ class TrackerController extends ControllerBase
         // $this->flash->success(var_dump($pi_users));
         $this->view->setVar('pi_users', $pi_users);
     }
+
 
     public function sequenceAction()
     {

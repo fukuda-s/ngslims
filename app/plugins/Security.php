@@ -93,6 +93,7 @@ class Security extends Plugin
                     'showTableSamples',
                     'showPanelSamples',
                     'showPanelSeqlibs',
+                    'showTubeSeqLibs',
                     'showPanelSeqlanes',
                     'loadSamples',
                     'editSamples',

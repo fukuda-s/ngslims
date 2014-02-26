@@ -9,6 +9,11 @@
     {{ step.name }}
   </li>
 </ol>
+{% if step.step_phase_code == "MULTIPLEX" or step.step_phase_code == "DUALMULTIPLEX" %}
+  <div
+      align="right">{{ link_to("trackerProjectSamples/editSamples/SHOW/0/", "Mixup Seqlibs >>", "class": "btn btn-primary") }}</div>
+  <hr>
+{% endif %}
 {% for user in pi_users %}
   {% if loop.first %}
     <div class="panel-group" id="projectOverview">
@@ -23,7 +28,8 @@
             <small>#sample</small>
           </div>
           <div class="col-md-2">
-            <button type="button" class="btn btn-default btn-xs" id="show-inactive"  data-toggle="collapse" data-target=".panel-default#inactives" style="min-width: 87px">Show
+            <button type="button" class="btn btn-default btn-xs" id="show-inactive" data-toggle="collapse"
+                    data-target=".panel-default#inactives" style="min-width: 87px">Show
               inactive
             </button>
           </div>
@@ -42,10 +48,12 @@
           <div class="">{{ user.name }}</div>
         </div>
         <div class="col-md-1">
-          <span class="badge">{{ user.project_count }}</span>
+          <span
+              class="badge">{% if user.project_count > 0 %}{{ user.project_count }}{% else %}{{ user.project_count_all }}{% endif %}</span>
         </div>
         <div class="col-md-1">
-          <span class="badge">{{ user.sample_count }}</span>
+          <span
+              class="badge">{% if user.project_count > 0 %}{{ user.sample_count }}{% else %}{{ user.sample_count_all }}{% endif %}</span>
         </div>
         <div class="col-md-2">
           <i class="indicator glyphicon glyphicon-chevron-right pull-right"></i>
@@ -64,3 +72,21 @@
   {% endif %}
 {% else %} No projects are recorded
 {% endfor %}
+<script>
+  function showTubeSeqLibs(step_id, project_id) {
+    target = '#seqlib-tube-list-project-id-' + project_id;
+    $.ajax({
+      url: '{{ url("trackerProjectSamples/showTubeSeqLibs") }}',
+      dataType: 'html',
+      type: 'POST',
+      data: {
+        step_id: step_id, project_id: project_id
+      }
+    })
+        .done(function (data) {
+          $(target).html(data);
+          console.log(target);
+          //console.log(data)
+        });
+  }
+</script>

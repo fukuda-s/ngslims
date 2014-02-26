@@ -365,4 +365,42 @@ class TrackerProjectSamplesController extends ControllerBase
             }
         }
     }
+
+    public function showTubeSeqLibsAction()
+    {
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                // echo "Request was made using POST and AJAX";
+                $step_id = $this->request->getPost("step_id", "int");
+                $project_id = $this->request->getPost("project_id", "int");
+
+                $phql = "
+                    SELECT
+                        sl.*,
+                        se.*
+                    FROM
+                        Seqlibs sl
+                            LEFT JOIN
+                        StepEntries se ON se.seqlib_id = sl.id
+                            LEFT JOIN
+	                    Protocols p ON p.id = se.protocol_id
+		                    LEFT JOIN
+	                    Steps st ON st.step_phase_code = p.next_step_phase_code AND st.id = :step_id:
+                    WHERE
+                        sl.project_id = :project_id:
+                ";
+                $seqlibs = $this->modelsManager->executeQuery($phql, array(
+                    'project_id' => $project_id,
+                    'step_id' => $step_id
+                ));
+
+                $this->view->setVar('seqlibs', $seqlibs);
+            }
+        }
+    }
 }
