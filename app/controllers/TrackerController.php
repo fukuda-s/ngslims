@@ -1,6 +1,7 @@
 <?php
 use Phalcon\Tag, Phalcon\Acl;
 
+
 class TrackerController extends ControllerBase
 {
 
@@ -199,6 +200,42 @@ class TrackerController extends ControllerBase
         $this->view->setVar('pi_users', $pi_users);
     }
 
+    public function multiplexAction()
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+        Tag::appendTitle(' | Multiplexing ');
+
+        $seqlib_ids = $this->session->get('selectedSeqlibs');
+        $seqlibs = $this->modelsManager->createBuilder()
+            ->columns(array('sl.*', 'se.*'))
+            ->addFrom('Seqlibs', 'sl')
+            ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
+            ->inWhere('sl.id', $seqlib_ids)
+            ->getQuery()
+            ->execute();
+
+        //$this->flash->success(var_dump($seqlibs));
+        $this->view->setVar('seqlibs', $seqlibs);
+    }
+
+    public function multiplexSetSessionAction()
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                if ($request->hasPost('selectedSeqlibs')) {
+                    $selectedSeqlibs = $request->getPost('selectedSeqlibs');
+                    //$this->session->remove('selectedSeqlibs');
+                    $this->session->set('selectedSeqlibs', $selectedSeqlibs);
+                    echo json_encode($selectedSeqlibs);
+                }
+            }
+        }
+
+    }
 
     public function sequenceAction()
     {

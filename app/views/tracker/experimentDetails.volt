@@ -10,8 +10,13 @@
   </li>
 </ol>
 {% if step.step_phase_code == "MULTIPLEX" or step.step_phase_code == "DUALMULTIPLEX" %}
-  <div
-      align="right">{{ link_to("trackerProjectSamples/editSamples/SHOW/0/", "Mixup Seqlibs >>", "class": "btn btn-primary") }}</div>
+  <div class="row">
+    <div class="col-md-10">
+    </div>
+    <div class="col-md-2">
+      <button id="mixup-seqlibs-button" type="button" class="btn btn-primary">Mixup Seqlibs &raquo;</button>
+    </div>
+  </div>
   <hr>
 {% endif %}
 {% for user in pi_users %}
@@ -74,7 +79,7 @@
 {% endfor %}
 <script>
   function showTubeSeqLibs(step_id, project_id) {
-    target = '#seqlib-tube-list-project-id-' + project_id;
+    target_id = '#seqlib-tube-list-project-id-' + project_id;
     $.ajax({
       url: '{{ url("trackerProjectSamples/showTubeSeqLibs") }}',
       dataType: 'html',
@@ -84,9 +89,55 @@
       }
     })
         .done(function (data) {
-          $(target).html(data);
-          console.log(target);
-          //console.log(data)
+          $(target_id).html(data);
+          console.log(target_id);
+
+          $(target_id).find("#sample-holder").selectable();
+
+          // put function to "Show inactive" button.
+          $(target_id)
+              .find('#show-inactive').click(function (e) {
+                // @TODO 'Show/Hide Inactive' button should be hidden if .tube-inactive(s) are not exist.
+                if ($(e.target).hasClass('active') == false) {
+                  $(target_id)
+                      .find('.tube-inactive')
+                      .show('slow');
+                  $(e.target)
+                      .addClass('active')
+                      .text('Hide Inactive');
+                } else {
+                  $(target_id)
+                      .find('.tube-inactive')
+                      .hide('slow');
+                  $(e.target)
+                      .removeClass('active')
+                      .text('Show Inactive');
+                }
+              });
         });
   }
+
+  $(document).ready(function () {
+    $("#mixup-seqlibs-button").click(function () {
+      var selectedSeqlibs = [];
+      console.log("Clicked mixup-seqlibs-button");
+      $(document).find(".ui-selected").each(function () {
+        var seqlib_id = $(this).attr("id").replace("seqlib-id-", "");
+        selectedSeqlibs.push(seqlib_id);
+      });
+      if (selectedSeqlibs.length > 0) {
+        $.ajax({
+          url: '{{ url("tracker/multiplexSetSession") }}',
+          dataType: 'json',
+          type: 'POST',
+          data: { selectedSeqlibs: selectedSeqlibs}
+        })
+            .done(function () {
+              window.location = "{{ url("tracker/multiplex/") }}"
+            });
+      }
+    })
+    ;
+  })
+  ;
 </script>

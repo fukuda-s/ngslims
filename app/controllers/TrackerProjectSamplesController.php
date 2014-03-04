@@ -1,6 +1,5 @@
 <?php
-use Phalcon\Tag;
-use Phalcon\Logger\Formatter\Json;
+use Phalcon\Tag, Phalcon\Acl;
 
 class TrackerProjectSamplesController extends ControllerBase
 {
@@ -231,7 +230,6 @@ class TrackerProjectSamplesController extends ControllerBase
                     $changes = $request->getPost('changes');
                     $data = $request->getPost('data');
 
-
                     foreach ($changes as $key => $value) {
                         $rowNumToChange = $value[0];
                         $colStrToChange = preg_split('/\./', $value[1]);
@@ -296,8 +294,9 @@ class TrackerProjectSamplesController extends ControllerBase
 
                         // @TODO Is it possible to tie $seqlib_step_entries to $seqlib and save (update) at onetime?
                         if (!$seqlib_step_entries->save()) {
-                            foreach ($seqlib->getMessages() as $message) {
-                                $this->flash->error((string)$message);
+                            foreach ($seqlib_step_entries->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
+                                echo "Error to save seqlib_step_entries: $message";
                             }
                             return;
                         }
@@ -305,7 +304,8 @@ class TrackerProjectSamplesController extends ControllerBase
                         // @TODO Validation should be added. started_date <= finished_date
                         if (!$seqlib->save()) {
                             foreach ($seqlib->getMessages() as $message) {
-                                $this->flash->error((string)$message);
+                                $this->flashSession->error((string)$message);
+                                echo "Error to save seqlib: $message";
                             }
                             return;
                         }

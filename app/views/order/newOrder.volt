@@ -213,6 +213,7 @@ $(document).ready(function () {
 
   /*
    * Function to set selected values to session.
+   * @TODO Should I use "ajaxSuccess" function?
    */
   function setOrderSessionVal(column, id, name) {
     $.ajax({

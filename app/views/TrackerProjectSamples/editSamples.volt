@@ -110,12 +110,38 @@ $(document).ready(function () {
     $(td).text(protocolAr[value]);
   };
 
+  //Cleaved edited row from whole data of handsontable.
+  function cleaveData(isDirtyAr) {
+    var data = handsontable.getData();
+    var cleavedData = [];
+    var cleaveCheck = [];
+    for (var i = 0; i < isDirtyAr.length; i++) {
+      var rowNumToChange = isDirtyAr[i][0];
+      if (cleaveCheck[i] != 1) {
+        cleavedData[rowNumToChange] = data[rowNumToChange];
+      }
+      cleaveCheck[i] = 1;
+    }
+    return cleavedData;
+  }
+
+
+  // Integrate 'changes' on handsontable, because editer can change same cell at several times.
+  function integrateIsDirtyAr(changes) {
+    var integratedChanges = [];
+    for (var i = 0; i < changes.length; i++) {
+      var rowNumToChange = changes[i][0];
+      integratedChanges[rowNumToChange] = changes[i]; //Over write isDirtyAr with current changes.
+    }
+    return integratedChanges;
+  }
+
   // Construct handsontable
   var $container = $("#handsontable-editSamples-body");
   var $console = $("#handsontable-console");
   var $toolbar = $("#handsontable-toolbar");
-  var autosaveNotification = new String();
-  var isDirtyAr = new Array();
+  var autosaveNotification = String();
+  var isDirtyAr = [];
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,
@@ -150,9 +176,7 @@ $(document).ready(function () {
         // alert("afterEdit");
         $toolbar.find("#save, #undo, #clear").removeClass("disabled");
         $console.text('Click "Save" to save data to server').removeClass().addClass("alert alert-info");
-        $.each(changes, function (key, value) {
-          isDirtyAr.push(value);
-        });
+        isDirtyAr = integrateIsDirtyAr(changes);
       }
 
       //console.log(JSON.stringify(handsontable.getData()));
@@ -163,7 +187,7 @@ $(document).ready(function () {
           url: '{{ url("trackerProjectSamples/saveSamples") }}',
           dataType: "json",
           type: "POST",
-          data: {data: handsontable.getData(), changes: changes} // returns "data" as all data and "changes" as changed data
+          data: {data: cleaveData(changes), changes: changes} // returns "data" as all data and "changes" as changed data
         })
             .done(function () {
               $console.text('Autosaved (' + changes.length + ' cell' + (changes.length > 1 ? 's' : '') + ')')
@@ -207,7 +231,7 @@ $(document).ready(function () {
     //alert("save! "+handsontable.getData());
     $.ajax({
       url: '{{ url("trackerProjectSamples/saveSamples") }}',
-      data: {data: handsontable.getData(), changes: isDirtyAr }, // returns all cells
+      data: {data: cleaveData(isDirtyAr), changes: isDirtyAr }, // returns all cells
       dataType: 'json',
       type: 'POST'
     })
