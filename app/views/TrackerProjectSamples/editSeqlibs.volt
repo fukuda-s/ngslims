@@ -136,28 +136,34 @@ $(document).ready(function () {
   };
 
   // Cleaved edited row from whole data of handsontable.
-  function cleaveData(isDirtyAr) {
+  function cleaveData(changes) {
     var data = handsontable.getData();
-    var cleavedData = [];
-    var cleaveCheck = [];
-    for (var i = 0; i < isDirtyAr.length; i++) {
-      var rowNumToChange = isDirtyAr[i][0];
-      if (cleaveCheck[i] != 1) {
-        cleavedData[rowNumToChange] = data[rowNumToChange];
+    var cleavedData = Object();
+    //for (var i = 0; i < changes.length; i++) {
+    $.each(changes, function (index, value) {
+      if (value) {
+        console.log('changes[' + index + '] = ' + value);
+        var rowNumToChange = value[0];
+        if (!cleavedData[rowNumToChange]) {
+          cleavedData[rowNumToChange] = data[rowNumToChange];
+        }
       }
-      cleaveCheck[i] = 1;
-    }
+    });
     return cleavedData;
   }
 
-  // Integrate 'changes' on handsontable, because editer can change same cell at several times.
+  // Integrate 'changes' on handsontable, because editor can change same cell at several times.
+  var isDirtyAr = Object();
+
   function integrateIsDirtyAr(changes) {
-    var integratedChanges = [];
-    for (var i = 0; i < changes.length; i++) {
-      var rowNumToChange = changes[i][0];
-      integratedChanges[rowNumToChange] = changes[i]; //Over write isDirtyAr with current changes.
-    }
-    return integratedChanges;
+    //for (var i = 0; i < changes.length; i++) {
+    $.each(changes, function (key, value) {
+      if (value) {
+        var rowNumToChange = value[0];
+        isDirtyAr[rowNumToChange] = value; //Over write isDirtyAr with current changes.
+      }
+    });
+    console.log(isDirtyAr);
   }
 
   // Construct handsontable
@@ -165,7 +171,6 @@ $(document).ready(function () {
   var $console = $("#handsontable-console");
   var $toolbar = $("#handsontable-toolbar");
   var autosaveNotification = String();
-  var isDirtyAr = [];
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,
@@ -198,7 +203,7 @@ $(document).ready(function () {
         // alert("afterEdit");
         $toolbar.find("#save, #undo, #clear").removeClass("disabled");
         $console.text('Click "Save" to save data to server').removeClass().addClass("alert alert-info");
-        isDirtyAr = integrateIsDirtyAr(changes);
+        integrateIsDirtyAr(changes);
       }
 
       if ($('#handsontable-autosave').find('input').is(':checked')) {
@@ -271,7 +276,7 @@ $(document).ready(function () {
           //alert(status.toString());
           $console.text('Save success').removeClass().addClass("alert alert-success");
           $toolbar.find("#save").addClass("disabled");
-          isDirtyAr.length = 0; //Clear isDirtyAr
+          isDirtyAr = Object(); //Clear isDirtyAr
         })
         .fail(function (error) {
           //alert(status.toString());
