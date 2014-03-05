@@ -140,14 +140,16 @@ $(document).ready(function () {
     var data = handsontable.getData();
     var cleavedData = Object();
     //for (var i = 0; i < changes.length; i++) {
-    $.each(changes, function (index, value) {
-      if (value) {
-        console.log('changes[' + index + '] = ' + value);
-        var rowNumToChange = value[0];
-        if (!cleavedData[rowNumToChange]) {
-          cleavedData[rowNumToChange] = data[rowNumToChange];
+    $.each(changes, function (rowIndex, rowValues) {
+      $.each(rowValues, function (colIndex, value) {
+        if (value) {
+          console.log('changes[' + colIndex + '] = ' + value);
+          var rowNumToChange = value[0];
+          if (!cleavedData[rowNumToChange]) {
+            cleavedData[rowNumToChange] = data[rowNumToChange];
+          }
         }
-      }
+      });
     });
     return cleavedData;
   }
@@ -160,7 +162,11 @@ $(document).ready(function () {
     $.each(changes, function (key, value) {
       if (value) {
         var rowNumToChange = value[0];
-        isDirtyAr[rowNumToChange] = value; //Over write isDirtyAr with current changes.
+        var columnToChange = value[1];
+        if (!isDirtyAr[rowNumToChange]) {
+          isDirtyAr[rowNumToChange] = Object();
+        }
+        isDirtyAr[rowNumToChange][columnToChange] = value; //Over write isDirtyAr with current changes.
       }
     });
     console.log(isDirtyAr);
@@ -269,7 +275,7 @@ $(document).ready(function () {
     $.ajax({
       url: '{{ url("trackerProjectSamples/saveSeqlibs") }}',
       data: {data: cleaveData(isDirtyAr), changes: isDirtyAr }, // returns all cells
-      dataType: 'json',
+      dataType: 'text',
       type: 'POST'
     })
         .done(function () {

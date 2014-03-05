@@ -69,12 +69,12 @@ class TrackerController extends ControllerBase
                     LEFT JOIN
                 Seqlibs sl ON sl.id = ste.seqlib_id
             WHERE
-                st.step_phase_code = :code_step_phase:
+                st.step_phase_code LIKE :code_step_phase:
                     AND st.active = 'Y'
             GROUP BY st.id
             ORDER BY st.sort_order IS NULL ASC , st.sort_order ASC";
         $steps = $this->modelsManager->executeQuery($phql, array(
-            'code_step_phase' => $code_step_phase
+            'code_step_phase' => '%' . $code_step_phase . '%'
         ));
 
         $this->view->setVar('steps', $steps);
@@ -200,10 +200,14 @@ class TrackerController extends ControllerBase
         $this->view->setVar('pi_users', $pi_users);
     }
 
-    public function multiplexAction()
+    public function multiplexAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Multiplexing ');
+
+        $step = Steps::findFirst($step_id);
+        $this->view->setVar('step', $step);
+        $step_phase_code = $step->step_phase_code;
 
         $seqlib_ids = $this->session->get('selectedSeqlibs');
         $seqlibs = $this->modelsManager->createBuilder()
@@ -216,6 +220,23 @@ class TrackerController extends ControllerBase
 
         //$this->flash->success(var_dump($seqlibs));
         $this->view->setVar('seqlibs', $seqlibs);
+
+        if ( $step_phase_code === 'MULTIPLEX') {
+            $oligobarcodes = $this->modelsManager->createBuilder()
+                ->columns(array('o.*', 'os.*'))
+                ->addFrom('Oligobarcodes', 'o')
+                ->leftJoin('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id AND os.active = "Y"', 'os')
+                ->leftJoin('OligobarcodeSchemeAllows', 'osa.oligobarcode_scheme_id = os.id', 'osa')
+                ->leftJoin('Seqlibs', 'sl.protocol_id = osa.protocol_id', 'sl')
+                ->inWhere('sl.id', $seqlib_ids)
+                ->andWhere('o.active = "Y"')
+                ->orderBy('os.id ASC, o.sort_order ASC')
+                ->groupBy('o.id')
+                ->getQuery()
+                ->execute();
+
+            $this->view->setVar('oligobarcodes', $oligobarcodes);
+        }
     }
 
     public function multiplexSetSessionAction()

@@ -123,7 +123,8 @@ class Seqlibs extends \Phalcon\Mvc\Model
         $this->belongsTo('oligobarcodeB_id', 'Oligobarcodes', 'id', array(
             'alias' => 'OligobarcodeB'
         ));
-        $this->belongsTo('id', 'StepEntries', 'seqlib_id');
+
+        $this->hasMany('id', 'StepEntries', 'seqlib_id');
 
         $this->hasManyToMany("id", "SeqtemplateAssocs", "seqlib_id", "seqtemplate_id", "Seqtemplates", "id");
 

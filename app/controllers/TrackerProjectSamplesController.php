@@ -130,71 +130,74 @@ class TrackerProjectSamplesController extends ControllerBase
                      * $changes has array [["row number from 0", "row name", "before value", "changed value"]] ex.)[["3","qual_od260230","","1"]]
                      */
                     $i = 0;
-                    foreach ($changes as $key => $value) {
-                        $rowNumToChange = $value[0];
-                        $colNameToChange = $value[1];
-                        $valueChangeFrom = $value[2];
-                        $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
-                        // Get sample_id from $data
-                        $sample_id = $data[$rowNumToChange]["id"];
-                        $sample = Samples::findFirstById($sample_id);
+                    foreach ($changes as $rowIndex => $rowValues) {
+                        foreach ($rowValues as $colIndex => $value) {
+                            $rowNumToChange = $value[0];
+                            $colNameToChange = $value[1];
+                            //$valueChangeFrom = $value[2];
+                            $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
+                            // Get sample_id from $data
+                            $sample_id = $data[$rowNumToChange]["id"];
+                            $sample = Samples::findFirstById($sample_id);
 
 
-                        if ($colNameToChange == 'to_prep_protocol_name') {
-                            continue; //Skip for to_prep_protocol_name
-                        } elseif ($colNameToChange === 'to_prep' && $valueChangeTo === 'true') {
-                            //Set up protocol values
-                            $protocol_name = $data[$rowNumToChange]["to_prep_protocol_name"];
-                            $protocol = Protocols::findFirst(array(
-                                "name = :name:",
-                                'bind' => array(
-                                    'name' => $protocol_name
-                                )
-                            ));
-                            if (!$protocol) {
-                                $this->flashSession->error("Please select Protocol if you need to create new seqlibs.");
-                                return;
-                            }
-
-                            //Set PREP step to StepEntries
-                            $seqlib_step_entries[0] = new StepEntries();
-                            $seqlib_step_entries[0]->step_id = $protocol->step_id;
-                            $seqlib_step_entries[0]->step_phase_code = $protocol->getSteps()->step_phase_code; //Should be 'PREP'
-                            $seqlib_step_entries[0]->protocol_id = $protocol->id;
-
-                            //Set data to Seqlibs
-                            $seqlib = new Seqlibs();
-                            $seqlib->name = $sample->name . '_' . date("Ymd");
-                            $seqlib->sample_id = $sample_id;
-                            $seqlib->project_id = $sample->project_id;
-                            $seqlib->protocol_id = $protocol->id;
-
-                            // Tied (seqlib) StepEntries to Seqlibs
-                            $seqlib->StepEntries = $seqlib_step_entries[0];
-
-                            if (!$seqlib->save()) {
-                                foreach ($seqlib->getMessages() as $message) {
-                                    $this->flashSession->error((string)$message);
+                            if ($colNameToChange == 'to_prep_protocol_name') {
+                                continue; //Skip for to_prep_protocol_name
+                            } elseif ($colNameToChange === 'to_prep' && $valueChangeTo === 'true') {
+                                //Set up protocol values
+                                $protocol_name = $data[$rowNumToChange]["to_prep_protocol_name"];
+                                $protocol = Protocols::findFirst(array(
+                                    "name = :name:",
+                                    'bind' => array(
+                                        'name' => $protocol_name
+                                    )
+                                ));
+                                if (!$protocol) {
+                                    $this->flashSession->error("Please select Protocol if you need to create new seqlibs.");
+                                    return;
                                 }
-                                return;
+
+                                //Set PREP step to StepEntries
+                                $seqlib_step_entries[0] = new StepEntries();
+                                $seqlib_step_entries[0]->step_id = $protocol->step_id;
+                                $seqlib_step_entries[0]->step_phase_code = $protocol->getSteps()->step_phase_code; //Should be 'PREP'
+                                $seqlib_step_entries[0]->protocol_id = $protocol->id;
+                                $seqlib_step_entries[0]->user_id = $this->session->get('auth')['id'];
+
+                                //Set data to Seqlibs
+                                $seqlib = new Seqlibs();
+                                $seqlib->name = $sample->name . '_' . date("Ymd");
+                                $seqlib->sample_id = $sample_id;
+                                $seqlib->project_id = $sample->project_id;
+                                $seqlib->protocol_id = $protocol->id;
+
+                                // Tied (seqlib) StepEntries to Seqlibs
+                                $seqlib->StepEntries = $seqlib_step_entries[0];
+
+                                if (!$seqlib->save()) {
+                                    foreach ($seqlib->getMessages() as $message) {
+                                        $this->flashSession->error((string)$message);
+                                    }
+                                    return;
+                                } else {
+                                    $this->flashSession->success($seqlib->name . " is saved.");
+                                }
+
+
                             } else {
-                                $this->flashSession->success($seqlib->name . " is saved.");
-                            }
-
-
-                        } else {
-                            $sample->$colNameToChange = $valueChangeTo;
-                            if (!$sample->save()) {
-                                foreach ($sample->getMessages() as $message) {
-                                    $this->flashSession->error((string)$message);
+                                $sample->$colNameToChange = $valueChangeTo;
+                                if (!$sample->save()) {
+                                    foreach ($sample->getMessages() as $message) {
+                                        $this->flashSession->error((string)$message);
+                                    }
+                                    return;
                                 }
-                                return;
                             }
                         }
-                    }
 
-                    // Something return is necessary for frontend jQuery Ajax to find success or fail.
-                    echo json_encode($changes);
+                        // Something return is necessary for frontend jQuery Ajax to find success or fail.
+                        echo json_encode($changes);
+                    }
                 }
             }
         }
@@ -230,88 +233,90 @@ class TrackerProjectSamplesController extends ControllerBase
                     $changes = $request->getPost('changes');
                     $data = $request->getPost('data');
 
-                    foreach ($changes as $key => $value) {
-                        $rowNumToChange = $value[0];
-                        $colStrToChange = preg_split('/\./', $value[1]);
-                        $tblNameToChange = $colStrToChange[0];
-                        $colNameToChange = $colStrToChange[1];
+                    foreach ($changes as $rowIndex => $rowValues) {
+                        foreach ($rowValues as $colIndex => $value) {
+                            $rowNumToChange = $value[0];
+                            $colStrToChange = preg_split('/\./', $value[1]);
+                            $tblNameToChange = $colStrToChange[0];
+                            $colNameToChange = $colStrToChange[1];
 
-                        $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
-                        $seqlib_id = $data[$rowNumToChange]['sl']['id']; //'sl' is alias of Seqlibs on SeqlibsController->loadjson()
+                            $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
+                            $seqlib_id = $data[$rowNumToChange]['sl']['id']; //'sl' is alias of Seqlibs on SeqlibsController->loadjson()
 
-                        $seqlib = Seqlibs::findFirstById($seqlib_id);
+                            $seqlib = Seqlibs::findFirstById($seqlib_id);
 
-                        //Set up StepEntries for this seqlib with PREP step
-                        $seqlib_step_entries = StepEntries::findFirst(array(
-                            "seqlib_id = :seqlib_id:",
-                            'bind' => array(
-                                'seqlib_id' => $seqlib_id
-                            )
-                        ));
-                        $seqlib_protocol = $seqlib->getProtocols();
-                        if(!$seqlib_step_entries){
-                            $seqlib_step_entries = new StepEntries();
-                            $seqlib_step_entries->seqlib_id = $seqlib->id;
-                            $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
-                            $seqlib_step_entries->step_phase_code = $seqlib_protocol->getSteps()->step_phase_code; //Should be 'PREP'
-                            $seqlib_step_entries->protocol_id = $seqlib->protocol_id;
-                        }
-
-                        if ($colNameToChange === 'protocol_id') {
-                            $seqlib_protocol = Protocols::findFirst(array(
-                                "name = :name:",
+                            //Set up StepEntries for this seqlib with PREP step
+                            $seqlib_step_entries = StepEntries::findFirst(array(
+                                "seqlib_id = :seqlib_id:",
                                 'bind' => array(
-                                    'name' => $valueChangeTo
+                                    'seqlib_id' => $seqlib_id
                                 )
                             ));
-                            $seqlib->protocol_id = $seqlib_protocol->id;
-                            $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
-                            $seqlib_step_entries->step_phase_code = $seqlib_protocol->step_phase_code; //Should be 'PREP'
-                            $seqlib_step_entries->protocol_id = $seqlib_protocol->id;
+                            $seqlib_protocol = $seqlib->getProtocols();
+                            if (!$seqlib_step_entries) {
+                                $seqlib_step_entries = new StepEntries();
+                                $seqlib_step_entries->seqlib_id = $seqlib->id;
+                                $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
+                                $seqlib_step_entries->step_phase_code = $seqlib_protocol->getSteps()->step_phase_code; //Should be 'PREP'
+                                $seqlib_step_entries->protocol_id = $seqlib->protocol_id;
+                            }
 
-                        } elseif (preg_match("/^oligobarcode[AB]_id$/", $colNameToChange, $columnName)) {
-                            $oligobarcodeStr = preg_split("/ : /", $valueChangeTo);
-                            if (count($oligobarcodeStr) > 1) { //Case if oligobarcode_id selected null (then $valueToChange should be blank).
-                                $oligobarcode_name = $oligobarcodeStr[0];
-                                $oligobarcode_seq = $oligobarcodeStr[1];
-                                $oligobarcode = Oligobarcodes::findFirst(array(
-                                    "name = :name: AND barcode_seq = :barcode_seq:",
+                            if ($colNameToChange === 'protocol_id') {
+                                $seqlib_protocol = Protocols::findFirst(array(
+                                    "name = :name:",
                                     'bind' => array(
-                                        'name' => $oligobarcode_name,
-                                        'barcode_seq' => $oligobarcode_seq
+                                        'name' => $valueChangeTo
                                     )
                                 ));
+                                $seqlib->protocol_id = $seqlib_protocol->id;
+                                $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
+                                $seqlib_step_entries->step_phase_code = $seqlib_protocol->step_phase_code; //Should be 'PREP'
+                                $seqlib_step_entries->protocol_id = $seqlib_protocol->id;
 
-                                $seqlib->$columnName[0] = $oligobarcode->id;
+                            } elseif (preg_match("/^oligobarcode[AB]_id$/", $colNameToChange, $columnName)) {
+                                $oligobarcodeStr = preg_split("/ : /", $valueChangeTo);
+                                if (count($oligobarcodeStr) > 1) { //Case if oligobarcode_id selected null (then $valueToChange should be blank).
+                                    $oligobarcode_name = $oligobarcodeStr[0];
+                                    $oligobarcode_seq = $oligobarcodeStr[1];
+                                    $oligobarcode = Oligobarcodes::findFirst(array(
+                                        "name = :name: AND barcode_seq = :barcode_seq:",
+                                        'bind' => array(
+                                            'name' => $oligobarcode_name,
+                                            'barcode_seq' => $oligobarcode_seq
+                                        )
+                                    ));
+
+                                    $seqlib->$columnName[0] = $oligobarcode->id;
+                                } else {
+                                    $seqlib->$columnName[0] = null;
+                                }
+                            } elseif ($tblNameToChange === 'se') { //'se' is alias of StepEntries on SeqlibsController->loadjson()
+                                $seqlib_step_entries->$colNameToChange = $valueChangeTo;
                             } else {
-                                $seqlib->$columnName[0] = null;
+                                $seqlib->$colNameToChange = $valueChangeTo;
                             }
-                        } elseif( $tblNameToChange === 'se') { //'se' is alias of StepEntries on SeqlibsController->loadjson()
-                            $seqlib_step_entries->$colNameToChange = $valueChangeTo;
-                        } else {
-                            $seqlib->$colNameToChange = $valueChangeTo;
-                        }
 
-                        // @TODO Is it possible to tie $seqlib_step_entries to $seqlib and save (update) at onetime?
-                        if (!$seqlib_step_entries->save()) {
-                            foreach ($seqlib_step_entries->getMessages() as $message) {
-                                $this->flashSession->error((string)$message);
-                                echo "Error to save seqlib_step_entries: $message";
+                            // @TODO Is it possible to tie $seqlib_step_entries to $seqlib and save (update) at onetime?
+                            if (!$seqlib_step_entries->save()) {
+                                foreach ($seqlib_step_entries->getMessages() as $message) {
+                                    $this->flashSession->error((string)$message);
+                                    echo "Error to save seqlib_step_entries: $message";
+                                }
+                                return;
                             }
-                            return;
-                        }
 
-                        // @TODO Validation should be added. started_date <= finished_date
-                        if (!$seqlib->save()) {
-                            foreach ($seqlib->getMessages() as $message) {
-                                $this->flashSession->error((string)$message);
-                                echo "Error to save seqlib: $message";
+                            // @TODO Validation should be added. started_date <= finished_date
+                            if (!$seqlib->save()) {
+                                foreach ($seqlib->getMessages() as $message) {
+                                    $this->flashSession->error((string)$message);
+                                    echo "Error to save seqlib: $message";
+                                }
+                                return;
                             }
-                            return;
                         }
+                        // Something return is necessary for frontend jQuery Ajax to find success or fail.
+                        echo json_encode($changes);
                     }
-                    // Something return is necessary for frontend jQuery Ajax to find success or fail.
-                    echo json_encode($changes);
                 }
             }
         }

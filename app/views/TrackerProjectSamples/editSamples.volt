@@ -114,16 +114,17 @@ $(document).ready(function () {
   function cleaveData(changes) {
     var data = handsontable.getData();
     var cleavedData = Object();
-    //console.log(changes + ":" + changes.length);
     //for (var i = 0; i < changes.length; i++) {
-    $.each(changes, function (index, value) {
-      if (value) {
-        //console.log('changes[' + index + '] = ' + value);
-        var rowNumToChange = value[0];
-        if (!cleavedData[rowNumToChange]) {
-          cleavedData[rowNumToChange] = data[rowNumToChange];
+    $.each(changes, function (rowIndex, rowValues) {
+      $.each(rowValues, function (colIndex, value) {
+        if (value) {
+          console.log('changes[' + colIndex + '] = ' + value);
+          var rowNumToChange = value[0];
+          if (!cleavedData[rowNumToChange]) {
+            cleavedData[rowNumToChange] = data[rowNumToChange];
+          }
         }
-      }
+      });
     });
     return cleavedData;
   }
@@ -136,11 +137,14 @@ $(document).ready(function () {
     $.each(changes, function (key, value) {
       if (value) {
         var rowNumToChange = value[0];
-        isDirtyAr[rowNumToChange] = value; //Over write isDirtyAr with current changes.
+        var columnToChange = value[1];
+        if (!isDirtyAr[rowNumToChange]) {
+          isDirtyAr[rowNumToChange] = Object();
+        }
+        isDirtyAr[rowNumToChange][columnToChange] = value; //Over write isDirtyAr with current changes.
       }
     });
-    //console.log(isDirtyAr);
-    return isDirtyAr;
+    console.log(isDirtyAr);
   }
 
   // Construct handsontable
@@ -168,9 +172,12 @@ $(document).ready(function () {
       { data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000' },
       { data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
       { data: "qual_amount", data: 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
-      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' },
+      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' }
+      {% if type === 'PREP' %}
+      ,
       { data: "to_prep", title: "Create New SeqLib", type: 'checkbox' },
       { data: "to_prep_protocol_name", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer }
+      {% endif %}
     ],
     afterChange: function (changes, source) {
       if (source === 'loadData') {
@@ -182,7 +189,7 @@ $(document).ready(function () {
         // alert("afterEdit");
         $toolbar.find("#save, #undo, #clear").removeClass("disabled");
         $console.text('Click "Save" to save data to server').removeClass().addClass("alert alert-info");
-        isDirtyAr = integrateIsDirtyAr(changes);
+        integrateIsDirtyAr(changes);
       }
 
       //console.log(JSON.stringify(handsontable.getData()));
