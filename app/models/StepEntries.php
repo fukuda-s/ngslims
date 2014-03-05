@@ -67,6 +67,12 @@ class StepEntries extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $user_id;
+
+    /**
+     *
      * @var string
      */
     public $note;
@@ -87,6 +93,7 @@ class StepEntries extends \Phalcon\Mvc\Model
             'protocol_id' => 'protocol_id',
             'created_at' => 'created_at',
             'status' => 'status',
+            'user_id' => 'user_id',
             'note' => 'note'
         );
     }
