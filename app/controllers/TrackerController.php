@@ -210,7 +210,7 @@ class TrackerController extends ControllerBase
         $step_phase_code = $step->step_phase_code;
 
         $seqlib_ids = $this->session->get('selectedSeqlibs');
-        $seqlibs = $this->modelsManager->createBuilder()
+        $seqlibs_all = $this->modelsManager->createBuilder()
             ->columns(array('sl.*', 'se.*'))
             ->addFrom('Seqlibs', 'sl')
             ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
@@ -218,10 +218,20 @@ class TrackerController extends ControllerBase
             ->getQuery()
             ->execute();
 
-        //$this->flash->success(var_dump($seqlibs));
-        $this->view->setVar('seqlibs', $seqlibs);
+        if ($step_phase_code === 'MULTIPLEX') {
+            // @TODO Is seqlib_nobarcode able to generate from $seqlib_all?
+            $seqlibs_nobarcode = $this->modelsManager->createBuilder()
+                ->columns(array('sl.*', 'se.*'))
+                ->addFrom('Seqlibs', 'sl')
+                ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
+                ->inWhere('sl.id', $seqlib_ids)
+                ->andWhere('sl.oligobarcodeA_id IS NULL')
+                ->getQuery()
+                ->execute();
 
-        if ( $step_phase_code === 'MULTIPLEX') {
+            //$this->flash->success(var_dump($seqlibs));
+            $this->view->setVar('seqlibs_nobarcode', $seqlibs_nobarcode);
+
             $oligobarcodes = $this->modelsManager->createBuilder()
                 ->columns(array('o.*', 'os.*'))
                 ->addFrom('Oligobarcodes', 'o')
@@ -236,6 +246,26 @@ class TrackerController extends ControllerBase
                 ->execute();
 
             $this->view->setVar('oligobarcodes', $oligobarcodes);
+
+            $seqlibs_inbarcode = array();
+            $seqtemplates = array();
+            foreach ($oligobarcodes as $oligobarcode) {
+                $oligobarcodeA_id = $oligobarcode->o->id;
+                $seqtemplate_id = 0;
+                $seqtemplates[$seqtemplate_id] = 1;
+                foreach ($seqlibs_all as $seqlib) {
+                    if ($seqlib->sl->oligobarcodeA_id && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id) {
+                        if (!empty($seqlibs_inbarcode[$oligobarcodeA_id][$seqtemplate_id])) {
+                            $seqtemplate_id++;
+                            $seqtemplates[$seqtemplate_id] = 1;
+                        }
+                        $seqlibs_inbarcode[$oligobarcodeA_id][$seqtemplate_id] = $seqlib;
+                    }
+                }
+            }
+            //var_dump($seqlibs_inbarcode);
+            $this->view->setVar('seqlibs_inbarcode', $seqlibs_inbarcode);
+            $this->view->setVar('seqtemplates', $seqtemplates);
         }
     }
 

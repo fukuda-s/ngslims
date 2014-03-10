@@ -395,9 +395,9 @@ class TrackerProjectSamplesController extends ControllerBase
                             LEFT JOIN
 	                    Protocols p ON p.id = se.protocol_id
 		                    LEFT JOIN
-	                    Steps st ON st.step_phase_code = p.next_step_phase_code AND st.id = :step_id:
+	                    Steps st ON st.step_phase_code = p.next_step_phase_code
                     WHERE
-                        sl.project_id = :project_id:
+                        sl.project_id = :project_id: AND st.id = :step_id:
                 ";
                 $seqlibs = $this->modelsManager->executeQuery($phql, array(
                     'project_id' => $project_id,

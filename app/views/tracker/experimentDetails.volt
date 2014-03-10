@@ -75,7 +75,7 @@
   {% if loop.last %}
     </div>
   {% endif %}
-{% else %} No projects are recorded
+{% elsefor %} No projects are recorded
 {% endfor %}
 <script>
   function showTubeSeqLibs(step_id, project_id) {
@@ -133,7 +133,7 @@
           data: { selectedSeqlibs: selectedSeqlibs}
         })
             .done(function () {
-              window.location = "{{ url("tracker/multiplex/") }}"
+              window.location = "{{ url("tracker/multiplex/") ~ step.id }}"
             });
       }
     })

@@ -106,11 +106,13 @@ class Elements extends Phalcon\Mvc\User\Component
             'action' => 'experiments',
             'param' => 'MULTIPLEX'
         ),
+        /*
         'Dual Indexing and Multiplexing View' => array(
             'controller' => 'tracker',
             'action' => 'experiments',
             'param' => 'DUALMULTIPLEX'
         ),
+        */
         'Sequencing View' => array(
             'controller' => 'tracker',
             'action' => 'sequence',
@@ -262,35 +264,43 @@ class Elements extends Phalcon\Mvc\User\Component
 
     public function getTrackerExperimentDetailProjectList($pi_user_id, $nucleotide_type, $step_phase_code, $step_id)
     {
-        $projects = Projects::find(array(
-            "pi_user_id = :pi_user_id:",
-            'bind' => array(
-                'pi_user_id' => $pi_user_id
-            )
-        ));
-        // $this->flash->success(var_dump($projects));
-        foreach ($projects as $project) {
-            // $this->flash->success(var_dump($project));
-            // @TODO Should be counted 'active' (in-completed on StepEntries).
-            if ($step_phase_code === 'MULTIPLEX' or $step_phase_code === 'DUALMULTIPLEX') {
-                $sample_count = Samples::query()
-                    ->where("project_id = $project->id")
-                    ->execute()
-                    ->count();
-            } else {
-                $sample_count = Samples::query()
-                    ->join('SampleTypes', 'st.id = Samples.sample_type_id', 'st')
-                    ->where("project_id = $project->id AND st.nucleotide_type = '$nucleotide_type'")
-                    ->execute()
-                    ->count();
-            }
+        $this->filter->sanitize($pi_user_id, array("int"));
+        $this->filter->sanitize($nucleotide_type, array("string"));
+        $this->filter->sanitize($step_phase_code, array("string"));
+        $this->filter->sanitize($step_id, array("int"));
 
-            if (!$sample_count) {
-                continue;
-            }
-            if ($step_phase_code === 'MULTIPLEX' or $step_phase_code === 'DUALMULTIPLEX') {
+        if ($step_phase_code === 'MULTIPLEX' or $step_phase_code === 'DUALMULTIPLEX') {
+            $projects = $this->modelsManager->createBuilder()
+                ->From('Projects')
+                ->Join('Seqlibs', 'sl.project_id = Projects.id', 'sl')
+                ->Join('Protocols', 'pt.id = sl.protocol_id', 'pt')
+                ->Where('Projects.pi_user_id = :pi_user_id:')
+                ->andWhere('pt.next_step_phase_code = :next_step_phase_code:')
+                ->groupBy('Projects.id')
+                ->getQuery()
+                ->execute(array(
+                    'pi_user_id' => $pi_user_id,
+                    'next_step_phase_code' => $step_phase_code
+                ));
+            // $this->flash->success(var_dump($projects));
+            foreach ($projects as $project) {
+                // $this->flash->success(var_dump($project));
+                // @TODO Should be counted 'active' (in-completed on StepEntries).
+                $sample_count = $this->modelsManager->createBuilder()
+                    ->From('Samples')
+                    ->join('Seqlibs', 'sl.sample_id = Samples.id', 'sl')
+                    ->join('Protocols', 'p.id = sl.protocol_id', 'p')
+                    ->where('Samples.project_id = :project_id:', array('project_id' => $project->id))
+                    ->andWhere('p.next_step_phase_code = :next_step_phase_code:', array('next_step_phase_code' => $step_phase_code))
+                    ->getQuery()
+                    ->execute()
+                    ->count();
+
+                if (!$sample_count) {
+                    continue;
+                }
                 echo '  <div class="panel panel-warning">';
-                echo '      <div class="panel panel-heading" onclick="showTubeSeqLibs('.$step_id.', '.$project->id.')">';
+                echo '      <div class="panel panel-heading" onclick="showTubeSeqLibs(' . $step_id . ', ' . $project->id . ')">';
                 echo '      	<div class="row">';
                 echo '	        	<div class="col-md-8">';
                 echo '                  <div>' . $project->name . '</div>';
@@ -304,10 +314,34 @@ class Elements extends Phalcon\Mvc\User\Component
                 echo '              </div>';
                 echo '      	</div>';
                 echo '     	</div>';
-                echo '      <div id="seqlib-tube-list-project-id-'.$project->id.'">';
+                echo '      <div id="seqlib-tube-list-project-id-' . $project->id . '">';
                 echo '     	</div>';
                 echo ' 	</div>';
-            } else {
+            }
+        } else {
+            $projects = Projects::find(array(
+                "pi_user_id = :pi_user_id:",
+                'bind' => array(
+                    'pi_user_id' => $pi_user_id
+                )
+            ));
+            foreach ($projects as $project) {
+                // $this->flash->success(var_dump($project));
+                // @TODO Should be counted 'active' (in-completed on StepEntries).
+                $sample_count = $this->modelsManager->createBuilder()
+                    ->From('Samples')
+                    ->join('SampleTypes', 'st.id = Samples.sample_type_id', 'st')
+                    ->where('project_id = :project_id: AND st.nucleotide_type = :nucleotide_type:')
+                    ->getQuery()
+                    ->execute(array(
+                        'project_id' => $project->id,
+                        'nucleotide_type' => $nucleotide_type
+                    ))
+                    ->count();
+
+                if (!$sample_count) {
+                    continue;
+                }
                 echo '<li class="list-group-item">';
                 echo '	<div class="row">';
                 echo '		<div class="col-md-8">';
