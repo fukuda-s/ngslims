@@ -252,25 +252,24 @@ class TrackerProjectSamplesController extends ControllerBase
                                     'seqlib_id' => $seqlib_id
                                 )
                             ));
-                            $seqlib_protocol = $seqlib->getProtocols();
                             if (!$seqlib_step_entries) {
+                                $seqlib_protocol = Protocols::findFirstById($seqlib->protocol_id);
+                                $seqlib_step = Steps::findFirstById($seqlib_protocol->step_id);
+
                                 $seqlib_step_entries = new StepEntries();
                                 $seqlib_step_entries->seqlib_id = $seqlib->id;
                                 $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
-                                $seqlib_step_entries->step_phase_code = $seqlib_protocol->getSteps()->step_phase_code; //Should be 'PREP'
+                                $seqlib_step_entries->step_phase_code = $seqlib_step->step_phase_code; //Should be 'PREP'
                                 $seqlib_step_entries->protocol_id = $seqlib->protocol_id;
                             }
 
                             if ($colNameToChange === 'protocol_id') {
-                                $seqlib_protocol = Protocols::findFirst(array(
-                                    "name = :name:",
-                                    'bind' => array(
-                                        'name' => $valueChangeTo
-                                    )
-                                ));
+                                $seqlib_protocol = Protocols::findFirstByName($valueChangeTo);
+                                $seqlib_step = Steps::findFirstById($seqlib_protocol->step_id);
+
                                 $seqlib->protocol_id = $seqlib_protocol->id;
                                 $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
-                                $seqlib_step_entries->step_phase_code = $seqlib_protocol->step_phase_code; //Should be 'PREP'
+                                $seqlib_step_entries->step_phase_code = $seqlib_step->step_phase_code;; //Should be 'PREP'
                                 $seqlib_step_entries->protocol_id = $seqlib_protocol->id;
 
                             } elseif (preg_match("/^oligobarcode[AB]_id$/", $colNameToChange, $columnName)) {
@@ -393,7 +392,7 @@ class TrackerProjectSamplesController extends ControllerBase
                             LEFT JOIN
                         StepEntries se ON se.seqlib_id = sl.id
                             LEFT JOIN
-	                    Protocols p ON p.id = se.protocol_id
+	                    Protocols p ON p.id = sl.protocol_id
 		                    LEFT JOIN
 	                    Steps st ON st.step_phase_code = p.next_step_phase_code
                     WHERE
