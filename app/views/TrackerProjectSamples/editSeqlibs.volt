@@ -189,7 +189,7 @@ $(document).ready(function () {
       { data: "sl.oligobarcodeB_id", title: "OligoBarcode B", type: "dropdown", source: oligobarcodeBDrop, renderer: oligobarcodeBRenderer },
       { data: "sl.concentration", title: "Conc. (nmol/L)", type: 'numeric', format: '0.000' },
       { data: "sl.stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
-      { data: "sl.fragmentsize", title: "Fragment Size", type: 'numeric' },
+      { data: "sl.fragment_size", title: "Fragment Size", type: 'numeric' },
       { data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'yy-mm-dd' },
       { data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'yy-mm-dd' },
       { data: "se.status", title: "Status", type: 'dropdown', source: ['', 'Completed', 'In Progress', 'On Hold'] }
