@@ -187,7 +187,7 @@ $(document).ready(function () {
       { data: "sl.protocol_id", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer },
       { data: "sl.oligobarcodeA_id", title: "OligoBarcode A", type: "dropdown", source: oligobarcodeADrop, renderer: oligobarcodeARenderer },
       { data: "sl.oligobarcodeB_id", title: "OligoBarcode B", type: "dropdown", source: oligobarcodeBDrop, renderer: oligobarcodeBRenderer },
-      { data: "sl.concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
+      { data: "sl.concentration", title: "Conc. (nmol/L)", type: 'numeric', format: '0.000' },
       { data: "sl.stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
       { data: "sl.fragmentsize", title: "Fragment Size", type: 'numeric' },
       { data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'yy-mm-dd' },
