@@ -210,6 +210,9 @@ class TrackerController extends ControllerBase
         $step_phase_code = $step->step_phase_code;
 
         $seqlib_ids = $this->session->get('selectedSeqlibs');
+        if (!$seqlib_ids) {
+            $this->flash->warning("Couldn't find any selected seqlibs.");
+        }
         $seqlibs_all = $this->modelsManager->createBuilder()
             ->columns(array('sl.*', 'se.*'))
             ->addFrom('Seqlibs', 'sl')
@@ -232,7 +235,7 @@ class TrackerController extends ControllerBase
             //$this->flash->success(var_dump($seqlibs));
             $this->view->setVar('seqlibs_nobarcode', $seqlibs_nobarcode);
 
-            $oligobarcodes = $this->modelsManager->createBuilder()
+            $oligobarcodeAs = $this->modelsManager->createBuilder()
                 ->columns(array('o.*', 'os.*'))
                 ->addFrom('Oligobarcodes', 'o')
                 ->leftJoin('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id AND os.active = "Y"', 'os')
@@ -245,21 +248,98 @@ class TrackerController extends ControllerBase
                 ->getQuery()
                 ->execute();
 
-            $this->view->setVar('oligobarcodes', $oligobarcodes);
+            $this->view->setVar('oligobarcodeAs', $oligobarcodeAs);
 
+            /*
+             * Create 2D array $seqlibs_inbarcode which has oligobarcodeA_id
+             *  Row: oligobarcodeA
+             *  Col: seqtemplates
+             */
             $seqlibs_inbarcode = array();
             $seqtemplates = array();
-            foreach ($oligobarcodes as $oligobarcode) {
-                $oligobarcodeA_id = $oligobarcode->o->id;
-                $seqtemplate_id = 0;
-                $seqtemplates[$seqtemplate_id] = 1;
+            foreach ($oligobarcodeAs as $oligobarcodeA) {
+                $oligobarcodeA_id = $oligobarcodeA->o->id;
+                $seqtemplate_index = 1;
+                $seqtemplates[$seqtemplate_index] = 1;
                 foreach ($seqlibs_all as $seqlib) {
                     if ($seqlib->sl->oligobarcodeA_id && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id) {
-                        if (!empty($seqlibs_inbarcode[$oligobarcodeA_id][$seqtemplate_id])) {
-                            $seqtemplate_id++;
-                            $seqtemplates[$seqtemplate_id] = 1;
+                        if (!empty($seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id])) {
+                            $seqtemplate_index++;
+                            $seqtemplates[$seqtemplate_index] = 1;
                         }
-                        $seqlibs_inbarcode[$oligobarcodeA_id][$seqtemplate_id] = $seqlib;
+                        $seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id] = $seqlib;
+                    }
+                }
+            }
+            //var_dump($seqlibs_inbarcode);
+            $this->view->setVar('seqlibs_inbarcode', $seqlibs_inbarcode);
+            $this->view->setVar('seqtemplates', $seqtemplates);
+        } elseif ($step_phase_code === 'DUALMULTIPLEX') {
+            // @TODO Is seqlib_nobarcode able to generate from $seqlib_all?
+            $seqlibs_nobarcode = $this->modelsManager->createBuilder()
+                ->columns(array('sl.*', 'se.*'))
+                ->addFrom('Seqlibs', 'sl')
+                ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
+                ->inWhere('sl.id', $seqlib_ids)
+                ->andWhere('(sl.oligobarcodeA_id IS NULL OR sl.oligobarcodeB_id IS NULL)')
+                ->getQuery()
+                ->execute();
+
+            $this->view->setVar('seqlibs_nobarcode', $seqlibs_nobarcode);
+
+            $oligobarcodeAs = $this->modelsManager->createBuilder()
+                ->columns(array('o.*', 'os.*'))
+                ->addFrom('Oligobarcodes', 'o')
+                ->leftJoin('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id AND os.active = "Y"', 'os')
+                ->leftJoin('OligobarcodeSchemeAllows', 'osa.oligobarcode_scheme_id = os.id', 'osa')
+                ->leftJoin('Seqlibs', 'sl.protocol_id = osa.protocol_id', 'sl')
+                ->inWhere('sl.id', $seqlib_ids)
+                ->andWhere('o.active = "Y"')
+                ->andWHere("os.is_oligobarcodeB = 'N'")
+                ->orderBy('os.id ASC, o.sort_order ASC')
+                ->groupBy('o.id')
+                ->getQuery()
+                ->execute();
+
+            $oligobarcodeBs = $this->modelsManager->createBuilder()
+                ->columns(array('o.*', 'os.*'))
+                ->addFrom('Oligobarcodes', 'o')
+                ->leftJoin('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id AND os.active = "Y"', 'os')
+                ->leftJoin('OligobarcodeSchemeAllows', 'osa.oligobarcode_scheme_id = os.id', 'osa')
+                ->leftJoin('Seqlibs', 'sl.protocol_id = osa.protocol_id', 'sl')
+                ->inWhere('sl.id', $seqlib_ids)
+                ->andWhere('o.active = "Y"')
+                ->andWHere("os.is_oligobarcodeB = 'Y'")
+                ->orderBy('os.id ASC, o.sort_order ASC')
+                ->groupBy('o.id')
+                ->getQuery()
+                ->execute();
+
+            $this->view->setVar('oligobarcodeAs', $oligobarcodeAs);
+            $this->view->setVar('oligobarcodeBs', $oligobarcodeBs);
+
+            /*
+             * Create 3D array $seqlibs_inbarcode which has oligobarcodeA_id and oligobarcodeB_id
+             * (Table: seqtemplates)
+             *  Row: oligobarcodeB
+             *  Col: oligobarcodeA
+             */
+            $seqlibs_inbarcode = array();
+            $seqtemplates = array();
+            foreach ($oligobarcodeBs as $oligobarcodeB) {
+                $oligobarcodeB_id = $oligobarcodeB->o->id;
+                foreach ($oligobarcodeAs as $oligobarcodeA) {
+                    $oligobarcodeA_id = $oligobarcodeA->o->id;
+                    $seqtemplate_index = 1;
+                    $seqtemplates[$seqtemplate_index] = 1;
+                    foreach ($seqlibs_all as $seqlib) {
+                        if ($seqlib->sl->oligobarcodeB_id && $seqlib->sl->oligobarcodeB_id == $oligobarcodeB_id && $seqlib->sl->oligobarcodeA_id && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id) {
+                            if (!empty($seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeB_id][$oligobarcodeA_id])) {
+                                $seqtemplate_index++;
+                                $seqtemplates[$seqtemplate_index] = 1;
+                            }
+                            $seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeB_id][$oligobarcodeA_id] = $seqlib;
+                        }
                     }
                 }
             }
@@ -283,9 +363,72 @@ class TrackerController extends ControllerBase
                     $this->session->set('selectedSeqlibs', $selectedSeqlibs);
                     echo json_encode($selectedSeqlibs);
                 }
+                if ($request->hasPost('indexedSeqlibs')) {
+                    $indexedSeqlibs = $request->getPost('indexedSeqlibs');
+                    $seqtemplates = $request->getPost('seqtemplates');
+                    //$this->session->remove('indexedSeqlibs');
+                    $this->session->set('indexedSeqlibs', $indexedSeqlibs);
+                    $this->session->set('seqtemplates', $seqtemplates);
+                    echo json_encode($indexedSeqlibs);
+                }
+            }
+        }
+    }
+
+    public function multiplexConfirmAction($step_id)
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+        Tag::appendTitle(' | Multiplex Confirm ');
+
+        $selected_seqtemplates = $this->session->get('seqtemplates');
+        $selected_seqlibs = $this->session->get('indexedSeqlibs');
+        //var_dump($selected_seqtemplates);
+        $this->view->setVar('selected_seqtemplates', $selected_seqtemplates);
+        //var_dump($selected_seqlibs);
+        $this->view->setVar('selected_seqlibs', $selected_seqlibs);
+
+        $seqlibs = array();
+        $oligobarcodes = array();
+        foreach ($selected_seqtemplates as $selected_seqtemplate_index) {
+            foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
+                $seqlibs[$selected_seqlib['seqlib_id']] = Seqlibs::findFirstById($selected_seqlib['seqlib_id']);
+                $oligobarcodes[$selected_seqlib['oligobarcodeA_id']] = Oligobarcodes::findFirstById($selected_seqlib['oligobarcodeA_id']);
+                if (!empty($selected_seqlib['oligobarcodeB_id'])) {
+                    $oligobarcodes[$selected_seqlib['oligobarcodeB_id']] = Oligobarcodes::findFirstById($selected_seqlib['oligobarcodeB_id']);
+                }
+            }
+        }
+        $this->view->setVar('seqlibs', $seqlibs);
+        $this->view->setVar('oligobarcodes', $oligobarcodes);
+
+    }
+
+    public function multiplexSaveAction()
+    {
+        /*
+         * Find today's last seqtemplate name (ex. INDEX20140312-001)
+         */
+        $seqtemplate_prefix = 'INDEX' . date('Ymd');
+        $prev_seqtemplates = Seqtemplates::find(array(
+            'conditions' => "name LIKE :name:",
+            'bind' => array(
+                'name' => $seqtemplate_prefix . '%'
+            ),
+            'order' => 'name'
+        ));
+
+        $prev_seqtemplate_last = $prev_seqtemplates->getLast();
+        if ($prev_seqtemplate_last) {
+            $prev_seqtemplate_serial_array = preg_split('/-/', $prev_seqtemplate_last->name);
+            if (count($prev_seqtemplate_serial_array) > 1) {
+                $prev_seqtemplate_serial = end($prev_seqtemplate_serial_array);
+                var_dump($prev_seqtemplate_serial);
             }
         }
 
+        // Remove session values which set at multiplex.volt with multiplexSetSessionAction (via ajax) and used on multiplexConfirmAction
+        $this->session->remove('seqtemplates');
+        $this->session->remove('indexedSeqlibs');
     }
 
     public function sequenceAction()

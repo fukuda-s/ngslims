@@ -87,6 +87,8 @@ class Security extends Plugin
                     'experimentDetails',
                     'multiplex',
                     'multiplexSetSession',
+                    'multiplexConfirm',
+                    'multiplexSave',
                     'sequence',
                     'protocol'
                 ),

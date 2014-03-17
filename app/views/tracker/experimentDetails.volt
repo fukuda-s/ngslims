@@ -125,7 +125,7 @@
         var seqlib_id = $(this).attr("id").replace("seqlib-id-", "");
         selectedSeqlibs.push(seqlib_id);
       });
-      if (selectedSeqlibs.length > 0) {
+      if (selectedSeqlibs.length) {
         $.ajax({
           url: '{{ url("tracker/multiplexSetSession") }}',
           dataType: 'json',
@@ -133,6 +133,7 @@
           data: { selectedSeqlibs: selectedSeqlibs}
         })
             .done(function () {
+              console.log(selectedSeqlibs);
               window.location = "{{ url("tracker/multiplex/") ~ step.id }}"
             });
       }

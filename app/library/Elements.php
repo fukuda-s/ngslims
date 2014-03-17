@@ -90,6 +90,11 @@ class Elements extends Phalcon\Mvc\User\Component
             'action' => 'project',
             'param' => ''
         ),
+        'Operation Overview' => array(
+            'controller' => 'tracker',
+            'action' => 'operation',
+            'param' => ''
+        ),
         'hr1' => array(),
         'QC Experiment View' => array(
             'controller' => 'tracker',
