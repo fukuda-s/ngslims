@@ -27,13 +27,13 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model
      *
      * @var double
      */
-    public $assoc_factor;
+    public $conc_factor;
 
     /**
      *
      * @var double
      */
-    public $assoc_vol;
+    public $input_vol;
 
     /**
      * Independent Column Mapping.
@@ -44,8 +44,8 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model
             'id' => 'id',
             'seqtemplate_id' => 'seqtemplate_id',
             'seqlib_id' => 'seqlib_id',
-            'assoc_factor' => 'assoc_factor',
-            'assoc_vol' => 'assoc_vol'
+            'conc_factor' => 'conc_factor',
+            'input_vol' => 'input_vol'
         );
     }
 

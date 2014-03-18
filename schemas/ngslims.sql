@@ -530,8 +530,8 @@ CREATE TABLE `seqtemplate_assocs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `seqtemplate_id` int(11) NOT NULL,
   `seqlib_id` int(11) NOT NULL,
-  `assoc_factor` decimal(8,4) unsigned DEFAULT '1.0000',
-  `assoc_vol` decimal(8,3) unsigned DEFAULT NULL,
+  `conc_factor` decimal(8,4) unsigned DEFAULT '1.0000',
+  `input_vol` decimal(8,3) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_seqtemplate_assocs_seqtemplates_idx` (`seqtemplate_id`),
   KEY `fk_seqtemplate_assocs_seqlibs_idx` (`seqlib_id`),
@@ -668,4 +668,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-03-17 11:54:02
+-- Dump completed on 2014-03-18 12:08:38
