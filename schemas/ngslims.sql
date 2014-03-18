@@ -499,7 +499,7 @@ CREATE TABLE `seqlibs` (
   `oligobarcodeB_id` int(11) DEFAULT NULL,
   `bioanalyser_chip_code` varchar(45) DEFAULT NULL,
   `concentration` decimal(8,4) unsigned DEFAULT NULL,
-  `stock_seqlib_volume` decimal(8,4) unsigned DEFAULT NULL,
+  `stock_seqlib_volume` decimal(8,3) unsigned DEFAULT NULL,
   `fragment_size` int(11) unsigned DEFAULT NULL,
   `started_at` datetime DEFAULT NULL,
   `finished_at` datetime DEFAULT NULL,
@@ -550,8 +550,8 @@ DROP TABLE IF EXISTS `seqtemplates`;
 CREATE TABLE `seqtemplates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `init_conc` decimal(8,4) unsigned DEFAULT NULL,
-  `init_vol` decimal(8,3) unsigned DEFAULT NULL,
+  `initial_conc` decimal(8,4) unsigned DEFAULT NULL,
+  `initial_vol` decimal(8,3) unsigned DEFAULT NULL,
   `target_conc` decimal(8,4) unsigned DEFAULT NULL,
   `target_dw_vol` decimal(8,3) unsigned DEFAULT NULL,
   `target_vol` decimal(8,3) unsigned DEFAULT NULL,
@@ -668,4 +668,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-03-18 12:08:38
+-- Dump completed on 2014-03-18 16:19:01

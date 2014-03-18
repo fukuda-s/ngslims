@@ -21,13 +21,13 @@ class Seqtemplates extends \Phalcon\Mvc\Model
      *
      * @var double
      */
-    public $init_conc;
+    public $initial_conc;
 
     /**
      *
      * @var double
      */
-    public $init_vol;
+    public $initial_vol;
 
     /**
      *
@@ -91,8 +91,8 @@ class Seqtemplates extends \Phalcon\Mvc\Model
         return array(
             'id' => 'id',
             'name' => 'name',
-            'init_conc' => 'init_conc',
-            'init_vol' => 'init_vol',
+            'initial_conc' => 'initial_conc',
+            'initial_vol' => 'initial_vol',
             'target_conc' => 'target_conc',
             'target_dw_vol' => 'target_dw_vol',
             'target_vol' => 'target_vol',
