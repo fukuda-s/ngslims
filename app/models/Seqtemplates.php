@@ -21,6 +21,24 @@ class Seqtemplates extends \Phalcon\Mvc\Model
      *
      * @var double
      */
+    public $target_conc;
+
+    /**
+     *
+     * @var double
+     */
+    public $target_vol;
+
+    /**
+     *
+     * @var double
+     */
+    public $target_dw_vol;
+
+    /**
+     *
+     * @var double
+     */
     public $initial_conc;
 
     /**
@@ -33,37 +51,19 @@ class Seqtemplates extends \Phalcon\Mvc\Model
      *
      * @var double
      */
-    public $target_conc;
-
-    /**
-     *
-     * @var double
-     */
-    public $target_dw_vol;
-
-    /**
-     *
-     * @var double
-     */
-    public $target_vol;
-
-    /**
-     *
-     * @var double
-     */
     public $final_conc;
 
     /**
      *
      * @var double
      */
-    public $final_dw_vol;
+    public $final_vol;
 
     /**
      *
      * @var double
      */
-    public $final_vol;
+    public $final_dw_vol;
 
     /**
      *
@@ -91,14 +91,14 @@ class Seqtemplates extends \Phalcon\Mvc\Model
         return array(
             'id' => 'id',
             'name' => 'name',
+            'target_conc' => 'target_conc',
+            'target_vol' => 'target_vol',
+            'target_dw_vol' => 'target_dw_vol',
             'initial_conc' => 'initial_conc',
             'initial_vol' => 'initial_vol',
-            'target_conc' => 'target_conc',
-            'target_dw_vol' => 'target_dw_vol',
-            'target_vol' => 'target_vol',
             'final_conc' => 'final_conc',
-            'final_dw_vol' => 'final_dw_vol',
             'final_vol' => 'final_vol',
+            'final_dw_vol' => 'final_dw_vol',
             'started_at' => 'started_at',
             'finished_at' => 'finished_at',
             'created_at' => 'created_at'

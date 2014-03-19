@@ -550,14 +550,14 @@ DROP TABLE IF EXISTS `seqtemplates`;
 CREATE TABLE `seqtemplates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
+  `target_conc` decimal(8,4) unsigned DEFAULT NULL,
+  `target_vol` decimal(8,3) unsigned DEFAULT NULL,
+  `target_dw_vol` decimal(8,3) unsigned DEFAULT NULL,
   `initial_conc` decimal(8,4) unsigned DEFAULT NULL,
   `initial_vol` decimal(8,3) unsigned DEFAULT NULL,
-  `target_conc` decimal(8,4) unsigned DEFAULT NULL,
-  `target_dw_vol` decimal(8,3) unsigned DEFAULT NULL,
-  `target_vol` decimal(8,3) unsigned DEFAULT NULL,
   `final_conc` decimal(8,4) unsigned DEFAULT NULL,
-  `final_dw_vol` decimal(8,3) unsigned DEFAULT NULL,
   `final_vol` decimal(8,3) unsigned DEFAULT NULL,
+  `final_dw_vol` decimal(8,3) unsigned DEFAULT NULL,
   `started_at` datetime DEFAULT NULL,
   `finished_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
@@ -668,4 +668,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-03-18 16:19:01
+-- Dump completed on 2014-03-19 15:01:37
