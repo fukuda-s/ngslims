@@ -400,11 +400,14 @@ class TrackerController extends ControllerBase
         }
         $this->view->setVar('seqlibs', $seqlibs);
         $this->view->setVar('oligobarcodes', $oligobarcodes);
-
+        $this->view->setVar('step_id', $step_id);
     }
 
-    public function multiplexSaveAction()
+    public function multiplexSaveAction($step_id)
     {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+
         /*
          * Find today's last seqtemplate name (ex. INDEX20140312-001)
          */
@@ -418,17 +421,73 @@ class TrackerController extends ControllerBase
         ));
 
         $prev_seqtemplate_last = $prev_seqtemplates->getLast();
+        $prev_seqtemplate_serial = 0;
         if ($prev_seqtemplate_last) {
             $prev_seqtemplate_serial_array = preg_split('/-/', $prev_seqtemplate_last->name);
             if (count($prev_seqtemplate_serial_array) > 1) {
                 $prev_seqtemplate_serial = end($prev_seqtemplate_serial_array);
-                var_dump($prev_seqtemplate_serial);
             }
+        }
+
+
+        /*
+         * Save Seqtemplates, SeqtemplateAssocs and Seqlibs
+         */
+        $selected_seqtemplates = $this->session->get('seqtemplates');
+        $selected_seqlibs = $this->session->get('indexedSeqlibs');
+        $seqtemplate_serial = $prev_seqtemplate_serial;
+        foreach ($selected_seqtemplates as $selected_seqtemplate_index) {
+            $seqtemplate_serial++;
+            $seqtemplate_serial_str = sprintf("%03d", $seqtemplate_serial);
+
+            $seqtemplate = new Seqtemplates();
+            $seqtemplate->name = $seqtemplate_prefix.'-'.$seqtemplate_serial_str;
+            $seqtemplate->target_conc = $request->getPost('target_conc-'.$selected_seqtemplate_index);
+            $seqtemplate->target_vol = $request->getPost('target_vol-'.$selected_seqtemplate_index);
+            $seqtemplate->target_dw_vol = $request->getPost('dw_for_dilution_vol-'.$selected_seqtemplate_index);
+            $seqtemplate->final_dw_vol = $request->getPost('added_dw_vol-'.$selected_seqtemplate_index);
+            $seqtemplate->initial_vol = $request->getPost('library_vol_total-'.$selected_seqtemplate_index);
+            $seqtemplate->initial_conc = $request->getPost('seqtemplate_initial_conc-'.$selected_seqtemplate_index);
+            $seqtemplate->final_vol = $request->getPost('seqtemplate_final_vol-'.$selected_seqtemplate_index);
+            $seqtemplate->final_conc = $request->getPost('seqtemplate_final_conc-'.$selected_seqtemplate_index);
+
+            $index = 0;
+            $seqtemplate_assocs = array();
+            foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
+                $seqlib = Seqlibs::findFirstById($selected_seqlib['seqlib_id']);
+                $seqlib->oligobarcodeA_id = $selected_seqlib['oligobarcodeA_id'];
+                if (!empty($selected_seqlib['oligobarcodeB_id'])) {
+                    $seqlib->oligobarcodeB_id = $selected_seqlib['oligobarcodeB_id'];
+                }
+                if (!$seqlib->save()) {
+                    foreach ($seqlib->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return;
+                }
+                $seqtemplate_assocs[$index] = new SeqtemplateAssocs();
+                $seqtemplate_assocs[$index]->seqlib_id = $seqlib->id;
+                $seqtemplate_assocs[$index]->conc_factor = $request->getPost('seqlib_conc_factor-'.$seqlib->id);
+                $seqtemplate_assocs[$index]->input_vol = $request->getPost('seqlib_input_vol-'.$seqlib->id);
+
+                $index++;
+            }
+            $seqtemplate->SeqtemplateAssocs = $seqtemplate_assocs;
+            if (!$seqtemplate->save()) {
+                foreach ($seqtemplate->getMessages() as $message) {
+                    $this->flashSession->error((string)$message);
+                }
+                return;
+            }
+
+            $this->flashSession->success($seqtemplate->name." is saved with ".count($seqtemplate_assocs)." seqlib(s).");
         }
 
         // Remove session values which set at multiplex.volt with multiplexSetSessionAction (via ajax) and used on multiplexConfirmAction
         $this->session->remove('seqtemplates');
         $this->session->remove('indexedSeqlibs');
+
+        return $this->response->redirect("tracker/experimentDetails/$step_id");
     }
 
     public function sequenceAction()

@@ -9,6 +9,7 @@
     {{ step.name }}
   </li>
 </ol>
+{{ flashSession.output() }}
 {% if step.step_phase_code == "MULTIPLEX" or step.step_phase_code == "DUALMULTIPLEX" %}
   <div class="row">
     <div class="col-md-10">
