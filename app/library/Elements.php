@@ -111,14 +111,12 @@ class Elements extends Phalcon\Mvc\User\Component
             'action' => 'experiments',
             'param' => 'MULTIPLEX'
         ),
-        /*
-        'Dual Indexing and Multiplexing View' => array(
+        'Flowcell Setup View' => array(
             'controller' => 'tracker',
-            'action' => 'experiments',
-            'param' => 'DUALMULTIPLEX'
+            'action' => 'flowcell',
+            'param' => ''
         ),
-        */
-        'Sequencing View' => array(
+        'Sequencing Setup View' => array(
             'controller' => 'tracker',
             'action' => 'sequence',
             'param' => ''

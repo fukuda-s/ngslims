@@ -89,6 +89,7 @@ class Security extends Plugin
                     'multiplexSetSession',
                     'multiplexConfirm',
                     'multiplexSave',
+                    'flowcell',
                     'sequence',
                     'protocol'
                 ),
