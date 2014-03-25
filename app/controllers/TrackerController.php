@@ -490,9 +490,18 @@ class TrackerController extends ControllerBase
         return $this->response->redirect("tracker/experimentDetails/$step_id");
     }
 
+    public function flowcellAction()
+    {
+        Tag::appendTitle(' | Flowcell Setup ');
+        $this->view->setVar('instrument_types', InstrumentTypes::find(array(
+            "active = 'Y'",
+            "order" => "sort_order IS NULL ASC, sort_order ASC"
+        )));
+    }
+
     public function sequenceAction()
     {
-        Tag::appendTitle(' | Sequence Runs ');
+        Tag::appendTitle(' | Sequencing Run Setup ');
         $this->view->setVar('instrument_types', InstrumentTypes::find(array(
             "active = 'Y'",
             "order" => "sort_order IS NULL ASC, sort_order ASC"

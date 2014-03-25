@@ -94,4 +94,5 @@
   </div>
   {% if loop.last %}
     </div>
-  {% endif %} {% else %} No projects are recorded {% endfor %}
+  {% endif %}
+  {% elsefor %} No projects are recorded {% endfor %}

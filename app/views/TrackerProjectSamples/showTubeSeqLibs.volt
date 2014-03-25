@@ -22,6 +22,6 @@
     {% if loop.last %}
       </div>
     {% endif %}
-  {% else %} No seqlibs are recorded
+  {% elsefor %} No seqlibs are recorded
   {% endfor %}
 </div>
