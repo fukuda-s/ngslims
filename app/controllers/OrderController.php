@@ -684,6 +684,32 @@ class OrderController extends ControllerBase
         $requests->lab_id = $this->session->get('lab')->id;
         $requests->user_id = $this->session->get('auth')['id'];
 
+        if ($this->session->get('seqrun_undecided')->name === "false") {
+            $instrument_type = $this->session->get('instrument_type');
+            $seq_runmode_type = $this->session->get('seq_runmode_type');
+            $seq_runread_type = $this->session->get('seq_runread_type');
+            $seq_runcycle_type = $this->session->get('seq_runcycle_type');
+            $seq_run_type_scheme = SeqRunTypeSchemes::findFirst(array(
+                "instrument_type_id = :instrument_type_id:
+                    AND seq_runmode_type_id = :seq_runmode_type_id:
+                    AND seq_runread_type_id = :seq_runread_type_id:
+                    AND seq_runcycle_type_id = :seq_runcycle_type_id:
+                    AND active = 'Y'",
+                'bind' => array(
+                    'instrument_type_id' => $instrument_type->id,
+                    'seq_runmode_type_id' => $seq_runmode_type->id,
+                    'seq_runread_type_id' => $seq_runread_type->id,
+                    'seq_runcycle_type_id' => $seq_runcycle_type->id
+                )
+            ));
+
+            if ($seq_run_type_scheme) {
+                $requests->seq_run_type_scheme_id = $seq_run_type_scheme->id;
+            } else {
+                $this->flashSession->error("Couldn't get seq_run_type_schemes from " . $instrument_type->name . ", " . $seq_runmode_type->name . ", " . $seq_runread_type->name . ", " . $seq_runcycle_type->name);
+            }
+        }
+
 
         /*
          * Set data for Samples, Seqlibs and StepEntries
@@ -780,6 +806,7 @@ class OrderController extends ControllerBase
             $this->session->remove('step');
             $this->session->remove('protocol');
             $this->session->remove('seqrun_undecided');
+            $this->session->remove('instrument_type');
             $this->session->remove('seq_runmode_type');
             $this->session->remove('seq_runread_type');
             $this->session->remove('seq_runcycle_type');

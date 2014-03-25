@@ -4,6 +4,11 @@ use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class SeqRunTypeSchemes extends \Phalcon\Mvc\Model
 {
+    /**
+     *
+     * @var integer
+     */
+    public $id;
 
     /**
      *
@@ -45,6 +50,7 @@ class SeqRunTypeSchemes extends \Phalcon\Mvc\Model
     public function columnMap()
     {
         return array(
+            'id' => 'id',
             'instrument_type_id' => 'instrument_type_id', 
             'seq_runmode_type_id' => 'seq_runmode_type_id', 
             'seq_runread_type_id' => 'seq_runread_type_id', 
