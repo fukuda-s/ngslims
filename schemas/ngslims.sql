@@ -268,12 +268,15 @@ CREATE TABLE `requests` (
   `project_id` int(11) NOT NULL,
   `lab_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `seq_run_type_scheme_id` int(11) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_requests_projects_idx` (`project_id`),
   KEY `fk_requests_labs_idx` (`lab_id`),
   KEY `fk_requests_users_idx` (`user_id`),
+  KEY `fk_requests_seq_run_type_schemes_idx` (`seq_run_type_scheme_id`),
+  CONSTRAINT `fk_requests_seq_run_type_schemes` FOREIGN KEY (`seq_run_type_scheme_id`) REFERENCES `seq_run_type_schemes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_requests_labs` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_requests_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_requests_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -668,4 +671,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-03-24 17:15:38
+-- Dump completed on 2014-03-25 15:00:11

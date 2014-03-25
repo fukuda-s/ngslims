@@ -31,6 +31,12 @@ class Requests extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $seq_run_type_scheme_id;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -51,6 +57,7 @@ class Requests extends \Phalcon\Mvc\Model
             'project_id' => 'project_id',
             'lab_id' => 'lab_id',
             'user_id' => 'user_id',
+            'seq_run_type_scheme_id' => 'seq_run_type_scheme_id',
             'created_at' => 'created_at',
             'description' => 'description'
         );
