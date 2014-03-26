@@ -170,7 +170,7 @@
       //console.log(seqlib_input_vol+" = "+target_each_mol+" / "+seqlib_actual_conc);
       library_vol_total += seqlib_input_vol;
       //console.log(library_vol_total+" : "+seqlib_input_vol);
-      $('p#seqlib_input_vol-' + seqlib_id).text(seqlib_input_vol.toFixed(3));
+      $('td#seqlib_input_vol-' + seqlib_id).text(seqlib_input_vol.toFixed(3));
       $('input#seqlib_input_vol_hidden-' + seqlib_id).val(seqlib_input_vol.toFixed(3));
     });
     $('p#library_vol_total-' + selected_seqtemplate_index).text(library_vol_total.toFixed(3));
