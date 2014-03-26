@@ -49,18 +49,21 @@
     </div>
   {% endif %}
   <div class="panel panel-success">
-    {{ link_to("tracker/project") }}
     <div class="panel-heading" id="StepList">
       <h4 class="panel-title">
         <div class="row">
-          <div class="col-md-8">{{ link_to("tracker/experimentDetails/" ~ step.id, step.name) }}</div>
+          {% if step.step_phase_code == 'FLOWCELL' %}
+            <div class="col-md-8">{{ link_to("tracker/flowcellSetupCandidates/" ~ step.id, step.name) }}</div>
+          {% else %}
+            <div class="col-md-8">{{ link_to("tracker/experimentDetails/" ~ step.id, step.name) }}</div>
+          {% endif %}
           {% if step.step_phase_code === 'QC' %}
-          <div class="col-md-1">
-            <span class="badge">{{ step.sample_project_count }}</span>
-          </div>
-          <div class="col-md-1">
-            <span class="badge">{{ step.sample_count }}</span>
-          </div>
+            <div class="col-md-1">
+              <span class="badge">{{ step.sample_project_count }}</span>
+            </div>
+            <div class="col-md-1">
+              <span class="badge">{{ step.sample_count }}</span>
+            </div>
           {% elseif step.step_phase_code === 'PREP' %}
             <div class="col-md-1">
               <span class="badge">{{ step.seqlib_project_count }}</span>
@@ -82,4 +85,4 @@
   {% if loop.last %}
     </div>
   {% endif %}
-{% elsefor %} No experiments are recorded {% endfor %}
+  {% elsefor %} No experiments are recorded {% endfor %}
