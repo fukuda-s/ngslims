@@ -122,7 +122,7 @@
     $("#mixup-seqlibs-button").click(function () {
       var selectedSeqlibs = [];
       console.log("Clicked mixup-seqlibs-button");
-      $(document).find(".ui-selected").each(function () {
+      $(document).find(".ui-selected[id^=seqlib-id-]").each(function () {
         var seqlib_id = $(this).attr("id").replace("seqlib-id-", "");
         selectedSeqlibs.push(seqlib_id);
       });
