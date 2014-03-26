@@ -470,7 +470,7 @@ class OrderController extends ControllerBase
                 } else {
                     $data = (object)array("id" => $id, "name" => $name);
                     $this->session->set($column, $data);
-                    var_dump($this->session->get($column));
+                    //var_dump($this->session->get($column));
                 }
 
             }
@@ -758,6 +758,7 @@ class OrderController extends ControllerBase
                 $qc_step_entries[0] = new StepEntries();
                 $qc_step_entries[0]->step_id = $step_qc->id;
                 $qc_step_entries[0]->step_phase_code = $step_qc->step_phase_code;
+                $qc_step_entries[0]->user_id = $this->session->get('auth')['id'];
 
             }
             if ($this->session->get('seqlib_undecided')->name === "false") {
@@ -766,6 +767,7 @@ class OrderController extends ControllerBase
                 $seqlib_step_entries[0]->step_id = $step_lib->id;
                 $seqlib_step_entries[0]->step_phase_code = $step_lib->step_phase_code;
                 $seqlib_step_entries[0]->protocol_id = $this->session->get('protocol')->id;
+                $seqlib_step_entries[0]->user_id = $this->session->get('auth')['id'];
 
                 //Set data to Seqlibs
                 $seqlibs[0] = new Seqlibs();
