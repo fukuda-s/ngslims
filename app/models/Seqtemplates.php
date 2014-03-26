@@ -109,6 +109,8 @@ class Seqtemplates extends \Phalcon\Mvc\Model
     {
         $this->hasMany('id', 'SeqtemplateAssocs', 'seqtemplate_id');
 
+        $this->hasMany('id', 'StepEntries', 'seqtemplate_id');
+
         $this->addBehavior(new Timestampable(
             array(
                 'beforeValidationOnCreate' => array(

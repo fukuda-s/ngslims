@@ -408,6 +408,9 @@ class TrackerController extends ControllerBase
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
 
+        $step = Steps::findFirst($step_id);
+        $step_phase_code = $step->step_phase_code;
+
         /*
          * Find today's last seqtemplate name (ex. INDEX20140312-001)
          */
@@ -451,6 +454,13 @@ class TrackerController extends ControllerBase
             $seqtemplate->final_vol = $request->getPost('seqtemplate_final_vol-'.$selected_seqtemplate_index);
             $seqtemplate->final_conc = $request->getPost('seqtemplate_final_conc-'.$selected_seqtemplate_index);
 
+            $seqtemplate_step_entries = array();
+            $seqtemplate_step_entries[0] = new StepEntries;
+            $seqtemplate_step_entries[0]->step_phase_code = $step_phase_code;
+            $seqtemplate_step_entries[0]->step_id = $step_id;
+            $seqtemplate_step_entries[0]->user_id = $this->session->get('auth')['id'];
+            $seqtemplate_step_entries[0]->status = 'Completed'; //Status should be 'Completed' at this time in the case of multiplexing.
+
             $index = 0;
             $seqtemplate_assocs = array();
             foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
@@ -463,7 +473,7 @@ class TrackerController extends ControllerBase
                     foreach ($seqlib->getMessages() as $message) {
                         $this->flashSession->error((string)$message);
                     }
-                    return;
+                    //return;
                 }
                 $seqtemplate_assocs[$index] = new SeqtemplateAssocs();
                 $seqtemplate_assocs[$index]->seqlib_id = $seqlib->id;
@@ -472,15 +482,20 @@ class TrackerController extends ControllerBase
 
                 $index++;
             }
+
+            // Tied $seqtemplateAssocs array to $seqtemplate with using hasMany on Model/Seqtemplates.php
             $seqtemplate->SeqtemplateAssocs = $seqtemplate_assocs;
+            // Tied $seqtemplate_step_entries array to $seqtemplate with using hasMany on Model/Seqtemplates.php
+            $seqtemplate->StepEntries = $seqtemplate_step_entries;
+
             if (!$seqtemplate->save()) {
                 foreach ($seqtemplate->getMessages() as $message) {
                     $this->flashSession->error((string)$message);
                 }
-                return;
+                //return;
+            }else {
+                $this->flashSession->success($seqtemplate->name." is saved with ".count($seqtemplate_assocs)." seqlib(s).");
             }
-
-            $this->flashSession->success($seqtemplate->name." is saved with ".count($seqtemplate_assocs)." seqlib(s).");
         }
 
         // Remove session values which set at multiplex.volt with multiplexSetSessionAction (via ajax) and used on multiplexConfirmAction
@@ -490,9 +505,10 @@ class TrackerController extends ControllerBase
         return $this->response->redirect("tracker/experimentDetails/$step_id");
     }
 
-    public function flowcellAction()
+    public function flowcellSetupCandidatesAction()
     {
         Tag::appendTitle(' | Flowcell Setup ');
+
         $this->view->setVar('instrument_types', InstrumentTypes::find(array(
             "active = 'Y'",
             "order" => "sort_order IS NULL ASC, sort_order ASC"
