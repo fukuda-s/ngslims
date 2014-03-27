@@ -113,8 +113,8 @@ class Elements extends Phalcon\Mvc\User\Component
         ),
         'Flowcell Setup View' => array(
             'controller' => 'tracker',
-            'action' => 'flowcell',
-            'param' => ''
+            'action' => 'experiments',
+            'param' => 'FLOWCELL'
         ),
         'Sequencing Setup View' => array(
             'controller' => 'tracker',
@@ -267,10 +267,10 @@ class Elements extends Phalcon\Mvc\User\Component
 
     public function getTrackerExperimentDetailProjectList($pi_user_id, $nucleotide_type, $step_phase_code, $step_id)
     {
-        $this->filter->sanitize($pi_user_id, array("int"));
-        $this->filter->sanitize($nucleotide_type, array("string"));
-        $this->filter->sanitize($step_phase_code, array("string"));
-        $this->filter->sanitize($step_id, array("int"));
+        $pi_user_id = $this->filter->sanitize($pi_user_id, array("int"));
+        $nucleotide_type = $this->filter->sanitize($nucleotide_type, array("string"));
+        $step_phase_code = $this->filter->sanitize($step_phase_code, array("string"));
+        $step_id = $this->filter->sanitize($step_id, array("int"));
 
         if ($step_phase_code === 'MULTIPLEX' or $step_phase_code === 'DUALMULTIPLEX') {
             $projects = $this->modelsManager->createBuilder()

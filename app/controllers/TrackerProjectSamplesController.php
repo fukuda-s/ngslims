@@ -427,4 +427,51 @@ class TrackerProjectSamplesController extends ControllerBase
             }
         }
     }
+
+    public function showTableSeqLibsAction()
+    {
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                // echo "Request was made using POST and AJAX";
+                $seqtemplate_id = $this->request->getPost("seqtemplate_id", "int");
+
+                $seqlibs = $this->modelsManager->createBuilder()
+                    ->columns(array('st.*', 'sl.*', 's.*', 'r.*', 'p.*', 'u.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'pt.*'))
+                    ->addFrom('Seqtemplates', 'st')
+                    ->join('SeqtemplateAssocs', 'sta.seqtemplate_id = st.id', 'sta')
+                    ->join('Seqlibs', 'sl.id = sta.seqlib_id', 'sl')
+                    ->join('Samples', 's.id = sl.sample_id', 's')
+                    ->join('Requests', 'r.id = s.request_id', 'r')
+                    ->join('Projects', 'p.id = r.project_id', 'p')
+                    ->join('Users', 'u.id = p.pi_user_id', 'u')
+                    ->leftJoin('SeqRunTypeSchemes', 'r.seq_run_type_scheme_id = srts.id', 'srts')
+                    ->leftJoin('InstrumentTypes', 'it.id = srts.instrument_type_id', 'it')
+                    ->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
+                    ->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
+                    ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
+                    ->leftJoin('Protocols', 'pt.id = sl.protocol_id', 'pt')
+                    ->where('st.id = :seqtemplate_id:')
+                    ->getQuery()
+                    ->execute(array(
+                        'seqtemplate_id' => $seqtemplate_id
+                    ));
+
+                $this->view->setVar('seqlibs', $seqlibs);
+
+                $oligobarcodeB_exists = false;
+                foreach($seqlibs as $seqlib){
+                    if ( $seqlib->sl->oligobarcodeB_id != null) {
+                        $oligobarcodeB_exists = true;
+                        continue;
+                    }
+                }
+                $this->view->setVar('oligobarcodeB_exists', $oligobarcodeB_exists);
+            }
+        }
+    }
 }

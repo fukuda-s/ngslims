@@ -89,6 +89,7 @@ class Security extends Plugin
                     'multiplexSetSession',
                     'multiplexConfirm',
                     'multiplexSave',
+                    'flowcellSetupCandidates',
                     'flowcell',
                     'sequence',
                     'protocol'
@@ -100,6 +101,7 @@ class Security extends Plugin
                     'showPanelSeqlibs',
                     'showTubeSeqLibs',
                     'showPanelSeqlanes',
+                    'showTableSeqLibs',
                     'loadSamples',
                     'editSamples',
                     'saveSamples',

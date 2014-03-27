@@ -49,7 +49,7 @@ class TrackerController extends ControllerBase
     {
         Tag::appendTitle(' | Experiments ');
         // Get step and step_entry list and data
-        $this->filter->sanitize($code_step_phase, array("string"));
+        $code_step_phase = $this->filter->sanitize($code_step_phase, array("string"));
         $phql = "
             SELECT
                 COUNT(DISTINCT s.project_id) AS sample_project_count,
@@ -86,7 +86,7 @@ class TrackerController extends ControllerBase
         //$this->view->setLayout('main');
         Tag::appendTitle(' | Experiments ');
 
-        $this->filter->sanitize($step_id, array("int"));
+        $step_id = $this->filter->sanitize($step_id, array("int"));
 
         $step = Steps::findFirst($step_id);
         $this->view->setVar('step', $step);
@@ -459,7 +459,6 @@ class TrackerController extends ControllerBase
             $seqtemplate_step_entries[0]->step_phase_code = $step_phase_code;
             $seqtemplate_step_entries[0]->step_id = $step_id;
             $seqtemplate_step_entries[0]->user_id = $this->session->get('auth')['id'];
-            $seqtemplate_step_entries[0]->status = 'Completed'; //Status should be 'Completed' at this time in the case of multiplexing.
 
             $index = 0;
             $seqtemplate_assocs = array();
@@ -505,14 +504,24 @@ class TrackerController extends ControllerBase
         return $this->response->redirect("tracker/experimentDetails/$step_id");
     }
 
-    public function flowcellSetupCandidatesAction()
+    public function flowcellSetupCandidatesAction($step_id)
     {
+        $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Flowcell Setup ');
 
-        $this->view->setVar('instrument_types', InstrumentTypes::find(array(
-            "active = 'Y'",
-            "order" => "sort_order IS NULL ASC, sort_order ASC"
-        )));
+        $step_id = $this->filter->sanitize($step_id, array("int"));
+
+        $step = Steps::findFirst($step_id);
+        $this->view->setVar('step', $step);
+
+        $seqtemplates = $this->modelsManager->createBuilder()
+            ->columns(array('st.*', 'se.*'))
+            ->addFrom('Seqtemplates', 'st')
+            ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se' )
+            ->getQuery()
+            ->execute();
+
+        $this->view->setVar('seqtemplates', $seqtemplates );
     }
 
     public function sequenceAction()
