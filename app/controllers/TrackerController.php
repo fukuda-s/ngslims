@@ -1,5 +1,5 @@
 <?php
-use Phalcon\Tag, Phalcon\Acl;
+use Phalcon\Tag, Phalcon\Acl, Phalcon\Forms\Form, Phalcon\Forms\Element\Text;
 
 
 class TrackerController extends ControllerBase
@@ -444,15 +444,15 @@ class TrackerController extends ControllerBase
             $seqtemplate_serial_str = sprintf("%03d", $seqtemplate_serial);
 
             $seqtemplate = new Seqtemplates();
-            $seqtemplate->name = $seqtemplate_prefix.'-'.$seqtemplate_serial_str;
-            $seqtemplate->target_conc = $request->getPost('target_conc-'.$selected_seqtemplate_index);
-            $seqtemplate->target_vol = $request->getPost('target_vol-'.$selected_seqtemplate_index);
-            $seqtemplate->target_dw_vol = $request->getPost('dw_for_dilution_vol-'.$selected_seqtemplate_index);
-            $seqtemplate->final_dw_vol = $request->getPost('added_dw_vol-'.$selected_seqtemplate_index);
-            $seqtemplate->initial_vol = $request->getPost('library_vol_total-'.$selected_seqtemplate_index);
-            $seqtemplate->initial_conc = $request->getPost('seqtemplate_initial_conc-'.$selected_seqtemplate_index);
-            $seqtemplate->final_vol = $request->getPost('seqtemplate_final_vol-'.$selected_seqtemplate_index);
-            $seqtemplate->final_conc = $request->getPost('seqtemplate_final_conc-'.$selected_seqtemplate_index);
+            $seqtemplate->name = $seqtemplate_prefix . '-' . $seqtemplate_serial_str;
+            $seqtemplate->target_conc = $request->getPost('target_conc-' . $selected_seqtemplate_index);
+            $seqtemplate->target_vol = $request->getPost('target_vol-' . $selected_seqtemplate_index);
+            $seqtemplate->target_dw_vol = $request->getPost('dw_for_dilution_vol-' . $selected_seqtemplate_index);
+            $seqtemplate->final_dw_vol = $request->getPost('added_dw_vol-' . $selected_seqtemplate_index);
+            $seqtemplate->initial_vol = $request->getPost('library_vol_total-' . $selected_seqtemplate_index);
+            $seqtemplate->initial_conc = $request->getPost('seqtemplate_initial_conc-' . $selected_seqtemplate_index);
+            $seqtemplate->final_vol = $request->getPost('seqtemplate_final_vol-' . $selected_seqtemplate_index);
+            $seqtemplate->final_conc = $request->getPost('seqtemplate_final_conc-' . $selected_seqtemplate_index);
 
             $seqtemplate_step_entries = array();
             $seqtemplate_step_entries[0] = new StepEntries;
@@ -476,8 +476,8 @@ class TrackerController extends ControllerBase
                 }
                 $seqtemplate_assocs[$index] = new SeqtemplateAssocs();
                 $seqtemplate_assocs[$index]->seqlib_id = $seqlib->id;
-                $seqtemplate_assocs[$index]->conc_factor = $request->getPost('seqlib_conc_factor-'.$seqlib->id);
-                $seqtemplate_assocs[$index]->input_vol = $request->getPost('seqlib_input_vol-'.$seqlib->id);
+                $seqtemplate_assocs[$index]->conc_factor = $request->getPost('seqlib_conc_factor-' . $seqlib->id);
+                $seqtemplate_assocs[$index]->input_vol = $request->getPost('seqlib_input_vol-' . $seqlib->id);
 
                 $index++;
             }
@@ -492,8 +492,8 @@ class TrackerController extends ControllerBase
                     $this->flashSession->error((string)$message);
                 }
                 //return;
-            }else {
-                $this->flashSession->success($seqtemplate->name." is saved with ".count($seqtemplate_assocs)." seqlib(s).");
+            } else {
+                $this->flashSession->success($seqtemplate->name . " is saved with " . count($seqtemplate_assocs) . " seqlib(s).");
             }
         }
 
@@ -510,18 +510,163 @@ class TrackerController extends ControllerBase
         Tag::appendTitle(' | Flowcell Setup ');
 
         $step_id = $this->filter->sanitize($step_id, array("int"));
-
         $step = Steps::findFirst($step_id);
         $this->view->setVar('step', $step);
+
+        $lane_per_flowcell = $step->getSeqRunmodeTypes()->lane_per_flowcell;
+        $lane_index = range(0, ($lane_per_flowcell - 1));
+        $this->view->setVar('lane_index', $lane_index);
 
         $seqtemplates = $this->modelsManager->createBuilder()
             ->columns(array('st.*', 'se.*'))
             ->addFrom('Seqtemplates', 'st')
-            ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se' )
+            ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se')
             ->getQuery()
             ->execute();
 
-        $this->view->setVar('seqtemplates', $seqtemplates );
+        $this->view->setVar('seqtemplates', $seqtemplates);
+
+        if ($seqlanes = $this->session->get('seqlanes')) {
+            $this->view->setVar('seqlanes', $seqlanes);
+        }
+
+        if ($flowcell_name = $this->session->get('flowcell_name')) {
+            $this->view->setVar('flowcell_name', $flowcell_name);
+        }
+    }
+
+    public function flowcellSetupSetSessionAction($step_id)
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                if ($request->getPost('flowcell_clear') == 'true') {
+                    $this->session->remove('flowcell_name');
+                    $this->session->remove('seqlanes');
+                }
+
+                if ($request->hasPost('flowcell_name')) {
+                    $flowcell_name = $request->getPost('flowcell_name');
+                    $this->session->set('flowcell_name', $flowcell_name);
+                }
+
+                if ($request->hasPost('seqlanes')) {
+                    $seqlanes = $request->getPost('seqlanes');
+                    $this->session->set('seqlanes', $seqlanes);
+                }
+            }
+        }
+
+    }
+
+    public function flowcellSetupConfirmAction($step_id)
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+        Tag::appendTitle(' | Flowcell Setup Confirm');
+
+        $step_id = $this->filter->sanitize($step_id, array("int"));
+        $step = Steps::findFirst($step_id);
+        $this->view->setVar('step', $step);
+
+        $warn_flag = 0;
+        $flowcell_name = $this->session->get('flowcell_name');
+        if (!$flowcell_name) {
+            $this->flashSession->error("Please input Flowcell ID!");
+            $warn_flag++;
+        }
+        $this->view->setVar('flowcell_name', $flowcell_name);
+
+        $lane_per_flowcell = $step->getSeqRunmodeTypes()->lane_per_flowcell;
+        $lane_index = range(0, ($lane_per_flowcell - 1));
+        $this->view->setVar('lane_index', $lane_index);
+
+        $seqlanes = $this->session->get('seqlanes');
+        if (!$seqlanes) {
+            $this->flashSession->error("Please set (drag and drop) seqtemplate(s) on Flowcell Lanes");
+            $warn_flag++;
+        }
+        $this->view->setVar('seqlanes', $seqlanes);
+
+        if ($warn_flag > 0) {
+            return $this->response->redirect("tracker/flowcellSetupCandidates/$step_id");
+        }
+
+    }
+
+    public function flowcellSetupSaveAction($step_id)
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $flowcell_name = $this->session->get('flowcell_name');
+                $flowcell_name = $this->filter->sanitize($flowcell_name, array("string"));
+
+                $seqlanes = $this->session->get('seqlanes');
+
+                $step_id = $this->filter->sanitize($step_id, array("int"));
+                $step = Steps::findFirstById($step_id);
+
+                $flowcell = new Flowcells();
+                $flowcell->name = $flowcell_name;
+                $flowcell->seq_runmode_type_id = $step->getSeqRunmodeTypes()->id;
+
+                $seqlanes_model = array();
+                foreach ($seqlanes as $index => $seqlane) {
+                    $seqlanes_model[$index] = new Seqlanes();
+                    $seqlanes_model[$index]->number = $this->filter->sanitize($seqlane["seqlane_number"], array("int"));
+
+                    //If $seqlane["seqtemplate_id"] = 'control', the sanitize filter returns fail.
+                    if ($seqtemplate_id = $this->filter->sanitize($seqlane["seqtemplate_id"], array("int"))){
+                        $seqlanes_model[$index]->seqtemplate_id = $seqtemplate_id;
+                    }
+                    $seqlanes_model[$index]->is_control = $this->filter->sanitize($seqlane["control_lane"], array("string"));
+                }
+                //Tied $seqlanes_model(Seqlanes) array to $flowcell(Flowcells) with using hasMany relation on Flowcells model.
+                $flowcell->Seqlanes = $seqlanes_model;
+
+                if (!$flowcell->save()) {
+                    foreach ($flowcell->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    $this->flashSession->error("Flowcell " . $flowcell_name . " is not saved.");
+                } else {
+                    //Return json if success.
+                    echo json_encode($flowcell);
+                    $this->flashSession->success("Flowcell " . $flowcell_name . " is saved.");
+
+                    $this->session->remove('flowcell_name');
+                    $this->session->remove('seqlanes');
+                }
+            }
+        }
+    }
+
+    public function flowcellAction($flowcell_id)
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+
+        $flowcell_id = $this->filter->sanitize($flowcell_id, array("int"));
+        $flowcell = Flowcells::findFirstById($flowcell_id);
+        Tag::appendTitle(' | Flowcell '.$flowcell->name);
+        $this->view->setVar('flowcell', $flowcell);
+
+        $lane_per_flowcell = $flowcell->getSeqRunmodeTypes()->lane_per_flowcell;
+        $lane_index = range(0, ($lane_per_flowcell - 1));
+        $this->view->setVar('lane_index', $lane_index);
+
+        $seqlanes = array();
+        foreach ($flowcell->getSeqlanes() as $seqlane){
+            $index = $seqlane->number - 1;
+            $seqlanes[$index] = $seqlane;
+        }
+        $this->view->setVar('seqlanes', $seqlanes);
+
     }
 
     public function sequenceAction()

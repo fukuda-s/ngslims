@@ -1,45 +1,38 @@
 {{ content() }}
-{% for instrument_type in instrument_types %}
-  {% if loop.first %}
-    <div class="panel-group" id="accordion">
-    <div class="panel panel-default">
+{{ flashSession.output() }}
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-success" id="flowcell-panel">
       <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-8">Instrument Type</div>
-          <div class="col-md-1">
-            <small>#project</small>
-          </div>
-          <div class="col-md-1">
-            <small>#sample</small>
-          </div>
-          <div class="col-md-2">
-          </div>
-        </div>
+        <h3 class="panel-title">Flowcell : {{ flowcell.name }}</h3>
       </div>
+      <table class="table table-bordered table-hover table-condensed table-responsive">
+        <thead>
+        <tr>
+          <th>Lane #</th>
+          <th>Seqtemplate Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index in lane_index %}
+          {% set lane_number = index + 1 %}
+          <tr>
+            {% if seqlanes[index] is defined %}
+              {% set seqlane = seqlanes[index] %}
+              <td>{{ seqlane.number }}</td>
+              {% if seqlane.is_control == 'Y' %}
+                <td class="info">Control</td>
+              {% else %}
+                <td class="success">{{ seqlane.getSeqtemplates().name }}</td>
+              {% endif %}
+            {% else %}
+              <td>{{ lane_number }}</td>
+              <td class="warning">NULL</td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
     </div>
-  {% endif %}
-  <div class="panel panel-success">
-    <div class="panel-heading" id="StepList">
-      <h4 class="panel-title">
-        <div class="row">
-          <div class="col-md-8">{{ link_to('tracker/flowcellDetails/' ~ instrument_type.id, instrument_type.name) }}</div>
-          <div class="col-md-1">
-            <span class="badge">0</span>
-          </div>
-          <div class="col-md-1">
-            <span class="badge">0</span>
-          </div>
-          <div class="col-md-2">
-            <a rel="tooltip" data-placement="right" data-original-title="Configure Experiment Step"> <i
-                  class="glyphicon glyphicon-pencil pull-right"></i>
-            </a>
-          </div>
-        </div>
-      </h4>
-    </div>
-    </a>
   </div>
-  {% if loop.last %}
-    </div>
-  {% endif %}
-  {% elsefor %} No platforms are recorded {% endfor %}
+</div>

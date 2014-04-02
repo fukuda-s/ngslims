@@ -14,7 +14,7 @@
         <span class="fa fa-expand"></span>
       </button>
     </ul>
-    <div id="handsontable-editSeqlibs-body" style="height: 400px; overflow: auto"></div>
+    <div id="handsontable-editSeqlibs-body" style="overflow: scroll"></div>
   </div>
 </div>
 <script>
@@ -264,6 +264,7 @@ $(document).ready(function () {
         .done(function (data) {
           //alert(data);
           //alert(location.href);
+          //console.log(data);
           $container.handsontable("loadData", data);
         });
   }

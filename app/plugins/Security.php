@@ -90,6 +90,9 @@ class Security extends Plugin
                     'multiplexConfirm',
                     'multiplexSave',
                     'flowcellSetupCandidates',
+                    'flowcellSetupSetSession',
+                    'flowcellSetupConfirm',
+                    'flowcellSetupSave',
                     'flowcell',
                     'sequence',
                     'protocol'

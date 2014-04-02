@@ -20,6 +20,12 @@ class Flowcells extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
+    public $seq_runmode_type_id;
+
+    /**
+     *
+     * @var integer
+     */
     public $seq_run_type_scheme_id;
 
     /**
@@ -66,6 +72,7 @@ class Flowcells extends \Phalcon\Mvc\Model
         return array(
             'id' => 'id',
             'name' => 'name',
+            'seq_runmode_type_id' => 'seq_runmode_type_id',
             'seq_run_type_scheme_id' => 'seq_run_type_scheme_id',
             'run_number' => 'run_number',
             'instrument_id' => 'instrument_id',
@@ -78,6 +85,9 @@ class Flowcells extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasMany('id', 'Seqlanes', 'flowcell_id');
+        $this->belongsTo('seq_runmode_type_id', 'SeqRunmodeTypes', 'id');
+
         $this->addBehavior(new Timestampable(
             array(
                 'beforeValidationOnCreate' => array(

@@ -143,18 +143,18 @@
 </form>
 <script>
   function calcTargetTotalMol(selected_seqtemplate_index) {
-    var target_conc = parseFloat($('#target_conc-' + selected_seqtemplate_index).val());
-    var target_vol = parseFloat($('#target_vol-' + selected_seqtemplate_index).val());
+    var target_conc = parseFloat($('input#target_conc-' + selected_seqtemplate_index).val());
+    var target_vol = parseFloat($('input#target_vol-' + selected_seqtemplate_index).val());
     var target_total_mol = target_conc * target_vol;
-    $('#target_total_mol-' + selected_seqtemplate_index).text(target_total_mol.toFixed(4));
+    $('p#target_total_mol-' + selected_seqtemplate_index).text(target_total_mol.toFixed(4));
     return target_total_mol
   }
 
   function calcTargetEachMol(selected_seqtemplate_index, target_total_mol) {
-    var multiplex = $('#multiplex-' + selected_seqtemplate_index).text();
+    var multiplex = $('p#multiplex-' + selected_seqtemplate_index).text();
     var target_each_mol = target_total_mol / multiplex;
     //console.log(target_total_mol + " / " + multiplex + " = " + target_each_mol);
-    $('#target_each_mol-' + selected_seqtemplate_index).text(target_each_mol.toFixed(4));
+    $('p#target_each_mol-' + selected_seqtemplate_index).text(target_each_mol.toFixed(4));
     return target_each_mol;
   }
 

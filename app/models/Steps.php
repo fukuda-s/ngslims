@@ -76,6 +76,7 @@ class Steps extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->belongsTo('seq_runmode_type_id', 'SeqRunmodeTypes', 'id');
         $this->belongsTo('nucleotide_type', 'SampleTypes', 'nucleotide_type');
         $this->hasMany('platform_code', 'InstrumentTypes', 'platform_code');
         $this->hasOne('step_phase_code', 'StepPhases', 'step_phase_code');

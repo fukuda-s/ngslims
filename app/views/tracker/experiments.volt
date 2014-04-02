@@ -1,4 +1,5 @@
 {{ content() }}
+{{ flashSession.output() }}
 {% for step in steps %}
   {% if loop.first %}
     <div class="panel-group" id="accordion">

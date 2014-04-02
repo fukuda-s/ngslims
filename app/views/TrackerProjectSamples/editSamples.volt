@@ -16,7 +16,7 @@
         <span class="fa fa-expand"></span>
       </button>
     </ul>
-    <div id="handsontable-editSamples-body" style="height: 400px; overflow: auto"></div>
+    <div id="handsontable-editSamples-body" style="overflow: scroll"></div>
   </div>
 </div>
 <script>
@@ -160,6 +160,7 @@ $(document).ready(function () {
     contextMenu: true,
     columnSorting: true,
     manualColumnResize: true,
+    colWidths: [120, , , , , , , , , , , 150, , 150],
     columns: [
       { data: "name", title: "Sample Name", readOnly: true },
       { data: "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer },
@@ -245,7 +246,7 @@ $(document).ready(function () {
     $.ajax({
       url: '{{ url("trackerProjectSamples/saveSamples") }}',
       data: {data: cleaveData(isDirtyAr), changes: isDirtyAr }, // returns all cells
-      dataType: 'json',
+      dataType: 'text',
       type: 'POST'
     })
         .done(function (data, status, xhr) {
