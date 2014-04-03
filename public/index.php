@@ -17,10 +17,10 @@ try {
 	 */
 	$loader->registerDirs(
 		array(
-			__DIR__ . $config->application->controllersDir,
-			__DIR__ . $config->application->pluginsDir,
-			__DIR__ . $config->application->libraryDir,
-			__DIR__ . $config->application->modelsDir,
+			__DIR__ . '/' . $config->application->controllersDir,
+			__DIR__ . '/' . $config->application->pluginsDir,
+			__DIR__ . '/' . $config->application->libraryDir,
+			__DIR__ . '/' . $config->application->modelsDir,
 		)
 	)->register();
 
@@ -63,8 +63,7 @@ try {
 
 		$view = new \Phalcon\Mvc\View();
 
-		//$view->setViewsDir(__DIR__ . $config->application->viewsDir);
-		$view->setViewsDir(__DIR__ . $config->application->viewsDir);
+		$view->setViewsDir(__DIR__ . '/' . $config->application->viewsDir);
 
 		$view->registerEngines(array(
 			".volt" => 'volt'
