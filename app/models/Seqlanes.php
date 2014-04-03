@@ -79,6 +79,12 @@ class Seqlanes extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $control_id;
+
+    /**
+     *
      * @var double
      */
     public $q30_yield;
@@ -137,6 +143,7 @@ class Seqlanes extends \Phalcon\Mvc\Model
             'last_cycle_failed' => 'last_cycle_failed',
             'apply_conc' => 'apply_conc',
             'is_control' => 'is_control',
+            'control_id' => 'control_id',
             'q30_yield' => 'q30_yield',
             'q30_percent' => 'q30_percent',
             'read1_clusters_total' => 'read1_clusters_total',
