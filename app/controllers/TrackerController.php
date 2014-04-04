@@ -514,7 +514,7 @@ class TrackerController extends ControllerBase
         $this->view->setVar('step', $step);
 
         $lane_per_flowcell = $step->getSeqRunmodeTypes()->lane_per_flowcell;
-        $lane_index = range(0, ($lane_per_flowcell - 1));
+        $lane_index = range(1, $lane_per_flowcell);
         $this->view->setVar('lane_index', $lane_index);
 
         $seqtemplates = $this->modelsManager->createBuilder()
@@ -533,9 +533,12 @@ class TrackerController extends ControllerBase
         if ($flowcell_name = $this->session->get('flowcell_name')) {
             $this->view->setVar('flowcell_name', $flowcell_name);
         }
+
+        $controls = $step->getControls("active = 'Y'");
+        $this->view->setVar('controls', $controls);
     }
 
-    public function flowcellSetupSetSessionAction($step_id)
+    public function flowcellSetupSetSessionAction()
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -579,8 +582,14 @@ class TrackerController extends ControllerBase
         }
         $this->view->setVar('flowcell_name', $flowcell_name);
 
+        $flowcell_name_unique_check = Flowcells::findFirstByName($flowcell_name);
+        if ($flowcell_name_unique_check) {
+            $this->flashSession->error("Flowcell " . $flowcell_name . " is already existed. Please record with another Flowcell ID.");
+            $warn_flag++;
+        }
+
         $lane_per_flowcell = $step->getSeqRunmodeTypes()->lane_per_flowcell;
-        $lane_index = range(0, ($lane_per_flowcell - 1));
+        $lane_index = range(1, $lane_per_flowcell);
         $this->view->setVar('lane_index', $lane_index);
 
         $seqlanes = $this->session->get('seqlanes');
@@ -607,7 +616,12 @@ class TrackerController extends ControllerBase
                 $flowcell_name = $this->session->get('flowcell_name');
                 $flowcell_name = $this->filter->sanitize($flowcell_name, array("string"));
 
+
                 $seqlanes = $this->session->get('seqlanes');
+
+                if ($request->hasPost('seqlanes_add')) {
+                    $seqlanes_add = $request->getPost('seqlanes_add');
+                }
 
                 $step_id = $this->filter->sanitize($step_id, array("int"));
                 $step = Steps::findFirstById($step_id);
@@ -621,11 +635,22 @@ class TrackerController extends ControllerBase
                     $seqlanes_model[$index] = new Seqlanes();
                     $seqlanes_model[$index]->number = $this->filter->sanitize($seqlane["seqlane_number"], array("int"));
 
-                    //If $seqlane["seqtemplate_id"] = 'control', the sanitize filter returns fail.
-                    if ($seqtemplate_id = $this->filter->sanitize($seqlane["seqtemplate_id"], array("int"))){
+                    if (array_key_exists("seqtemplate_id", $seqlane)) {
+                        $seqtemplate_id = $this->filter->sanitize($seqlane["seqtemplate_id"], array("int"));
                         $seqlanes_model[$index]->seqtemplate_id = $seqtemplate_id;
                     }
-                    $seqlanes_model[$index]->is_control = $this->filter->sanitize($seqlane["control_lane"], array("string"));
+
+                    if (array_key_exists("control_id", $seqlane)) {
+                        $control_id = $this->filter->sanitize($seqlane["control_id"], array("int"));
+                        $seqlanes_model[$index]->control_id = $control_id;
+                    }
+
+                    $seqlanes_model[$index]->is_control = $this->filter->sanitize($seqlanes_add[$index]["is_control"], array("string"));
+
+                    //If $seqlanes_add[$index]["apply_conc"] = null/not float, the sanitize filter returns fail.
+                    if ($apply_conc = $this->filter->sanitize($seqlanes_add[$index]["apply_conc"], array("float"))) {
+                        $seqlanes_model[$index]->apply_conc = $apply_conc;
+                    }
                 }
                 //Tied $seqlanes_model(Seqlanes) array to $flowcell(Flowcells) with using hasMany relation on Flowcells model.
                 $flowcell->Seqlanes = $seqlanes_model;
@@ -653,17 +678,16 @@ class TrackerController extends ControllerBase
 
         $flowcell_id = $this->filter->sanitize($flowcell_id, array("int"));
         $flowcell = Flowcells::findFirstById($flowcell_id);
-        Tag::appendTitle(' | Flowcell '.$flowcell->name);
+        Tag::appendTitle(' | Flowcell ' . $flowcell->name);
         $this->view->setVar('flowcell', $flowcell);
 
         $lane_per_flowcell = $flowcell->getSeqRunmodeTypes()->lane_per_flowcell;
-        $lane_index = range(0, ($lane_per_flowcell - 1));
+        $lane_index = range(1, $lane_per_flowcell);
         $this->view->setVar('lane_index', $lane_index);
 
         $seqlanes = array();
-        foreach ($flowcell->getSeqlanes() as $seqlane){
-            $index = $seqlane->number - 1;
-            $seqlanes[$index] = $seqlane;
+        foreach ($flowcell->getSeqlanes() as $seqlane) {
+            $seqlanes[$seqlane->number] = $seqlane;
         }
         $this->view->setVar('seqlanes', $seqlanes);
 

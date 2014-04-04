@@ -158,6 +158,7 @@ class Seqlanes extends \Phalcon\Mvc\Model
     {
         $this->belongsTo('flowcell_id', 'Flowcells', 'id');
         $this->belongsTo('seqtemplate_id', 'SeqTemplates', 'id');
+        $this->belongsTo('control_id', 'Controls', 'id');
 
         $this->addBehavior(new Timestampable(
             array(

@@ -154,3 +154,22 @@ td.tube-sm {
 #sample-holder .tube-inactive.ui-selectee.ui-selected {
   background-color: #ACA4C5;
 }
+
+.tube > .form-inline {
+  vertical-align: baseline;
+}
+
+.tube > .form-inline > .form-group {
+ padding: 0px 0px 0px 10px
+}
+
+td > .form-inline > .form-group {
+  padding: 0px 0px 0px 10px
+}
+
+.tube > .form-inline > .form-group > .form-control {
+  max-height: 21px;
+  width: 80px;
+  vertical-align: baseline;
+  padding: 0px;
+}

@@ -15,7 +15,7 @@
 {{ flashSession.output() }}
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-success" id="flowcell-panel">
+    <div class="panel panel-info" id="flowcell-panel">
       <div class="panel-heading">
         <h3 class="panel-title">Flowcell : {{ flowcell_name }}</h3>
       </div>
@@ -23,22 +23,33 @@
         <thead>
         <tr>
           <th>Lane #</th>
-          <th>Seqtemplate Name</th>
+          <th style="width: 70%;">Seqtemplate Name</th>
+          <th style="width: 15%;">Apply Conc.(pM)</th>
+          <th>Control Lane</th>
         </tr>
         </thead>
-        <tbody>
-        {% for index in lane_index %}
-          {% set lane_number = index + 1 %}
-          <tr>
-            {% if seqlanes[index] is defined %}
-              {% set seqlane = seqlanes[index] %}
+        <tbody id="flowcell-tbody">
+        {% for lane_number in lane_index %}
+          {% if seqlanes[lane_number] is defined %}
+            {% set seqlane = seqlanes[lane_number] %}
+            <tr class="success">
               <td>{{ seqlane["seqlane_number"] }}</td>
-              <td class="success">{{ seqlane["seqtemplate_name"] }}</td>
-            {% else %}
+              <td>{{ seqlane["seqtemplate_name"] }}</td>
+              <td>{{ text_field('apply_conc-' ~ seqlane["seqlane_number"], 'class': 'form-control input-sm') }}</td>
+              {% if seqlane["is_control"] is 'Y' %}
+                <td>{{ check_field('is_control-' ~ seqlane["seqlane_number"], 'class': 'checkbox', 'checked': 'checked', 'disabled': 'disabled') }}</td>
+              {% else %}
+                <td>{{ check_field('is_control-' ~ seqlane["seqlane_number"], 'class': 'checkbox') }}</td>
+              {% endif %}
+            </tr>
+          {% else %}
+            <tr class="warning">
               <td>{{ lane_number }}</td>
-              <td class="warning">NULL</td>
-            {% endif %}
-          </tr>
+              <td>NULL</td>
+              <td>NULL</td>
+              <td>NULL</td>
+            </tr>
+          {% endif %}
         {% endfor %}
         </tbody>
       </table>
@@ -50,25 +61,38 @@
   </div>
 </div>
 <script>
-  $(document).ready(function(){
-    $("#flowcell-save-button").click(function(){
+  $(document).ready(function () {
+    $("#flowcell-save-button").click(function () {
+      var seqlanes_add = new Object();
+      $('#flowcell-tbody').children('tr.success').each(function () {
+        var lane_number = $(this).index() + 1;
+        var apply_conc = $(this).find('input[id^=apply_conc-]').val();
+        var is_control = 'N';
+        if ($(this).find('input[id^=is_control-]').prop('checked')) {
+          is_control = 'Y';
+        }
+        seqlanes_add[lane_number] = {lane_number: lane_number, apply_conc: apply_conc, is_control: is_control};
+      });
+      console.log(seqlanes_add);
+
       $.ajax({
         url: '{{ url("tracker/flowcellSetupSave/") ~ step.id }}',
         dataType: 'json',
         type: 'POST',
         data: {
+          seqlanes_add: seqlanes_add
         }
       })
           .done(function (data) {
-            $('#flowcell-save-button').prop('disabled',true);
+            $('#flowcell-save-button').prop('disabled', true);
             console.log(data);
             var flowcell_id = data["id"];
-            window.location = "{{ url("tracker/flowcell/")}}"+flowcell_id
+            window.location = "{{ url("tracker/flowcell/")}}" + flowcell_id
           })
-          .fail(function(data) {
+          .fail(function (data) {
             console.log(data);
             window.location = "{{ url("tracker/flowcellSetupConfirm/") ~ step.id }}"
-          })
+          });
 
 
     });

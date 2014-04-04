@@ -78,8 +78,9 @@ class Steps extends \Phalcon\Mvc\Model
     {
         $this->belongsTo('seq_runmode_type_id', 'SeqRunmodeTypes', 'id');
         $this->belongsTo('nucleotide_type', 'SampleTypes', 'nucleotide_type');
+        $this->belongsTo('step_phase_code', 'StepPhases', 'step_phase_code');
         $this->hasMany('platform_code', 'InstrumentTypes', 'platform_code');
-        $this->hasOne('step_phase_code', 'StepPhases', 'step_phase_code');
+        $this->hasMany('platform_code', 'Controls', 'platform_code');
 
         $this->addBehavior(new SoftDelete(
             array(

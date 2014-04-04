@@ -11,23 +11,28 @@
         <tr>
           <th>Lane #</th>
           <th>Seqtemplate Name</th>
+          <th>Apply Conc.(pM)</th>
+          <th>Is Control</th>
         </tr>
         </thead>
         <tbody>
-        {% for index in lane_index %}
-          {% set lane_number = index + 1 %}
+        {% for lane_number in lane_index %}
           <tr>
-            {% if seqlanes[index] is defined %}
-              {% set seqlane = seqlanes[index] %}
+            {% if seqlanes[lane_number] is defined %}
+              {% set seqlane = seqlanes[lane_number] %}
               <td>{{ seqlane.number }}</td>
-              {% if seqlane.is_control == 'Y' %}
-                <td class="info">Control</td>
-              {% else %}
+              {% if seqlane.seqtemplate_id != "" %}
                 <td class="success">{{ seqlane.getSeqtemplates().name }}</td>
+              {% elseif seqlane.control_id != "" %}
+                <td class="success">{{ seqlane.getControls().name }}</td>
               {% endif %}
+                <td class="success">{{ seqlane.apply_conc }}</td>
+                <td class="success">{{ seqlane.is_control }}</td>
             {% else %}
               <td>{{ lane_number }}</td>
               <td class="warning">NULL</td>
+              <td class="warning"></td>
+              <td class="warning"></td>
             {% endif %}
           </tr>
         {% endfor %}
