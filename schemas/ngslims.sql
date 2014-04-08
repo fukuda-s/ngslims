@@ -16,6 +16,24 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `controls`
+--
+
+DROP TABLE IF EXISTS `controls`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `controls` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) NOT NULL,
+  `platform_code` varchar(100) NOT NULL,
+  `active` char(1) NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`),
+  KEY `fk_controls_platforms_idx` (`platform_code`),
+  CONSTRAINT `fk_controls_platforms` FOREIGN KEY (`platform_code`) REFERENCES `platforms` (`platform_code`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `flowcells`
 --
 
@@ -25,6 +43,7 @@ DROP TABLE IF EXISTS `flowcells`;
 CREATE TABLE `flowcells` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
+  `seq_runmode_type_id` int(11) DEFAULT NULL,
   `seq_run_type_scheme_id` int(11) DEFAULT NULL,
   `run_number` int(11) DEFAULT NULL,
   `instrument_id` int(11) DEFAULT NULL,
@@ -35,7 +54,9 @@ CREATE TABLE `flowcells` (
   PRIMARY KEY (`id`),
   KEY `fk_flowcells_instruments_idx` (`instrument_id`),
   KEY `fk_flowcells_seq_run_type_schemes_idx` (`seq_run_type_scheme_id`),
+  KEY `fk_flowcells_seq_runmode_types_idx` (`seq_runmode_type_id`),
   CONSTRAINT `fk_flowcells_instruments` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_flowcells_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_flowcells_seq_run_type_schemes` FOREIGN KEY (`seq_run_type_scheme_id`) REFERENCES `seq_run_type_schemes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -50,7 +71,7 @@ DROP TABLE IF EXISTS `instrument_types`;
 CREATE TABLE `instrument_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `platform_code` varchar(20) NOT NULL,
+  `platform_code` varchar(100) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
@@ -200,7 +221,7 @@ DROP TABLE IF EXISTS `platforms`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `platforms` (
-  `platform_code` varchar(20) NOT NULL,
+  `platform_code` varchar(100) NOT NULL,
   `description` varchar(200) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`platform_code`)
@@ -376,6 +397,33 @@ CREATE TABLE `samples` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `seq_demultiplex_results`
+--
+
+DROP TABLE IF EXISTS `seq_demultiplex_results`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `seq_demultiplex_results` (
+  `id` int(11) NOT NULL,
+  `seqlib_id` int(11) DEFAULT NULL,
+  `seqlane_id` int(11) DEFAULT NULL,
+  `flowcell_id` int(11) DEFAULT NULL,
+  `is_undetermined` char(1) DEFAULT NULL,
+  `reads_total` bigint(20) DEFAULT NULL,
+  `reads_passedfilter` bigint(20) DEFAULT NULL,
+  `software_version` varchar(45) DEFAULT NULL,
+  `create_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_ seq_demultiplex_results_seqlibs_idx` (`seqlib_id`),
+  KEY `fk_ seq_demultiplex_results_seqlanes_idx` (`seqlane_id`),
+  KEY `fk_ seq_demultiplex_results_flowcells_idx` (`flowcell_id`),
+  CONSTRAINT `fk_ seq_demultiplex_results_seqlanes` FOREIGN KEY (`seqlane_id`) REFERENCES `seqlanes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ seq_demultiplex_results_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ seq_demultiplex_results_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `seq_run_type_schemes`
 --
 
@@ -470,18 +518,18 @@ CREATE TABLE `seqlanes` (
   `last_cycle_failed` char(1) DEFAULT NULL,
   `apply_conc` decimal(8,2) DEFAULT NULL,
   `is_control` char(1) DEFAULT NULL,
-  `q30_yield` decimal(4,1) DEFAULT NULL,
+  `control_id` int(11) DEFAULT NULL,
+  `reads_total` bigint(20) DEFAULT NULL,
+  `reads_passed_filter` bigint(20) DEFAULT NULL,
   `q30_percent` decimal(4,3) DEFAULT NULL,
-  `read1_clusters_total` bigint(20) DEFAULT NULL,
-  `read1_clusters_passed_filter` bigint(20) DEFAULT NULL,
-  `read2_clusters_total` bigint(20) DEFAULT NULL,
-  `read2_clusters_passed_filter` bigint(20) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_seqlanes_flowcells_idx` (`flowcell_id`),
   KEY `fk_seqlanes_seqtemplates_idx` (`seqtemplate_id`),
-  CONSTRAINT `fk_seqlanes_seqtemplates` FOREIGN KEY (`seqtemplate_id`) REFERENCES `seqtemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_seqlanes_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_seqlanes_controls_idx` (`control_id`),
+  CONSTRAINT `fk_seqlanes_controls_idx` FOREIGN KEY (`control_id`) REFERENCES `controls` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seqlanes_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seqlanes_seqtemplates` FOREIGN KEY (`seqtemplate_id`) REFERENCES `seqtemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -600,7 +648,7 @@ CREATE TABLE `step_entries` (
   CONSTRAINT `fk_step_entries_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_seqtemplates` FOREIGN KEY (`seqtemplate_id`) REFERENCES `seqtemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -631,7 +679,7 @@ CREATE TABLE `steps` (
   `name` varchar(200) NOT NULL,
   `step_phase_code` varchar(20) NOT NULL,
   `seq_runmode_type_id` int(11) DEFAULT NULL,
-  `platform_code` varchar(20) NOT NULL,
+  `platform_code` varchar(100) NOT NULL,
   `nucleotide_type` varchar(45) DEFAULT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
@@ -674,4 +722,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-04-02 12:25:31
+-- Dump completed on 2014-04-08 13:05:35
