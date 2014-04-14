@@ -99,6 +99,12 @@ class Samples extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    public $notes;
+
+    /**
+     *
+     * @var string
+     */
     public $created_at;
 
     /**
@@ -130,6 +136,7 @@ class Samples extends \Phalcon\Mvc\Model
             'qual_nanodrop_conc' => 'qual_nanodrop_conc',
             'qual_fragment_size' => 'qual_fragment_size',
             'qual_date' => 'qual_date',
+            'notes' => 'notes',
             'created_at' => 'created_at',
             'description' => 'description'
         );
