@@ -334,7 +334,7 @@ DROP TABLE IF EXISTS `sample_property_types`;
 CREATE TABLE `sample_property_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `mo_term_name` varchar(45) DEFAULT NULL,
+  `mo_term_name` varchar(45) NOT NULL,
   `mo_id` varchar(45) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`)
@@ -417,8 +417,8 @@ CREATE TABLE `seq_demultiplex_results` (
   KEY `fk_ seq_demultiplex_results_seqlibs_idx` (`seqlib_id`),
   KEY `fk_ seq_demultiplex_results_seqlanes_idx` (`seqlane_id`),
   KEY `fk_ seq_demultiplex_results_flowcells_idx` (`flowcell_id`),
-  CONSTRAINT `fk_ seq_demultiplex_results_seqlanes` FOREIGN KEY (`seqlane_id`) REFERENCES `seqlanes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ seq_demultiplex_results_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ seq_demultiplex_results_seqlanes` FOREIGN KEY (`seqlane_id`) REFERENCES `seqlanes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ seq_demultiplex_results_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -722,4 +722,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-04-08 13:05:35
+-- Dump completed on 2014-04-14 15:38:00

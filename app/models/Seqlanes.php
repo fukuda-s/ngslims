@@ -87,37 +87,19 @@ class Seqlanes extends \Phalcon\Mvc\Model
      *
      * @var double
      */
-    public $q30_yield;
-
-    /**
-     *
-     * @var double
-     */
     public $q30_percent;
 
     /**
      *
      * @var integer
      */
-    public $read1_clusters_total;
+    public $reads_total;
 
     /**
      *
      * @var integer
      */
-    public $read1_clusters_passed_filter;
-
-    /**
-     *
-     * @var integer
-     */
-    public $read2_clusters_total;
-
-    /**
-     *
-     * @var integer
-     */
-    public $read2_clusters_passed_filter;
+    public $reads_passed_filter;
 
     /**
      *
@@ -144,12 +126,9 @@ class Seqlanes extends \Phalcon\Mvc\Model
             'apply_conc' => 'apply_conc',
             'is_control' => 'is_control',
             'control_id' => 'control_id',
-            'q30_yield' => 'q30_yield',
             'q30_percent' => 'q30_percent',
-            'read1_clusters_total' => 'read1_clusters_total',
-            'read1_clusters_passed_filter' => 'read1_clusters_passed_filter',
-            'read2_clusters_total' => 'read2_clusters_total',
-            'read2_clusters_passed_filter' => 'read2_clusters_passed_filter',
+            'reads_total' => 'reads_total',
+            'reads_passed_filter' => 'reads_passed_filter',
             'created_at' => 'created_at'
         );
     }
