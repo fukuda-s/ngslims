@@ -74,6 +74,10 @@ class OrderController extends ControllerBase
         $form = new Form();
         $this->view->form = $form;
         $form->add(new Text("project_name"));
+
+        //Set sample_property_types for columns of Handsontable.
+        $sample_property_types = SamplePropertyTypes::find("active = 'Y'");
+        $this->view->setVar('sample_property_types', $sample_property_types);
     }
 
     public function userSelectListAction($lab_id)
@@ -684,6 +688,13 @@ class OrderController extends ControllerBase
         $requests->lab_id = $this->session->get('lab')->id;
         $requests->user_id = $this->session->get('auth')['id'];
 
+        if ($this->session->get('seqlib_undecided')->name === "false") {
+            //Set property of Experiment Step (for PREP)
+            $step_lib = Steps::FindFirst($this->session->get('step')->id);
+        }
+        /*
+         * Set Seq Run properties when seqrun is decided.
+         */
         if ($this->session->get('seqrun_undecided')->name === "false") {
             $instrument_type = $this->session->get('instrument_type');
             $seq_runmode_type = $this->session->get('seq_runmode_type');
@@ -726,13 +737,14 @@ class OrderController extends ControllerBase
         $sample_type = SampleTypes::findFirst("id = " . $this->session->get('sample_type')->id);
         $step_qc = Steps::findFirst("nucleotide_type = '" . $sample_type->nucleotide_type . "' AND step_phase_code = 'QC'");
 
-        //Set property of Experiment Step (for PREP)
-        $step_lib = Steps::FindFirst($this->session->get('step')->id);
+        //Set sample_property_types
+        $sample_property_types = SamplePropertyTypes::find("active = 'Y'");
 
         $samples = array();
         $qc_step_entries = array();
         $seqlibs = array();
         $seqlib_step_entries = array();
+        $sample_property_entries = array();
 
         $i = 0;
         foreach ($sample_data_arr as $sample_data) {
@@ -779,9 +791,21 @@ class OrderController extends ControllerBase
                 $seqlibs[0]->StepEntries = $seqlib_step_entries[0];
             }
 
+            $j = 0;
+            foreach ($sample_property_types as $sample_property_type) {
+                $sample_property_type_id = $sample_property_type->id;
+                if(isset($sample_data->sample_property_types->$sample_property_type_id)){
+                    $sample_property_entries[$j] = new SamplePropertyEntries();
+                    $sample_property_entries[$j]->sample_property_type_id = $sample_property_type_id;
+                    $sample_property_entries[$j]->value = $sample_data->sample_property_types->$sample_property_type_id;
+                    $j++;
+                }
+            }
+
             // Tied StepEntries and Seqlibs to Samples with has-many relation (They will be saved with Samples, and Samples will be saved with Requests)
             $samples[$i]->StepEntries = $qc_step_entries;
             $samples[$i]->Seqlibs = $seqlibs;
+            $samples[$i]->SamplePropertyEntries = $sample_property_entries;
             $i++;
         }
 
