@@ -2,7 +2,7 @@
 <div class="col-sm-9">
   {{ flashSession.output() }}
   <div id="flash"></div>
-  <div class="panel panel-default">
+  <div class="panel panel-success">
     <div class="panel-heading">User & Project</div>
     <div class="panel-body">
       <div id="lab_select" class="form-group">
@@ -25,7 +25,7 @@
     </div>
     {% include "partials/modal-project.volt" %}
   </div>
-  <div class="panel panel-default">
+  <div class="panel panel-success">
     <div class="panel-heading">Sample</div>
     <div class="panel-body">
       <div id="sample_type_select" class="form-group">
@@ -69,7 +69,13 @@
             <div class="form-group">
               <select id="sample_property_types" multiple="multiple">
                 {% for sample_property_type in sample_property_types %}
-                  <option value="sample_property_type_id_{{ sample_property_type.id }}">{{ sample_property_type.name }}</option>
+                  {% set sample_property_type_id_str = "sample_property_type_id_" ~ sample_property_type.id %}
+                  {% if sample_property_types_checked.name[sample_property_type_id_str] is defined
+                      and sample_property_types_checked.name[sample_property_type_id_str] == "true" %}
+                      <option value="{{ sample_property_type_id_str }}" selected>{{ sample_property_type.name }}</option>
+                  {% else %}
+                      <option value="{{ sample_property_type_id_str }}">{{ sample_property_type.name }}</option>
+                  {% endif %}
                 {% endfor %}
               </select>
               <input type="text" class="form-control" placeholder="Search">
@@ -85,7 +91,7 @@
       <div id="handsontable-orderSamples-body"></div>
     </div>
   </div>
-  <div class="panel panel-default">
+  <div class="panel panel-success">
     <div class="panel-heading">Sequence Library & Multiplex
       <div class="checkbox-inline pull-right">
         <label>
@@ -112,7 +118,7 @@
     </div>
   </div>
   <div
-      class="panel panel-default seqlib-undecide-toggle-target collapse {% if seqlib_undecided.name === "false" %}in{% endif %}">
+      class="panel panel-success seqlib-undecide-toggle-target collapse {% if seqlib_undecided.name === "false" %}in{% endif %}">
     <div class="panel-heading">Sequencing Run
       <div class="checkbox-inline pull-right">
         <label>
@@ -146,7 +152,7 @@
   </div>
   <div class="seqrun-undecide-toggle-target collapse in">
     <div
-        class="panel panel-default seqlib-undecide-toggle-target collapse {% if seqlib_undecided.name === "false" and seqrun_undecided.name === "false" %}in{% endif %}">
+        class="panel panel-success seqlib-undecide-toggle-target collapse {% if seqlib_undecided.name === "false" and seqrun_undecided.name === "false" %}in{% endif %}">
       <div class="panel-heading">Pipeline
         <div class="checkbox-inline pull-right">
           <label>
@@ -162,7 +168,7 @@
   </div>
 </div>
 <div class="col-sm-3" id="new_order_summary">
-  <div class="panel panel-default" data-offset-top="50" data-spy="affix">
+  <div class="panel panel-primary" data-offset-top="50" data-spy="affix">
     <div class="panel-heading">Summary</div>
     <ul class="list-group">
       <li class="list-group-item text-info">User & Project
@@ -869,7 +875,7 @@ $(document).ready(function () {
       });
 
   //var handsontable = $container.data('handsontable');
-  var handsontable = $container.handsontable('getInstance');
+  var $handsontable = $container.handsontable('getInstance');
 
 
   function loadData() {
@@ -883,7 +889,7 @@ $(document).ready(function () {
         .done(function (data) {
           //alert(data);
           //alert(location.href);
-          handsontable.loadData(data);
+          $handsontable.loadData(data);
         });
   }
 
@@ -891,17 +897,17 @@ $(document).ready(function () {
 
   //Build 'Undo' function on toolbar
   $toolbar.find('#undo').click(function () {
-    // alert('undo! '+handsontable.isUndoAvailable()+'
-    // '+handsontable.isRedoAvailable())
-    handsontable.undo();
+    // alert('undo! '+$handsontable.isUndoAvailable()+'
+    // '+$handsontable.isRedoAvailable())
+    $handsontable.undo();
     // $console.text('Undo!');
-    if (handsontable.isUndoAvailable()) {
+    if ($handsontable.isUndoAvailable()) {
       $toolbar.find('#undo').removeClass('disabled');
     } else {
       $toolbar.find('#undo').addClass('disabled');
     }
 
-    if (handsontable.isRedoAvailable()) {
+    if ($handsontable.isRedoAvailable()) {
       $toolbar.find('#redo').removeClass('disabled');
     } else {
       $toolbar.find('#redo').addClass('disabled');
@@ -910,17 +916,17 @@ $(document).ready(function () {
 
   //Build 'Redo' function on toolbar
   $toolbar.find('#redo').click(function () {
-    // alert('redo! '+handsontable.isUndoAvailable()+'
-    // '+handsontable.isRedoAvailable());
-    handsontable.redo();
+    // alert('redo! '+$handsontable.isUndoAvailable()+'
+    // '+$handsontable.isRedoAvailable());
+    $handsontable.redo();
     // $console.text('Redo!');
-    if (handsontable.isUndoAvailable()) {
+    if ($handsontable.isUndoAvailable()) {
       $toolbar.find('#undo').removeClass('disabled');
     } else {
       $toolbar.find('#undo').addClass('disabled');
     }
 
-    if (handsontable.isRedoAvailable()) {
+    if ($handsontable.isRedoAvailable()) {
       $toolbar.find('#redo').removeClass('disabled');
     } else {
       $toolbar.find('#redo').addClass('disabled');
@@ -930,9 +936,10 @@ $(document).ready(function () {
   $toolbar.find('#clear').click(function () {
     $toolbar.find('#save, #undo, #redo, #clear').addClass('disabled');
     $console.text('All changes is discarded').removeClass().addClass('alert alert-success');
-    handsontable.loadData(null);
+    $handsontable.loadData(null);
   });
 
+  var $samplePropertyTypesChecked = new Object();
   $('#sample_property_types').multiselect({
     /*
      * Show/Hide sample_property_types columns when checkbox is checked/unchecked.
@@ -951,12 +958,15 @@ $(document).ready(function () {
           } else {
             changedColWidths[actualColWidthIdx] = 0.1;
           }
-          //@TODO set session to record status of checkbox.
-          //setOrderSessionVal('sample_property_types.'+element.val(), 0, checked);
+          $samplePropertyTypesChecked[$samplePropertyTypesColumns[i]] = checked;
         }
       }
-      //console.log(element.val()+" : "+checked);
-      handsontable.updateSettings( {'colWidths' : changedColWidths} );
+      //Set session value for sample_property_types checked of checked/unchecked.
+      setOrderSessionVal('sample_property_types_checked', 0, $samplePropertyTypesChecked);
+      console.log($samplePropertyTypesChecked);
+
+      //Change column width (Show checked sample_property_types column) on handsontable.
+      $handsontable.updateSettings( {'colWidths' : changedColWidths} );
       //console.log(changedColWidths);
     }
   });

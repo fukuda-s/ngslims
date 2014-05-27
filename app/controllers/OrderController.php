@@ -78,6 +78,11 @@ class OrderController extends ControllerBase
         //Set sample_property_types for columns of Handsontable.
         $sample_property_types = SamplePropertyTypes::find("active = 'Y'");
         $this->view->setVar('sample_property_types', $sample_property_types);
+
+        //Set sample_property_types_checked session value as pre-selected
+        if ($this->session->has('sample_property_types_checked')) {
+            $this->view->setVar('sample_property_types_checked', $this->session->get('sample_property_types_checked'));
+        }
     }
 
     public function userSelectListAction($lab_id)
@@ -324,6 +329,7 @@ class OrderController extends ControllerBase
             }
         }
     }
+
 
     public function seqRunTypeSelectListAction($instrument_type_id)
     {
@@ -828,6 +834,7 @@ class OrderController extends ControllerBase
             $this->session->remove('organism');
             $this->session->remove('qc_inside');
             $this->session->remove('sample');
+            $this->session->remove('sample_property_types_checked');
             $this->session->remove('seqlib_undecided');
             $this->session->remove('step');
             $this->session->remove('protocol');
