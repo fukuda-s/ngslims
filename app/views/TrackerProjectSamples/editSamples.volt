@@ -3,6 +3,7 @@
     {{ partial('partials/trackerProjectSamples-header') }}
     <hr>
     {{ flashSession.output() }}
+    {# {{ dump(sample_property_types) }} #}
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
       <li class="active">{{ link_to("trackerProjectSamples/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
@@ -112,7 +113,7 @@ $(document).ready(function () {
 
   // Cleaved edited row from whole data of handsontable.
   function cleaveData(changes) {
-    var data = handsontable.getData();
+    var data = $handsontable.getData();
     var cleavedData = Object();
     //for (var i = 0; i < changes.length; i++) {
     $.each(changes, function (rowIndex, rowValues) {
@@ -152,6 +153,24 @@ $(document).ready(function () {
   var $console = $("#handsontable-console");
   var $toolbar = $("#handsontable-toolbar");
   var autosaveNotification = String();
+  var $samplePropertyTypesColumns = [
+    {% for sample_property_type in sample_property_types %}
+    "sample_property_type_id_{{ sample_property_type.id }}",
+    {% endfor %}
+  ];
+  var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 150
+    {% for sample_property_type in sample_property_types %}
+      {% if sample_property_type.sample_count > 0 %}
+       , 120
+      {% else %}
+       , 0.1
+      {% endif %}
+    {% endfor %}
+    {% if type === 'PREP' %}
+      , 80, 150
+    {% endif %}
+  ];
+  var $samplePropertyTypesColumnsStartIdx = 12; //@TODO First index number(begin by 0) of sample_property_types
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,
@@ -160,7 +179,7 @@ $(document).ready(function () {
     contextMenu: true,
     columnSorting: true,
     manualColumnResize: true,
-    colWidths: [120, , , , , , , , , , , 150, , 150],
+    colWidths: $defaultColWidths,
     columns: [
       { data: "name", title: "Sample Name", readOnly: true },
       { data: "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer },
@@ -173,9 +192,11 @@ $(document).ready(function () {
       { data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000' },
       { data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
       { data: "qual_amount", data: 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
-      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' }
+      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' },
+      {% for sample_property_type in sample_property_types %}
+      { data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', type: 'text'},
+      {% endfor %}
       {% if type === 'PREP' %}
-      ,
       { data: "to_prep", title: "Create New SeqLib", type: 'checkbox' },
       { data: "to_prep_protocol_name", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer }
       {% endif %}
@@ -218,7 +239,7 @@ $(document).ready(function () {
 
     }
   });
-  var handsontable = $container.data('handsontable');
+  var $handsontable = $container.data('handsontable');
 
   function loadData() {
     $.ajax({
@@ -235,14 +256,14 @@ $(document).ready(function () {
             value["to_prep"] = "false";
             value["to_prep_protocol_name"] = '';
           });
-          $container.handsontable("loadData", data);
+          $handsontable.loadData(data);
         });
   }
 
   loadData(); // loading data at first.
 
   $toolbar.find('#save').click(function () {
-    //alert("save! "+handsontable.getData());
+    //alert("save! "+$handsontable.getData());
     $.ajax({
       url: '{{ url("trackerProjectSamples/saveSamples") }}',
       data: {data: cleaveData(isDirtyAr), changes: isDirtyAr }, // returns all cells
@@ -262,17 +283,17 @@ $(document).ready(function () {
   });
 
   $toolbar.find('#undo').click(function () {
-    // alert("undo! "+handsontable.isUndoAvailable()+"
-    // "+handsontable.isRedoAvailable())
-    handsontable.undo();
+    // alert("undo! "+$handsontable.isUndoAvailable()+"
+    // "+$handsontable.isRedoAvailable())
+    $handsontable.undo();
     // $console.text('Undo!');
-    if (handsontable.isUndoAvailable()) {
+    if ($handsontable.isUndoAvailable()) {
       $toolbar.find("#undo").removeClass("disabled");
     } else {
       $toolbar.find("#undo").addClass("disabled");
     }
 
-    if (handsontable.isRedoAvailable()) {
+    if ($handsontable.isRedoAvailable()) {
       $toolbar.find("#redo").removeClass("disabled");
     } else {
       $toolbar.find("#redo").addClass("disabled");
@@ -280,17 +301,17 @@ $(document).ready(function () {
   });
 
   $toolbar.find('#redo').click(function () {
-    // alert("redo! "+handsontable.isUndoAvailable()+"
-    // "+handsontable.isRedoAvailable());
-    handsontable.redo();
+    // alert("redo! "+$handsontable.isUndoAvailable()+"
+    // "+$handsontable.isRedoAvailable());
+    $handsontable.redo();
     // $console.text('Redo!');
-    if (handsontable.isUndoAvailable()) {
+    if ($handsontable.isUndoAvailable()) {
       $toolbar.find("#undo").removeClass("disabled");
     } else {
       $toolbar.find("#undo").addClass("disabled");
     }
 
-    if (handsontable.isRedoAvailable()) {
+    if ($handsontable.isRedoAvailable()) {
       $toolbar.find("#redo").removeClass("disabled");
     } else {
       $toolbar.find("#redo").addClass("disabled");
@@ -310,6 +331,38 @@ $(document).ready(function () {
     }
     else {
       $console.text('Changes will not be autosaved').removeClass().addClass("alert alert-warning");
+    }
+  });
+
+  //var $samplePropertyTypesChecked = new Object();
+  $('#sample_property_types').multiselect({
+    /*
+     * Show/Hide sample_property_types columns when checkbox is checked/unchecked.
+     */
+    onChange: function(element, checked) {
+
+      var changedColWidths = $defaultColWidths;
+      console.log(changedColWidths);
+
+      for(var i = 0; i < $samplePropertyTypesColumns.length; i++){
+        var actualColWidthIdx = i + $samplePropertyTypesColumnsStartIdx;
+        if ($samplePropertyTypesColumns[i] == element.val()){
+          //console.log($samplePropertyTypesColumns[i] + " : " + element.val());
+          if(checked == true){
+            changedColWidths[actualColWidthIdx] = 120;
+          } else {
+            changedColWidths[actualColWidthIdx] = 0.1;
+          }
+          //$samplePropertyTypesChecked[$samplePropertyTypesColumns[i]] = checked;
+        }
+      }
+      //Set session value for sample_property_types checked of checked/unchecked.
+      //setOrderSessionVal('sample_property_types_checked', 0, $samplePropertyTypesChecked);
+      //console.log($samplePropertyTypesChecked);
+
+      //Change column width (Show checked sample_property_types column) on handsontable.
+      $handsontable.updateSettings( {'colWidths' : changedColWidths} );
+      console.log(changedColWidths);
     }
   });
 

@@ -112,6 +112,27 @@ class TrackerProjectSamplesController extends ControllerBase
         } else {
             $this->view->setVar('step', Steps::findFirstById($step_id));
         }
+
+        //Set sample_property_types for columns of Handsontable.
+        $phql = "
+          SELECT
+            spt.id,
+            spt.name,
+            spt.mo_term_name,
+            COUNT(s.id) AS sample_count
+          FROM
+            SamplePropertyTypes spt
+             LEFT JOIN
+            SamplePropertyEntries spe ON spe.sample_property_type_id = spt.id
+             LEFT JOIN
+            Samples s ON s.id = spe.sample_id
+               AND s.project_id = :project_id:
+            GROUP BY spt.id
+        ";
+        $sample_property_types = $this->modelsManager->executeQuery($phql, array(
+            'project_id' => $project_id
+        ));
+        $this->view->setVar('sample_property_types', $sample_property_types);
     }
 
     public function saveSamplesAction()
@@ -185,12 +206,35 @@ class TrackerProjectSamplesController extends ControllerBase
 
 
                             } else {
-                                $sample->$colNameToChange = $valueChangeTo;
-                                if (!$sample->save()) {
-                                    foreach ($sample->getMessages() as $message) {
-                                        $this->flashSession->error((string)$message);
+                                $pattern = '/sample_property_types\.(\d+)/i';
+                                //If the changes are sample_property_entries.
+                                if (preg_match($pattern, $colNameToChange)) {
+                                    $replacement = '${1}';
+                                    $sample_property_type_id = preg_replace($pattern, $replacement, $colNameToChange);
+                                    //@TODO Is it possible to bind with '$sample' object?
+                                    $sample_property_entry = SamplePropertyEntries::findFirst(array(
+                                        "sample_property_type_id = :sample_property_type_id: AND sample_id = :sample_id:",
+                                        'bind' => array(
+                                            "sample_property_type_id" => $sample_property_type_id,
+                                            "sample_id" => $sample_id
+                                        )
+                                    ));
+                                    $sample_property_entry->value = $valueChangeTo;
+                                    if (!$sample_property_entry->save()) {
+                                        foreach ($sample->getMessages() as $message) {
+                                            $this->flashSession->error((string)$message);
+                                        }
+                                        return;
                                     }
-                                    return;
+                                } else {
+                                //If the changes are samples own.
+                                    $sample->$colNameToChange = $valueChangeTo;
+                                    if (!$sample->save()) {
+                                        foreach ($sample->getMessages() as $message) {
+                                            $this->flashSession->error((string)$message);
+                                        }
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -464,8 +508,8 @@ class TrackerProjectSamplesController extends ControllerBase
                 $this->view->setVar('seqlibs', $seqlibs);
 
                 $oligobarcodeB_exists = false;
-                foreach($seqlibs as $seqlib){
-                    if ( $seqlib->sl->oligobarcodeB_id != null) {
+                foreach ($seqlibs as $seqlib) {
+                    if ($seqlib->sl->oligobarcodeB_id != null) {
                         $oligobarcodeB_exists = true;
                         continue;
                     }

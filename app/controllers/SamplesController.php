@@ -42,8 +42,25 @@ class SamplesController extends ControllerBase
                         ->getQuery()
                         ->execute();
                 }
-                //echo json_encode($this->handsontableHelper->getValuesArr($samples->toArray()));
-                echo json_encode($samples->toArray());
+
+                //Set sample_property_entries for each sample.
+                $samples_array = array();
+                foreach ($samples as $sample) {
+                    $sample_array = $sample->toArray();
+                    $sample_property_entries = $sample->SamplePropertyEntries;
+                    //echo json_encode($sample_property_entries->toArray());
+                    if($sample_property_entries){
+                        $sample_property_entries_array = array();
+                        foreach($sample_property_entries as $sample_property_entry){
+                            //echo json_encode($sample_property_entry->toArray());
+                            $sample_property_type = $sample_property_entry->SamplePropertyTypes;
+                            $sample_property_entries_array[$sample_property_type->id] = $sample_property_entry->value;
+                        }
+                        $sample_array['sample_property_types'] = $sample_property_entries_array;
+                    }
+                    array_push($samples_array, $sample_array);
+                }
+                echo json_encode($samples_array);
             }
         }
     }

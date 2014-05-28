@@ -11,11 +11,22 @@
   <div class="collapse navbar-collapse" id="handsontable-toolbar">
     <ul class="nav navbar-nav">
       <li class="disabled" id="save"><a href="#"><i class="fa fa-save"></i> Save</a></li>
-      <li class="disabled" id="undo"><a href="#"><i class="fa fa-undo"></i> Undo</a></li>
+      <li class="disabled" id="undo"><a href="#"><i class="fa fa-undo"></i> Unde</a></li>
       <li class="disabled" id="redo"><a href="#">Redo <i class="fa fa-repeat"></i></a></li>
     </ul>
     <form class="navbar-form navbar-right" role="search">
       <div class="form-group">
+        {% if step.id == 0 %}
+        <select id="sample_property_types" multiple="multiple">
+        {% for sample_property_type in sample_property_types %}
+          {% if sample_property_type.sample_count > 0 %}
+            <option value="sample_property_type_id_{{ sample_property_type.id }}" disabled="disabled" selected>{{ sample_property_type.name }}</option>
+          {% else %}
+            <option value="sample_property_type_id_{{ sample_property_type.id }}">{{ sample_property_type.name }}</option>
+          {% endif %}
+        {% endfor %}
+        </select>
+        {% endif %}
         <input type="text" class="form-control" placeholder="Search">
       </div>
     </form>

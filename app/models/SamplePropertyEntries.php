@@ -39,4 +39,9 @@ class SamplePropertyEntries extends \Phalcon\Mvc\Model
             'value' => 'value'
         );
     }
+
+    public function initialize()
+    {
+        $this->hasOne('sample_property_type_id', 'SamplePropertyTypes', 'id');
+    }
 }
