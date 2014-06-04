@@ -103,6 +103,18 @@ class Samples extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $barcode_number;
+
+    /**
+     *
+     * @var integer
+     */
+    public $sample_location_id;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -137,6 +149,8 @@ class Samples extends \Phalcon\Mvc\Model
             'qual_fragment_size' => 'qual_fragment_size',
             'qual_date' => 'qual_date',
             'notes' => 'notes',
+            'barcode_number' => 'barcode_number',
+            'sample_location_id' => 'sample_location_id',
             'created_at' => 'created_at',
             'description' => 'description'
         );
@@ -148,6 +162,7 @@ class Samples extends \Phalcon\Mvc\Model
         $this->hasOne('project_id', 'Projects', 'id');
         $this->hasOne('request_id', 'Requests', 'id');
         $this->hasOne('sample_type_id', 'SampleTypes', 'id');
+        $this->hasOne('sample_location_id', 'SampleLocations', 'id');
 
         $this->hasMany('id', 'SeqLibs', 'sample_id');
         $this->hasMany('id', 'StepEntries', 'sample_id');
