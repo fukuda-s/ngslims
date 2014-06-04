@@ -1,4 +1,3 @@
-{{ content() }}
 {# Begin #seqlibs-nobarcode-holder part. #}
 {% for seqlib in seqlibs_nobarcode %}
   {% if loop.first %}
@@ -31,19 +30,20 @@
 <div class="row">
   <div class="col-md-12">
     {% if step.step_phase_code == 'MULTIPLEX' %}
-      {% for oligobarcodeA in oligobarcodeAs %}
-        {% if loop.first %}
+      {% for index, oligobarcodeA in oligobarcodeAs %}
+        {% if index == 0 %} {# @TODO loop.first couldn't use here, it is bug of phalcon. #}
           <table class="tube-matrix table table-hover table-condensed">
           <thead id="seqtemplate-matrix-header">
           <tr>
-            <td class="tube tube-sm-header">OligoBarcode</td>
+            <th class="tube tube-sm-header">OligoBarcode</th>
             {% for seqtemplate_index, seqtempalte in seqtemplates %}
-              <td id="seqtemplate_index_{{ seqtemplate_index }}" class="tube tube-sm-header">{{ seqtemplate_index }}</td>
+              <th id="seqtemplate_index_{{ seqtemplate_index }}"
+                  class="tube tube-sm-header">{{ seqtemplate_index }}</th>
               {% if loop.last %}
-                <td>
+                <th>
                   <button type="button" id="add-seqtemplate-button" class="btn btn-default btn-xs pull-left"><span
                         class="glyphicon glyphicon-plus"></span></button>
-                </td>
+                </th>
               {% endif %}
               {% elsefor %} No records on seqtemplates
             {% endfor %}
@@ -81,8 +81,8 @@
     {# @TODO Could not use 'elseif' at here. Is it Bug? #}
     {% if step.step_phase_code == 'DUALMULTIPLEX' %}
       {% for seqtemplate_index, seqtemplate in seqtemplates %}
-        {% for oligobarcodeB in oligobarcodeBs %}
-          {% if loop.first %}
+        {% for indexB, oligobarcodeB in oligobarcodeBs %}
+          {% if indexB == 0 %} {# @TODO loop.first couldn't use here, it is bug of phalcon. #}
             <table class="tube-matrix table table-hover table-condensed">
             <thead>
             <tr>
@@ -129,7 +129,7 @@
   </div>
 </div>
 <script>
-  $(function () {
+  $(document).ready(function () {
     /*
      * Set jQuery-UI sortable to #seqlibs-nobarcode-holder
      */
@@ -150,7 +150,10 @@
         // Append close button on sorted seqlib tube
         ui.item.append('<button type="button" class="close pull-right">&times;</button>');
         ui.item.find('button.close').click(function () {
-          $(this).parent('td').replaceWith('<td class="tube tube-sm tube-empty"></td>');
+          clicked_td = $(this).parent('td').remove('button.close');
+          //@TODO The tube which clicked closed button should be back to #saqlibs-nobarcode-holder
+          //clicked_td.clone(true).remove('button.close').appendTo('#seqlibs-nobarcode-holder');
+          clicked_td.replaceWith('<td class="tube tube-sm tube-empty"></td>');
         });
 
         // Remove tube-empty which dragged seqlib tube from #seqlibs-nobarcode-holder
@@ -173,7 +176,10 @@
         // Append close button on sorted seqlib tube
         ui.item.append('<button type="button" class="close pull-right">&times;</button>');
         ui.item.find('button.close').click(function () {
-          $(this).parent('td').replaceWith('<td class="tube tube-sm tube-empty"></td>');
+          clicked_td = $(this).parent('td');
+          //@TODO The tube which clicked closed button should be back to #saqlibs-nobarcode-holder
+          //$('#seqlibs-nobarcode-holder').append(clicked_td.parent().html());
+          clicked_td.replaceWith('<td class="tube tube-sm tube-empty"></td>');
         });
 
         // Remove tube-empty which dragged seqlib tube from #seqlibs-nobarcode-holder
@@ -190,7 +196,10 @@
      * Set function close button on each seqlib tubes
      */
     $('button.close').click(function () {
-      $(this).parent('td').replaceWith('<td class="tube tube-sm tube-empty"></td>');
+      clicked_td = $(this).parent('td');
+      //@TODO The tube which clicked closed button should be back to #saqlibs-nobarcode-holder
+      //$('#seqlibs-nobarcode-holder').append(clicked_td.html());
+      clicked_td.replaceWith('<td class="tube tube-sm tube-empty"></td>');
     });
 
     /*
@@ -203,7 +212,7 @@
        */
       var seqtemplates = [];
       //For MULTIPLEX
-      $('#seqtemplate-matrix-header').find('td').each(function () {
+      $('#seqtemplate-matrix-header').find('th').each(function () {
         var seqtemplate_index = $(this).attr('id');
         if (seqtemplate_index) {
           seqtemplates.push(seqtemplate_index.replace('seqtemplate_index_', ''));
@@ -231,13 +240,17 @@
       //For MULTIPLEX
       $('tr[id^=oligobarcodeA_id_]').each(function () {
         var oligobarcodeA_id = $(this).attr('id').replace('oligobarcodeA_id_', '');
-        $(this).find('td[id^=seqlib_id_]').each(function (index) {
+        //$(this).find('td[id^=seqlib_id_]').each(function (index) {
+        $(this).find("td:not('.tube-sm-header')").each(function (index) {
           var seqtemplate_index = seqtemplates[index];
+          //console.log(oligobarcodeA_id + ' : ' + seqtemplate_index + " : " + index);
           if (!seqlibs[seqtemplate_index]) {
             seqlibs[seqtemplate_index] = new Object();
           }
-          var seqlib_id = $(this).attr('id').replace('seqlib_id_', '');
-          seqlibs[seqtemplate_index][seqlib_id] = {seqlib_id: seqlib_id, oligobarcodeA_id: oligobarcodeA_id, seqtemplate_index: seqtemplate_index};
+          if ( $(this).is('td[id^=seqlib_id_]') ){
+            var seqlib_id = $(this).attr('id').replace('seqlib_id_', '');
+            seqlibs[seqtemplate_index][seqlib_id] = {seqlib_id: seqlib_id, oligobarcodeA_id: oligobarcodeA_id, seqtemplate_index: seqtemplate_index};
+          }
         })
       });
 
@@ -271,6 +284,21 @@
               window.location = "{{ url("tracker/multiplexConfirm/") ~ step.id }}"
             });
       }
+    });
+
+    $('#add-seqtemplate-button').click(function () {
+      $('#seqtemplate-matrix-header').find('th[id^=seqtemplate_index_]').filter(':last').html( function(){
+        var new_seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_','');
+        new_seqtemplate_index++;
+
+        //Add new column header with new_seqtemplate_index.
+        $(this).after('<th id="seqtemplate_index_'+new_seqtemplate_index+'" class="tube tube-sm-header">'+new_seqtemplate_index+'</th>');
+        console.log(this);
+      })
+      $('#seqtemplate-matrix-body').find('tr').each(function () {
+        //Add new column with new_seqtemplate_index for each row.
+        $(this).append('<td class="tube tube-sm tube-empty"></td>');
+      })
     });
 
   });

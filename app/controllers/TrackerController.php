@@ -259,15 +259,17 @@ class TrackerController extends ControllerBase
             $seqtemplates = array();
             foreach ($oligobarcodeAs as $oligobarcodeA) {
                 $oligobarcodeA_id = $oligobarcodeA->o->id;
-                $seqtemplate_index = 1;
-                $seqtemplates[$seqtemplate_index] = 1;
-                foreach ($seqlibs_all as $seqlib) {
-                    if ($seqlib->sl->oligobarcodeA_id && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id) {
-                        if (!empty($seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id])) {
-                            $seqtemplate_index++;
-                            $seqtemplates[$seqtemplate_index] = 1;
+                if ($seqlibs_all) {
+                    $seqtemplate_index = 1;
+                    $seqtemplates[$seqtemplate_index] = 1;
+                    foreach ($seqlibs_all as $seqlib) {
+                        if ($seqlib->sl->oligobarcodeA_id && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id) {
+                            if (!empty($seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id])) {
+                                $seqtemplate_index++;
+                                $seqtemplates[$seqtemplate_index] = 1;
+                            }
+                            $seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id] = $seqlib;
                         }
-                        $seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id] = $seqlib;
                     }
                 }
             }
@@ -390,11 +392,13 @@ class TrackerController extends ControllerBase
         $seqlibs = array();
         $oligobarcodes = array();
         foreach ($selected_seqtemplates as $selected_seqtemplate_index) {
-            foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
-                $seqlibs[$selected_seqlib['seqlib_id']] = Seqlibs::findFirstById($selected_seqlib['seqlib_id']);
-                $oligobarcodes[$selected_seqlib['oligobarcodeA_id']] = Oligobarcodes::findFirstById($selected_seqlib['oligobarcodeA_id']);
-                if (!empty($selected_seqlib['oligobarcodeB_id'])) {
-                    $oligobarcodes[$selected_seqlib['oligobarcodeB_id']] = Oligobarcodes::findFirstById($selected_seqlib['oligobarcodeB_id']);
+            if (isset($selected_seqlibs[$selected_seqtemplate_index])) {
+                foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
+                    $seqlibs[$selected_seqlib['seqlib_id']] = Seqlibs::findFirstById($selected_seqlib['seqlib_id']);
+                    $oligobarcodes[$selected_seqlib['oligobarcodeA_id']] = Oligobarcodes::findFirstById($selected_seqlib['oligobarcodeA_id']);
+                    if (!empty($selected_seqlib['oligobarcodeB_id'])) {
+                        $oligobarcodes[$selected_seqlib['oligobarcodeB_id']] = Oligobarcodes::findFirstById($selected_seqlib['oligobarcodeB_id']);
+                    }
                 }
             }
         }
