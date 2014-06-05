@@ -305,6 +305,22 @@ CREATE TABLE `requests` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `sample_locations`
+--
+
+DROP TABLE IF EXISTS `sample_locations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sample_locations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `active` char(1) NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `sample_property_entries`
 --
 
@@ -337,7 +353,8 @@ CREATE TABLE `sample_property_types` (
   `mo_term_name` varchar(45) NOT NULL,
   `mo_id` varchar(45) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `mo_term_name_UNIQUE` (`mo_term_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -381,6 +398,9 @@ CREATE TABLE `samples` (
   `qual_nanodrop_conc` decimal(8,4) unsigned DEFAULT NULL,
   `qual_fragment_size` int(11) unsigned DEFAULT NULL,
   `qual_date` datetime DEFAULT NULL,
+  `notes` varchar(200) DEFAULT NULL,
+  `barcode_number` int(10) DEFAULT NULL,
+  `sample_location_id` int(11) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -389,6 +409,8 @@ CREATE TABLE `samples` (
   KEY `fk_samples_projects_idx` (`project_id`),
   KEY `fk_samples_sample_types_idx` (`sample_type_id`),
   KEY `fk_samples_organisms_idx` (`organism_id`),
+  KEY `fk_samples_sample_locations_idx` (`sample_location_id`),
+  CONSTRAINT `fk_samples_sample_locations` FOREIGN KEY (`sample_location_id`) REFERENCES `sample_locations` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_organisms` FOREIGN KEY (`organism_id`) REFERENCES `organisms` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_requests` FOREIGN KEY (`request_id`) REFERENCES `requests` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -648,7 +670,7 @@ CREATE TABLE `step_entries` (
   CONSTRAINT `fk_step_entries_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_seqtemplates` FOREIGN KEY (`seqtemplate_id`) REFERENCES `seqtemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -722,4 +744,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-04-14 15:38:00
+-- Dump completed on 2014-06-05 11:13:59
