@@ -17,7 +17,17 @@ class SampleLocations extends \Phalcon\Mvc\Model
      * @var string
      */
     public $name;
-     
+
+    /**
+     *
+     * @var string
+     */
+    public $active;
+
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
     /**
      * Independent Column Mapping.
      */
@@ -25,8 +35,19 @@ class SampleLocations extends \Phalcon\Mvc\Model
     {
         return array(
             'id' => 'id', 
-            'name' => 'name'
+            'name' => 'name',
+            'active' => 'active'
         );
+    }
+
+    public function initialize()
+    {
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => Instruments::NOT_ACTIVE
+            )
+        ));
     }
 
 }
