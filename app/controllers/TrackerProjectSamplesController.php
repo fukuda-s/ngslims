@@ -226,9 +226,24 @@ class TrackerProjectSamplesController extends ControllerBase
                                         }
                                         return;
                                     }
-                                } else {
-                                //If the changes are samples own.
-                                    $sample->$colNameToChange = $valueChangeTo;
+                                } else { //If the changes are samples own.
+                                    if ( $colNameToChange == 'sample_location_id') {
+                                        //Set up sample_location values
+                                        $sample_location_name = $valueChangeTo;
+                                        $sample_location = SampleLocations::findFirst(array(
+                                            "name = :name:",
+                                            'bind' => array(
+                                                'name' => $sample_location_name
+                                            )
+                                        ));
+                                        if (!$sample_location) {
+                                            $this->flashSession->error("Sample Location: ".$sample_location_name." is not configured.");
+                                            return;
+                                        }
+                                        $sample->sample_location_id = $sample_location->id;
+                                    } else {
+                                        $sample->$colNameToChange = $valueChangeTo;
+                                    }
                                     if (!$sample->save()) {
                                         foreach ($sample->getMessages() as $message) {
                                             $this->flashSession->error((string)$message);

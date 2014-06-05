@@ -1,7 +1,6 @@
 <?php
 
-
-
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class SampleLocations extends \Phalcon\Mvc\Model
 {
@@ -11,7 +10,7 @@ class SampleLocations extends \Phalcon\Mvc\Model
      * @var integer
      */
     public $id;
-     
+
     /**
      *
      * @var string
@@ -34,7 +33,7 @@ class SampleLocations extends \Phalcon\Mvc\Model
     public function columnMap()
     {
         return array(
-            'id' => 'id', 
+            'id' => 'id',
             'name' => 'name',
             'active' => 'active'
         );

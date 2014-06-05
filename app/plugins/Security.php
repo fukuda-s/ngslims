@@ -116,6 +116,9 @@ class Security extends Plugin
                 'sampletypes' => array(
                     'loadjson'
                 ),
+                'samplelocations' => array(
+                    'loadjson'
+                ),
                 'organisms' => array(
                     'loadjson'
                 ),

@@ -29,6 +29,8 @@ var sampleTypeAr = [];
 var organismAr = [];
 var protocolAr = [];
 var protocolDrop = [];
+var sampleLocationAr = [];
+var sampleLocationDrop = [];
 
 $(document).ready(function () {
 
@@ -93,6 +95,27 @@ $(document).ready(function () {
       }
   );
 
+  function getSampleLocationAr(data) {
+    //console.log("stringified:"+JSON.stringify(data));
+    var parseAr = JSON.parse(JSON.stringify(data));
+    //alert(parseAr);
+    $.each(parseAr, function (key, value) {
+      //alert(value["id"]+" : "+value["name"]);
+      var sample_location_id = value["id"];
+      var sample_location_name = value["name"];
+      sampleLocationAr[sample_location_id] = sample_location_name;
+      sampleLocationDrop.push(value["name"]);
+    });
+  }
+
+  $.getJSON(
+      '{{ url("samplelocations/loadjson") }}',
+      {},
+      function (data, status, xhr) {
+        getSampleLocationAr(data);
+      }
+  );
+
 
   var sampleTypeRenderer = function (instance, td, row, col, prop, value, cellProperties) {
     Handsontable.TextCell.renderer.apply(this, arguments);
@@ -109,6 +132,12 @@ $(document).ready(function () {
   var protocolRenderer = function (instance, td, row, col, prop, value, cellProperties) {
     Handsontable.TextCell.renderer.apply(this, arguments);
     $(td).text(protocolAr[value]);
+  };
+
+  var sampleLocationRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+    Handsontable.TextCell.renderer.apply(this, arguments);
+    //alert("renderer: "+sampleTypeAr[value]);
+    $(td).text(sampleLocationAr[value]);
   };
 
   // Cleaved edited row from whole data of handsontable.
@@ -158,7 +187,7 @@ $(document).ready(function () {
     "sample_property_type_id_{{ sample_property_type.id }}",
     {% endfor %}
   ];
-  var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 150
+  var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 150, 80, 100
     {% for sample_property_type in sample_property_types %}
       {% if sample_property_type.sample_count > 0 %}
        , 120
@@ -170,7 +199,7 @@ $(document).ready(function () {
       , 80, 150
     {% endif %}
   ];
-  var $samplePropertyTypesColumnsStartIdx = 12; //@TODO First index number(begin by 0) of sample_property_types
+  var $samplePropertyTypesColumnsStartIdx = 14; //@TODO First index number(begin by 0) of sample_property_types
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,
@@ -193,6 +222,8 @@ $(document).ready(function () {
       { data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
       { data: "qual_amount", data: 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
       { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' },
+      { data: "barcode_number", title: "2D barcode" },
+      { data: "sample_location_id", title: "Sample Repo.", type: "dropdown", source: sampleLocationDrop, renderer: sampleLocationRenderer },
       {% for sample_property_type in sample_property_types %}
       { data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', type: 'text'},
       {% endfor %}
