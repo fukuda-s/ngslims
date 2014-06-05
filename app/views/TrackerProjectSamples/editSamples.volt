@@ -187,7 +187,7 @@ $(document).ready(function () {
     "sample_property_type_id_{{ sample_property_type.id }}",
     {% endfor %}
   ];
-  var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 150, 80, 100
+  var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 150, 80, 110
     {% for sample_property_type in sample_property_types %}
       {% if sample_property_type.sample_count > 0 %}
        , 120
@@ -223,7 +223,7 @@ $(document).ready(function () {
       { data: "qual_amount", data: 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
       { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' },
       { data: "barcode_number", title: "2D barcode" },
-      { data: "sample_location_id", title: "Sample Repo.", type: "dropdown", source: sampleLocationDrop, renderer: sampleLocationRenderer },
+      { data: "sample_location_id", title: "Sample Repos.", type: "dropdown", source: sampleLocationDrop, renderer: sampleLocationRenderer },
       {% for sample_property_type in sample_property_types %}
       { data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', type: 'text'},
       {% endfor %}
