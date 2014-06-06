@@ -90,9 +90,9 @@
           </div>
         </div>
       {% else %}
-        <div class="panel panel-default collapse" id="seqtemplate-panel-{{ seqtemplate.st.id }}"
-             data-toggle="collapse" data-target="#seqtemplate-table-{{ seqtemplate.st.id }}"
-             name="{{ seqtemplate.st.name }}">
+        <div class="panel panel-default collapse" id="seqtemplate-panel-{{ seqtemplate.st.id }}" data-toggle="collapse"
+             data-target="#seqtemplate-table-{{ seqtemplate.st.id }}" seqtemplate_id="{{ seqtemplate.st.id }}"
+             seqtemplate_name="{{ seqtemplate.st.name }}">
           <div class="panel-heading" id="seqtemplate-header-{{ seqtemplate.st.id }}">
             {{ seqtemplate.st.name }}
           </div>
