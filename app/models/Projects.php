@@ -37,6 +37,12 @@ class Projects extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $project_type_id;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -58,6 +64,7 @@ class Projects extends \Phalcon\Mvc\Model
             'name' => 'name',
             'user_id' => 'user_id',
             'pi_user_id' => 'pi_user_id',
+            'project_type_id' => 'project_type_id',
             'created_at' => 'created_at',
             'description' => 'description'
         );
@@ -72,8 +79,10 @@ class Projects extends \Phalcon\Mvc\Model
         $this->belongsTo('pi_user_id', 'Users', 'id', array(
             "alias" => "PIs"
         ));
+        $this->belongsTo('project_type_id', 'ProjectTypes', 'id');
 
         $this->hasMany('id', 'Samples', 'project_id');
+
 
         $this->addBehavior(new Timestampable(
             array(

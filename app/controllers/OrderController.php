@@ -75,6 +75,10 @@ class OrderController extends ControllerBase
         $this->view->form = $form;
         $form->add(new Text("project_name"));
 
+        //Set project_types for project modal
+        $project_types = ProjectTypes::find("active = 'Y'");
+        $this->view->setVar('project_types', $project_types);
+
         //Set sample_property_types for columns of Handsontable.
         $sample_property_types = SamplePropertyTypes::find("active = 'Y'");
         $this->view->setVar('sample_property_types', $sample_property_types);
@@ -653,6 +657,7 @@ class OrderController extends ControllerBase
         }
         $projects = new Projects();
         $projects->name = $this->request->getPost("project_name", "striptags");
+        $projects->project_type_id = $this->request->getPost("project_type_id", "striptags");
         $projects->lab_id = $this->session->get('lab')->id;
         $projects->user_id = $this->session->get('auth')['id'];
         $projects->pi_user_id = $this->session->get('pi_user')->id;
