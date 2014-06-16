@@ -238,8 +238,9 @@ DROP TABLE IF EXISTS `project_types`;
 CREATE TABLE `project_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
-  `create_at` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
+  `create_at` datetime NOT NULL,
+  `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -763,4 +764,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-06-11 16:06:25
+-- Dump completed on 2014-06-13 11:46:45

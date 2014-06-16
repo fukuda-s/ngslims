@@ -1,14 +1,14 @@
 {{ flashSession.output() }}
 <div class="row">
   <div class="col-md-12">
-    {{ partial('partials/trackerProjectSamples-header') }}
+    {{ partial('partials/trackerdetails-header') }}
     <hr>
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
-      <li>{{ link_to("trackerProjectSamples/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
-      <li class="active">{{ link_to("trackerProjectSamples/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
+      <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
+      <li class="active">{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
       {% if type !== 'PREP' %}
-        <li>{{ link_to("trackerProjectSamples/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
+        <li>{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
       {% endif %}
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
@@ -215,7 +215,7 @@ $(document).ready(function () {
       if ($('#handsontable-autosave').find('input').is(':checked')) {
         clearTimeout(autosaveNotification);
         $.ajax({
-          url: '{{ url("trackerProjectSamples/saveSeqlibs") }}',
+          url: '{{ url("trackerdetails/saveSeqlibs") }}',
           dataType: "json",
           type: "POST",
           data: {data: cleaveData(changes), changes: changes} // returns "data" as all data and "changes" as changed data
@@ -274,7 +274,7 @@ $(document).ready(function () {
   $toolbar.find('#save').click(function () {
     //alert("save! "+handsontable.getData());
     $.ajax({
-      url: '{{ url("trackerProjectSamples/saveSeqlibs") }}',
+      url: '{{ url("trackerdetails/saveSeqlibs") }}',
       data: {data: cleaveData(isDirtyAr), changes: isDirtyAr }, // returns all cells
       dataType: 'text',
       type: 'POST'

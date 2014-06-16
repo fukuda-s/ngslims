@@ -29,7 +29,7 @@ class SeqlibsController extends ControllerBase
                     $phql = "
                         SELECT sl.*,
                                se.*
-                        FROM SeqLibs sl
+                        FROM Seqlibs sl
                         LEFT JOIN StepEntries se ON se.seqlib_id = sl.id
                         WHERE sl.project_id = :project_id:
                     ";
@@ -40,7 +40,7 @@ class SeqlibsController extends ControllerBase
                     $phql = "
                         SELECT sl.*,
                                se.*
-                        FROM SeqLibs sl
+                        FROM Seqlibs sl
                         JOIN Protocols p ON p.id = sl.protocol_id
                         JOIN Steps stp ON stp.id = p.step_id
                         LEFT JOIN StepEntries se ON se.seqlib_id = sl.id

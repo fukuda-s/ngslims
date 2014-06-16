@@ -164,7 +164,7 @@ class Samples extends \Phalcon\Mvc\Model
         $this->hasOne('sample_type_id', 'SampleTypes', 'id');
         $this->hasOne('sample_location_id', 'SampleLocations', 'id');
 
-        $this->hasMany('id', 'SeqLibs', 'sample_id');
+        $this->hasMany('id', 'Seqlibs', 'sample_id');
         $this->hasMany('id', 'StepEntries', 'sample_id');
         $this->hasMany('id', 'SamplePropertyEntries', 'sample_id');
 

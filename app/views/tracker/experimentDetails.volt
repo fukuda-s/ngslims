@@ -79,10 +79,10 @@
 {% elsefor %} No projects are recorded
 {% endfor %}
 <script>
-  function showTubeSeqLibs(step_id, project_id) {
+  function showTubeSeqlibs(step_id, project_id) {
     target_id = '#seqlib-tube-list-project-id-' + project_id;
     $.ajax({
-      url: '{{ url("trackerProjectSamples/showTubeSeqLibs") }}',
+      url: '{{ url("trackerdetails/showTubeSeqlibs") }}',
       dataType: 'html',
       type: 'POST',
       data: {

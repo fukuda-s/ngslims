@@ -107,14 +107,14 @@
   </div>
 </div>
 <script>
-  function showTableSeqLibs(obj, seqtemplate_id) {
+  function showTableSeqlibs(obj, seqtemplate_id) {
     var table = $(obj).find("#seqtemplate-table-" + seqtemplate_id);
     //console.log(table.attr("id"));
     // @TODO It should not be show table if the table is already exist. How is best way to recognize table exists?
     if (!table.attr("id")) {
       var target_id = '#seqtemplate-header-' + seqtemplate_id;
       $.ajax({
-        url: '{{ url("trackerProjectSamples/showTableSeqLibs") }}',
+        url: '{{ url("trackerdetails/showTableSeqlibs") }}',
         dataType: 'html',
         type: 'POST',
         data: {
@@ -139,7 +139,7 @@
           if ($(this).attr("seqtemplate_id")) {
             $(this).click(function () {
               var seqtemplate_id = $(this).attr('seqtemplate_id');
-              showTableSeqLibs(this, seqtemplate_id);
+              showTableSeqlibs(this, seqtemplate_id);
               //console.log(seqtemplate_id);
             })
           }

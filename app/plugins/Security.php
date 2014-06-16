@@ -97,14 +97,14 @@ class Security extends Plugin
                     'sequence',
                     'protocol'
                 ),
-                'trackerProjectSamples' => array(
+                'trackerdetails' => array(
                     'index',
                     'showTableSamples',
                     'showPanelSamples',
                     'showPanelSeqlibs',
-                    'showTubeSeqLibs',
+                    'showTubeSeqlibs',
                     'showPanelSeqlanes',
-                    'showTableSeqLibs',
+                    'showTableSeqlibs',
                     'loadSamples',
                     'editSamples',
                     'saveSamples',

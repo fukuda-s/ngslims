@@ -234,7 +234,7 @@ class Elements extends Phalcon\Mvc\User\Component
             echo '	<div class="row">';
             echo '		<div class="col-md-8">';
             echo Tag::linkTo(array(
-                "trackerProjectSamples/showTableSamples/" . $project->id,
+                "trackerdetails/showTableSamples/" . $project->id,
                 $project->name
             ));
             echo '		</div>';
@@ -303,7 +303,7 @@ class Elements extends Phalcon\Mvc\User\Component
                     continue;
                 }
                 echo '  <div class="panel panel-warning">';
-                echo '      <div class="panel panel-heading" onclick="showTubeSeqLibs(' . $step_id . ', ' . $project->id . ')">';
+                echo '      <div class="panel panel-heading" onclick="showTubeSeqlibs(' . $step_id . ', ' . $project->id . ')">';
                 echo '      	<div class="row">';
                 echo '	        	<div class="col-md-8">';
                 echo '                  <div>' . $project->name . '</div>';
@@ -349,7 +349,7 @@ class Elements extends Phalcon\Mvc\User\Component
                 echo '	<div class="row">';
                 echo '		<div class="col-md-8">';
                 echo Tag::linkTo(array(
-                    "trackerProjectSamples/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id,
+                    "trackerdetails/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id,
                     $project->name
                 ));
                 echo '		</div>';

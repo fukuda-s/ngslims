@@ -6,7 +6,7 @@
     <li class="active">{{ project.name }}</li>
   </ol>
   <div
-      align="left">{{ link_to("trackerProjectSamples/showTableSamples/" ~ project.id, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
+      align="left">{{ link_to("trackerdetails/showTableSamples/" ~ project.id, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
 {% else %}
   <ol class="breadcrumb">
     <li>{{ link_to("tracker", "Tracker") }}</li>

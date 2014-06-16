@@ -1,7 +1,7 @@
 <?php
 use Phalcon\Tag, Phalcon\Acl;
 
-class TrackerProjectSamplesController extends ControllerBase
+class TrackerdetailsController extends ControllerBase
 {
 
     public function initialize()
@@ -13,7 +13,7 @@ class TrackerProjectSamplesController extends ControllerBase
 
     public function indexAction()
     {
-        echo "Index of TrackerProjectSamples";
+        echo "Index of Trackerdetails";
     }
 
     public function showTableSamplesAction($project_id)
@@ -45,7 +45,7 @@ class TrackerProjectSamplesController extends ControllerBase
 						LEFT JOIN
 					SampleTypes st ON st.id = s.sample_type_id
 						LEFT JOIN
-					SeqLibs slib ON slib.sample_id = s.id
+					Seqlibs slib ON slib.sample_id = s.id
 						LEFT JOIN
 					Oligobarcodes oa ON oa.id = slib.oligobarcodeA_id
 						LEFT JOIN
@@ -429,7 +429,7 @@ class TrackerProjectSamplesController extends ControllerBase
         }
     }
 
-    public function showTubeSeqLibsAction()
+    public function showTubeSeqlibsAction()
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
@@ -487,7 +487,7 @@ class TrackerProjectSamplesController extends ControllerBase
         }
     }
 
-    public function showTableSeqLibsAction()
+    public function showTableSeqlibsAction()
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);

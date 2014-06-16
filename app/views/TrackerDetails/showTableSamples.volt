@@ -9,7 +9,7 @@
       <li class="active">{{ project.name }}</li>
     </ol>
     <div
-        align="right">{{ link_to("trackerProjectSamples/editSamples/SHOW/0/" ~ project.id, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
+        align="right">{{ link_to("trackerdetails/editSamples/SHOW/0/" ~ project.id, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
     <hr>
     <table class="table table-bordered table-hover table-condensed" id="sampleInfo_table">
       <thead>

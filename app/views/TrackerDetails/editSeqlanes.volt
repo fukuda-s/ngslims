@@ -1,12 +1,12 @@
 <div class="row">
   <div class="col-md-12">
-    {{ partial('partials/trackerProjectSamples-header') }}
+    {{ partial('partials/trackerdetails-header') }}
     <hr>
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
-      <li>{{ link_to("trackerProjectSamples/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
-      <li>{{ link_to("trackerProjectSamples/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
-      <li class="active">{{ link_to("trackerProjectSamples/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
+      <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
+      <li>{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
+      <li class="active">{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
       </button>
@@ -126,7 +126,7 @@ $(document).ready(function () {
       if ($('#handsontable-autosave').find('input').is(':checked')) {
         clearTimeout(autosaveNotification);
         $.ajax({
-          url: '{{ url("trackerProjectSamples/saveSamples") }}',
+          url: '{{ url("trackerdetails/saveSamples") }}',
           dataType: "json",
           type: "POST",
           data: {data: handsontable.getData(), changes: changes} // returns "data" as all data and "changes" as changed data
@@ -168,7 +168,7 @@ $(document).ready(function () {
   $toolbar.find('#save').click(function () {
     //alert("save! "+handsontable.getData());
     $.ajax({
-      url: '{{ url("trackerProjectSamples/saveSamples") }}',
+      url: '{{ url("trackerdetails/saveSamples") }}',
       data: {data: handsontable.getData(), changes: isDirtyAr }, // returns all cells
       dataType: 'json',
       type: 'POST'
