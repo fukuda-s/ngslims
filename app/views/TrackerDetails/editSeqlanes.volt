@@ -121,6 +121,11 @@ $(document).ready(function () {
         $.each(changes, function (key, value) {
           isDirtyAr.push(value);
         });
+
+        // Show alert dialog when this page moved before save.
+        $(window).on('beforeunload', function() {
+          return 'CAUTION! You have not yet saved. Are you sure you want to leave?';
+        });
       }
 
       if ($('#handsontable-autosave').find('input').is(':checked')) {
@@ -177,7 +182,10 @@ $(document).ready(function () {
           //alert(status.toString());
           $console.text('Save success').removeClass().addClass("alert alert-success");
           $toolbar.find("#save").addClass("disabled");
-          isDirtyAr.length = 0;
+          isDirtyAr = Object(); //Clear isDirtyAr
+
+          // Disable alert dialog when this page is saved.
+          $(window).off('beforeunload');
         })
         .fail(function (xhr, status, error) {
           //alert(status.toString());
@@ -225,6 +233,8 @@ $(document).ready(function () {
     loadData();
     $toolbar.find("#save, #undo, #redo, #clear").addClass("disabled");
     $console.text('All changes is discarded').removeClass().addClass("alert alert-success");
+    // Disable alert dialog when this page is cleard.
+    $(window).off('beforeunload');
   });
 
 
