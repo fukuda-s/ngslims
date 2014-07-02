@@ -525,6 +525,7 @@ class TrackerController extends ControllerBase
             ->columns(array('st.*', 'se.*'))
             ->addFrom('Seqtemplates', 'st')
             ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se')
+            ->orderBy(array('DATE(st.created_at) DESC', 'st.name ASC'))
             ->getQuery()
             ->execute();
 
@@ -634,6 +635,16 @@ class TrackerController extends ControllerBase
                 $flowcell->name = $flowcell_name;
                 $flowcell->seq_runmode_type_id = $step->getSeqRunmodeTypes()->id;
 
+                //Setup related StepEntries
+                $flowcell_step_entries = array();
+                $flowcell_step_entries[0] = new StepEntries;
+                $flowcell_step_entries[0]->step_phase_code = $step->step_phase_code; //Should be FLOWCELL;
+                $flowcell_step_entries[0]->step_id = $step_id;
+                $flowcell_step_entries[0]->user_id = $this->session->get('auth')['id'];
+
+                $flowcell->StepEntries = $flowcell_step_entries;
+
+                //Setup related Seqlanes
                 $seqlanes_model = array();
                 foreach ($seqlanes as $index => $seqlane) {
                     $seqlanes_model[$index] = new Seqlanes();
@@ -704,6 +715,34 @@ class TrackerController extends ControllerBase
             "active = 'Y'",
             "order" => "sort_order IS NULL ASC, sort_order ASC"
         )));
+    }
+
+    public function sequenceSetupCandidatesAction($instrument_type_id)
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+        Tag::appendTitle(' | Sequence Run Setup ');
+
+        $instrument_type_id = $this->filter->sanitize($instrument_type_id, array("int"));
+        $instrument_type = InstrumentTypes::findFirst($instrument_type_id);
+        $this->view->setVar('instrument_type', $instrument_type);
+
+        $seqtemplates = $this->modelsManager->createBuilder()
+            ->columns(array('st.*', 'se.*'))
+            ->addFrom('Seqtemplates', 'st')
+            ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se')
+            ->getQuery()
+            ->execute();
+
+        $this->view->setVar('seqtemplates', $seqtemplates);
+
+        if ($seqlanes = $this->session->get('seqlanes')) {
+            $this->view->setVar('seqlanes', $seqlanes);
+        }
+
+        if ($flowcell_name = $this->session->get('flowcell_name')) {
+            $this->view->setVar('flowcell_name', $flowcell_name);
+        }
+
     }
 
     public function protocolAction()

@@ -79,7 +79,7 @@
             </div>
           </div>
         </div>
-        <div class="panel-group">
+        <div class="panel-group"  style="overflow: auto; height: 400px;">
       {% endif %}
       {% if seqtemplate.se.id != null and seqtemplate.se.status != 'Completed' %}
         <div class="panel panel-info" id="seqtemplate-panel-{{ seqtemplate.st.id }}" data-toggle="collapse"
