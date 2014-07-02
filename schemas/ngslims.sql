@@ -265,8 +265,8 @@ CREATE TABLE `projects` (
   KEY `fk_projects_labs_idx` (`lab_id`),
   KEY `fk_projects_users_idx` (`user_id`),
   KEY `fk_projects_project_types_idx` (`project_type_id`),
-  CONSTRAINT `fk_projects_project_types` FOREIGN KEY (`project_type_id`) REFERENCES `project_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_projects_labs` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_projects_project_types` FOREIGN KEY (`project_type_id`) REFERENCES `project_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_projects_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -690,7 +690,26 @@ CREATE TABLE `step_entries` (
   CONSTRAINT `fk_step_entries_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_seqtemplates` FOREIGN KEY (`seqtemplate_id`) REFERENCES `seqtemplates` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `step_instrument_type_schemes`
+--
+
+DROP TABLE IF EXISTS `step_instrument_type_schemes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `step_instrument_type_schemes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `step_id` int(11) NOT NULL,
+  `instrument_type_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`,`step_id`,`instrument_type_id`),
+  KEY `fk_ step_instrument_type_schemes_steps_idx` (`step_id`),
+  KEY `fk_ step_instrument_type_schemes_instrument_types_idx` (`instrument_type_id`),
+  CONSTRAINT `fk_ step_instrument_type_schemes_instrument_types` FOREIGN KEY (`instrument_type_id`) REFERENCES `instrument_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ step_instrument_type_schemes_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -764,4 +783,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-06-13 11:46:45
+-- Dump completed on 2014-07-02 15:11:00
