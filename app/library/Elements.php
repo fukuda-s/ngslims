@@ -28,21 +28,7 @@ class Elements extends Phalcon\Mvc\User\Component
             'report' => array(
                 'caption' => 'Report',
                 'action' => 'index'
-            ),
-            /*
-            'invoices' => array (
-                    'caption' => 'Invoices',
-                    'action' => 'index'
-            ),
-            'about' => array (
-                    'caption' => 'About',
-                    'action' => 'index'
-            ),
-            'contact' => array (
-                    'caption' => 'Contact',
-                    'action' => 'index'
             )
-            */
         ),
         'pull-right' => array(
             'session' => array(
