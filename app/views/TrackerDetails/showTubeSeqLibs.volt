@@ -17,6 +17,9 @@
     {% endif %}
     {% if seqlib.se.status == 'Completed' %}
       <div class="tube tube-active" id="seqlib-id-{{ seqlib.sl.id }}">
+    {% else %}
+      <div class="tube tube-inactive" id="seqlib-id-{{ seqlib.sl.id }}">
+    {% endif %}
         <div class="row">
           <div class="col-md-4">
             {{ seqlib.sl.name }}
@@ -29,9 +32,6 @@
           </div>
         </div>
       </div>
-    {% else %}
-      <div class="tube tube-inactive" id="seqlib-id-{{ seqlib.sl.id }}">{{ seqlib.sl.name }}</div>
-    {% endif %}
     {% if loop.last %}
       </div>
     {% endif %}
