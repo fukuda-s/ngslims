@@ -100,6 +100,8 @@ class StepEntries extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->belongsTo('flowcell_id', 'Flowcells', 'id');
+
         $this->addBehavior(new Timestampable(
             array(
                 'beforeValidationOnCreate' => array(

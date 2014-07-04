@@ -95,6 +95,10 @@ class Security extends Plugin
                     'flowcellSetupSave',
                     'flowcell',
                     'sequence',
+                    'sequenceSetupCandidates',
+                    'sequenceSetupSetSession',
+                    'sequenceSetupConfirm',
+                    'sequenceSetupSave',
                     'protocol'
                 ),
                 'trackerdetails' => array(
@@ -105,6 +109,7 @@ class Security extends Plugin
                     'showTubeSeqlibs',
                     'showPanelSeqlanes',
                     'showTableSeqlibs',
+                    'showTubeSeqtemplates',
                     'loadSamples',
                     'editSamples',
                     'saveSamples',

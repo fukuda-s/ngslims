@@ -720,29 +720,70 @@ class TrackerController extends ControllerBase
     public function sequenceSetupCandidatesAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
-        Tag::appendTitle(' | Sequence Run Setup ');
+        Tag::appendTitle(' | Sequencing Run Setup ');
 
         $instrument_type_id = $this->filter->sanitize($instrument_type_id, array("int"));
         $instrument_type = InstrumentTypes::findFirst($instrument_type_id);
         $this->view->setVar('instrument_type', $instrument_type);
 
-        $seqtemplates = $this->modelsManager->createBuilder()
-            ->columns(array('st.*', 'se.*'))
-            ->addFrom('Seqtemplates', 'st')
-            ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se')
+        /*
+        $flowcells = $this->modelsManager->createBuilder()
+            ->columns(array('fc.*', 'se.*'))
+            ->addFrom('StepEntries', 'se')
+            ->Join('StepInstrumentTypeSchemes', 'sits.step_id = se.step_id', 'sits')
+            ->Join('Flowcells', 'fc.id = se.flowcell_id', 'fc')
+            ->where('sits.instrument_type_id = :instrument_type_id:')
             ->getQuery()
-            ->execute();
+            ->execute(array(
+                'instrument_type_id' => $instrument_type_id
+            ));
+        */
 
-        $this->view->setVar('seqtemplates', $seqtemplates);
+        $phql = "
+           SELECT
+                se . *,
+                fc . *,
+                GROUP_CONCAT(DISTINCT(concat(it.id, '-', srmt.id, '-', srct.id, '-', srrt.id))) AS seqrun_prop_id,
+                GROUP_CONCAT(DISTINCT(concat(it.name, ' ', srmt.name, ' ', srct.name, ' ', srrt.name))) AS seqrun_prop_name
+            FROM
+                StepEntries se
+                    LEFT JOIN
+                StepInstrumentTypeSchemes sits ON sits.step_id = se.step_id
+                    LEFT JOIN
+                Flowcells fc ON fc.id = se.flowcell_id
+                    LEFT JOIN
+                Seqlanes sl ON sl.flowcell_id = fc.id
+                    LEFT JOIN
+                Seqtemplates st ON st.id = sl.seqtemplate_id
+                    LEFT JOIN
+                SeqtemplateAssocs sa ON sa.seqtemplate_id = st.id
+                    LEFT JOIN
+                Seqlibs slib ON slib.id = sa.seqlib_id
+                    LEFT JOIN
+                Samples s ON s.id = slib.sample_id
+                    LEFT JOIN
+                Requests r ON r.id = s.request_id
+                    LEFT JOIN
+                SeqRunTypeSchemes srts ON srts.id = r.seq_run_type_scheme_id
+                    LEFT JOIN
+                InstrumentTypes it ON it.id = srts.instrument_type_id
+                    LEFT JOIN
+                SeqRunmodeTypes srmt ON srmt.id = srts.seq_runmode_type_id
+                    LEFT JOIN
+                SeqRunreadTypes srrt ON srrt.id = srts.seq_runread_type_id
+                    LEFT JOIN
+                SeqRuncycleTypes srct ON srct.id = srts.seq_runcycle_type_id
+            WHERE
+                sits.instrument_type_id = :instrument_type_id:
+            GROUP BY fc.id
+            ORDER BY fc.created_at
+        ";
 
-        if ($seqlanes = $this->session->get('seqlanes')) {
-            $this->view->setVar('seqlanes', $seqlanes);
-        }
+        $flowcells = $this->modelsManager->executeQuery($phql, array(
+            'instrument_type_id' => $instrument_type_id
+        ));
 
-        if ($flowcell_name = $this->session->get('flowcell_name')) {
-            $this->view->setVar('flowcell_name', $flowcell_name);
-        }
-
+        $this->view->setVar('flowcells', $flowcells);
     }
 
     public function protocolAction()

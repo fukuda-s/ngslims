@@ -227,7 +227,7 @@ class TrackerdetailsController extends ControllerBase
                                         return;
                                     }
                                 } else { //If the changes are samples own.
-                                    if ( $colNameToChange == 'sample_location_id') {
+                                    if ($colNameToChange == 'sample_location_id') {
                                         //Set up sample_location values
                                         $sample_location_name = $valueChangeTo;
                                         $sample_location = SampleLocations::findFirst(array(
@@ -237,7 +237,7 @@ class TrackerdetailsController extends ControllerBase
                                             )
                                         ));
                                         if (!$sample_location) {
-                                            $this->flashSession->error("Sample Location: ".$sample_location_name." is not configured.");
+                                            $this->flashSession->error("Sample Location: " . $sample_location_name . " is not configured.");
                                             return;
                                         }
                                         $sample->sample_location_id = $sample_location->id;
@@ -530,6 +530,70 @@ class TrackerdetailsController extends ControllerBase
                     }
                 }
                 $this->view->setVar('oligobarcodeB_exists', $oligobarcodeB_exists);
+            }
+        }
+    }
+
+    public function showTubeSeqtemplatesAction()
+    {
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                // echo "Request was made using POST and AJAX";
+                $flowcell_id = $this->request->getPost("flowcell_id", "int");
+
+                $seqtemplates = $this->modelsManager->createBuilder()
+                    ->columns(array('fc.*, sl.*, st.*, ct.*, srmt.*'))
+                    ->addFrom('Flowcells', 'fc')
+                    ->leftJoin('Seqlanes', 'sl.flowcell_id = fc.id', 'sl')
+                    ->leftJoin('Seqtemplates', 'st.id = sl.seqtemplate_id', 'st')
+                    ->leftJoin('Controls', 'ct.id = sl.control_id', 'ct')
+                    //->join('SeqtemplateAssocs', 'sta.seqtemplate_id = st.id', 'sta')
+                    //->join('Seqlibs', 'sl.id = sta.seqlib_id', 'sl')
+                    //->join('Samples', 's.id = sl.sample_id', 's')
+                    //->join('Requests', 'r.id = s.request_id', 'r')
+                    //->join('Projects', 'p.id = r.project_id', 'p')
+                    //->join('Users', 'u.id = p.pi_user_id', 'u')
+                    //->leftJoin('SeqRunTypeSchemes', 'r.seq_run_type_scheme_id = srts.id', 'srts')
+                    //->leftJoin('InstrumentTypes', 'it.id = srts.instrument_type_id', 'it')
+                    //->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
+                    ->leftJoin('SeqRunmodeTypes', 'srmt.id = fc.seq_runmode_type_id', 'srmt')
+                    //->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
+                    //->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
+                    //->leftJoin('Protocols', 'pt.id = sl.protocol_id', 'pt')
+                    ->where('fc.id = :flowcell_id:')
+                    ->orderBy('sl.number ASC')
+                    ->getQuery()
+                    ->execute(array(
+                        'flowcell_id' => $flowcell_id
+                    ));
+
+                //$this->view->setVar('seqtemplates', $seqtemplates);
+
+                $flowcell = Flowcells::findFirst($flowcell_id);
+                $lane_per_flowcell = $flowcell->SeqRunmodeTypes->lane_per_flowcell;
+
+                //Set seqlane index 0 to (lane_per_flowcell - 1) to show all lanes even the flowcell has not seqtemplates fully on all lanes.
+                $seqlane_indexes = range(0, ($lane_per_flowcell - 1));
+                $this->view->setVar('seqlane_indexes', $seqlane_indexes);
+
+                //Set seqlanes with index as seqlane_number
+                $seqlanes = array();
+                foreach ($seqlane_indexes as $seqlane_index) {
+                    $seqlanes[$seqlane_index] = null;
+                    foreach ($seqtemplates as $seqtemplate) {
+                        $number = ($seqtemplate->sl->number - 1);
+                        if ($number == $seqlane_index) {
+                            $seqlanes[$seqlane_index] = $seqtemplate;
+                        }
+                    }
+                }
+                $this->view->setVar('seqlanes', $seqlanes);
+
             }
         }
     }

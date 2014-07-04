@@ -87,7 +87,10 @@ class Flowcells extends \Phalcon\Mvc\Model
     {
         $this->hasMany('id', 'Seqlanes', 'flowcell_id');
         $this->hasMany('id', 'StepEntries', 'flowcell_id');
-        $this->belongsTo('seq_runmode_type_id', 'SeqRunmodeTypes', 'id');
+
+        $this->hasOne('seq_runmode_type_id', 'SeqRunmodeTypes', 'id');
+
+        $this->hasManyToMany('id', 'Seqlanes', 'flowcell_id', 'seqtemplate_id', 'Seqtemplates', 'id');
 
         $this->addBehavior(new Timestampable(
             array(

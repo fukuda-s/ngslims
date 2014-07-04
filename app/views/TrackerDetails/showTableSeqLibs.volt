@@ -1,6 +1,5 @@
 {% for seqlib in seqlibs %}
   {% if loop.first %}
-    <div class="table-responsive">
     <table class="table table-bordered table-hover table-condensed table-responsive collapse in"
     id="seqtemplate-table-{{ seqlib.st.id }}">
     <thead>
@@ -43,7 +42,6 @@
   {% if loop.last %}
     </tbody>
     </table>
-    </div>
   {% endif %}
   {% elsefor %} No seqlib recorded
 {% endfor %}

@@ -51,7 +51,9 @@ class SeqtemplateAssocs extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
-        $this->hasMany("id", "Seqlanes", "seqtemplate_id");
+        $this->belongsTo("seqtemplate_id", "Seqlanes", "seqtemplate_id");
+        $this->belongsTo("seqtemplate_id", "Seqtemplates", "id");
+        $this->belongsTo("seqlib_id", "Seqlibs", "id");
 
         $this->addBehavior(new Timestampable(
             array(
