@@ -547,6 +547,12 @@ class OrderController extends ControllerBase
             } else {
                 $this->view->setVar('protocol', $this->session->get('protocol'));
             }
+
+            if (!$this->session->has('samples_per_seqtemplate')) {
+                $this->view->setVar('samples_per_seqtemplate', '(Undefined)');
+            } else {
+                $this->view->setVar('samples_per_seqtemplate', $this->session->get('samples_per_seqtemplate'));
+            }
         }
 
 
@@ -579,6 +585,12 @@ class OrderController extends ControllerBase
                 $warning++;
             } else {
                 $this->view->setVar('seq_runcycle_type', $this->session->get('seq_runcycle_type'));
+            }
+
+            if (!$this->session->has('lanes_per_seqtemplate')) {
+                $this->view->setVar('lanes_per_seqtemplate', '(Undefined)');
+            } else {
+                $this->view->setVar('lanes_per_seqtemplate', $this->session->get('lanes_per_seqtemplate'));
             }
         }
 
@@ -698,6 +710,12 @@ class OrderController extends ControllerBase
         $requests->project_id = $this->session->get('project')->id;
         $requests->lab_id = $this->session->get('lab')->id;
         $requests->user_id = $this->session->get('auth')['id'];
+        if ($this->session->has('samples_per_seqtemplate')) {
+            $requests->samples_per_seqtemplate = $this->session->get('samples_per_seqtemplate')->name;
+        }
+        if ($this->session->has('lanes_per_seqtemplate')) {
+            $requests->lanes_per_seqtemplate = $this->session->get('lanes_per_seqtemplate')->name;
+        }
 
         if ($this->session->get('seqlib_undecided')->name === "false") {
             //Set property of Experiment Step (for PREP)
@@ -843,11 +861,13 @@ class OrderController extends ControllerBase
             $this->session->remove('seqlib_undecided');
             $this->session->remove('step');
             $this->session->remove('protocol');
+            $this->session->remove('samples_per_seqtemplate');
             $this->session->remove('seqrun_undecided');
             $this->session->remove('instrument_type');
             $this->session->remove('seq_runmode_type');
             $this->session->remove('seq_runread_type');
             $this->session->remove('seq_runcycle_type');
+            $this->session->remove('lanes_per_seqtemplate');
         }
 
         // Input into step_entries

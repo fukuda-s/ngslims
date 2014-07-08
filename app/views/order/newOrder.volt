@@ -115,6 +115,10 @@
         <label for="protocol_id" class="control-label">Protocol</label>
         <select id="protocol_id" class="form-control input-sm" disabled></select>
       </div>
+      <div id="samples_per_seqtemplate_form" class="form-group">
+        <label for="samples_per_seqtemplate" class="control-label"># of Samples / Lane <small>(How many sample(s) will be multiplexed in one mixed library?)</small></label>
+        <input type="number" id="samples_per_seqtemplate" class="form-control input-sm">
+      </div>
     </div>
   </div>
   <div
@@ -147,6 +151,10 @@
         <div id="seq_runcycle_type_select" class="form-group">
           <label>Read Cycle</label>
         </div>
+      </div>
+      <div id="lanes_per_seqtemplate_form" class="form-group">
+        <label for="lanes_per_seqtemplate" class="control-label"># of Lane / Multiplexed Library <small>(How many lane(s) will be required per one multiplexed library?)</small></label>
+        <input type="number" id="lanes_per_seqtemplate" class="form-control input-sm">
       </div>
     </div>
   </div>
@@ -190,6 +198,7 @@
           <li id="seqlib_undecided_selected" class="text-warning" style="display: none;">Undecided</li>
           <li id="step_name_selected" style="display: none;"></li>
           <li id="protocol_name_selected" style="display: none;"></li>
+          <li id="samples_per_seqtemplate_inputted" style="display: none;"><span></span><small> sample(s)/1 lane</small></li>
         </ul>
       </li>
       <li class="list-group-item text-info">Sequencing
@@ -199,6 +208,7 @@
           <li id="seq_runmode_type_name_selected" style="display: none;"></li>
           <li id="seq_runread_type_name_selected" style="display: none;"></li>
           <li id="seq_runcycle_type_name_selected" style="display: none;"></li>
+          <li id="lanes_per_seqtemplate_inputted" style="display: none;"><span></span><small> lane(s)/1 multiplexed library</small></small></li>
         </ul>
       </li>
       <li class="list-group-item text-info">Pipeline
@@ -490,7 +500,7 @@ $(document).ready(function () {
        * Change child select list and right-side summary when parent select list is changed
        */
       /* User & Project */
-//Change lab_id_selected value on right side summary with selected values
+     //Change lab_id_selected value on right side summary with selected values
       $('#lab_id').on('change', function () {
         var lab_id_selected = $(this).val();
         var lab_name_selected = $('option:selected', this).text();
@@ -508,7 +518,7 @@ $(document).ready(function () {
       });
 
       /* Sample */
-//Change sample_type_selected value on right side summary with selected values
+      //Change sample_type_selected value on right side summary with selected values
       $('#sample_type_id').on('change', function () {
         var sample_type_id_selected = $(this).val();
         var sample_type_name_selected = $('option:selected', this).text();
@@ -523,7 +533,7 @@ $(document).ready(function () {
 
       });
 
-//Change organism_selected value on right side summary with selected values
+      //Change organism_selected value on right side summary with selected values
       $('#organism_id').on('change', function () {
         var organism_id_selected = $(this).val();
         var organism_name_selected = $('option:selected', this).text();
@@ -533,7 +543,7 @@ $(document).ready(function () {
         setOrderSessionVal('organism', organism_id_selected, organism_name_selected);
       });
 
-//Change qc_inside_select value on right side summary with selected values
+      //Change qc_inside_select value on right side summary with selected values
       $("input:radio[name='qc_inside']").on('change', function () {
         var qc_inside_value_selected = $(this).filter(':checked').val();
         var qc_inside_name_selected = $(this).filter(':checked').parent('label').text();
@@ -544,7 +554,7 @@ $(document).ready(function () {
       });
 
       /* Sequence Library & Multiplex */
-//Change protocol_name_selected value on right side summary with selected values
+      //Change protocol_name_selected value on right side summary with selected values
       $('#protocol_id').on('change', function () {
         var protocol_id_selected = $(this).val();
         var protocol_name_selected = $('option:selected', this).text();
@@ -554,6 +564,26 @@ $(document).ready(function () {
         setOrderSessionVal('protocol', protocol_id_selected, protocol_name_selected);
       });
 
+      //Change samples_per_seqtemplate_inputted value on right side summary with inputted values
+      $('#samples_per_seqtemplate').on('change', function() {
+        var samples_per_seqtemplate_inputted = $('#samples_per_seqtemplate').val();
+        $('#samples_per_seqtemplate_inputted').show('normal').find('span').text(samples_per_seqtemplate_inputted);
+
+        //Set inputted samples_per_seqtemplate to session values.
+        setOrderSessionVal('samples_per_seqtemplate', 0, samples_per_seqtemplate_inputted);
+      });
+
+      /*
+       * Sequencing Run
+       */
+      //Change samples_per_seqtemplate_inputted value on right side summary with inputted values
+      $('#lanes_per_seqtemplate').on('change', function() {
+        var lanes_per_seqtemplate_inputted = $('#lanes_per_seqtemplate').val();
+        $('#lanes_per_seqtemplate_inputted').show('normal').find('span').text(lanes_per_seqtemplate_inputted);
+
+        //Set inputted lanes_per_seqtemplate to session values.
+        setOrderSessionVal('lanes_per_seqtemplate', 0, lanes_per_seqtemplate_inputted);
+      });
 
       /*
        * Set control for "Undecided" check box
@@ -564,6 +594,7 @@ $(document).ready(function () {
           $('#seq_runmode_type_name_selected').hide();
           $('#seq_runread_type_name_selected').hide();
           $('#seq_runcycle_type_name_selected').hide();
+          $('#lanes_per_seqtemplate_inputted').hide();
 
           $("#seqrun_undecided_selected").show('normal');
           //$("#pipeline_undecided_selected").show('normal');
@@ -586,6 +617,9 @@ $(document).ready(function () {
           var seq_runcycle_type_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
           var seq_runcycle_type_name_selected = seq_runcycle_type_selected.parent('label').text();
           $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+
+          var lanes_per_seqtemplate_inputted = $('#lanes_per_seqtemplate').val();
+          $('#lanes_per_seqtemplate_inputted').show('normal').find('span').text(lanes_per_seqtemplate_inputted);
         }
         //Set selected seqrun-undecided to session values.
         setOrderSessionVal('seqrun_undecided', 0, $(this).prop('checked'));
@@ -599,10 +633,12 @@ $(document).ready(function () {
           $('#seq_runmode_type_name_selected').hide();
           $('#seq_runread_type_name_selected').hide();
           $('#seq_runcycle_type_name_selected').hide();
+          $('#lanes_per_seqtemplate_inputted').hide();
           $("#seqlib_undecided_selected").show('normal');
 
           $('#step_name_selected').hide();
           $('#protocol_name_selected').hide();
+          $('#samples_per_seqtemplate_inputted').hide();
 
           $("#seqrun_undecided_selected").show('normal');
           //$("#pipeline_undecided_selected").show('normal');
@@ -619,6 +655,8 @@ $(document).ready(function () {
           var protocol_name_selected = protocol_selected.text();
           $('#protocol_name_selected').hide().show('normal').text(protocol_name_selected);
 
+          var samples_per_seqtemplate_inputted = $('#samples_per_seqtemplate').val();
+          $('#samples_per_seqtemplate_inputted').show('normal').find('span').text(samples_per_seqtemplate_inputted);
 
           $("#seqrun_undecided_selected").hide();
 
@@ -637,6 +675,9 @@ $(document).ready(function () {
           var seq_runcycle_type_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
           var seq_runcycle_type_name_selected = seq_runcycle_type_selected.parent('label').text();
           $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+
+          var lanes_per_seqtemplate_inputted = $('#lanes_per_seqtemplate').val();
+          $('#lanes_per_seqtemplate_inputted').show('normal').find('span').text(lanes_per_seqtemplate_inputted);
         }
         //Set selected seqlib_undecided to session values.
         setOrderSessionVal('seqlib_undecided', 0, $(this).prop('checked'));
@@ -671,7 +712,7 @@ $(document).ready(function () {
       });
 
       /*
-       * Check session values.
+       * Check and load session values.
        * Some select list should be rewrite when cascaded (parent) value has session value
        */
       $(function () {
@@ -697,6 +738,14 @@ $(document).ready(function () {
           $('#sample_type_name_selected').show('normal').text(sample_type_name_selected);
         }
 
+        var organism_selected = $('#organism_id').find('option:selected');
+        var organism_id_selected = organism_selected.val();
+        var organism_name_selected = organism_selected.text();
+        if (organism_id_selected !== '@') {
+          //Change organism_name_selected value on right side summary with selected values
+          $('#organism_name_selected').show('normal').text(organism_name_selected);
+        }
+
         var qc_inside_name_selected = $("input:radio[name='qc_inside']").filter(':checked').parent('label').text();
         $('#qc_inside_selected').show('normal').text('QC Inside?: ' + qc_inside_name_selected);
 
@@ -707,6 +756,7 @@ $(document).ready(function () {
           $('#seq_runmode_type_name_selected').hide();
           $('#seq_runread_type_name_selected').hide();
           $('#seq_runcycle_type_name_selected').hide();
+          $('#samples_per_seqtemplate_inputted').hide();
           $("#seqrun_undecided_selected").show('normal');
         } else if (instrument_type_id_selected == '@') {
           //Remove from right-side summary
@@ -714,6 +764,7 @@ $(document).ready(function () {
           $('#seq_runmode_type_name_selected').hide();
           $('#seq_runread_type_name_selected').hide();
           $('#seq_runcycle_type_name_selected').hide();
+          $('#samples_per_seqtemplate_inputted').hide();
         } else {
           $("#seqrun_undecided_selected").hide();
 
@@ -732,6 +783,9 @@ $(document).ready(function () {
           var seq_runcycle_type_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
           var seq_runcycle_type_name_selected = seq_runcycle_type_selected.parent('label').text();
           $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+
+          var lanes_per_seqtemplate_inputted = $('#lanes_per_seqtemplate').val();
+          $('#lanes_per_seqtemplate_inputted').show('normal').find('span').text(lanes_per_seqtemplate_inputted);
         }
 
         var step_id_selected = $('#step_id').val();
@@ -741,10 +795,12 @@ $(document).ready(function () {
           $('#seq_runmode_type_name_selected').hide();
           $('#seq_runread_type_name_selected').hide();
           $('#seq_runcycle_type_name_selected').hide();
+          $('#lanes_per_seqtemplate_inputted').hide();
           $("#seqlib_undecided_selected").show('normal');
 
           $('#step_name_selected').hide();
           $('#protocol_name_selected').hide();
+          $('#samples_per_seqtemplate_inputted').hide();
           $("#seqrun_undecided_selected").show('normal');
           //$("#pipeline_undecided_selected").show('normal');
         } else if (step_id_selected === '@') {
@@ -753,10 +809,12 @@ $(document).ready(function () {
           $('#seq_runmode_type_name_selected').hide();
           $('#seq_runread_type_name_selected').hide();
           $('#seq_runcycle_type_name_selected').hide();
+          $('#lanes_per_seqtemplate_inputted').hide();
           $("#seqlib_undecided_selected").hide();
 
           $('#step_name_selected').hide();
           $('#protocol_name_selected').hide();
+          $('#samples_per_seqtemplate_inputted').hide();
           $("#seqrun_undecided_selected").hide();
           //$("#pipeline_undecided_selected").show('normal');
         } else {
@@ -771,6 +829,8 @@ $(document).ready(function () {
           var protocol_name_selected = protocol_selected.text();
           $('#protocol_name_selected').hide().show('normal').text(protocol_name_selected);
 
+          var samples_per_seqtemplate_inputted = $('#samples_per_seqtemplate').val();
+          $('#samples_per_seqtemplate_inputted').show('normal').find('span').text(samples_per_seqtemplate_inputted);
 
           $("#seqrun_undecided_selected").hide();
 
@@ -789,6 +849,9 @@ $(document).ready(function () {
           var seq_runcycle_type_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
           var seq_runcycle_type_name_selected = seq_runcycle_type_selected.parent('label').text();
           $('#seq_runcycle_type_name_selected').show('normal').text(seq_runcycle_type_name_selected);
+
+          var lanes_per_seqtemplate_inputted = $('#lanes_per_seqtemplate').val();
+          $('#lanes_per_seqtemplate_inputted').show('normal').find('span').text(lanes_per_seqtemplate_inputted);
         }
       });
 

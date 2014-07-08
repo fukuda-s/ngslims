@@ -310,6 +310,8 @@ CREATE TABLE `requests` (
   `lab_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `seq_run_type_scheme_id` int(11) DEFAULT NULL,
+  `samples_per_seqtemplate` int(11) DEFAULT NULL,
+  `lanes_per_seqtemplate` int(11) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -783,4 +785,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-07-02 15:11:00
+-- Dump completed on 2014-07-07 14:41:52

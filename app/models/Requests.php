@@ -37,6 +37,18 @@ class Requests extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $samples_per_seqtemplate;
+
+    /**
+     *
+     * @var integer
+     */
+    public $lanes_per_seqtemplate;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -58,6 +70,8 @@ class Requests extends \Phalcon\Mvc\Model
             'lab_id' => 'lab_id',
             'user_id' => 'user_id',
             'seq_run_type_scheme_id' => 'seq_run_type_scheme_id',
+            'samples_per_seqtemplate' => 'samples_per_seqtemplate',
+            'lanes_per_seqtemplate' => 'lanes_per_seqtemplate',
             'created_at' => 'created_at',
             'description' => 'description'
         );
