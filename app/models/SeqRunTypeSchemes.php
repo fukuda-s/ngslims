@@ -61,6 +61,11 @@ class SeqRunTypeSchemes extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->belongsTo("instrument_type_id", "InstrumentTypes", "id");
+        $this->belongsTo("seq_runmode_type_id", "SeqRunmodeTypes", "id");
+        $this->belongsTo("seq_runread_type_id", "SeqRunreadTypes", "id");
+        $this->belongsTo("seq_runcycle_type_id", "SeqRuncycleTypes", "id");
+
         $this->addBehavior(new SoftDelete(
             array(
                 'field' => 'active',

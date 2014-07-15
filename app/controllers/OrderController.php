@@ -335,7 +335,7 @@ class OrderController extends ControllerBase
     }
 
 
-    public function seqRunTypeSelectListAction($instrument_type_id)
+    public function seqRunmodeTypesSelectListAction()
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -343,20 +343,25 @@ class OrderController extends ControllerBase
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
-                $instrument_type_id = $this->filter->sanitize($instrument_type_id, array("int"));
-                $instrumentTypes = InstrumentTypes::findFirst($instrument_type_id);
-
-                //Build seq_runmode_select
-                $seq_runmode_types = $instrumentTypes->getSeqRunmodeTypes(array(
-                    "SeqRunmodeTypes.active = 'Y'",
-                    "order" => "sort_order IS NULL ASC, sort_order ASC"
+                $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
+                $seq_run_type_schemes = seqRunTypeSchemes::find(array(
+                    "instrument_type_id = :instrument_type_id: AND active = 'Y'",
+                    'bind' => array(
+                        'instrument_type_id' => $instrument_type_id
+                    )
                 ));
+
 
                 $seq_runmode_types_uniq = array(); // @TODO Could not use DISTINCT
                 echo '<div id="seq_runmode_type_select" class="form-group">';
                 echo '<label for="seq_runmode_type_id">Run Mode</label><br>';
-                foreach ($seq_runmode_types as $seq_runmode_type) {
-                    if (!isset($seq_runmode_types_uniq[$seq_runmode_type->id])) {
+                foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
+                    //Build seq_runmode_select
+                    $seq_runmode_type = $seq_run_type_scheme->getSeqRunmodeTypes(array(
+                        "active = 'Y'",
+                        "order" => "sort_order IS NULL ASC, sort_order ASC"
+                    ));
+                    if (!empty($seq_runmode_type) && !isset($seq_runmode_types_uniq[$seq_runmode_type->id])) {
                         if ($this->session->has('seq_runmode_type') && $seq_runmode_type->id == $this->session->get('seq_runmode_type')->id) {
                             echo '<label class="radio-inline">';
                             echo $this->tag->radioField(array(
@@ -381,18 +386,39 @@ class OrderController extends ControllerBase
                     }
                 }
                 echo '</div>';
+            }
+        }
+    }
 
-                //Build seq_runread_select
-                $seq_runread_types = $instrumentTypes->getSeqRunreadTypes(array(
-                    "SeqRunreadTypes.active = 'Y'",
-                    "order" => "sort_order IS NULL ASC, sort_order ASC"
+    public function seqRunreadTypesSelectListAction()
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
+                $seq_runmode_type_id = $this->request->getPost('seq_runmode_type_id', 'int');
+                $seq_run_type_schemes = seqRunTypeSchemes::find(array(
+                    "instrument_type_id = :instrument_type_id: AND seq_runmode_type_id = :seq_runmode_type_id: AND active = 'Y'",
+                    'bind' => array(
+                        'instrument_type_id' => $instrument_type_id,
+                        'seq_runmode_type_id' => $seq_runmode_type_id
+                    )
                 ));
+
 
                 $seq_runread_types_uniq = array(); // @TODO Could not use DISTINCT
                 echo '<div id="seq_runread_type_select" class="form-group">';
                 echo '<label for="seq_runread_type_id">Read Type</label><br>';
-                foreach ($seq_runread_types as $seq_runread_type) {
-                    if (!isset($seq_runread_types_uniq[$seq_runread_type->id])) {
+                foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
+                    //Build seq_runmread_select
+                    $seq_runread_type = $seq_run_type_scheme->getSeqRunreadTypes(array(
+                        "active = 'Y'",
+                        "order" => "sort_order IS NULL ASC, sort_order ASC"
+                    ));
+                    if (!empty($seq_runread_type) && !isset($seq_runread_types_uniq[$seq_runread_type->id])) {
                         if ($this->session->has('seq_runread_type') && $seq_runread_type->id == $this->session->get('seq_runread_type')->id) {
                             echo '<label class="radio-inline">';
                             echo $this->tag->radioField(array(
@@ -417,19 +443,41 @@ class OrderController extends ControllerBase
                     }
                 }
                 echo '</div>';
+            }
+        }
+    }
 
-
-                //Build seq_runcycle_select
-                $seq_runcycle_types = $instrumentTypes->getSeqRuncycleTypes(array(
-                    "SeqRuncycleTypes.active = 'Y'",
-                    "order" => "sort_order IS NULL ASC, sort_order ASC"
+    public function seqRuncycleTypesSelectListAction()
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
+                $seq_runmode_type_id = $this->request->getPost('seq_runmode_type_id', 'int');
+                $seq_runread_type_id = $this->request->getPost('seq_runread_type_id', 'int');
+                $seq_run_type_schemes = seqRunTypeSchemes::find(array(
+                    "instrument_type_id = :instrument_type_id: AND seq_runmode_type_id = :seq_runmode_type_id: AND seq_runread_type_id = :seq_runread_type_id: AND active = 'Y'",
+                    'bind' => array(
+                        'instrument_type_id' => $instrument_type_id,
+                        'seq_runmode_type_id' => $seq_runmode_type_id,
+                        'seq_runread_type_id' => $seq_runread_type_id
+                    )
                 ));
+
 
                 $seq_runcycle_types_uniq = array(); // @TODO Could not use DISTINCT
                 echo '<div id="seq_runcycle_type_select" class="form-group">';
                 echo '<label for="seq_runcycle_type_id">Read Cycle</label><br>';
-                foreach ($seq_runcycle_types as $seq_runcycle_type) {
-                    if (!isset($seq_runcycle_types_uniq[$seq_runcycle_type->id])) {
+                foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
+                    //Build seq_runcycle_select
+                    $seq_runcycle_type = $seq_run_type_scheme->getSeqRuncycleTypes(array(
+                        "active = 'Y'",
+                        "order" => "sort_order IS NULL ASC, sort_order ASC"
+                    ));
+                    if (!empty($seq_runcycle_type) && !isset($seq_runcycle_types_uniq[$seq_runcycle_type->id])) {
                         if ($this->session->has('seq_runcycle_type') && $seq_runcycle_type->id == $this->session->get('seq_runcycle_type')->id) {
                             echo '<label class="radio-inline">';
                             echo $this->tag->radioField(array(
@@ -823,7 +871,7 @@ class OrderController extends ControllerBase
             $j = 0;
             foreach ($sample_property_types as $sample_property_type) {
                 $sample_property_type_id = $sample_property_type->id;
-                if(isset($sample_data->sample_property_types->$sample_property_type_id)){
+                if (isset($sample_data->sample_property_types->$sample_property_type_id)) {
                     $sample_property_entries[$j] = new SamplePropertyEntries();
                     $sample_property_entries[$j]->sample_property_type_id = $sample_property_type_id;
                     $sample_property_entries[$j]->value = $sample_data->sample_property_types->$sample_property_type_id;

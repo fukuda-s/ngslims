@@ -726,6 +726,8 @@ class TrackerController extends ControllerBase
         $instrument_type = InstrumentTypes::findFirst($instrument_type_id);
         $this->view->setVar('instrument_type', $instrument_type);
 
+        $seq_run_type_schemes = SeqRunTypeSchemes::find($instrument_type_id);
+
         /*
         $flowcells = $this->modelsManager->createBuilder()
             ->columns(array('fc.*', 'se.*'))
@@ -744,7 +746,8 @@ class TrackerController extends ControllerBase
                 se . *,
                 fc . *,
                 GROUP_CONCAT(DISTINCT(concat(it.id, '-', srmt.id, '-', srct.id, '-', srrt.id))) AS seqrun_prop_id,
-                GROUP_CONCAT(DISTINCT(concat(it.name, ' ', srmt.name, ' ', srct.name, ' ', srrt.name))) AS seqrun_prop_name
+                GROUP_CONCAT(DISTINCT(concat(it.name, ' ', srmt.name, ' ', srct.name, ' ', srrt.name))) AS seqrun_prop_name,
+                fcsrmt.*
             FROM
                 StepEntries se
                     LEFT JOIN
@@ -773,6 +776,8 @@ class TrackerController extends ControllerBase
                 SeqRunreadTypes srrt ON srrt.id = srts.seq_runread_type_id
                     LEFT JOIN
                 SeqRuncycleTypes srct ON srct.id = srts.seq_runcycle_type_id
+                    LEFT JOIN
+                SeqRunmodeTypes fcsrmt ON fcsrmt.id = fc.seq_runmode_type_id
             WHERE
                 sits.instrument_type_id = :instrument_type_id:
             GROUP BY fc.id
