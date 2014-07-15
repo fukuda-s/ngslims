@@ -344,7 +344,7 @@ class OrderController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
-                $seq_run_type_schemes = seqRunTypeSchemes::find(array(
+                $seq_run_type_schemes = SeqRunTypeSchemes::find(array(
                     "instrument_type_id = :instrument_type_id: AND active = 'Y'",
                     'bind' => array(
                         'instrument_type_id' => $instrument_type_id

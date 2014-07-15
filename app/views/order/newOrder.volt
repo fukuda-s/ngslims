@@ -119,7 +119,7 @@
         <label for="samples_per_seqtemplate" class="control-label"># of Samples / Lane
           <small>(How many sample(s) will be multiplexed in one mixed library?)</small>
         </label>
-        <input type="number" id="samples_per_seqtemplate" class="form-control input-sm">
+        <input type="number" id="samples_per_seqtemplate" class="form-control input-sm" min="1">
       </div>
     </div>
   </div>
@@ -158,7 +158,7 @@
         <label for="lanes_per_seqtemplate" class="control-label"># of Lane / Multiplexed Library
           <small>(How many lane(s) will be required per one multiplexed library?)</small>
         </label>
-        <input type="number" id="lanes_per_seqtemplate" class="form-control input-sm">
+        <input type="number" id="lanes_per_seqtemplate" class="form-control input-sm" min="1">
       </div>
     </div>
   </div>
