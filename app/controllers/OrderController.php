@@ -400,7 +400,7 @@ class OrderController extends ControllerBase
             if ($request->isAjax() == true) {
                 $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
                 $seq_runmode_type_id = $this->request->getPost('seq_runmode_type_id', 'int');
-                $seq_run_type_schemes = seqRunTypeSchemes::find(array(
+                $seq_run_type_schemes = SeqRunTypeSchemes::find(array(
                     "instrument_type_id = :instrument_type_id: AND seq_runmode_type_id = :seq_runmode_type_id: AND active = 'Y'",
                     'bind' => array(
                         'instrument_type_id' => $instrument_type_id,
@@ -458,7 +458,7 @@ class OrderController extends ControllerBase
                 $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
                 $seq_runmode_type_id = $this->request->getPost('seq_runmode_type_id', 'int');
                 $seq_runread_type_id = $this->request->getPost('seq_runread_type_id', 'int');
-                $seq_run_type_schemes = seqRunTypeSchemes::find(array(
+                $seq_run_type_schemes = SeqRunTypeSchemes::find(array(
                     "instrument_type_id = :instrument_type_id: AND seq_runmode_type_id = :seq_runmode_type_id: AND seq_runread_type_id = :seq_runread_type_id: AND active = 'Y'",
                     'bind' => array(
                         'instrument_type_id' => $instrument_type_id,
