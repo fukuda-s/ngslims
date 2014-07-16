@@ -366,89 +366,88 @@ $(document).ready(function () {
           getSeqRunmodeTypesList(instrument_type_id_selected);
 
         });
+  }
 
-    function getSeqRunmodeTypesList(instrument_type_id) {
-      $.ajax({
-        url: '{{ url('order/seqRunmodeTypesSelectList/')}}',
-        dataType: 'html',
-        type: 'POST',
-        data: { instrument_type_id: instrument_type_id }
-      })
-          .done(function (data) {
-            $('#seq_runmode_types_select').html(data);
+  function getSeqRunmodeTypesList(instrument_type_id) {
+    $.ajax({
+      url: '{{ url('order/seqRunmodeTypesSelectList/')}}',
+      dataType: 'html',
+      type: 'POST',
+      data: { instrument_type_id: instrument_type_id }
+    })
+        .done(function (data) {
+          $('#seq_runmode_types_select').html(data);
 
-            //Change seq_runmode_type_name_selected value on right side summary with selected values
-            $("input:radio[name='seq_runmode_type_id']").on('change', function () {
-              var seq_runmode_type_id_selected = $(this).filter(':checked').val();
-              var seq_runmode_type_name_selected = $(this).filter(':checked').parent('label').text();
-              $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
+          //Change seq_runmode_type_name_selected value on right side summary with selected values
+          $("input:radio[name='seq_runmode_type_id']").on('change', function () {
+            var seq_runmode_type_id_selected = $(this).filter(':checked').val();
+            var seq_runmode_type_name_selected = $(this).filter(':checked').parent('label').text();
+            $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
 
-              //Set selected seq_runmode_type to session values.
-              setOrderSessionVal('seq_runmode_type', seq_runmode_type_id_selected, seq_runmode_type_name_selected);
+            //Set selected seq_runmode_type to session values.
+            setOrderSessionVal('seq_runmode_type', seq_runmode_type_id_selected, seq_runmode_type_name_selected);
 
-              //Refresh seq_runread_types_select when seq_runmode_type_id is changed
-              getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id_selected);
-            });
-
-            //Refresh seq_runread_types_select when seq_runmode_type_id has session value
-            var seq_runmode_type_id_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked').val();
+            //Refresh seq_runread_types_select when seq_runmode_type_id is changed
             getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id_selected);
-
           });
-    }
 
-    function getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id) {
-      $.ajax({
-        url: '{{ url('order/seqRunreadTypesSelectList/')}}',
-        dataType: 'html',
-        type: 'POST',
-        data: { instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id }
-      })
-          .done(function (data) {
-            $('#seq_runread_types_select').html(data);
+          //Refresh seq_runread_types_select when seq_runmode_type_id has session value
+          var seq_runmode_type_id_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked').val();
+          getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id_selected);
 
-            //Change seq_runread_type_name_selected value on right side summary with selected values
-            $("input:radio[name='seq_runread_type_id']").on('change', function () {
-              var seq_runread_type_id_selected = $(this).filter(':checked').val();
-              var seq_runread_type_name_selected = $(this).filter(':checked').parent('label').text();
-              $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
+        });
+  }
 
-              //Set selected seq_runread_type to session values.
-              setOrderSessionVal('seq_runread_type', seq_runread_type_id_selected, seq_runread_type_name_selected);
+  function getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id) {
+    $.ajax({
+      url: '{{ url('order/seqRunreadTypesSelectList/')}}',
+      dataType: 'html',
+      type: 'POST',
+      data: { instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id }
+    })
+        .done(function (data) {
+          $('#seq_runread_types_select').html(data);
 
-              //Refresh seq_runcycle_types_select when seq_runread_type_id is changed
-              getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id_selected);
-            });
+          //Change seq_runread_type_name_selected value on right side summary with selected values
+          $("input:radio[name='seq_runread_type_id']").on('change', function () {
+            var seq_runread_type_id_selected = $(this).filter(':checked').val();
+            var seq_runread_type_name_selected = $(this).filter(':checked').parent('label').text();
+            $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
 
-            //Refresh seq_runcycle_types_select when seq_runread_type_id has session value
-            var seq_runread_type_id_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked').val();
+            //Set selected seq_runread_type to session values.
+            setOrderSessionVal('seq_runread_type', seq_runread_type_id_selected, seq_runread_type_name_selected);
+
+            //Refresh seq_runcycle_types_select when seq_runread_type_id is changed
             getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id_selected);
           });
-    }
 
-    function getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id) {
-      $.ajax({
-        url: '{{ url('order/seqRuncycleTypesSelectList/')}}',
-        dataType: 'html',
-        type: 'POST',
-        data: { instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id, seq_runread_type_id: seq_runread_type_id }
-      })
-          .done(function (data) {
-            $('#seq_runcycle_types_select').html(data);
-            //Change seq_runcycle_type_name_selected value on right side summary with selected values
-            $("input:radio[name='seq_runcycle_type_id']").on('change', function () {
-              var seq_runcycle_type_id_selected = $(this).filter(':checked').val();
-              var seq_runcycle_type_name_selected = $(this).filter(':checked').parent('label').text();
-              $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
-
-              //Set selected seq_runcycle_type to session values.
-              setOrderSessionVal('seq_runcycle_type', seq_runcycle_type_id_selected, seq_runcycle_type_name_selected);
-            });
-          });
-    }
-
-
+          //Refresh seq_runcycle_types_select when seq_runread_type_id has session value
+          var seq_runread_type_id_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked').val();
+          getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id_selected);
+        });
   }
+
+  function getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id) {
+    $.ajax({
+      url: '{{ url('order/seqRuncycleTypesSelectList/')}}',
+      dataType: 'html',
+      type: 'POST',
+      data: { instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id, seq_runread_type_id: seq_runread_type_id }
+    })
+        .done(function (data) {
+          $('#seq_runcycle_types_select').html(data);
+          //Change seq_runcycle_type_name_selected value on right side summary with selected values
+          $("input:radio[name='seq_runcycle_type_id']").on('change', function () {
+            var seq_runcycle_type_id_selected = $(this).filter(':checked').val();
+            var seq_runcycle_type_name_selected = $(this).filter(':checked').parent('label').text();
+            $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
+
+            //Set selected seq_runcycle_type to session values.
+            setOrderSessionVal('seq_runcycle_type', seq_runcycle_type_id_selected, seq_runcycle_type_name_selected);
+          });
+        });
+  }
+
 
   /*
    * Build function to get pi_user list from selected step_id.
