@@ -34,37 +34,6 @@ class Security extends Plugin
 
             // Private area resources
             $privateResources = array(
-                'companies' => array(
-                    'index',
-                    'search',
-                    'new',
-                    'edit',
-                    'save',
-                    'create',
-                    'delete'
-                ),
-                'products' => array(
-                    'index',
-                    'search',
-                    'new',
-                    'edit',
-                    'save',
-                    'create',
-                    'delete'
-                ),
-                'producttypes' => array(
-                    'index',
-                    'search',
-                    'new',
-                    'edit',
-                    'save',
-                    'create',
-                    'delete'
-                ),
-                'invoices' => array(
-                    'index',
-                    'profile'
-                ),
                 'order' => array(
                     'index',
                     'newOrder',
@@ -161,7 +130,9 @@ class Security extends Plugin
                     'index',
                     'register',
                     'start',
-                    'end'
+                    'end',
+                    'account',
+                    'password'
                 ),
                 'contact' => array(
                     'index',

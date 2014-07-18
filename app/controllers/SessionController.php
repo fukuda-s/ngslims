@@ -124,4 +124,77 @@ class SessionController extends ControllerBase
         $this->flash->success('Goodbye!');
         return $this->forward('index/index');
     }
+
+    /**
+     * Account setting form
+     */
+    public function accountAction()
+    {
+        $request = $this->request;
+        //Get session info
+        $auth = $this->session->get('auth');
+
+        //Query the active user
+        $user = Users::findFirst($auth['id']);
+
+        if ($user == false) {
+            $this->_forward('index/index');
+        }
+
+        if (!$request->isPost()) {
+            Tag::setDefault('firstname', $user->firstname);
+            Tag::setDefault('lastname', $user->lastname);
+            Tag::setDefault('email', $user->email);
+        } else {
+
+            $firstname = $request->getPost('firstname', array('string', 'striptags'));
+            $lastname = $request->getPost('lastname', array('string', 'striptags'));
+            $email = $request->getPost('email', 'email');
+
+            $firstname = strip_tags($firstname);
+            $lastname = strip_tags($lastname);
+
+            $user->firstname = $firstname;
+            $user->lastname = $lastname;
+            $user->email = $email;
+            $user->active = 'Y';
+            if ($user->save() == false) {
+                foreach ($user->getMessages() as $message) {
+                    $this->flash->error((string)$message);
+                }
+            } else {
+                $this->flash->success('Your profile information was updated successfully');
+            }
+        }
+    }
+
+    /**
+     * Password setting form
+     */
+    public function passwordAction()
+    {
+        $request = $this->request;
+        if ($request->isPost()) {
+
+
+            $password = $request->getPost('password');
+            $repeatPassword = $this->request->getPost('repeatPassword');
+            $newPassword = $request->getPost('newPassword');
+
+            if ($password != $repeatPassword) {
+                $this->flash->error('Passwords are different');
+                return false;
+            }
+
+            $user = Users::findFirst($this->session->get('auth')['id']);
+            $user->password = $this->security->hash($newPassword);
+            if ($user->save() == false) {
+                foreach ($user->getMessages() as $message) {
+                    $this->flash->error((string)$message);
+                }
+            } else {
+                $this->flash->success('Your password was updated successfully');
+            }
+        }
+    }
 }

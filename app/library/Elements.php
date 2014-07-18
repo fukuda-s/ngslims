@@ -42,31 +42,36 @@ class Elements extends Phalcon\Mvc\User\Component
         )
     );
 
-    private $_tabs = array(
-        'Invoices' => array(
-            'controller' => 'invoices',
-            'action' => 'index',
-            'any' => false
+    private $_userDropdownMenu = array(
+        array(
+            'caption' => 'Account',
+            'controller' => 'session',
+            'action' => 'account',
+            'class' => ''
         ),
-        'Companies' => array(
-            'controller' => 'companies',
-            'action' => 'index',
-            'any' => true
+        array(
+            'caption' => '',
+            'controller' => '',
+            'action' => '',
+            'class' => 'divider'
         ),
-        'Products' => array(
-            'controller' => 'products',
-            'action' => 'index',
-            'any' => true
+        array(
+            'caption' => 'Password',
+            'controller' => 'session',
+            'action' => 'password',
+            'class' => ''
         ),
-        'Product Types' => array(
-            'controller' => 'producttypes',
-            'action' => 'index',
-            'any' => true
+        array(
+            'caption' => '',
+            'controller' => '',
+            'action' => '',
+            'class' => 'divider'
         ),
-        'Your Profile' => array(
-            'controller' => 'invoices',
-            'action' => 'profile',
-            'any' => false
+        array(
+            'caption' => 'Log Out',
+            'controller' => 'session',
+            'action' => 'end',
+            'class' => ''
         )
     );
 
@@ -125,8 +130,8 @@ class Elements extends Phalcon\Mvc\User\Component
         $auth = $this->session->get('auth');
         if ($auth) {
             $this->_headerMenu['pull-right']['session'] = array(
-                'caption' => 'Log Out',
-                'action' => 'end'
+                'caption' => $auth['firstname'] . ' ' . $auth['lastname'],
+                'dropdown' => '_userDropdownMenu'
             );
         } else {
             unset($this->_headerMenu['pull-left']['invoices']);
@@ -138,13 +143,32 @@ class Elements extends Phalcon\Mvc\User\Component
         foreach ($this->_headerMenu as $position => $menu) {
             echo '<ul class="nav navbar-nav ', $position, '">';
             foreach ($menu as $controller => $option) {
-                if ($controllerName == $controller) {
-                    echo '<li class="active">';
+                if (isset($option['dropdown']) && !empty($option['dropdown'])) {
+                    $dropdown = $this->$option['dropdown'];
+                    //$dropdown = $this->_userDropdownMenu;
+                    echo '<li class="dropdown">';
+                    echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' . $option['caption'] . '<span class="caret"></span></a>';
+                    echo '<ul class="dropdown-menu" role="menu">';
+                    foreach ($dropdown as $d_menu) {
+                        if (isset($d_menu['controller']) && $d_menu['class'] == 'divider') {
+                            echo '<li class="divider">';
+                        } else {
+                            echo '<li class="' . $d_menu['class'] . '">';
+                            echo Tag::linkTo($d_menu['controller'] . '/' . $d_menu['action'], $d_menu['caption']);
+                        }
+                        echo '</li>';
+                    }
+                    echo '</ul>';
+
                 } else {
-                    echo '<li>';
+                    if ($controllerName == $controller) {
+                        echo '<li class="active">';
+                    } else {
+                        echo '<li>';
+                    }
+                    echo Tag::linkTo($controller . '/' . $option['action'], $option['caption']);
+                    echo '</li>';
                 }
-                echo Tag::linkTo($controller . '/' . $option['action'], $option['caption']);
-                echo '</li>';
             }
             echo '</ul>';
         }

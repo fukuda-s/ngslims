@@ -30,6 +30,7 @@
       </form>
     </div>
 
+    <!--
     <div class="col-md-6">
       <div class="page-header">
         <h2>Don't have an account yet?</h2>
@@ -46,6 +47,7 @@
         {{ link_to('session/register', 'Sign Up', 'class': 'btn btn-primary btn-large btn-success') }}
       </div>
     </div>
+    -->
 
   </div>
 </div>

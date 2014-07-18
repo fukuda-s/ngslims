@@ -5,9 +5,11 @@
 
   <p>ngsLIMS is a revolutionary application to create laboratory information online.</p>
 
+  <!--
   {% if login != 1 %}
     <p>{{ link_to('session/register', 'Register Account &raquo;', 'class': 'btn btn-primary btn-large btn-success') }}</p>
   {% endif %}
+  -->
 </div>
 
 <div class="row">
