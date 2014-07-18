@@ -174,6 +174,12 @@ class SessionController extends ControllerBase
     public function passwordAction()
     {
         $request = $this->request;
+        //Get session info
+        $auth = $this->session->get('auth');
+
+        //Query the active user
+        $user = Users::findFirst($auth['id']);
+
         if ($request->isPost()) {
 
 
@@ -186,7 +192,6 @@ class SessionController extends ControllerBase
                 return false;
             }
 
-            $user = Users::findFirst($this->session->get('auth')['id']);
             $user->password = $this->security->hash($newPassword);
             if ($user->save() == false) {
                 foreach ($user->getMessages() as $message) {
