@@ -34,7 +34,7 @@
     <label class="control-label" for="email">Email Address</label>
 
     <div class="controls">
-      {{ text_field('email', 'class': 'input-xlarge') }}
+      {{ email_field('email', 'class': 'input-xlarge') }}
       <p class="help-block">(required)</p>
 
       <div class="alert" id="email_alert">

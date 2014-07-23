@@ -13,7 +13,7 @@
           <label class="control-label" for="email">Username/Email</label>
 
           <div class="controls">
-            {{ text_field('email', 'size': "30", 'class': "input-xlarge") }}
+            {{ email_field('email', 'size': "30", 'class': "input-xlarge") }}
           </div>
         </div>
         <div class="control-group">
