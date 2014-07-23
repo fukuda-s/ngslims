@@ -67,7 +67,6 @@ class Security extends Plugin
                     'flowcell',
                     'sequence',
                     'sequenceSetupCandidates',
-                    'sequenceSetupSetSession',
                     'sequenceSetupConfirm',
                     'sequenceSetupSave',
                     'protocol'

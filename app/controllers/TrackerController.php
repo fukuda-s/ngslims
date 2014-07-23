@@ -725,10 +725,20 @@ class TrackerController extends ControllerBase
         $instrument_type_id = $this->filter->sanitize($instrument_type_id, array("int"));
         $instrument_type = InstrumentTypes::findFirst($instrument_type_id);
         $this->view->setVar('instrument_type', $instrument_type);
+        $this->view->setVar('slots_per_run', range(1, $instrument_type->slots_per_run));
 
-        $seq_run_type_schemes = SeqRunTypeSchemes::find($instrument_type_id);
+        $instruments = Instruments::find(array(
+            "instrument_type_id = :instrument_type_id: AND active = 'Y'",
+            'bind' => array(
+                'instrument_type_id' => $instrument_type_id
+            ),
+            "order" => "instrument_number IS NULL ASC, instrument_number ASC"
+        ));
+        $this->view->setVar('instruments', $instruments);
 
         /*
+        $seq_run_type_schemes = SeqRunTypeSchemes::find($instrument_type_id);
+
         $flowcells = $this->modelsManager->createBuilder()
             ->columns(array('fc.*', 'se.*'))
             ->addFrom('StepEntries', 'se')
@@ -789,6 +799,27 @@ class TrackerController extends ControllerBase
         ));
 
         $this->view->setVar('flowcells', $flowcells);
+    }
+
+    public function sequenceSetupConfirmAction($instrument_type_id)
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+        Tag::appendTitle(' | Sequencing Run Setup Confirm ');
+
+
+        $request = $this->request;
+        $instrument_type_id = $this->filter->sanitize($instrument_type_id, array("int"));
+        $instrument_type = InstrumentTypes::findFirst($instrument_type_id);
+        $slots_per_run = range(1, $instrument_type->slots_per_run);
+
+        echo "<h3>Confirm Sequence Run Setup</h3>";
+        echo "<br>";
+        echo "<h4>$instrument_type->name</h4>";
+        echo $request->getPost('seq_runmode_type_id', array('string', 'striptags'));
+        foreach ($slots_per_run as $slot) {
+
+        }
+
     }
 
     public function protocolAction()

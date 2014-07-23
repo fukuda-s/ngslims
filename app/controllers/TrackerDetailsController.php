@@ -547,7 +547,7 @@ class TrackerdetailsController extends ControllerBase
                 $flowcell_id = $this->request->getPost("flowcell_id", "int");
 
                 $seqtemplates = $this->modelsManager->createBuilder()
-                    ->columns(array('fc.*, sl.*, st.*, ct.*, srmt.*'))
+                    ->columns(array('fc.*', 'sl.*', 'st.*', 'ct.*'))
                     ->addFrom('Flowcells', 'fc')
                     ->leftJoin('Seqlanes', 'sl.flowcell_id = fc.id', 'sl')
                     ->leftJoin('Seqtemplates', 'st.id = sl.seqtemplate_id', 'st')
@@ -561,7 +561,6 @@ class TrackerdetailsController extends ControllerBase
                     //->leftJoin('SeqRunTypeSchemes', 'r.seq_run_type_scheme_id = srts.id', 'srts')
                     //->leftJoin('InstrumentTypes', 'it.id = srts.instrument_type_id', 'it')
                     //->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
-                    ->leftJoin('SeqRunmodeTypes', 'srmt.id = fc.seq_runmode_type_id', 'srmt')
                     //->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
                     //->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
                     //->leftJoin('Protocols', 'pt.id = sl.protocol_id', 'pt')

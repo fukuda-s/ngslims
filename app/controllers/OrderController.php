@@ -353,7 +353,7 @@ class OrderController extends ControllerBase
 
 
                 $seq_runmode_types_uniq = array(); // @TODO Could not use DISTINCT
-                echo '<div id="seq_runmode_type_select" class="form-group">';
+                //echo '<div id="seq_runmode_types_checkbox" class="form-group">';
                 echo '<label for="seq_runmode_type_id">Run Mode</label><br>';
                 foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
                     //Build seq_runmode_select
@@ -385,7 +385,7 @@ class OrderController extends ControllerBase
                         $seq_runmode_types_uniq[$seq_runmode_type->id] = true;
                     }
                 }
-                echo '</div>';
+                //echo '</div>';
             }
         }
     }
@@ -400,6 +400,7 @@ class OrderController extends ControllerBase
             if ($request->isAjax() == true) {
                 $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
                 $seq_runmode_type_id = $this->request->getPost('seq_runmode_type_id', 'int');
+                $slot = $this->request->getPost('slot', 'striptags');
                 $seq_run_type_schemes = SeqRunTypeSchemes::find(array(
                     "instrument_type_id = :instrument_type_id: AND seq_runmode_type_id = :seq_runmode_type_id: AND active = 'Y'",
                     'bind' => array(
@@ -409,9 +410,16 @@ class OrderController extends ControllerBase
                 ));
 
 
+                if (empty($slot)) {
+                    $seq_runread_types_checkbox_attr = 'seq_runread_types_checkbox';
+                    $seq_runread_type_id_attr = 'seq_runread_type_id';
+                } else {
+                    $seq_runread_types_checkbox_attr = 'seq_runread_types_checkbox_' . $slot;
+                    $seq_runread_type_id_attr = 'seq_runread_type_id_' . $slot;
+                }
                 $seq_runread_types_uniq = array(); // @TODO Could not use DISTINCT
-                echo '<div id="seq_runread_type_select" class="form-group">';
-                echo '<label for="seq_runread_type_id">Read Type</label><br>';
+                //echo '<div id="' . $seq_runread_types_checkbox_attr . '" class="form-group">';
+                echo '<label for="' . $seq_runread_type_id_attr . '">Read Type</label><br>';
                 foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
                     //Build seq_runmread_select
                     $seq_runread_type = $seq_run_type_scheme->getSeqRunreadTypes(array(
@@ -423,7 +431,7 @@ class OrderController extends ControllerBase
                             echo '<label class="radio-inline">';
                             echo $this->tag->radioField(array(
                                 "seq_runread_type_id_" . $seq_runread_type->id,
-                                "name" => "seq_runread_type_id",
+                                "name" => $seq_runread_type_id_attr,
                                 "value" => $seq_runread_type->id,
                                 'checked' => 'checked'
                             ));
@@ -433,7 +441,7 @@ class OrderController extends ControllerBase
                             echo '<label class="radio-inline">';
                             echo $this->tag->radioField(array(
                                 "seq_runread_type_id_" . $seq_runread_type->id,
-                                "name" => "seq_runread_type_id",
+                                "name" => $seq_runread_type_id_attr,
                                 "value" => $seq_runread_type->id
                             ));
                             echo $seq_runread_type->name;
@@ -442,7 +450,7 @@ class OrderController extends ControllerBase
                         $seq_runread_types_uniq[$seq_runread_type->id] = true;
                     }
                 }
-                echo '</div>';
+                //echo '</div>';
             }
         }
     }
@@ -458,6 +466,7 @@ class OrderController extends ControllerBase
                 $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
                 $seq_runmode_type_id = $this->request->getPost('seq_runmode_type_id', 'int');
                 $seq_runread_type_id = $this->request->getPost('seq_runread_type_id', 'int');
+                $slot = $this->request->getPost('slot', 'striptags');
                 $seq_run_type_schemes = SeqRunTypeSchemes::find(array(
                     "instrument_type_id = :instrument_type_id: AND seq_runmode_type_id = :seq_runmode_type_id: AND seq_runread_type_id = :seq_runread_type_id: AND active = 'Y'",
                     'bind' => array(
@@ -467,10 +476,16 @@ class OrderController extends ControllerBase
                     )
                 ));
 
-
+                if (empty($slot)) {
+                    $seq_runcycle_types_checkbox_attr = 'seq_runcycle_types_checkbox';
+                    $seq_runcycle_type_id_attr = 'seq_runcycle_type_id';
+                } else {
+                    $seq_runcycle_types_checkbox_attr = 'seq_runcycle_types_checkbox_' . $slot;
+                    $seq_runcycle_type_id_attr = 'seq_runcycle_type_id_' . $slot;
+                }
                 $seq_runcycle_types_uniq = array(); // @TODO Could not use DISTINCT
-                echo '<div id="seq_runcycle_type_select" class="form-group">';
-                echo '<label for="seq_runcycle_type_id">Read Cycle</label><br>';
+                //echo '<div id="'. $seq_runcycle_types_checkbox_attr . '" class="form-group">';
+                echo '<label for="' . $seq_runcycle_type_id_attr . '">Read Cycle</label><br>';
                 foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
                     //Build seq_runcycle_select
                     $seq_runcycle_type = $seq_run_type_scheme->getSeqRuncycleTypes(array(
@@ -482,7 +497,7 @@ class OrderController extends ControllerBase
                             echo '<label class="radio-inline">';
                             echo $this->tag->radioField(array(
                                 "seq_runcycle_type_id_" . $seq_runcycle_type->id,
-                                "name" => "seq_runcycle_type_id",
+                                "name" => $seq_runcycle_type_id_attr,
                                 "value" => $seq_runcycle_type->id,
                                 'checked' => 'checked'
                             ));
@@ -492,7 +507,7 @@ class OrderController extends ControllerBase
                             echo '<label class="radio-inline">';
                             echo $this->tag->radioField(array(
                                 "seq_runcycle_type_id_" . $seq_runcycle_type->id,
-                                "name" => "seq_runcycle_type_id",
+                                "name" => $seq_runcycle_type_id_attr,
                                 "value" => $seq_runcycle_type->id
                             ));
                             echo $seq_runcycle_type->name;
@@ -501,7 +516,7 @@ class OrderController extends ControllerBase
                         $seq_runcycle_types_uniq[$seq_runcycle_type->id] = true;
                     }
                 }
-                echo '</div>';
+                //echo '</div>';
             }
         }
     }
