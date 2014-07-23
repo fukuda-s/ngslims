@@ -27,6 +27,12 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
+    public $slots_per_run;
+
+    /**
+     *
+     * @var integer
+     */
     public $sort_order;
 
     /**
@@ -48,6 +54,7 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
             'id' => 'id',
             'name' => 'name',
             'platform_code' => 'platform_code',
+            'slots_per_run' => 'slots_per_run',
             'sort_order' => 'sort_order',
             'active' => 'active'
         );

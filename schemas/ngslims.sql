@@ -49,6 +49,8 @@ CREATE TABLE `flowcells` (
   `instrument_id` int(11) DEFAULT NULL,
   `side` char(1) DEFAULT NULL,
   `dirname` varchar(200) DEFAULT NULL,
+  `run_started_date` datetime DEFAULT NULL,
+  `run_finished_date` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `notes` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -72,6 +74,7 @@ CREATE TABLE `instrument_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `platform_code` varchar(100) NOT NULL,
+  `slots_per_run` int(11) NOT NULL DEFAULT '1',
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
@@ -785,4 +788,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-07-07 14:41:52
+-- Dump completed on 2014-07-23 14:35:05

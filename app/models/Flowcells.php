@@ -50,6 +50,18 @@ class Flowcells extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    public $run_started_date;
+
+    /**
+     *
+     * @var string
+     */
+    public $run_finished_date;
+
+    /**
+     *
+     * @var string
+     */
     public $dirname;
 
     /**
@@ -77,6 +89,8 @@ class Flowcells extends \Phalcon\Mvc\Model
             'run_number' => 'run_number',
             'instrument_id' => 'instrument_id',
             'side' => 'side',
+            'run_started_date' => 'run_started_date',
+            'run_finished_date' => 'run_finished_date',
             'dirname' => 'dirname',
             'created_at' => 'created_at',
             'notes' => 'notes'
