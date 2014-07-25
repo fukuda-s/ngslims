@@ -28,13 +28,13 @@ class OrderController extends ControllerBase
         // @TODO Should be filter labs which should have lab_users
         //Set default value from session value
         if ($this->session->has('lab')) {
-            $this->tag->setDefault('lab_id', $this->session->get('lab')->id);
+            Tag::setDefault('lab_id', $this->session->get('lab')->id);
         }
         $this->view->setVar('labs', Labs::find("active = 'Y'"));
 
         //Set default value from session value
         if ($this->session->has('sample_type')) {
-            $this->tag->setDefault('sample_type_id', $this->session->get('sample_type')->id);
+            Tag::setDefault('sample_type_id', $this->session->get('sample_type')->id);
         }
         $this->view->setVar('sampletypes', SampleTypes::find(array(
             "active = 'Y'",
@@ -43,7 +43,7 @@ class OrderController extends ControllerBase
 
         //Set default value from session value
         if ($this->session->has('organism')) {
-            $this->tag->setDefault('organism_id', $this->session->get('organism')->id);
+            Tag::setDefault('organism_id', $this->session->get('organism')->id);
         }
         $this->view->setVar('organisms', Organisms::find(array(
             "active = 'Y'",
@@ -123,14 +123,14 @@ class OrderController extends ControllerBase
 
                 //Set default value from session value
                 if ($this->session->has('pi_user')) {
-                    $this->tag->setDefault('pi_user_id', $this->session->get('pi_user')->id);
+                    Tag::setDefault('pi_user_id', $this->session->get('pi_user')->id);
                 } else {
                     //Set default selected pi_user_id with session's user.
-                    $this->tag->setDefault('pi_user_id', $auth['id']);
+                    Tag::setDefault('pi_user_id', $auth['id']);
                 }
 
                 echo '<label for="pi_user_id" class="control-label">PI </label>';
-                echo $this->tag->selectStatic(
+                echo Tag::selectStatic(
                     array(
                         'pi_user_id',
                         $users,
@@ -162,7 +162,7 @@ class OrderController extends ControllerBase
 
                 //Set default value from session value
                 if ($this->session->has('project')) {
-                    $this->tag->setDefault('project_id', $this->session->get('project')->id);
+                    Tag::setDefault('project_id', $this->session->get('project')->id);
                     //var_dump($this->session->get('project')->name);
                 }
 
@@ -172,7 +172,7 @@ class OrderController extends ControllerBase
                 echo '<button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-project">';
                 echo '<span class="glyphicon glyphicon-plus"></span>';
                 echo '</button>';
-                echo $this->tag->selectStatic(
+                echo Tag::selectStatic(
                     array(
                         'project_id',
                         $projects,
@@ -215,12 +215,12 @@ class OrderController extends ControllerBase
 
                 //Set default value from session value
                 if ($this->session->has('step')) {
-                    $this->tag->setDefault('step_id', $this->session->get('step')->id);
+                    Tag::setDefault('step_id', $this->session->get('step')->id);
                 }
 
                 $emptyText = (!$steps->getFirst()) ? 'Please, add first Experiment' : 'Please, choose Experiment...';
                 echo '<label for="step_id" class="control-label">Experiment Step</label>';
-                echo $this->tag->selectStatic(
+                echo Tag::selectStatic(
                     array(
                         'step_id',
                         $steps,
@@ -264,12 +264,12 @@ class OrderController extends ControllerBase
 
                 //Set default value from session value
                 if ($this->session->has('protocol')) {
-                    $this->tag->setDefault('protocol_id', $this->session->get('protocol')->id);
+                    Tag::setDefault('protocol_id', $this->session->get('protocol')->id);
                 }
 
                 $emptyText = (!$protocols->getFirst()) ? 'Please, add first Protocol' : 'Please, choose Protocol...';
                 echo '<label for="protocol_id" class="control-label">Protocol</label>';
-                echo $this->tag->selectStatic(
+                echo Tag::selectStatic(
                     array(
                         'protocol_id',
                         $protocols,
@@ -296,8 +296,8 @@ class OrderController extends ControllerBase
             if ($request->isAjax() == true) {
                 //return disabled select list when upper level select list has been reset.
                 if ($step_id === '@') {
-                    echo '<label for="instrument_type_id">Instrument Type</label>';
-                    echo '<select id="instrument_type_id" class="form-control input-sm" disabled>';
+                    echo '<label for="instrument_type">Instrument Type</label>';
+                    echo '<select id="instrument_type" class="form-control input-sm" disabled>';
                     echo '<option value="@">Experiment Step necessary...</option>';
                     echo '</select>';
                     return;
@@ -314,14 +314,14 @@ class OrderController extends ControllerBase
 
                 //Set default value from session value
                 if ($this->session->has('instrument_type')) {
-                    $this->tag->setDefault('instrument_type_id', $this->session->get('instrument_type')->id);
+                    Tag::setDefault('instrument_type', $this->session->get('instrument_type')->id);
                 }
 
                 $emptyText = (!$instrument_types->getFirst()) ? 'Please, configure instrument type before' : 'Please, choose Instrument Type...';
-                echo '<label for="instrument_type_id">Instrument Type</label>';
-                echo $this->tag->selectStatic(
+                echo '<label for="instrument_type">Instrument Type</label>';
+                echo Tag::selectStatic(
                     array(
-                        'instrument_type_id',
+                        'instrument_type',
                         $instrument_types,
                         'using' => ['id', 'name'],
                         'useEmpty' => true,
@@ -353,8 +353,7 @@ class OrderController extends ControllerBase
 
 
                 $seq_runmode_types_uniq = array(); // @TODO Could not use DISTINCT
-                //echo '<div id="seq_runmode_types_checkbox" class="form-group">';
-                echo '<label for="seq_runmode_type_id">Run Mode</label><br>';
+                echo '<label for="seq_runmode_type">Run Mode</label><br>';
                 foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
                     //Build seq_runmode_select
                     $seq_runmode_type = $seq_run_type_scheme->getSeqRunmodeTypes(array(
@@ -364,9 +363,9 @@ class OrderController extends ControllerBase
                     if (!empty($seq_runmode_type) && !isset($seq_runmode_types_uniq[$seq_runmode_type->id])) {
                         if ($this->session->has('seq_runmode_type') && $seq_runmode_type->id == $this->session->get('seq_runmode_type')->id) {
                             echo '<label class="radio-inline">';
-                            echo $this->tag->radioField(array(
+                            echo Tag::radioField(array(
                                 "seq_runmode_type_id_" . $seq_runmode_type->id,
-                                "name" => "seq_runmode_type_id",
+                                "name" => "seq_runmode_type",
                                 "value" => $seq_runmode_type->id,
                                 "checked" => "checked"
                             ));
@@ -374,9 +373,9 @@ class OrderController extends ControllerBase
                             echo '</label>';
                         } else {
                             echo '<label class="radio-inline">';
-                            echo $this->tag->radioField(array(
+                            echo Tag::radioField(array(
                                 "seq_runmode_type_id_" . $seq_runmode_type->id,
-                                "name" => "seq_runmode_type_id",
+                                "name" => "seq_runmode_type",
                                 "value" => $seq_runmode_type->id
                             ));
                             echo $seq_runmode_type->name;
@@ -385,7 +384,6 @@ class OrderController extends ControllerBase
                         $seq_runmode_types_uniq[$seq_runmode_type->id] = true;
                     }
                 }
-                //echo '</div>';
             }
         }
     }
@@ -411,14 +409,11 @@ class OrderController extends ControllerBase
 
 
                 if (empty($slot)) {
-                    $seq_runread_types_checkbox_attr = 'seq_runread_types_checkbox';
-                    $seq_runread_type_id_attr = 'seq_runread_type_id';
+                    $seq_runread_type_id_attr = 'seq_runread_type';
                 } else {
-                    $seq_runread_types_checkbox_attr = 'seq_runread_types_checkbox_' . $slot;
-                    $seq_runread_type_id_attr = 'seq_runread_type_id_' . $slot;
+                    $seq_runread_type_id_attr = 'seq_runread_type_' . $slot;
                 }
                 $seq_runread_types_uniq = array(); // @TODO Could not use DISTINCT
-                //echo '<div id="' . $seq_runread_types_checkbox_attr . '" class="form-group">';
                 echo '<label for="' . $seq_runread_type_id_attr . '">Read Type</label><br>';
                 foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
                     //Build seq_runmread_select
@@ -427,9 +422,9 @@ class OrderController extends ControllerBase
                         "order" => "sort_order IS NULL ASC, sort_order ASC"
                     ));
                     if (!empty($seq_runread_type) && !isset($seq_runread_types_uniq[$seq_runread_type->id])) {
-                        if ($this->session->has('seq_runread_type') && $seq_runread_type->id == $this->session->get('seq_runread_type')->id) {
+                        if ($this->session->has($seq_runread_type_id_attr) && $seq_runread_type->id == $this->session->get($seq_runread_type_id_attr)->id) {
                             echo '<label class="radio-inline">';
-                            echo $this->tag->radioField(array(
+                            echo Tag::radioField(array(
                                 "seq_runread_type_id_" . $seq_runread_type->id,
                                 "name" => $seq_runread_type_id_attr,
                                 "value" => $seq_runread_type->id,
@@ -439,7 +434,7 @@ class OrderController extends ControllerBase
                             echo '</label>';
                         } else {
                             echo '<label class="radio-inline">';
-                            echo $this->tag->radioField(array(
+                            echo Tag::radioField(array(
                                 "seq_runread_type_id_" . $seq_runread_type->id,
                                 "name" => $seq_runread_type_id_attr,
                                 "value" => $seq_runread_type->id
@@ -450,7 +445,6 @@ class OrderController extends ControllerBase
                         $seq_runread_types_uniq[$seq_runread_type->id] = true;
                     }
                 }
-                //echo '</div>';
             }
         }
     }
@@ -477,14 +471,11 @@ class OrderController extends ControllerBase
                 ));
 
                 if (empty($slot)) {
-                    $seq_runcycle_types_checkbox_attr = 'seq_runcycle_types_checkbox';
-                    $seq_runcycle_type_id_attr = 'seq_runcycle_type_id';
+                    $seq_runcycle_type_id_attr = 'seq_runcycle_type';
                 } else {
-                    $seq_runcycle_types_checkbox_attr = 'seq_runcycle_types_checkbox_' . $slot;
-                    $seq_runcycle_type_id_attr = 'seq_runcycle_type_id_' . $slot;
+                    $seq_runcycle_type_id_attr = 'seq_runcycle_type_' . $slot;
                 }
                 $seq_runcycle_types_uniq = array(); // @TODO Could not use DISTINCT
-                //echo '<div id="'. $seq_runcycle_types_checkbox_attr . '" class="form-group">';
                 echo '<label for="' . $seq_runcycle_type_id_attr . '">Read Cycle</label><br>';
                 foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
                     //Build seq_runcycle_select
@@ -493,9 +484,9 @@ class OrderController extends ControllerBase
                         "order" => "sort_order IS NULL ASC, sort_order ASC"
                     ));
                     if (!empty($seq_runcycle_type) && !isset($seq_runcycle_types_uniq[$seq_runcycle_type->id])) {
-                        if ($this->session->has('seq_runcycle_type') && $seq_runcycle_type->id == $this->session->get('seq_runcycle_type')->id) {
+                        if ($this->session->has($seq_runcycle_type_id_attr) && $seq_runcycle_type->id == $this->session->get($seq_runcycle_type_id_attr)->id) {
                             echo '<label class="radio-inline">';
-                            echo $this->tag->radioField(array(
+                            echo Tag::radioField(array(
                                 "seq_runcycle_type_id_" . $seq_runcycle_type->id,
                                 "name" => $seq_runcycle_type_id_attr,
                                 "value" => $seq_runcycle_type->id,
@@ -505,7 +496,7 @@ class OrderController extends ControllerBase
                             echo '</label>';
                         } else {
                             echo '<label class="radio-inline">';
-                            echo $this->tag->radioField(array(
+                            echo Tag::radioField(array(
                                 "seq_runcycle_type_id_" . $seq_runcycle_type->id,
                                 "name" => $seq_runcycle_type_id_attr,
                                 "value" => $seq_runcycle_type->id
@@ -516,7 +507,6 @@ class OrderController extends ControllerBase
                         $seq_runcycle_types_uniq[$seq_runcycle_type->id] = true;
                     }
                 }
-                //echo '</div>';
             }
         }
     }

@@ -596,4 +596,29 @@ class TrackerdetailsController extends ControllerBase
             }
         }
     }
+
+    public function getMaxRunNumberAction()
+    {
+        $this->view->disable();
+        $request = new \Phalcon\Http\Request();
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $instrument_id = $this->request->getPost("instrument_id", "int");
+                $run_number = Flowcells::findFirst(array(
+                    "instrument_id = :instrument_id:",
+                    "columns" => array(
+                        "MAX(run_number) AS max_run_number"
+                    ),
+                    "group" => "instrument_id",
+                    "bind" => array(
+                        "instrument_id" => $instrument_id
+                    )
+                ));
+                echo $run_number->max_run_number;
+            }
+        }
+
+    }
 }

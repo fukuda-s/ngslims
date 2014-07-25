@@ -138,19 +138,19 @@
     <div
         class="panel-body seqrun-undecide-toggle-target collapse {% if seqlib_undecided.name === "false" and seqrun_undecided.name === "false" %}in{% endif %}">
       <div id="instrument_type_select" class="form-group">
-        <label for="instrument_type_id">Instrument Type</label>
-        <select id="instrument_type_id" class="form-control input-sm" disabled>
+        <label for="instrument_type">Instrument Type</label>
+        <select id="instrument_type" class="form-control input-sm" disabled>
           <option value="@">Experiment Step is necessary...</option>
         </select>
       </div>
       <div id="seq_run_type_select">
-        <div id="seq_runmode_types_checkbox" class="form-group">
+        <div id="seq_runmode_types_radio" class="form-group">
           <label>Run Mode</label>
         </div>
-        <div id="seq_runread_types_checkbox" class="form-group">
+        <div id="seq_runread_types_radio" class="form-group">
           <label>Read Type</label>
         </div>
-        <div id="seq_runcycle_types_checkbox" class="form-group">
+        <div id="seq_runcycle_types_radio" class="form-group">
           <label>Read Cycle</label>
         </div>
       </div>
@@ -349,7 +349,7 @@ $(document).ready(function () {
           $('#instrument_type_select').html(data);
 
           //setSelectChangedVals('instrument_type', new Array('seq_run_type'));
-          $('#instrument_type_id').on('change', function () {
+          $('#instrument_type').on('change', function () {
             var instrument_type_id_selected = $(this).val();
             var instrument_type_name_selected = $('option:selected', this).text();
             $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
@@ -357,12 +357,12 @@ $(document).ready(function () {
             //Set selected step to session values.
             setOrderSessionVal('instrument_type', instrument_type_id_selected, instrument_type_name_selected);
 
-            //Refresh seq_runmode_types_checkbox when instrument_type_id is changed
+            //Refresh seq_runmode_types_radio when instrument_type_id is changed
             getSeqRunmodeTypesList(instrument_type_id_selected);
           });
 
-          //Refresh seq_runmode_types_checkbox when instrument_type_id has session value
-          var instrument_type_id_selected = $('#instrument_type_id').val();
+          //Refresh seq_runmode_types_radio when instrument_type_id has session value
+          var instrument_type_id_selected = $('#instrument_type').val();
           getSeqRunmodeTypesList(instrument_type_id_selected);
 
         });
@@ -376,10 +376,10 @@ $(document).ready(function () {
       data: { instrument_type_id: instrument_type_id }
     })
         .done(function (data) {
-          $('#seq_runmode_types_checkbox').html(data);
+          $('#seq_runmode_types_radio').html(data);
 
           //Change seq_runmode_type_name_selected value on right side summary with selected values
-          $("input:radio[name='seq_runmode_type_id']").on('change', function () {
+          $("input:radio[name='seq_runmode_type']").on('change', function () {
             var seq_runmode_type_id_selected = $(this).filter(':checked').val();
             var seq_runmode_type_name_selected = $(this).filter(':checked').parent('label').text();
             $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
@@ -387,12 +387,12 @@ $(document).ready(function () {
             //Set selected seq_runmode_type to session values.
             setOrderSessionVal('seq_runmode_type', seq_runmode_type_id_selected, seq_runmode_type_name_selected);
 
-            //Refresh seq_runread_types_checkbox when seq_runmode_type_id is changed
+            //Refresh seq_runread_types_radio when seq_runmode_type_id is changed
             getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id_selected);
           });
 
-          //Refresh seq_runread_types_checkbox when seq_runmode_type_id has session value
-          var seq_runmode_type_id_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked').val();
+          //Refresh seq_runread_types_radio when seq_runmode_type_id has session value
+          var seq_runmode_type_id_selected = $("input:radio[name='seq_runmode_type']").filter(':checked').val();
           getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id_selected);
 
         });
@@ -406,10 +406,10 @@ $(document).ready(function () {
       data: { instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id }
     })
         .done(function (data) {
-          $('#seq_runread_types_checkbox').html(data);
+          $('#seq_runread_types_radio').html(data);
 
           //Change seq_runread_type_name_selected value on right side summary with selected values
-          $("input:radio[name='seq_runread_type_id']").on('change', function () {
+          $("input:radio[name='seq_runread_type']").on('change', function () {
             var seq_runread_type_id_selected = $(this).filter(':checked').val();
             var seq_runread_type_name_selected = $(this).filter(':checked').parent('label').text();
             $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
@@ -417,12 +417,12 @@ $(document).ready(function () {
             //Set selected seq_runread_type to session values.
             setOrderSessionVal('seq_runread_type', seq_runread_type_id_selected, seq_runread_type_name_selected);
 
-            //Refresh seq_runcycle_types_checkbox when seq_runread_type_id is changed
+            //Refresh seq_runcycle_types_radio when seq_runread_type_id is changed
             getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id_selected);
           });
 
-          //Refresh seq_runcycle_types_checkbox when seq_runread_type_id has session value
-          var seq_runread_type_id_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked').val();
+          //Refresh seq_runcycle_types_radio when seq_runread_type_id has session value
+          var seq_runread_type_id_selected = $("input:radio[name='seq_runread_type']").filter(':checked').val();
           getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id_selected);
         });
   }
@@ -435,9 +435,9 @@ $(document).ready(function () {
       data: { instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id, seq_runread_type_id: seq_runread_type_id }
     })
         .done(function (data) {
-          $('#seq_runcycle_types_checkbox').html(data);
+          $('#seq_runcycle_types_radio').html(data);
           //Change seq_runcycle_type_name_selected value on right side summary with selected values
-          $("input:radio[name='seq_runcycle_type_id']").on('change', function () {
+          $("input:radio[name='seq_runcycle_type']").on('change', function () {
             var seq_runcycle_type_id_selected = $(this).filter(':checked').val();
             var seq_runcycle_type_name_selected = $(this).filter(':checked').parent('label').text();
             $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
@@ -635,19 +635,19 @@ $(document).ready(function () {
       $("#seqrun_undecided_selected").hide();
       //$("#pipeline_undecided_selected").hide();
 
-      var instrument_type_selected = $('#instrument_type_id').find('option:selected');
+      var instrument_type_selected = $('#instrument_type').find('option:selected');
       var instrument_type_name_selected = instrument_type_selected.text();
       $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
 
-      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked');
+      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type']").filter(':checked');
       var seq_runmode_type_name_selected = seq_runmode_types_selected.parent('label').text();
       $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
 
-      var seq_runread_types_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked');
+      var seq_runread_types_selected = $("input:radio[name='seq_runread_type']").filter(':checked');
       var seq_runread_type_name_selected = seq_runread_types_selected.parent('label').text();
       $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
 
-      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
+      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type']").filter(':checked');
       var seq_runcycle_type_name_selected = seq_runcycle_types_selected.parent('label').text();
       $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
 
@@ -693,19 +693,19 @@ $(document).ready(function () {
 
       $("#seqrun_undecided_selected").hide();
 
-      var instrument_type_selected = $('#instrument_type_id').find('option:selected');
+      var instrument_type_selected = $('#instrument_type').find('option:selected');
       var instrument_type_name_selected = instrument_type_selected.text();
       $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
 
-      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked');
+      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type']").filter(':checked');
       var seq_runmode_type_name_selected = seq_runmode_types_selected.parent('label').text();
       $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
 
-      var seq_runread_types_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked');
+      var seq_runread_types_selected = $("input:radio[name='seq_runread_type']").filter(':checked');
       var seq_runread_type_name_selected = seq_runread_types_selected.parent('label').text();
       $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
 
-      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
+      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type']").filter(':checked');
       var seq_runcycle_type_name_selected = seq_runcycle_types_selected.parent('label').text();
       $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
 
@@ -782,7 +782,7 @@ $(document).ready(function () {
     var qc_inside_name_selected = $("input:radio[name='qc_inside']").filter(':checked').parent('label').text();
     $('#qc_inside_selected').hide().show('normal').text('QC Inside?: ' + qc_inside_name_selected);
 
-    var instrument_type_id_selected = $('#instrument_type_id').val();
+    var instrument_type_id_selected = $('#instrument_type').val();
     if ($('#seqrun-undecided').prop('checked')) {
       //Remove from right-side summary
       $('#instrument_type_name_selected').hide();
@@ -801,19 +801,19 @@ $(document).ready(function () {
     } else {
       $("#seqrun_undecided_selected").hide();
 
-      var instrument_type_selected = $('#instrument_type_id').find('option:selected');
+      var instrument_type_selected = $('#instrument_type').find('option:selected');
       var instrument_type_name_selected = instrument_type_selected.text();
       $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
 
-      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked');
+      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type']").filter(':checked');
       var seq_runmode_type_name_selected = seq_runmode_types_selected.parent('label').text();
       $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
 
-      var seq_runread_types_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked');
+      var seq_runread_types_selected = $("input:radio[name='seq_runread_type']").filter(':checked');
       var seq_runread_type_name_selected = seq_runread_types_selected.parent('label').text();
       $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
 
-      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
+      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type']").filter(':checked');
       var seq_runcycle_type_name_selected = seq_runcycle_types_selected.parent('label').text();
       $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
 
@@ -867,19 +867,19 @@ $(document).ready(function () {
 
       $("#seqrun_undecided_selected").hide();
 
-      var instrument_type_selected = $('#instrument_type_id').find('option:selected');
+      var instrument_type_selected = $('#instrument_type').find('option:selected');
       var instrument_type_name_selected = instrument_type_selected.text();
       $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
 
-      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type_id']").filter(':checked');
+      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type']").filter(':checked');
       var seq_runmode_type_name_selected = seq_runmode_types_selected.parent('label').text();
       $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
 
-      var seq_runread_types_selected = $("input:radio[name='seq_runread_type_id']").filter(':checked');
+      var seq_runread_types_selected = $("input:radio[name='seq_runread_type']").filter(':checked');
       var seq_runread_type_name_selected = seq_runread_types_selected.parent('label').text();
       $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
 
-      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type_id']").filter(':checked');
+      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type']").filter(':checked');
       var seq_runcycle_type_name_selected = seq_runcycle_types_selected.parent('label').text();
       $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
 

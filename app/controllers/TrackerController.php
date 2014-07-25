@@ -728,6 +728,11 @@ class TrackerController extends ControllerBase
         $this->view->setVar('slots_per_run', range(1, $instrument_type->slots_per_run));
 
         $instruments = Instruments::find(array(
+            "columns" => array(
+                "id",
+                "name",
+                "CONCAT(name, ' (', instrument_number, ' : ', nickname, ')') AS fullname"
+            ),
             "instrument_type_id = :instrument_type_id: AND active = 'Y'",
             'bind' => array(
                 'instrument_type_id' => $instrument_type_id
@@ -736,22 +741,7 @@ class TrackerController extends ControllerBase
         ));
         $this->view->setVar('instruments', $instruments);
 
-        /*
-        $seq_run_type_schemes = SeqRunTypeSchemes::find($instrument_type_id);
-
-        $flowcells = $this->modelsManager->createBuilder()
-            ->columns(array('fc.*', 'se.*'))
-            ->addFrom('StepEntries', 'se')
-            ->Join('StepInstrumentTypeSchemes', 'sits.step_id = se.step_id', 'sits')
-            ->Join('Flowcells', 'fc.id = se.flowcell_id', 'fc')
-            ->where('sits.instrument_type_id = :instrument_type_id:')
-            ->getQuery()
-            ->execute(array(
-                'instrument_type_id' => $instrument_type_id
-            ));
-        */
-
-        $phql = "
+        $phql_f = "
            SELECT
                 se . *,
                 fc . *,
@@ -794,11 +784,19 @@ class TrackerController extends ControllerBase
             ORDER BY fc.created_at
         ";
 
-        $flowcells = $this->modelsManager->executeQuery($phql, array(
+        $flowcells = $this->modelsManager->executeQuery($phql_f, array(
             'instrument_type_id' => $instrument_type_id
         ));
 
         $this->view->setVar('flowcells', $flowcells);
+
+        //Set session values to input forms.
+        if ($this->session->has('instrument_id')) {
+            Tag::setDefault('instrument_id', $this->session->get('instrument_id')->id);
+        }
+        if ($this->session->has('run_started_date')) {
+            Tag::setDefault('run_started_date', $this->session->get('run_started_date')->id);
+        }
     }
 
     public function sequenceSetupConfirmAction($instrument_type_id)

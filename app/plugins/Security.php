@@ -86,7 +86,8 @@ class Security extends Plugin
                     'editSeqlibs',
                     'saveSeqlibs',
                     'editSeqlanes',
-                    'saveSeqlanes'
+                    'saveSeqlanes',
+                    'getMaxRunNumber'
                 ),
                 'sampletypes' => array(
                     'loadjson'
