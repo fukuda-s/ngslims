@@ -1,5 +1,5 @@
 <?php
-use Phalcon\Tag, Phalcon\Acl, Phalcon\Forms\Form, Phalcon\Forms\Element\Text;
+use Phalcon\Tag, Phalcon\Acl;
 
 
 class TrackerController extends ControllerBase
@@ -780,6 +780,7 @@ class TrackerController extends ControllerBase
                 SeqRunmodeTypes fcsrmt ON fcsrmt.id = fc.seq_runmode_type_id
             WHERE
                 sits.instrument_type_id = :instrument_type_id:
+            AND se.status IS NULL
             GROUP BY fc.id
             ORDER BY fc.created_at
         ";
@@ -788,36 +789,229 @@ class TrackerController extends ControllerBase
             'instrument_type_id' => $instrument_type_id
         ));
 
+        if(count($flowcells) < 1) {
+            $this->flash->error("Any flowcells for " . $instrument_type->name . " does not available. Please set up flowcells before set up sequencing run.");
+        }
+
         $this->view->setVar('flowcells', $flowcells);
 
         //Set session values to input forms.
         if ($this->session->has('instrument_id')) {
             Tag::setDefault('instrument_id', $this->session->get('instrument_id')->id);
         }
-        if ($this->session->has('run_started_date')) {
-            Tag::setDefault('run_started_date', $this->session->get('run_started_date')->id);
-        }
+        /* @TODO Could not set default value at input:date form with setDefault?
+         * if ($this->session->has('run_started_date')) {
+         * //$this->flash->error($this->session->get('run_started_date'));
+         * Tag::setDefault('run_started_date', $this->session->get('run_started_date')->name);
+         * }
+         */
     }
 
     public function sequenceSetupConfirmAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Sequencing Run Setup Confirm ');
-
-
         $request = $this->request;
+
+        $warning = 0; // @TODO How to know flashSession is exist or not?
+
         $instrument_type_id = $this->filter->sanitize($instrument_type_id, array("int"));
         $instrument_type = InstrumentTypes::findFirst($instrument_type_id);
-        $slots_per_run = range(1, $instrument_type->slots_per_run);
+        $this->view->setVar('instrument_type', $instrument_type);
 
-        echo "<h3>Confirm Sequence Run Setup</h3>";
-        echo "<br>";
-        echo "<h4>$instrument_type->name</h4>";
-        echo $request->getPost('seq_runmode_type_id', array('string', 'striptags'));
-        foreach ($slots_per_run as $slot) {
-
+        $instrument_id = $request->getPost('instrument_id', array('string', 'int'));
+        if (!$instrument_id) {
+            $this->flashSession->warning("Please select Instrument");
+            $warning++;
+        } else {
+            $instrument = Instruments::findFirst(array(
+                $instrument_id,
+                "columns" => array(
+                    "id",
+                    "name",
+                    "CONCAT(name, ' (', instrument_number, ' : ', nickname, ')') AS fullname"
+                ),
+            ));
+            $this->view->setVar('instrument', $instrument);
         }
 
+        $run_started_date = $request->getPost('run_started_date', array('striptags'));
+        if (!$run_started_date) {
+            $this->flashSession->warning("Please input Run Started Date");
+            $warning++;
+        } else {
+            $this->view->setVar('run_started_date', $run_started_date);
+        }
+
+        $seq_runmode_type_id = $request->getPost('seq_runmode_type', array('int'));
+        if (!$seq_runmode_type_id) {
+            $this->flashSession->warning("Please select Run Mode");
+            $warning++;
+        } else {
+            $seq_runmode_type = SeqRunmodeTypes::findFirst($seq_runmode_type_id);
+            $this->view->setVar('seq_runmode_type', $seq_runmode_type);
+        }
+
+        $slots_per_run = range(1, $instrument_type->slots_per_run);
+        $this->view->setVar('slots_per_run', $slots_per_run);
+
+        $slots_data = array();
+        foreach ($slots_per_run as $slot) {
+            $slot_unused = $request->getPost('slot_unused_' . $slot, array('striptags'));
+            $slots_data[$slot]['slot_unused'] = $slot_unused;
+
+            if ($slot_unused == 'on') {
+                continue; //Skip if slot_unused is true
+            }
+
+            $run_number = $request->getPost('run_number_' . $slot, array('int'));
+            if (!$run_number) {
+                $this->flashSession->warning("Please select Run Number for Slot" . $slot);
+                $warning++;
+            } else {
+                $slots_data[$slot]['run_number'] = $run_number;
+            }
+
+            $seq_runread_type_id = $request->getPost('seq_runread_type_' . $slot, array('int'));
+            if (!$seq_runread_type_id) {
+                $this->flashSession->warning("Please select Run Read Type for Slot" . $slot);
+                $warning++;
+            } else {
+                $seq_runread_type = SeqRunreadTypes::findFirst($seq_runread_type_id);
+                $slots_data[$slot]['seq_runread_type']['id'] = $seq_runread_type->id;
+                $slots_data[$slot]['seq_runread_type']['name'] = $seq_runread_type->name;
+            }
+
+            $seq_runcycle_type_id = $request->getPost('seq_runcycle_type_' . $slot, array('int'));
+            if (!$seq_runcycle_type_id) {
+                $this->flashSession->warning("Please select Run Cycle for Slot" . $slot);
+                $warning++;
+            } else {
+                $seq_runcycle_type = SeqRunCycleTypes::findFirst($seq_runcycle_type_id);
+                $slots_data[$slot]['seq_runcycle_type']['id'] = $seq_runcycle_type->id;
+                $slots_data[$slot]['seq_runcycle_type']['name'] = $seq_runcycle_type->name;
+            }
+
+            $flowcell_id = $request->getPost('flowcell_id_' . $slot, array('int'));
+            if (!$flowcell_id) {
+                $this->flashSession->warning("Please select Flowcell for Slot" . $slot);
+                $warning++;
+            } else {
+                $flowcell = Flowcells::findFirst($flowcell_id);
+                $slots_data[$slot]['flowcell']['id'] = $flowcell->id;
+                $slots_data[$slot]['flowcell']['name'] = $flowcell->name;
+            }
+
+        }
+        $this->view->setVar('slots_data', $slots_data);
+
+        if ($warning > 0) {
+            $this->flashSession->error($warning . " error(s).");
+            return $this->response->redirect("tracker/sequenceSetupCandidates/" . $instrument_type->id);
+        }
+
+    }
+
+    public function sequenceSetupSaveAction()
+    {
+        $this->view->disable();
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            $instrument_type_id = $request->getPost('instrument_type_id', array('int'));
+            $instrument_type = InstrumentTypes::findFirst($instrument_type_id);
+            $instrument_id = $request->getPost('instrument_id', array('int'));
+            $instrument = Instruments::findFirst($instrument_id);
+
+            $run_started_date = $request->getPost('run_started_date', array('striptags'));
+
+            $seq_runmode_type_id = $request->getPost('seq_runmode_type_id', array('int'));
+
+            $slots_per_run = range(1, $instrument_type->slots_per_run);
+            $warning = 0;
+            foreach ($slots_per_run as $slot) {
+                $slot_unused = $request->getPost('slot_unused_' . $slot, array('striptags'));
+                $slots_data[$slot]['slot_unused'] = $slot_unused;
+
+                if ($slot_unused == 'on') {
+                    continue; //Skip if slot_unused is true
+                }
+
+                $flowcell_id = $request->getPost('flowcell_id_' . $slot, array('int'));
+                $flowcell = Flowcells::findFirst($flowcell_id);
+
+                $seq_runread_type_id = $request->getPost('seq_runread_type_id_' . $slot, array('int'));
+                $seq_runcycle_type_id = $request->getPost('seq_runcycle_type_id_' . $slot, array('int'));
+                $seq_run_type_scheme_id = SeqRunTypeSchemes::findFirst(array(
+                    "instrument_type_id = :instrument_type_id:
+                        AND
+                     seq_runmode_type_id = :seq_runmode_type_id:
+                        AND
+                     seq_runread_type_id = :seq_runread_type_id:
+                        AND
+                     seq_runcycle_type_id = :seq_runcycle_type_id:",
+                    "bind" => array(
+                        "instrument_type_id" => $instrument_type_id,
+                        "seq_runmode_type_id" => $seq_runmode_type_id,
+                        "seq_runread_type_id" => $seq_runread_type_id,
+                        "seq_runcycle_type_id" => $seq_runcycle_type_id,
+                    )
+                ))->id;
+                $run_number = $request->getPost('run_number_' . $slot, array('int'));
+                $side = $instrument_type->getSlotStr($slot);
+                $dirname = implode('_', array(
+                        date('ymd', strtotime($run_started_date)),
+                        $instrument->name,
+                        $side . $flowcell->name
+                    )
+                );
+
+                //Update Flowcells table
+                $flowcell->seq_run_type_scheme_id = $seq_run_type_scheme_id;
+                $flowcell->run_number = $run_number;
+                $flowcell->instrument_id = $instrument_id;
+                $flowcell->side = $side;
+                $flowcell->dirname = $dirname;
+                $flowcell->run_started_date = $run_started_date;
+
+                //Update StepEntry table
+                $step_entry = array();
+                $step_entry[0] = StepEntries::findFirst(array(
+                    "flowcell_id = :flowcell_id:",
+                    "bind" => array(
+                        "flowcell_id" => $flowcell_id
+                    )
+                ));
+                $step_entry[0]->status = "Completed";
+                $step_entry[0]->update_user_id = $this->session->get('auth')['id'];
+
+                //Tied $step_entry as flowcell->StepEntry.
+                $flowcell->StepEntries = $step_entry;
+
+
+                if (!$flowcell->save()) {
+                    foreach ($flowcell->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                        $warning++;
+                    }
+                } else {
+                    $this->session->remove("run_number_" . $slot);
+                    $this->session->remove("seq_runread_type_" . $slot);
+                    $this->session->remove("seq_runcycle_type_" . $slot);
+                    $this->session->remove("flowcell_id" . $slot);
+
+                    $this->flashSession->notice("Sequence Run Setup has been recorded with flowcell ID " . $flowcell->name);
+                }
+            }
+            if ($warning > 0) {
+                $this->flashSession->warning($warning . " error(s) has been occurred.");
+            } else {
+                $this->session->remove("instrument_id");
+                $this->session->remove("run_started_date");
+                $this->session->remove("seq_runmode_type");
+            }
+            return $this->response->redirect("tracker/sequenceSetupCandidates/" . $instrument_type->id);
+        }
     }
 
     public function protocolAction()

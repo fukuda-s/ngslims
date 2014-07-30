@@ -31,6 +31,12 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var string
+     */
+    public $slots_array_json;
+
+    /**
+     *
      * @var integer
      */
     public $sort_order;
@@ -45,6 +51,11 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
 
     const NOT_ACTIVE = 'N';
 
+    public function getSlotStr($slot_num) {
+        $slots_array = json_decode($this->slots_array_json);
+        return $slots_array->$slot_num;
+    }
+
     /**
      * Independent Column Mapping.
      */
@@ -55,6 +66,7 @@ class InstrumentTypes extends \Phalcon\Mvc\Model
             'name' => 'name',
             'platform_code' => 'platform_code',
             'slots_per_run' => 'slots_per_run',
+            'slots_array_json' => 'slots_array_json',
             'sort_order' => 'sort_order',
             'active' => 'active'
         );

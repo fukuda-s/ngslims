@@ -1,3 +1,4 @@
+{{ content() }}
 <ol class="breadcrumb" xmlns="http://www.w3.org/1999/html">
   <li>
     {{ link_to('tracker', 'Tracker') }}
@@ -32,9 +33,16 @@
       {% for slot in slots_per_run %}
         <div id="{{ 'slot_' ~ slot }}" class="panel panel-info">
           <div id={{ 'slot_header_' ~ slot }} slot="{{ slot }}" class="panel-heading">
-            <h4 class="panel-title">Slot{{ slot }}</h4>
+            <span class="panel-title">Slot{{ instrument_type.getSlotStr(slot) }}</span>
+            <div class="checkbox-inline pull-right">
+              <label>
+                {{ check_field('slot_unused_' ~ slot , 'id' : 'slot_unused_checkbox_' ~ slot , 'data-toggle' : 'collapse', 'data-target' : '.slot_unused_checkbox_target_' ~ slot  ) }}
+                Unused
+              </label>
+            </div>
           </div>
-          <div id={{ 'slot_body_' ~ slot }} slot="{{ slot }}" class="panel-body">
+          <div id={{ 'slot_body_' ~ slot }} slot="{{ slot }}"
+               class="panel-body {{ 'slot_unused_checkbox_target_' ~ slot }} collapse in">
             <div id="run_number_input_{{ slot }}" class="form-group" slot="{{ slot }}">
               <label for="{{ 'run_number_' ~ slot }}">Run Number</label>
               {{ numeric_field('run_number_' ~ slot , 'class': 'input-sm') }}
@@ -362,6 +370,20 @@ $(document).ready(function () {
     //Set min value of run_number on run_number input form.
     var instrument_id = $('select[id=instrument_id]').find('option:selected').val();
     setMaxRunNumber(instrument_id);
+  });
+
+  $('input[id^=slot_unused_checkbox]').each(function () {
+    $(this).on('change', function () {
+      var slot_unused_name_attr = $(this).attr('name');
+      var slot_unused = $(this).prop('checked');
+
+      //Set checked/unchecked slot_unused to session values.
+      setOrderSessionVal(slot_unused_name_attr, '', slot_unused);
+    });
+
+    //Set collapse which is depended on checked/unchecked slot_unused.
+    var data_target = $(this).filter(':checked').attr('data-target');
+    $(data_target).removeClass("in");
   });
 })
 
