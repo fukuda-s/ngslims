@@ -75,6 +75,7 @@ CREATE TABLE `instrument_types` (
   `name` varchar(45) NOT NULL,
   `platform_code` varchar(100) NOT NULL,
   `slots_per_run` int(11) NOT NULL DEFAULT '1',
+  `slots_array_json` varchar(100) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
@@ -681,8 +682,10 @@ CREATE TABLE `step_entries` (
   `step_id` int(11) NOT NULL,
   `protocol_id` int(11) DEFAULT NULL,
   `created_at` datetime NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
   `note` varchar(200) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
+  `update_user_id` int(11) DEFAULT NULL,
   `status` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_step_entries_samples_idx` (`sample_id`),
@@ -788,4 +791,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-07-23 14:35:05
+-- Dump completed on 2014-07-30 11:36:05
