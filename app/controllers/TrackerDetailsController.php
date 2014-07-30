@@ -138,7 +138,7 @@ class TrackerdetailsController extends ControllerBase
     public function saveSamplesAction()
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -282,7 +282,7 @@ class TrackerdetailsController extends ControllerBase
     public function saveSeqlibsAction()
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -433,7 +433,7 @@ class TrackerdetailsController extends ControllerBase
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -538,7 +538,7 @@ class TrackerdetailsController extends ControllerBase
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax

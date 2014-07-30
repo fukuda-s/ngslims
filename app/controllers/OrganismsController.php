@@ -12,7 +12,7 @@ class OrganismsController extends ControllerBase
     public function loadjsonAction()
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;;
         // Check whether the request was made with method POST
         if ($request->isGet() == true) {
             // Check whether the request was made with Ajax

@@ -92,7 +92,7 @@ class OrderController extends ControllerBase
     public function userSelectListAction($lab_id)
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -146,7 +146,7 @@ class OrderController extends ControllerBase
     public function projectSelectListAction($pi_user_id)
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -239,7 +239,7 @@ class OrderController extends ControllerBase
     public function protocolSelectListAction($step_id)
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -338,7 +338,7 @@ class OrderController extends ControllerBase
     public function seqRunmodeTypesSelectListAction()
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -452,7 +452,7 @@ class OrderController extends ControllerBase
     public function seqRuncycleTypesSelectListAction()
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -700,7 +700,7 @@ class OrderController extends ControllerBase
     public function loadSessionSampleDataAction()
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -717,12 +717,13 @@ class OrderController extends ControllerBase
 
     public function saveProjectAction()
     {
+        $request = $this->request;
         if (!$this->request->isPost()) {
             return $this->forward("order/newOrder");
         }
         $projects = new Projects();
-        $projects->name = $this->request->getPost("project_name", "striptags");
-        $projects->project_type_id = $this->request->getPost("project_type_id", "striptags");
+        $projects->name = $request->getPost("project_name", "striptags");
+        $projects->project_type_id = $request->getPost("project_type_id", "striptags");
         $projects->lab_id = $this->session->get('lab')->id;
         $projects->user_id = $this->session->get('auth')['id'];
         $projects->pi_user_id = $this->session->get('pi_user')->id;

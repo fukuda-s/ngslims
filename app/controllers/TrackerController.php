@@ -354,7 +354,7 @@ class TrackerController extends ControllerBase
     public function multiplexSetSessionAction()
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -546,7 +546,7 @@ class TrackerController extends ControllerBase
     public function flowcellSetupSetSessionAction()
     {
         $this->view->disable();
-        $request = new \Phalcon\Http\Request();
+        $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
