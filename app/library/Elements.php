@@ -134,7 +134,6 @@ class Elements extends Phalcon\Mvc\User\Component
                 'dropdown' => '_userDropdownMenu'
             );
         } else {
-            unset($this->_headerMenu['pull-left']['invoices']);
             unset($this->_headerMenu['pull-left']['order']);
             unset($this->_headerMenu['pull-left']['tracker']);
         }

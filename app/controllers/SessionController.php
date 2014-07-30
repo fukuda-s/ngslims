@@ -52,7 +52,7 @@ class SessionController extends ControllerBase
             } else {
                 Tag::setDefault('email', '');
                 Tag::setDefault('password', '');
-                $this->flash->success('Thanks for sign-up, please log-in to start generating invoices');
+                $this->flash->success('Thanks for sign-up, please log-in to start to use ngsLIMS');
                 return $this->forward('session/index');
             }
         }
