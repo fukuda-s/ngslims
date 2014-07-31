@@ -24,8 +24,19 @@ class SamplesController extends ControllerBase
                 $project_id = $this->filter->sanitize($project_id, array(
                     "int"
                 ));
+                $query = $request->getPost('query', 'striptags');
+                $query = $this->filter->sanitize($query, array(
+                    "striptags"
+                ));
 
-                if ($step_id == 0) { //Case that requested from editSamples Action
+                if (!empty($query)) {
+                    $samples = Samples::find(array(
+                        "name LIKE :query:",
+                        'bind' => array(
+                            'query' => '%' . $query . '%'
+                        )
+                    ));
+                } elseif ($step_id == 0) { //Case that requested from editSamples Action
                     $samples = Samples::find(array(
                         "project_id = :project_id:",
                         'bind' => array(
@@ -49,9 +60,9 @@ class SamplesController extends ControllerBase
                     $sample_array = $sample->toArray();
                     $sample_property_entries = $sample->SamplePropertyEntries;
                     //echo json_encode($sample_property_entries->toArray());
-                    if($sample_property_entries){
+                    if ($sample_property_entries) {
                         $sample_property_entries_array = array();
-                        foreach($sample_property_entries as $sample_property_entry){
+                        foreach ($sample_property_entries as $sample_property_entry) {
                             //echo json_encode($sample_property_entry->toArray());
                             $sample_property_type = $sample_property_entry->SamplePropertyTypes;
                             $sample_property_entries_array[$sample_property_type->id] = $sample_property_entry->value;

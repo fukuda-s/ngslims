@@ -54,17 +54,16 @@ class Users extends \Phalcon\Mvc\Model
      */
     public $active;
 
-    protected $name;
-
-    public function getFullname() {
-        if ( $this->firstname && $this->lastname ) {
+    public function getFullname()
+    {
+        if (!empty($this->firstname) && !empty($this->lastname)) {
             return $this->lastname . ', ' . $this->firstname;
-        }
-        elseif ( $this->firstname ) {
+        } elseif (!empty($this->firstname)) {
             return $this->firstname;
-        }
-        elseif ( $this->lastname ) {
+        } elseif (!empty($this->lastname)) {
             return $this->lastname;
+        } else {
+            return 'Undefined';
         }
     }
 
@@ -90,18 +89,12 @@ class Users extends \Phalcon\Mvc\Model
         }
     }
 
-    public function getSource()
-    {
-        return 'users';
-    }
-
     public function columnMap()
     {
         return array(
             'id' => 'id',
             'username' => 'username',
             'password' => 'password',
-            'name' => 'name',
             'firstname' => 'firstname',
             'lastname' => 'lastname',
             'email' => 'email',
