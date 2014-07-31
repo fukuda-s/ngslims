@@ -89,6 +89,9 @@ class Security extends Plugin
                     'saveSeqlanes',
                     'getMaxRunNumber'
                 ),
+                'projects' => array(
+                    'loadjson'
+                ),
                 'sampletypes' => array(
                     'loadjson'
                 ),
@@ -112,6 +115,13 @@ class Security extends Plugin
                 ),
                 'report' => array(
                     'index'
+                ),
+                'search' => array(
+                    'index',
+                    'result',
+                    'showProjects',
+                    'showSamples',
+                    'showSeqlibs'
                 )
             );
             foreach ($privateResources as $resource => $actions) {
@@ -137,6 +147,9 @@ class Security extends Plugin
                 'contact' => array(
                     'index',
                     'send'
+                ),
+                'search' => array(
+                    'index'
                 )
             );
             foreach ($publicResources as $resource => $actions) {
@@ -146,7 +159,7 @@ class Security extends Plugin
             // Grant access to public areas to both users and guests
             foreach ($roles as $role) {
                 foreach ($publicResources as $resource => $actions) {
-                    $acl->allow($role->getName(), $resource, '*');
+                    $acl->allow($role->getFullname(), $resource, '*');
                 }
             }
 

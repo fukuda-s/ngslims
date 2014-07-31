@@ -56,7 +56,7 @@ class Users extends \Phalcon\Mvc\Model
 
     protected $name;
 
-    public function getName() {
+    public function getFullname() {
         if ( $this->firstname && $this->lastname ) {
             return $this->lastname . ', ' . $this->firstname;
         }
