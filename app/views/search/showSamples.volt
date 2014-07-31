@@ -7,7 +7,7 @@
         <div  class="panel-title">Sample Search Results</div>
       </div>
       <div id="sample_result_panel_body" class="panel-body collapse in">
-        <div id="handsontable-editSamples-body" style="overflow: scroll"></div>
+        <div id="handsontable-showSamples-body" style="overflow: scroll"></div>
       </div>
     </div>
   </div>
@@ -23,7 +23,7 @@ var projectTypeAr = [];
 var sampleTypeAr = [];
 var organismAr = [];
 var sampleLocationAr = [];
-var sampleLocationDrop = [];
+//var sampleLocationDrop = [];
 
 $(document).ready(function () {
 
@@ -100,7 +100,7 @@ $(document).ready(function () {
       var sample_location_id = value["id"];
       var sample_location_name = value["name"];
       sampleLocationAr[sample_location_id] = sample_location_name;
-      sampleLocationDrop.push(value["name"]);
+      //sampleLocationDrop.push(value["name"]);
     });
   }
 
@@ -149,6 +149,7 @@ $(document).ready(function () {
   };
 
   // Cleaved edited row from whole data of handsontable.
+  /*
   function cleaveData(changes) {
     var data = $handsontable.getData();
     var cleavedData = Object();
@@ -166,8 +167,10 @@ $(document).ready(function () {
     });
     return cleavedData;
   }
+  */
 
   // Integrate 'changes' on handsontable, because editor can change same cell at several times.
+  /*
   var isDirtyAr = Object();
 
   function integrateIsDirtyAr(changes) {
@@ -184,17 +187,18 @@ $(document).ready(function () {
     });
     console.log(isDirtyAr);
   }
+  */
 
   // Construct handsontable
-  var $container = $("#handsontable-editSamples-body");
-  var $console = $("#handsontable-console");
-  var $toolbar = $("#handsontable-toolbar");
-  var autosaveNotification = String();
-  var $samplePropertyTypesColumns = [
+  var $container = $("#handsontable-showSamples-body");
+  //var $console = $("#handsontable-console");
+  //var $toolbar = $("#handsontable-toolbar");
+  //var autosaveNotification = String();
+  //var $samplePropertyTypesColumns = [
     {# {% for sample_property_type in sample_property_types %}
     "sample_property_type_id_{{ sample_property_type.id }}",
     {% endfor %} #}
-  ];
+  //];
   var $defaultColWidths = [120, 80, 100, 120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 150, 80, 110
     {% for sample_property_type in sample_property_types %}
       {% if sample_property_type.sample_count > 0 %}
@@ -204,16 +208,16 @@ $(document).ready(function () {
       {% endif %}
     {% endfor %}
   ];
-  var $samplePropertyTypesColumnsStartIdx = 14; //@TODO First index number(begin by 0) of sample_property_types
+  //var $samplePropertyTypesColumnsStartIdx = 14; //@TODO First index number(begin by 0) of sample_property_types
   $container.handsontable({
     stretchH: 'all',
+    height: 400,
     rowHeaders: true,
     minSpareCols: 0,
     minSpareRows: 0,
     contextMenu: true,
     columnSorting: true,
     manualColumnResize: true,
-    height: 500,
     colWidths: $defaultColWidths,
     columns: [
       { data: "project_id", title: "Project Name", readOnly: true, renderer: projectRenderer },
@@ -222,21 +226,22 @@ $(document).ready(function () {
       { data: "name", title: "Sample Name", readOnly: true },
       { data: "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer },
       { data: "organism_id", title: "Organism", readOnly: true, renderer: organismRenderer, source: organismRenderer },
-      { data: "qual_concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
-      { data: "qual_od260280", title: "A260/A280", type: 'numeric', format: '0.00' },
-      { data: "qual_od260230", title: "A260/A230", type: 'numeric', format: '0.00' },
-      { data: "qual_RIN", title: "RIN", type: 'numeric', format: '0.00' },
-      { data: "qual_fragmentsize", title: "Fragment Size", type: 'numeric' },
-      { data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000' },
-      { data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
-      { data: "qual_amount", data: 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
-      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' },
-      { data: "barcode_number", title: "2D barcode" },
-      { data: "sample_location_id", title: "Sample Repos.", type: "dropdown", source: sampleLocationDrop, renderer: sampleLocationRenderer },
+      { data: "qual_concentration", title: "Conc. (ng/uL)", readOnly: true, type: 'numeric', format: '0.000' },
+      { data: "qual_od260280", title: "A260/A280", readOnly: true, type: 'numeric', format: '0.00' },
+      { data: "qual_od260230", title: "A260/A230", readOnly: true, type: 'numeric', format: '0.00' },
+      { data: "qual_RIN", title: "RIN", readOnly: true, type: 'numeric', format: '0.00' },
+      { data: "qual_fragmentsize", title: "Fragment Size", readOnly: true, type: 'numeric' },
+      { data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", readOnly: true, type: 'numeric', format: '0.000' },
+      { data: "qual_volume", title: "Volume (uL)", readOnly: true, type: 'numeric', format: '0.00' },
+      { data: "qual_amount", data: 0, title: "Total (ng)", readOnly: true, type: 'numeric', format: '0.00' },
+      { data: "qual_date", title: "QC Date", readOnly: true, type: 'date', dateFormat: 'yy-mm-dd' },
+      { data: "barcode_number", title: "2D barcode", readOnly: true  },
+      { data: "sample_location_id", title: "Sample Repos.", readOnly: true, /* type: "dropdown", source: sampleLocationDrop, */ renderer: sampleLocationRenderer },
       {% for sample_property_type in sample_property_types %}
-      { data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', type: 'text'},
+      { data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', readOnly: true, type: 'text'},
       {% endfor %}
     ],
+    /*
     afterChange: function (changes, source) {
       if (source === 'loadData') {
         return; // don't save this change
@@ -279,6 +284,7 @@ $(document).ready(function () {
       }
 
     }
+     */
   });
   var $handsontable = $container.data('handsontable');
 
@@ -300,6 +306,7 @@ $(document).ready(function () {
 
   loadData(); // loading data at first.
 
+  /*
   $toolbar.find('#save').click(function () {
     //alert("save! "+$handsontable.getData());
     $.ajax({
@@ -376,12 +383,15 @@ $(document).ready(function () {
       $console.text('Changes will not be autosaved').removeClass().addClass("alert alert-warning");
     }
   });
+  */
 
   //var $samplePropertyTypesChecked = new Object();
+
+   /*
+   * Show/Hide sample_property_types columns when checkbox is checked/unchecked.
+   */
+  /*
   $('#sample_property_types').multiselect({
-    /*
-     * Show/Hide sample_property_types columns when checkbox is checked/unchecked.
-     */
     onChange: function (element, checked) {
 
       var changedColWidths = $defaultColWidths;
@@ -408,6 +418,7 @@ $(document).ready(function () {
       console.log(changedColWidths);
     }
   });
+  */
 
 });
 </script>

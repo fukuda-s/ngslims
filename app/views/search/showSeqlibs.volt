@@ -1,20 +1,15 @@
 {{ flashSession.output() }}
 <div class="row">
   <div class="col-md-12">
-    {{ partial('partials/trackerdetails-header') }}
-    <hr>
-    {% include 'partials/handsontable-toolbar.volt' %}
-    <ul class="nav nav-tabs">
-      <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
-      <li class="active">{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
-      {% if type !== 'PREP' %}
-        <li>{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
-      {% endif %}
-      <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
-        <span class="fa fa-expand"></span>
-      </button>
-    </ul>
-    <div id="handsontable-editSeqlibs-body" style="overflow: scroll"></div>
+    {# {{ dump(sample_property_types) }} #}
+    <div class="panel panel-info">
+      <div class="panel-heading" data-toggle="collapse" href="#seqlib_result_panel_body">
+        <div class="panel-title">Seqlib Search Results</div>
+      </div>
+      <div id="seqlib_result_panel_body" class="panel-body collapse in">
+        <div id="handsontable-showSeqlibs-body" style="overflow: scroll"></div>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -22,6 +17,9 @@
  * Construct Handsontable
  */
 // Make handsontable renderer and dropdown lists
+var projectAr = [];
+var projectPiAr = [];
+var projectTypeAr = [];
 var sampleNameAr = [];
 var oligobarcodeAAr = [];
 var oligobarcodeBAr = [];
@@ -32,30 +30,57 @@ var protocolDrop = [];
 
 $(document).ready(function () {
 
-  function getSampleNameAr(data) {
+  function getProjectAr(data) {
     //console.log("stringified:"+JSON.stringify(data));
     var parseAr = JSON.parse(JSON.stringify(data));
     //alert(parseAr);
     $.each(parseAr, function (key, value) {
       //alert(value["id"]+" : "+value["name"]);
-      var sample_id = value["id"];
-      var sample_name = value["name"];
-      sampleNameAr[sample_id] = sample_name;
+      var project_id = value["id"];
+      var project_name = value["name"];
+      var project_pi_name = value["pi_name"];
+      var project_type_name = value["project_type_name"];
+      projectAr[project_id] = project_name;
+      projectPiAr[project_id] = project_pi_name;
+      projectTypeAr[project_id] = project_type_name;
     });
   }
 
-  $.ajax({
-    url: '{{ url("samples/loadjson/0/") ~ project.id }}',
-    dataType: 'json',
-    type: 'POST',
-    data: {
-    }
-  })
-      .done(function (data) {
-        //alert(data);
-        //alert(location.href);
-        getSampleNameAr(data);
-      });
+  $.getJSON(
+      '{{ url("projects/loadjson") }}',
+      {},
+      function (data, status, xhr) {
+        getProjectAr(data);
+      }
+  );
+
+  /*
+   function getSampleNameAr(data) {
+   //console.log("stringified:"+JSON.stringify(data));
+   var parseAr = JSON.parse(JSON.stringify(data));
+   //alert(parseAr);
+   $.each(parseAr, function (key, value) {
+   //alert(value["id"]+" : "+value["name"]);
+   var sample_id = value["id"];
+   var sample_name = value["name"];
+   sampleNameAr[sample_id] = sample_name;
+   });
+   }
+
+   $.ajax({
+   url: '
+  {{ url("samples/loadjson/0/") }}',
+   dataType: 'json',
+   type: 'POST',
+   data: {
+   }
+   })
+   .done(function (data) {
+   //alert(data);
+   //alert(location.href);
+   getSampleNameAr(data);
+   });
+   */
 
   function getProtocolAr(data) {
     //console.log("stringified:"+JSON.stringify(data));
@@ -71,7 +96,7 @@ $(document).ready(function () {
   }
 
   $.getJSON(
-      '{{ url("protocols/loadjson/") ~ step.id }}',
+      '{{ url("protocols/loadjson/0/")  }}',
       {},
       function (data, status, xhr) {
         getProtocolAr(data);
@@ -115,10 +140,12 @@ $(document).ready(function () {
         getOligobarcodeAr(data);
       });
 
+  /*
   var sampleNameRenderer = function (instance, td, row, col, prop, value, cellProperties) {
     Handsontable.TextCell.renderer.apply(this, arguments);
     $(td).text(sampleNameAr[value]);
   };
+  */
 
   var oligobarcodeARenderer = function (instance, td, row, col, prop, value, cellProperties) {
     Handsontable.TextCell.renderer.apply(this, arguments);
@@ -136,6 +163,7 @@ $(document).ready(function () {
   };
 
   // Cleaved edited row from whole data of handsontable.
+  /*
   function cleaveData(changes) {
     var data = handsontable.getData();
     var cleavedData = Object();
@@ -153,8 +181,10 @@ $(document).ready(function () {
     });
     return cleavedData;
   }
+  */
 
   // Integrate 'changes' on handsontable, because editor can change same cell at several times.
+  /*
   var isDirtyAr = Object();
 
   function integrateIsDirtyAr(changes) {
@@ -171,34 +201,37 @@ $(document).ready(function () {
     });
     console.log(isDirtyAr);
   }
+  */
 
   // Construct handsontable
-  var $container = $("#handsontable-editSeqlibs-body");
-  var $console = $("#handsontable-console");
-  var $toolbar = $("#handsontable-toolbar");
-  var autosaveNotification = String();
+  var $container = $("#handsontable-showSeqlibs-body");
+  //var $console = $("#handsontable-console");
+  //var $toolbar = $("#handsontable-toolbar");
+  //var autosaveNotification = String();
   $container.handsontable({
     stretchH: 'all',
+    height: 400,
     rowHeaders: true,
-    colWidths: [80, 50, 150, 80, 80, , , , 90, 90, 90],
+    colWidths: [120, 120, 150, 80, 80, , , , 90, 90, 90],
     columns: [
-      { data: "sl.name", title: "Seqlib Name" },
-      { data: "sl.sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer },
-      { data: "sl.protocol_id", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer },
-      { data: "sl.oligobarcodeA_id", title: "OligoBarcode A", type: "dropdown", source: oligobarcodeADrop, renderer: oligobarcodeARenderer },
-      { data: "sl.oligobarcodeB_id", title: "OligoBarcode B", type: "dropdown", source: oligobarcodeBDrop, renderer: oligobarcodeBRenderer },
-      { data: "sl.concentration", title: "Conc. (nmol/L)", type: 'numeric', format: '0.000' },
-      { data: "sl.stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
-      { data: "sl.fragment_size", title: "Fragment Size", type: 'numeric' },
-      { data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'yy-mm-dd' },
-      { data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'yy-mm-dd' },
-      { data: "se.status", title: "Status", type: 'dropdown', source: ['', 'Completed', 'In Progress', 'On Hold'] }
+      { data: "name", title: "Seqlib Name" },
+      { data: "sample_name", title: "Sample Name", readOnly: true },
+      { data: "protocol_id", title: "Protocol", readOnly: true, type: "dropdown", /* source: protocolDrop, */ renderer: protocolRenderer },
+      { data: "oligobarcodeA_id", title: "OligoBarcode A", readOnly: true, type: "dropdown", /* source: oligobarcodeADrop, */ renderer: oligobarcodeARenderer },
+      { data: "oligobarcodeB_id", title: "OligoBarcode B", readOnly: true, type: "dropdown", /* source: oligobarcodeBDrop, */ renderer: oligobarcodeBRenderer },
+      { data: "concentration", title: "Conc. (nmol/L)", readOnly: true, type: 'numeric', format: '0.000' },
+      { data: "stock_seqlib_volume", title: "Volume (uL)", readOnly: true, type: 'numeric', format: '0.00' },
+      { data: "fragment_size", title: "Fragment Size", readOnly: true, type: 'numeric' },
+      { data: "started_at", title: "Started Date", readOnly: true, type: 'date', dateFormat: 'yy-mm-dd' },
+      { data: "finished_at", title: "Finished Date", readOnly: true, type: 'date', dateFormat: 'yy-mm-dd' },
+      { data: "status", title: "Status", readOnly: true, type: 'dropdown'/*, source: ['', 'Completed', 'In Progress', 'On Hold'] */ }
     ],
     minSpareCols: 0,
     minSpareRows: 0,
     contextMenu: true,
     columnSorting: true,
     manualColumnResize: true,
+    /*
     afterChange: function (changes, source) {
       if (source === 'loadData') {
         return; // don't save this change
@@ -212,7 +245,7 @@ $(document).ready(function () {
         integrateIsDirtyAr(changes);
 
         // Show alert dialog when this page moved before save.
-        $(window).on('beforeunload', function() {
+        $(window).on('beforeunload', function () {
           return 'CAUTION! You have not yet saved. Are you sure you want to leave?';
         });
       }
@@ -255,15 +288,17 @@ $(document).ready(function () {
         console.log(protocol_id);
       }
     }
+    */
   });
   var handsontable = $container.data('handsontable');
 
   function loadData() {
     $.ajax({
-      url: '{{ url("seqlibs/loadjson/") ~ step.id ~ '/' ~ project.id }}',
+      url: '{{ url("seqlibs/loadjson/0/0") }}',
       dataType: 'json',
       type: 'POST',
       data: {
+        query: '{{ query  }}'
       }
     })
         .done(function (data) {
@@ -276,6 +311,7 @@ $(document).ready(function () {
 
   loadData(); // loading data at first.
 
+  /*
   $toolbar.find('#save').click(function () {
     //alert("save! "+handsontable.getData());
     $.ajax({
@@ -352,6 +388,7 @@ $(document).ready(function () {
       $console.text('Changes will not be autosaved').removeClass().addClass("alert alert-warning");
     }
   });
+  */
 
 });
 </script>
