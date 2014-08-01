@@ -5,10 +5,10 @@
     <hr>
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
-      <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "Samples") }}</li>
-      <li class="active">{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLibs") }}</li>
+      <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "Samples") }}</li>
+      <li class="active">{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLibs") }}</li>
       {% if type !== 'PREP' %}
-        <li>{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id, "SeqLanes") }}</li>
+        <li>{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLanes") }}</li>
       {% endif %}
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>

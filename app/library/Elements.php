@@ -262,7 +262,7 @@ class Elements extends Phalcon\Mvc\User\Component
             echo '	<div class="row">';
             echo '		<div class="col-md-8">';
             echo Tag::linkTo(array(
-                "trackerdetails/showTableSamples/" . $project->id,
+                "trackerdetails/showTableSamples/" . $project->id . "?pre=projectPi",
                 $project->name
             ));
             echo '		</div>';

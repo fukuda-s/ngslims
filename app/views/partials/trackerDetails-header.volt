@@ -1,12 +1,12 @@
 {% if type == 'SHOW' %}
   <ol class="breadcrumb">
     <li>{{ link_to("tracker", "Tracker") }}</li>
-    <li>{{ link_to("summary/projectPi", "Project Overview") }}</li>
+    <li>{{ link_to("summary/" ~ previousAction, "Project Overview") }}</li>
     <li>{{ project.PIs.getFullname() }}</li>
     <li class="active">{{ project.name }}</li>
   </ol>
   <div
-      align="left">{{ link_to("trackerdetails/showTableSamples/" ~ project.id, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
+      align="left">{{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre=" ~ previousAction, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
 {% else %}
   <ol class="breadcrumb">
     <li>{{ link_to("tracker", "Tracker") }}</li>

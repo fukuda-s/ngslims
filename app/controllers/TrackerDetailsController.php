@@ -9,6 +9,12 @@ class TrackerdetailsController extends ControllerBase
         $this->view->setTemplateAfter('main');
         Tag::setTitle('Manage your product samples');
         parent::initialize();
+
+        /*
+         * Get previous action name for breadcrumb
+         */
+        $previousAction = $this->request->get('pre', 'striptags');
+        $this->view->setVar('previousAction', $previousAction);
     }
 
     public function indexAction()
@@ -74,6 +80,8 @@ class TrackerdetailsController extends ControllerBase
 
         // $this->flash->success($project->users->name . " " . $project->name);
         // $this->flash->success(var_dump($samples[0]->seqlibs[0]->seqtemplates[0]));
+
+
     }
 
     public function showPanelSamplesAction($project_id)

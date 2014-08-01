@@ -39,6 +39,7 @@
       </h4>
     </div>
     <div class="panel-body collapse" id="project_panel_body_{{ project.id }}">
+      {{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre=projectName", "Details") }}
     </div>
   </div>
 {% elsefor %} No projects are recorded
