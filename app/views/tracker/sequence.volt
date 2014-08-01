@@ -18,7 +18,7 @@
     </div>
   {% endif %}
   <div class="panel panel-success">
-    {{ link_to("tracker/project") }}
+    {{ link_to("summary/projectPi") }}
     <div class="panel-heading" id="StepList">
       <h4 class="panel-title">
         <div class="row">

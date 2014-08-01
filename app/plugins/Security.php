@@ -51,6 +51,12 @@ class Security extends Plugin
                     'confirm',
                     'checkout'
                 ),
+                'summary' => array(
+                    'index',
+                    'projectPi',
+                    'projectName',
+                    'operation'
+                ),
                 'tracker' => array(
                     'index',
                     'project',
@@ -147,9 +153,6 @@ class Security extends Plugin
                 'contact' => array(
                     'index',
                     'send'
-                ),
-                'search' => array(
-                    'index'
                 )
             );
             foreach ($publicResources as $resource => $actions) {

@@ -1,7 +1,7 @@
 {% if type == 'SHOW' %}
   <ol class="breadcrumb">
     <li>{{ link_to("tracker", "Tracker") }}</li>
-    <li>{{ link_to("tracker/project", "Project Overview") }}</li>
+    <li>{{ link_to("summary/projectPi", "Project Overview") }}</li>
     <li>{{ project.PIs.getFullname() }}</li>
     <li class="active">{{ project.name }}</li>
   </ol>

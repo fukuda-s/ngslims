@@ -1,5 +1,5 @@
 <?php
-use Phalcon\Tag;
+use Phalcon\Tag, Phalcon\Mvc\Url;
 
 /**
  * Elements
@@ -80,13 +80,18 @@ class Elements extends Phalcon\Mvc\User\Component
     );
 
     private $_trackerSideMenu = array(
-        'Project Overview' => array(
+        'Project PI Overview' => array(
             'controller' => 'summary',
             'action' => 'projectPi',
             'param' => ''
         ),
+        'Project Name Overview' => array(
+            'controller' => 'summary',
+            'action' => 'projectName',
+            'param' => ''
+        ),
         'Operation Overview' => array(
-            'controller' => 'tracker',
+            'controller' => 'summary',
             'action' => 'operation',
             'param' => ''
         ),
@@ -149,7 +154,7 @@ class Elements extends Phalcon\Mvc\User\Component
             foreach ($menu as $controller => $option) {
                 if ($controller == 'search') {
                     echo "<li>";
-                    echo "<form class='navbar-form' role='search' action='" . Tag::LinkTo($controller . '/' . $option['action']) . "'/>";
+                    echo "<form class='navbar-form' role='search' action='" . $this->url->get($controller . '/' . $option['action']) . "'/>";
                     echo "  <div class='form-group'>";
                     echo "      <input method='post' name='q' type='text' class='form-control' placeholder='Sample Search'/>";
                     echo "  </div>";

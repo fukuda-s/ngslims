@@ -105,9 +105,21 @@ class Users extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
-        $this->hasMany('id', 'Projects', 'user_id');
+        $this->hasMany('id', 'Projects', 'user_id', array(
+            'alias' => 'UserProjects'
+        ));
+        $this->hasMany('id', 'Projects', 'pi_user_id', array(
+            'alias' => 'PiProjects'
+        ));
+
         $this->hasMany('id', 'Requests', 'user_id');
-        $this->hasMany('id', 'Samples', 'user_id');
+
+        $this->hasManyToMany('id', 'Projects', 'user_id', 'id', 'Samples', 'project_id', array(
+            'alias' => 'UserSamples'
+        ));
+        $this->hasManyToMany('id', 'Projects', 'pi_user_id', 'id', 'Samples', 'project_id', array(
+            'alias' => 'PiSamples'
+        ));
 
         $this->addBehavior(new SoftDelete(
             [
