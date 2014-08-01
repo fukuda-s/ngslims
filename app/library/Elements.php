@@ -31,6 +31,10 @@ class Elements extends Phalcon\Mvc\User\Component
             )
         ),
         'pull-right' => array(
+            'search' => array(
+                'caption' => '',
+                'action' => 'result'
+            ),
             'session' => array(
                 'caption' => 'Log In/Sign Up',
                 'action' => 'index'
@@ -77,8 +81,8 @@ class Elements extends Phalcon\Mvc\User\Component
 
     private $_trackerSideMenu = array(
         'Project Overview' => array(
-            'controller' => 'tracker',
-            'action' => 'project',
+            'controller' => 'summary',
+            'action' => 'projectPi',
             'param' => ''
         ),
         'Operation Overview' => array(
@@ -136,13 +140,23 @@ class Elements extends Phalcon\Mvc\User\Component
         } else {
             unset($this->_headerMenu['pull-left']['order']);
             unset($this->_headerMenu['pull-left']['tracker']);
+            unset($this->_headerMenu['pull-right']['search']);
         }
 
         $controllerName = $this->view->getControllerName();
         foreach ($this->_headerMenu as $position => $menu) {
             echo '<ul class="nav navbar-nav ', $position, '">';
             foreach ($menu as $controller => $option) {
-                if (isset($option['dropdown']) && !empty($option['dropdown'])) {
+                if ($controller == 'search') {
+                    echo "<li>";
+                    echo "<form class='navbar-form' role='search' action='" . Tag::LinkTo($controller . '/' . $option['action']) . "'/>";
+                    echo "  <div class='form-group'>";
+                    echo "      <input method='post' name='q' type='text' class='form-control' placeholder='Sample Search'/>";
+                    echo "  </div>";
+                    echo "  <button type='submit' class='btn btn-default' value='action'>Submit</button>";
+                    echo "</form>";
+                    echo "</li>";
+                } elseif (isset($option['dropdown']) && !empty($option['dropdown'])) {
                     $dropdown = $this->$option['dropdown'];
                     //$dropdown = $this->_userDropdownMenu;
                     echo '<li class="dropdown">';
