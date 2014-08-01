@@ -17,34 +17,6 @@ class TrackerController extends ControllerBase
         // return $this->forward("trackerProjects/piList");
     }
 
-    public function projectAction()
-    {
-        Tag::appendTitle(' | Projects ');
-
-        /* Get PI list and data */
-        // @TODO Is it possible to get concatenated 'name' from getter on Users.php?
-        $phql = "SELECT
-					COUNT(DISTINCT p.id) AS project_count,
-					COUNT(DISTINCT s.id) AS sample_count,
-					u.id,
-                    u.firstname,
-                    u.lastname,
-                    CONCAT(u.lastname, ', ', u.firstname) AS name
-                 FROM
-					Users u,
-					Projects p,
-					Samples s
-				WHERE
-					u.id = p.pi_user_id AND p.id = s.project_id
-				GROUP BY (u.id)
-				ORDER BY u.name ASC
-				";
-        $pi_users = $this->modelsManager->executeQuery($phql);
-
-        // $this->flash->success(var_dump($users));
-        $this->view->setVar('pi_users', $pi_users);
-    }
-
     public function experimentsAction($code_step_phase)
     {
         Tag::appendTitle(' | Experiments ');
