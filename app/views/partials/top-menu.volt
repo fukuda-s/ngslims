@@ -9,11 +9,5 @@
   </div>
   <div class="collapse navbar-collapse target">
     {{ elements.getMenu() }}
-    <form class="navbar-form navbar-right" role="search" action="{{ url("search/result") }}">
-      <div class="form-group">
-        <input method="post" name="q" type="text" class="form-control" placeholder="Sample Search"/>
-      </div>
-      <button type="submit" class="btn btn-default" value="action">Submit</button>
-    </form>
   </div>
 </nav>
