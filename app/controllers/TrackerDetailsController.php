@@ -252,6 +252,7 @@ class TrackerdetailsController extends ControllerBase
                                     } else {
                                         $sample->$colNameToChange = $valueChangeTo;
                                     }
+
                                     if (!$sample->save()) {
                                         foreach ($sample->getMessages() as $message) {
                                             $this->flashSession->error((string)$message);
@@ -262,9 +263,9 @@ class TrackerdetailsController extends ControllerBase
                             }
                         }
 
-                        // Something return is necessary for frontend jQuery Ajax to find success or fail.
-                        echo json_encode($changes);
                     }
+                    // Something return is necessary for frontend jQuery Ajax to find success or fail.
+                    echo json_encode($changes);
                 }
             }
         }
@@ -380,9 +381,9 @@ class TrackerdetailsController extends ControllerBase
                                 return;
                             }
                         }
-                        // Something return is necessary for frontend jQuery Ajax to find success or fail.
-                        echo json_encode($changes);
                     }
+                    // Something return is necessary for frontend jQuery Ajax to find success or fail.
+                    echo json_encode($changes);
                 }
             }
         }
