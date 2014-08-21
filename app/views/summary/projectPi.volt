@@ -77,9 +77,11 @@
     </div>
     <ul class="list-group">
       <div id="user_id_{{ user.id }}" class="panel-body panel-collapse collapse">
+        <!--
         <button class="btn btn-success btn-add-panel" data-toggle="collapse" data-target="#addNewProject">
           <i class="glyphicon glyphicon-plus"></i> Add new Project
         </button>
+        -->
         <div class="panel panel-default">
           <div id="addNewProject" class="panel-body panel-collapse collapse">
             <form class="form-inline" role="form">
