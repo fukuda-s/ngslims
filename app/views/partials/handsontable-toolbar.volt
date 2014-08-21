@@ -16,7 +16,7 @@
     </ul>
     <form class="navbar-form navbar-right" role="search">
       <div class="form-group">
-        {% if step.id == 0 %}
+        {% if step.tabtype is defined and step.tabtype == 'sample' %}
         <select id="sample_property_types" multiple="multiple">
         {% for sample_property_type in sample_property_types %}
           {% if sample_property_type.sample_count > 0 %}
