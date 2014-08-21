@@ -1,6 +1,7 @@
 <?php
 
 use Phalcon\Mvc\Model\Behavior\Timestampable;
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class Projects extends \Phalcon\Mvc\Model
 {
@@ -54,6 +55,16 @@ class Projects extends \Phalcon\Mvc\Model
     public $description;
 
     /**
+     *
+     * @var string
+     */
+    public $active;
+
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
+    /**
      * Independent Column Mapping.
      */
     public function columnMap()
@@ -66,7 +77,8 @@ class Projects extends \Phalcon\Mvc\Model
             'pi_user_id' => 'pi_user_id',
             'project_type_id' => 'project_type_id',
             'created_at' => 'created_at',
-            'description' => 'description'
+            'description' => 'description',
+            'active' => 'active'
         );
     }
 
@@ -90,6 +102,13 @@ class Projects extends \Phalcon\Mvc\Model
                     'field' => 'created_at',
                     'format' => 'Y-m-d H:i:s'
                 )
+            )
+        ));
+
+        $this->addBehavior(new SoftDelete(
+            array(
+                'field' => 'active',
+                'value' => Protocols::NOT_ACTIVE
             )
         ));
     }

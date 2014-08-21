@@ -154,7 +154,7 @@ class OrderController extends ControllerBase
                 $pi_user_id = $this->filter->sanitize($pi_user_id, array("int"));
 
                 $projects = Projects::find(array(
-                    "pi_user_id = :pi_user_id:",
+                    "pi_user_id = :pi_user_id: AND active = 'Y'",
                     'bind' => array(
                         'pi_user_id' => $pi_user_id
                     )
@@ -764,6 +764,7 @@ class OrderController extends ControllerBase
         $requests->project_id = $this->session->get('project')->id;
         $requests->lab_id = $this->session->get('lab')->id;
         $requests->user_id = $this->session->get('auth')['id'];
+        $requests->request_pi_user_id = $this->session->get('auth')['id'];
         if ($this->session->has('samples_per_seqtemplate')) {
             $requests->samples_per_seqtemplate = $this->session->get('samples_per_seqtemplate')->name;
         }

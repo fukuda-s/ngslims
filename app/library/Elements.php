@@ -258,26 +258,33 @@ class Elements extends Phalcon\Mvc\User\Component
         // $this->flash->success(var_dump($projects));
         foreach ($projects as $project) {
             // $this->flash->success(var_dump($project));
-            echo '<li class="list-group-item">';
-            echo '	<div class="row">';
-            echo '		<div class="col-md-8">';
-            echo Tag::linkTo(array(
-                "trackerdetails/showTableSamples/" . $project->id . "?pre=projectPi",
-                $project->name
-            ));
-            echo '		</div>';
-            echo '		<div class="col-md-1">';
-            echo '		</div>';
-            echo '		<div class="col-md-1">';
-            echo '			<span class="badge">' . Samples::count("project_id = $project->id") . '</span>';
-            echo '		</div>';
-            echo '		<div class="col-md-2">';
-            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Import Excel file"><i class="glyphicon glyphicon-import"></i></a>';
-            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Export Excel file"><i class="glyphicon glyphicon-export"></i></a>';
-            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Edit Project name"><i class="glyphicon glyphicon-pencil"></i></a>';
-            echo '		</div>';
-            echo '	</div>';
-            echo '</li>';
+            if (count($project->Samples) > 0) {
+                echo '<li class="list-group-item">';
+                echo '	<div class="row">';
+                echo '		<div class="col-md-6">';
+                echo Tag::linkTo(array(
+                    "trackerdetails/showTableSamples/" . $project->id . "?pre=projectPi",
+                    $project->name
+                ));
+                echo '		</div>';
+                echo '		<div class="col-md-2">';
+                if ($project->ProjectTypes->id > 0) { //Undefined ProjectType->id is -1.
+                    echo '          <span>' . $project->ProjectTypes->name . '</span>';
+                }
+                echo '		</div>';
+                echo '		<div class="col-md-1">';
+                echo '		</div>';
+                echo '		<div class="col-md-1">';
+                echo '			<span class="badge">' . Samples::count("project_id = $project->id") . '</span>';
+                echo '		</div>';
+                echo '		<div class="col-md-2">';
+                echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Import Excel file"><i class="glyphicon glyphicon-import"></i></a>';
+                echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Export Excel file"><i class="glyphicon glyphicon-export"></i></a>';
+                echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Edit Project name"><i class="glyphicon glyphicon-pencil"></i></a>';
+                echo '		</div>';
+                echo '	</div>';
+                echo '</li>';
+            }
         }
     }
 

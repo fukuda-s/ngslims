@@ -74,8 +74,6 @@ CREATE TABLE `instrument_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `platform_code` varchar(100) NOT NULL,
-  `slots_per_run` int(11) NOT NULL DEFAULT '1',
-  `slots_array_json` varchar(100) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
@@ -265,6 +263,7 @@ CREATE TABLE `projects` (
   `project_type_id` int(11) NOT NULL DEFAULT '-1',
   `created_at` datetime NOT NULL,
   `description` varchar(255) DEFAULT NULL,
+  `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   KEY `fk_projects_labs_idx` (`lab_id`),
   KEY `fk_projects_users_idx` (`user_id`),
@@ -312,6 +311,7 @@ CREATE TABLE `requests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `project_id` int(11) NOT NULL,
   `lab_id` int(11) NOT NULL,
+  `request_pi_user_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `seq_run_type_scheme_id` int(11) DEFAULT NULL,
   `samples_per_seqtemplate` int(11) DEFAULT NULL,
@@ -791,4 +791,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-07-30 11:36:05
+-- Dump completed on 2014-08-21 11:52:46
