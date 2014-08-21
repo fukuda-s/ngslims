@@ -180,7 +180,7 @@ $(document).ready(function () {
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,
-    colWidths: [80, 50, 150, 80, 80, , , , 90, 90, 90],
+    colWidths: [80, 50, 150, 80, 80, , , , 160, 160, 90],
     columns: [
       { data: "sl.name", title: "Seqlib Name" },
       { data: "sl.sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer },

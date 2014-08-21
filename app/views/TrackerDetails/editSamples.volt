@@ -151,7 +151,11 @@ $(document).ready(function () {
           console.log('changes[' + colIndex + '] = ' + value);
           var rowNumToChange = value[0];
           if (!cleavedData[rowNumToChange]) {
-            cleavedData[rowNumToChange] = data[rowNumToChange];
+            cleavedData[rowNumToChange] = new Object();
+            cleavedData[rowNumToChange]["id"] = data[rowNumToChange]["id"];
+            if (data[rowNumToChange]["to_prep_protocol_name"] !== "") {
+              cleavedData[rowNumToChange]["to_prep_protocol_name"] = data[rowNumToChange]["to_prep_protocol_name"];
+            }
           }
         }
       });
@@ -187,7 +191,7 @@ $(document).ready(function () {
     "sample_property_type_id_{{ sample_property_type.id }}",
     {% endfor %}
   ];
-  var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 150, 80, 110
+  var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 160, 80, 110
     {% for sample_property_type in sample_property_types %}
       {% if sample_property_type.sample_count > 0 %}
        , 120
@@ -202,6 +206,7 @@ $(document).ready(function () {
   var $samplePropertyTypesColumnsStartIdx = 14; //@TODO First index number(begin by 0) of sample_property_types
   $container.handsontable({
     stretchH: 'all',
+    height: 500,
     rowHeaders: true,
     minSpareCols: 0,
     minSpareRows: 0,
