@@ -65,6 +65,7 @@ class TrackerController extends ControllerBase
 
         $step_phase_code = $step->step_phase_code;
         if ($step_phase_code === 'QC') {
+            //project|sample_count_all are needed when the sample|seqlib does not have step_entry record caused by bulk import.
             $phql = "
                 SELECT
                     COUNT(DISTINCT s2.project_id) AS project_count,
@@ -78,7 +79,7 @@ class TrackerController extends ControllerBase
                 FROM
                     Users u
                         LEFT JOIN
-                    Projects p ON p.pi_user_id = u.id
+                    Projects p ON p.pi_user_id = u.id AND p.active = 'Y'
                         JOIN
                     Samples s ON s.project_id = p.id
                         LEFT JOIN
@@ -100,6 +101,7 @@ class TrackerController extends ControllerBase
                 'nucleotide_type' => $step->nucleotide_type
             ));
         } elseif ($step_phase_code === 'PREP') {
+            //project|sample_count_all are needed when the sample|seqlib does not have step_entry record caused by bulk import.
             $phql = "
                 SELECT
                     COUNT(DISTINCT sl2.project_id) AS project_count,
@@ -113,7 +115,7 @@ class TrackerController extends ControllerBase
                 FROM
                     Users u
                         LEFT JOIN
-                    Projects p ON p.pi_user_id = u.id
+                    Projects p ON p.pi_user_id = u.id AND p.active = 'Y'
                         JOIN
                     Seqlibs sl ON sl.project_id = p.id
                         JOIN
@@ -137,6 +139,7 @@ class TrackerController extends ControllerBase
                 'nucleotide_type' => $step->nucleotide_type
             ));
         } elseif ($step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
+            //project|sample_count_all are needed when the sample|seqlib does not have step_entry record caused by bulk import.
             $phql = "
                 SELECT
                     COUNT(DISTINCT sl2.project_id) AS project_count,
@@ -150,7 +153,7 @@ class TrackerController extends ControllerBase
                 FROM
                     Users u
                         LEFT JOIN
-                    Projects p ON p.pi_user_id = u.id
+                    Projects p ON p.pi_user_id = u.id AND p.active = 'Y'
                         JOIN
                     Seqlibs sl ON sl.project_id = p.id
                         JOIN

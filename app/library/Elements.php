@@ -309,10 +309,11 @@ class Elements extends Phalcon\Mvc\User\Component
 
         if ($step_phase_code === 'MULTIPLEX' or $step_phase_code === 'DUALMULTIPLEX') {
             $projects = $this->modelsManager->createBuilder()
-                ->From('Projects')
-                ->Join('Seqlibs', 'sl.project_id = Projects.id', 'sl')
-                ->Join('Protocols', 'pt.id = sl.protocol_id', 'pt')
-                ->Where('Projects.pi_user_id = :pi_user_id:')
+                ->from('Projects')
+                ->join('Seqlibs', 'sl.project_id = Projects.id', 'sl')
+                ->join('Protocols', 'pt.id = sl.protocol_id', 'pt')
+                ->where('Projects.pi_user_id = :pi_user_id:')
+                ->andWhere('Projects.active = "Y"')
                 ->andWhere('pt.next_step_phase_code = :next_step_phase_code:')
                 ->groupBy('Projects.id')
                 ->getQuery()
@@ -325,10 +326,9 @@ class Elements extends Phalcon\Mvc\User\Component
                 // $this->flash->success(var_dump($project));
                 // @TODO Should be counted 'active' (in-completed on StepEntries).
                 $sample_count = $this->modelsManager->createBuilder()
-                    ->From('Samples')
-                    ->join('Seqlibs', 'sl.sample_id = Samples.id', 'sl')
+                    ->addFrom('Seqlibs', 'sl')
                     ->join('Protocols', 'p.id = sl.protocol_id', 'p')
-                    ->where('Samples.project_id = :project_id:', array('project_id' => $project->id))
+                    ->where('sl.project_id = :project_id:', array('project_id' => $project->id))
                     ->andWhere('p.next_step_phase_code = :next_step_phase_code:', array('next_step_phase_code' => $step_phase_code))
                     ->getQuery()
                     ->execute()
@@ -358,24 +358,38 @@ class Elements extends Phalcon\Mvc\User\Component
             }
         } else {
             $projects = Projects::find(array(
-                "pi_user_id = :pi_user_id:",
+                "pi_user_id = :pi_user_id: AND active = 'Y'",
                 'bind' => array(
                     'pi_user_id' => $pi_user_id
                 )
             ));
             foreach ($projects as $project) {
                 // $this->flash->success(var_dump($project));
-                // @TODO Should be counted 'active' (in-completed on StepEntries).
-                $sample_count = $this->modelsManager->createBuilder()
-                    ->From('Samples')
-                    ->join('SampleTypes', 'st.id = Samples.sample_type_id', 'st')
-                    ->where('project_id = :project_id: AND st.nucleotide_type = :nucleotide_type:')
-                    ->getQuery()
-                    ->execute(array(
-                        'project_id' => $project->id,
-                        'nucleotide_type' => $nucleotide_type
-                    ))
-                    ->count();
+                if ($step_phase_code == 'QC') {
+                    $sample_count = $this->modelsManager->createBuilder()
+                        ->addFrom('Samples', 's')
+                        ->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
+                        ->join('StepEntries', 'ste.sample_id = s.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
+                        ->where('s.project_id = :project_id: AND st.nucleotide_type = :nucleotide_type:')
+                        ->getQuery()
+                        ->execute(array(
+                            'step_id' => $step_id,
+                            'project_id' => $project->id,
+                            'nucleotide_type' => $nucleotide_type
+                        ))
+                        ->count();
+                } elseif ($step_phase_code == 'PREP') {
+                    $sample_count = $this->modelsManager->createBuilder()
+                        ->addFrom('Seqlibs', 'slib')
+                        ->join('StepEntries', 'ste.seqlib_id = slib.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
+                        ->where('slib.project_id = :project_id:')
+                        ->getQuery()
+                        ->execute(array(
+                            'step_id' => $step_id,
+                            'project_id' => $project->id
+                        ))
+                        ->count();
+                }
 
                 if (!$sample_count) {
                     continue;
@@ -394,9 +408,11 @@ class Elements extends Phalcon\Mvc\User\Component
                 echo '			<span class="badge">' . $sample_count . '</span>';
                 echo '		</div>';
                 echo '		<div class="col-md-2">';
+                echo '<!--';
                 echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Import Excel file"><i class="glyphicon glyphicon-import"></i></a>';
                 echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Export Excel file"><i class="glyphicon glyphicon-export"></i></a>';
                 echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Edit Project name"><i class="glyphicon glyphicon-pencil"></i></a>';
+                echo '-->';
                 echo '		</div>';
                 echo '	</div>';
                 echo '</li>';

@@ -308,3 +308,12 @@ td > .form-inline > .form-group {
   border: 0;
 }
 
+/*
+ * Custom style for label of progress-bar
+ */
+.progress-label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: bold;
+}

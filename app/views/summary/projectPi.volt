@@ -62,7 +62,7 @@
             <div class="">{{ user.getFullname() }}</div>
           </div>
           <div class="col-md-1">
-            <span class="badge">{{ user.PiProjects|length }}</span>
+            <span class="badge">{{ user.getPiProjects("active = 'Y'")|length }}</span>
           </div>
           <div class="col-md-1">
             <span class="badge">{{ user.PiSamples|length }}</span>
