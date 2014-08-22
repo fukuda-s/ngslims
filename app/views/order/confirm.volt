@@ -26,7 +26,11 @@
           {% else %}
             <li id="step_name_selected">{{ step.name }}</li>
             <li id="protocol_name_selected">{{ protocol.name }}</li>
-            <li id="samples_per_seqtemplate">{{ samples_per_seqtemplate.name }} sample(s)/1 seqtemplate</li>
+            {% if samples_per_seqtemplate.name is defined %}
+              <li id="samples_per_seqtemplate">{{ samples_per_seqtemplate.name }} sample(s)/1 seqtemplate</li>
+            {% else %}
+              <li id="samples_per_seqtemplate"># of sample(s)/1 seqtemplate is undefined</li>
+            {% endif %}
           {% endif %}
         </ul>
       </li>
@@ -39,7 +43,11 @@
             <li id="seq_runmode_type_name_selected">{{ seq_runmode_type.name }}</li>
             <li id="seq_runread_type_name_selected">{{ seq_runread_type.name }}</li>
             <li id="seq_runcycle_type_name_selected">{{ seq_runcycle_type.name }}</li>
-            <li id="lanes_per_seqtemplate">{{ lanes_per_seqtemplate.name }} lane(s)/1 seqtemplate</li>
+            {% if lanes_per_seqtemplate.name is defined %}
+              <li id="lanes_per_seqtemplate">{{ lanes_per_seqtemplate.name }} lane(s)/1 seqtemplate</li>
+            {% else %}
+              <li id="lanes_per_seqtemplate"># of lane(s)/1 seqtemplate is undefined</li>
+            {% endif %}
           {% endif %}
         </ul>
       </li>
