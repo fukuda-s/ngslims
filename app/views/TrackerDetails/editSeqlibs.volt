@@ -179,6 +179,7 @@ $(document).ready(function () {
   var autosaveNotification = String();
   $container.handsontable({
     stretchH: 'all',
+    height: 500,
     rowHeaders: true,
     colWidths: [80, 50, 150, 80, 80, , , , 160, 160, 90],
     columns: [
