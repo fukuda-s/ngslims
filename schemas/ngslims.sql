@@ -75,6 +75,8 @@ CREATE TABLE `instrument_types` (
   `name` varchar(45) NOT NULL,
   `platform_code` varchar(100) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
+  `slots_per_run` varchar(45) NOT NULL,
+  `slots_array_json` varchar(100) NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   KEY `fk_instrument_types_platforms_idx` (`platform_code`),
@@ -791,4 +793,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-08-21 11:52:46
+-- Dump completed on 2014-08-25 15:19:55
