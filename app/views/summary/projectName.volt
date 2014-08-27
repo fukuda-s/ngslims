@@ -18,7 +18,7 @@
       {% continue %}
     {% endif %}
     <div class="panel panel-success">
-      <div class="panel-heading" data-toggle="collapse" href="#project_panel_body_{{ project.id }}">
+      <div class="panel-heading" data-toggle="collapse" data-target="#project_panel_body_{{ project.id }}">
         <h4 class="panel-title">
           <div class="row">
             <div class="col-md-6">
@@ -39,74 +39,45 @@
                     class="glyphicon glyphicon-pencil"></i></a> <i
                   class="indicator glyphicon glyphicon-chevron-right pull-right"></i>
             </div>
+          </div>
         </h4>
       </div>
       <div class="panel-body collapse" id="project_panel_body_{{ project.id }}">
         <p>
           {{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre=projectName", "» Link to detail of project samples") }}
         </p>
-        <div class="progress-label">QC</div>
-        <div class="progress">
-          {% if project.Samples.StepEntries is defined
-            and project.Samples|length == project.Samples.StepEntries|length %}
-            {% set samples = project.Samples %}
-            {% set sample_num = samples.StepEntries|length %}
-            {% set complete_num = samples.getStepEntries("status = 'Completed'")|length %}
-            {% set complete_rate = complete_num / sample_num * 100 %}
-            {% set inprogress_num = samples.getStepEntries("status = 'In Progress'")|length %}
-            {% set inprogress_rate = inprogress_num / sample_num * 100 %}
-            {% set onhold_num = samples.getStepEntries("status = 'On Hold'")|length %}
-            {% set onhold_rate = onhold_num / sample_num * 100 %}
-            <div class="progress-bar progress-bar-success" style="width: {{ complete_rate }}%">
-              {{ complete_num ~ '/' ~ sample_num ~ ' (' ~ complete_rate ~ '%)' }}
-              <span class="sr-only">{{ complete_rate }}% Completed</span>
-            </div>
-            <div class="progress-bar progress-bar-warning" style="width: {{ inprogress_rate }}%">
-              {{ inprogress_num ~ '/' ~ sample_num ~ ' (' ~ inprogress_rate ~ '%)' }}
-              <span class="sr-only">{{ inprogress_rate }}% In Progress</span>
-            </div>
-            <div class="progress-bar progress-bar-danger" style="width: {{ onhold_rate }}%">
-              {{ onhold_num ~ '/' ~ sample_num ~ ' (' ~ onhold_rate ~ '%)' }}
-              <span class="sr-only">{{ onhold_rate }}% On Hold</span>
-            </div>
-          {% else %}
-            {% set sample_num = project.Samples|length %}
-            {% set complete_num = project.getSamples("qual_date IS NOT NULL")|length %}
-            {% set complete_rate = complete_num / sample_num * 100 %}
-            <div class="progress-bar progress-bar-success" style="width: {{ complete_rate }}%">
-              {{ complete_num ~ '/' ~ sample_num ~ ' (' ~ complete_rate ~ '%)' }}
-              <span class="sr-only">{{ complete_rate }}% Complete (success)</span>
-            </div>
-          {% endif %}
-        </div>
-        <div class="progress-label">SeqLib</div>
-        <div class="progress">
-          <div class="progress-bar progress-bar-success" style="width: 35%">
-            35%
-            <span class="sr-only">35% Complete (success)</span>
-          </div>
-          <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 20%">
-            <span class="sr-only">20% Complete (warning)</span>
-          </div>
-          <div class="progress-bar progress-bar-danger" style="width: 10%">
-            <span class="sr-only">10% Complete (danger)</span>
-          </div>
-        </div>
-        <div class="progress-label">SeqRun</div>
-        <div class="progress">
-          <div class="progress-bar progress-bar-success" style="width: 35%">
-            35%
-            <span class="sr-only">35% Complete (success)</span>
-          </div>
-          <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 20%">
-            <span class="sr-only">20% Complete (warning)</span>
-          </div>
-          <div class="progress-bar progress-bar-danger" style="width: 10%">
-            <span class="sr-only">10% Complete (danger)</span>
-          </div>
-        </div>
+        <div id="project_progress_{{ project.id }}"></div>
       </div>
     </div>
     {% elsefor %} No projects are recorded
   {% endfor %}
 </div>
+<script>
+  /*
+   * Show Progress Bar on #project_progress_<project_id>
+   */
+  function showProgressBar(project_id) {
+    var target_id = '#project_progress_' + project_id;
+    $.ajax({
+      url: '{{ url("summary/projectNameProgress") }}',
+      dataType: 'html',
+      type: 'POST',
+      data: {
+        project_id: project_id
+      }
+    })
+        .done(function (data) {
+          $(target_id).replaceWith(data);
+        });
+  }
+
+  $(document).ready(function () {
+    $("[id^=project_panel_body_]").each(function () {
+      $(this).on('show.bs.collapse', function () {
+        var project_id = $(this).attr("id").replace('project_panel_body_', '');
+        showProgressBar(project_id);
+      });
+    });
+
+  })
+</script>

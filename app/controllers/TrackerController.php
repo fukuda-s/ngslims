@@ -963,6 +963,19 @@ class TrackerController extends ControllerBase
                 //Tied $step_entry as flowcell->StepEntry.
                 $flowcell->StepEntries = $step_entry;
 
+                //Update Seqlane table
+                $seqlanes = $flowcell->Seqlanes;
+                $seqlane_model = array();
+                $index = 0;
+                foreach ( $seqlanes as $seqlane) {
+                    $seqlane_id = $seqlane->id;
+                    $seqlane_model[$index] = Seqlanes::findFirst($seqlane_id);
+                    $seqlane_model[$index]->first_cycle_date = $run_started_date;
+                    $index++;
+                }
+                //Tied $seqlane as flowcell->Seqlane
+                $flowcell->Seqlanes = $seqlane_model;
+
 
                 if (!$flowcell->save()) {
                     foreach ($flowcell->getMessages() as $message) {

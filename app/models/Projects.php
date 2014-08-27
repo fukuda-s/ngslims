@@ -94,6 +94,7 @@ class Projects extends \Phalcon\Mvc\Model
         $this->belongsTo('project_type_id', 'ProjectTypes', 'id');
 
         $this->hasMany('id', 'Samples', 'project_id');
+        $this->hasMany('id', 'Seqlibs', 'project_id');
 
 
         $this->addBehavior(new Timestampable(
