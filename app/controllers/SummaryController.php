@@ -121,11 +121,11 @@ class SummaryController extends ControllerBase
                      * The above result of $seqlane"s"_progress like as follows. (each line each seqlib)
                      *  <seqlib>    all_sum completed_sum   inprogress_sum  onhold_sum
                      *  (seqlib1)   1	3	2	0
-                     *  (seqlib2)   1	1	1	0
+                     *  (seqlib2)   1	0	1	1
                      *  (seqlib3)   1	1	1	0
                      * The following $seqlane_progress (not "s") is generated to display progress bar
                      *  <summary>    all_sum completed_sum   inprogress_sum  onhold_sum
-                     *  (summary)   3	3	0	0
+                     *  (summary)   3	2	1	0
                      * !!Status 'Completed' has priority more than 'In Progress' and 'On Hold'. (Completed > In Progress > On Hold)
                      */
                     $seqlane_progress = (object)array(
@@ -138,11 +138,9 @@ class SummaryController extends ControllerBase
                     foreach ($seqlanes_progress as $progress) {
                         if (isset($progress->completed_sum) and $progress->completed_sum > 0) {
                             $seqlane_progress->completed_sum++;
-                        }
-                        else if (isset($progress->inprogress_sum) and $progress->inprogress_sum > 0) {
+                        } else if (isset($progress->inprogress_sum) and $progress->inprogress_sum > 0) {
                             $seqlane_progress->inprogress_sum++;
-                        }
-                        else if (isset($progress->onhold_sum) and $progress->onhold_sum > 0) {
+                        } else if (isset($progress->onhold_sum) and $progress->onhold_sum > 0) {
                             $seqlane_progress->onhold_sum++;
                         }
                     }
@@ -155,6 +153,82 @@ class SummaryController extends ControllerBase
     public function operationAction()
     {
         Tag::appendTitle(' | Summary By Operation');
+    }
+
+    public function overallAction($year, $month)
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+        Tag::appendTitle(' | Overall');
+
+        $year = $this->filter->sanitize($year, array("int"));
+        $month = $this->filter->sanitize($month, array("int"));
+
+        /*
+         * Get Year-Month of run_started_date for button toolbar
+         */
+        $run_year_months = $this->modelsManager->createBuilder()
+            ->columns(array(
+                "YEAR(run_started_date) AS run_year",
+                "MONTH(run_started_date) AS run_month"
+            ))
+            ->from('Flowcells')
+            ->groupBy(array('run_year', 'run_month'))
+            ->orderBy(array('run_year', 'run_month'))
+            ->getQuery()
+            ->execute();
+
+        //Re-construct array with all month (1..12)
+        $run_year_month_array = (object)[];
+        $current_year_month = (object)[];
+        foreach ($run_year_months as $run_year_month) {
+            $run_year = (int)$run_year_month->run_year;
+            $run_month = (int)$run_year_month->run_month;
+            if (!isset($run_year_month_array->$run_year)) {
+                $run_year_month_array->$run_year = (object)[];
+            }
+
+            foreach (range(1, 12) as $month_chk) {
+                if ($month_chk === $run_month) {
+                    $run_year_month_array->$run_year->$month_chk = 1;
+                    $current_year_month->year = $run_year;
+                    $current_year_month->month = $run_month;
+                } else if (!isset($run_year_month_array->$run_year->$month_chk)) {
+                    $run_year_month_array->$run_year->$month_chk = 0;
+                }
+            }
+
+        }
+        /*
+         * Redirect to current year/month record if $year or $month is null.
+         */
+        if (!isset($year) or !isset($month)) {
+            return $this->response->redirect("summary/overall/" . $current_year_month->year . "/" . $current_year_month->month);
+        }
+
+        $this->view->setVar('run_year_month_array', $run_year_month_array);
+
+        /*
+         * Get data to display table withusing $year and $month
+         */
+        $overall_tmp = $this->modelsManager->createBuilder()
+            ->columns(array('slane.*', 'sl.*', 'sta.*', 'fc.*'))
+            ->addFrom('Seqlanes', 'slane')
+            ->join('SeqtemplateAssocs', 'sta.seqtemplate_id = slane.seqtemplate_id', 'sta')
+            ->join('Seqlibs', 'sl.id = sta.seqlib_id', 'sl')
+            ->leftJoin('Flowcells', 'fc.id = slane.flowcell_id', 'fc')
+            ->orderBy(array('fc.run_number', 'slane.number', 'sl.oligobarcodeA_id', 'sl.oligobarcodeB_id'));
+
+        if (!empty($year) and $year > 0) {
+            $overall_tmp = $overall_tmp->where("YEAR(fc.run_started_date) = :year:", array("year" => $year));
+        }
+        if (!empty($month) and $month > 0) {
+            $overall_tmp = $overall_tmp->andWhere("MONTH(fc.run_started_date) = :month:", array("month" => $month));
+        }
+        $overall = $overall_tmp->orderBy(array('fc.run_started_date', 'slane.number', 'sl.oligobarcodeA_id', 'sl.oligobarcodeB_id'))
+            ->getQuery()
+            ->execute();
+        $this->view->setVar('overall', $overall);
+
     }
 
 }

@@ -16,7 +16,13 @@ class Steps extends \Phalcon\Mvc\Model
      * @var string
      */
     public $name;
-     
+
+    /**
+     *
+     * @var string
+     */
+    public $short_name;
+
     /**
      *
      * @var string
@@ -64,7 +70,8 @@ class Steps extends \Phalcon\Mvc\Model
     {
         return array(
             'id' => 'id', 
-            'name' => 'name', 
+            'name' => 'name',
+            'short_name' => 'short_name',
             'step_phase_code' => 'step_phase_code',
             'seq_runmode_type_id' => 'seq_runmode_type_id',
             'platform_code' => 'platform_code', 

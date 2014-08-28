@@ -56,7 +56,8 @@ class Security extends Plugin
                     'projectPi',
                     'projectName',
                     'projectNameProgress',
-                    'operation'
+                    'operation',
+                    'overall'
                 ),
                 'tracker' => array(
                     'index',

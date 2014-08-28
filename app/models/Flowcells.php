@@ -99,6 +99,8 @@ class Flowcells extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->belongsTo('instrument_id', 'Instruments', 'id');
+
         $this->hasMany('id', 'Seqlanes', 'flowcell_id');
         $this->hasMany('id', 'StepEntries', 'flowcell_id');
 

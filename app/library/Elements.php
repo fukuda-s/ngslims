@@ -90,9 +90,16 @@ class Elements extends Phalcon\Mvc\User\Component
             'action' => 'projectName',
             'param' => ''
         ),
+        /*
         'Operation Overview' => array(
             'controller' => 'summary',
             'action' => 'operation',
+            'param' => ''
+        ),
+        */
+        'Overall View' => array(
+            'controller' => 'summary',
+            'action' => 'overall',
             'param' => ''
         ),
         'hr1' => array(),
