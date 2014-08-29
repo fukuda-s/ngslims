@@ -69,9 +69,8 @@
    */
   $(document).ready(function () {
     $('#sampleInfo_table').dataTable({
-      "sScrollY": "600px",
-      "bPaginate": false,
-      "bScrollCollapse": true
+      scrollX: true,
+      responsive: true
     });
   });
 </script>
