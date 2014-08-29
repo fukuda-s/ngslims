@@ -123,7 +123,9 @@ class Seqlibs extends \Phalcon\Mvc\Model
         $this->belongsTo('oligobarcodeB_id', 'Oligobarcodes', 'id', array(
             'alias' => 'OligobarcodeB'
         ));
-        //$this->belongsTo('id', 'StepEntries', 'seqlib_id');
+        $this->belongsTo('id', 'StepEntries', 'seqlib_id', array(
+            'alias' => 'StepEntries_BelongsTo'
+        ));
 
         $this->hasMany('id', 'StepEntries', 'seqlib_id'); //It should be hasMany to use tied record on order.
 

@@ -51,8 +51,8 @@ class SeqlibsController extends ControllerBase
                         $seqlibs_array[$i]['fragment_size'] = $seqlib->fragment_size;
                         $seqlibs_array[$i]['started_at'] = $seqlib->started_at;
                         $seqlibs_array[$i]['finished_at'] = $seqlib->finished_at;
-                        if ($seqlib->StepEntries) {
-                            $seqlibs_array[$i]['status'] = $seqlib->StepEntries->status;
+                        if ($seqlib->StepEntries_BelongsTo) {
+                            $seqlibs_array[$i]['status'] = $seqlib->StepEntries_BelongsTo->status;
                         } else {
                             $seqlibs_array[$i]['status'] = '';
                         }
