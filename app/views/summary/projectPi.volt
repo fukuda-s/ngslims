@@ -75,28 +75,8 @@
 
       </h4>
     </div>
-    <ul class="list-group">
-      <div id="user_id_{{ user.id }}" class="panel-body panel-collapse collapse">
-        <!--
-        <button class="btn btn-success btn-add-panel" data-toggle="collapse" data-target="#addNewProject">
-          <i class="glyphicon glyphicon-plus"></i> Add new Project
-        </button>
-        -->
-        <div class="panel panel-default">
-          <div id="addNewProject" class="panel-body panel-collapse collapse">
-            <form class="form-inline" role="form">
-              <div class="form-group">
-                <label class="sr-only" for="inputProjectName">Project Name</label> <input type="text"
-                                                                                          class="form-control"
-                                                                                          id="inputProjectName"
-                                                                                          placeholder="Project Name"/>
-              </div>
-              <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-          </div>
-        </div>
+    <ul class="list-group collapse" id="user_id_{{ user.id }}">
         {{ elements.getTrackerProjectSummaryProjectList( user.id ) }}
-      </div>
     </ul>
   </div>
   {% if loop.last %}

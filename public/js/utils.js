@@ -98,7 +98,7 @@ $(document).ready(function() {
  * Change cheveron icon with toggle panel
  */
 function toggleChevron(e) {
-	$(e.target).parent().prev('.panel-heading').find("i.indicator")
+    $(e.target).parent(".panel").find("i.indicator")
 			.toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
 };
 
