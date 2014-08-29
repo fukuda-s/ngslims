@@ -187,6 +187,7 @@ class SummaryController extends ControllerBase
                 $run_year_month_array->$run_year = (object)[];
             }
 
+            //If the year-month of run_started_date is available then $run_year_month_array->$run_year->$run_month is 1 either 0.
             foreach (range(1, 12) as $month_chk) {
                 if ($month_chk === $run_month) {
                     $run_year_month_array->$run_year->$month_chk = 1;
@@ -196,6 +197,12 @@ class SummaryController extends ControllerBase
                     $run_year_month_array->$run_year->$month_chk = 0;
                 }
             }
+
+            //If the year-month of run_started_date is indicated by $year and $month of URL then 2. (It is used for "class='btn active'"
+            if ($run_year == $year and $run_month == $month) {
+                $run_year_month_array->$run_year->$run_month = 2;
+            }
+
 
         }
         /*

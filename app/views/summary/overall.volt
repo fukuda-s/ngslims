@@ -7,15 +7,21 @@
       <li class="active">Overall</li>
     </ol>
     <hr>
-    <button type="button" class="btn btn-default" onclick="location.href='{{ url("summary/overall/0/0") }}'">SHOW ALL
+    <button disabled type="button" class="btn btn-primary" onclick="location.href='{{ url("summary/overall/0/0") }}'">
+      ALL&nbsp;
+      <i class="glyphicon glyphicon-download"></i>
     </button>
     {% for run_year, run_month_array in run_year_month_array %}
       <div class="btn-toolbar" role="toolbar">
         <div class="btn-group btn-group-sm" id="run_year_{{ run_year }}">
-          <button type="button" class="btn btn-default"
-                  onclick="location.href='{{ url("summary/overall/" ~ run_year ~ '/0') }}'">{{ run_year }}</button>
+          <button disabled type="button" class="btn btn-info"
+                  onclick="location.href='{{ url("summary/overall/" ~ run_year ~ '/0') }}'">{{ run_year }}&nbsp;<i
+                class="glyphicon glyphicon-download"></i></button>
           {% for run_month, run_month_available in run_month_array %}
-            {% if run_month_available == 1 %}
+            {% if run_month_available == 2 %}
+              <button type="button" class="btn btn-default active"
+                      onclick="location.href='{{ url("summary/overall/" ~ run_year ~ '/' ~ run_month) }}'">{{ run_month }}</button>
+            {% elseif run_month_available == 1 %}
               <button type="button" class="btn btn-default"
                       onclick="location.href='{{ url("summary/overall/" ~ run_year ~ '/' ~ run_month) }}'">{{ run_month }}</button>
             {% else %}
@@ -25,6 +31,7 @@
         </div>
       </div>
     {% endfor %}
+    <hr>
     <table class="table table-bordered table-hover table-condensed" id="overall_table">
       <thead>
       <tr>
@@ -112,8 +119,13 @@
   $(document).ready(function () {
     $('#overall_table').dataTable({
       scrollX: true,
-      order: [[ 2, 'asc' ], [ 5, 'asc' ], [17, 'asc'], [18, 'asc']], // fc.un_started_date > slane.number > sl.oligobarcodeA.name > sl.oligobarcodeB.name
-      responsive: true
+      responsive: true,
+      order: [
+        [ 2, 'asc' ],
+        [ 5, 'asc' ],
+        [17, 'asc'],
+        [18, 'asc']
+      ] // fc.un_started_date > slane.number > sl.oligobarcodeA.name > sl.oligobarcodeB.name
     });
   });
 </script>
