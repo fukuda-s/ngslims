@@ -12,6 +12,9 @@
       <i class="glyphicon glyphicon-download"></i>
     </button>
     {% for run_year, run_month_array in run_year_month_array %}
+      {% if run_year is empty %} {# Case for run_started_date is NULL #}
+        {% continue %}
+      {% endif %}
       <div class="btn-toolbar" role="toolbar">
         <div class="btn-group btn-group-sm" id="run_year_{{ run_year }}">
           <button disabled type="button" class="btn btn-info"
@@ -122,6 +125,7 @@
       responsive: true,
       order: [
         [ 2, 'asc' ],
+        [ 4, 'asc' ],
         [ 5, 'asc' ],
         [17, 'asc'],
         [18, 'asc']
