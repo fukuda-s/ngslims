@@ -22,7 +22,11 @@
   {% endif %}
   <tr id="seqlib_id_{{ seqlib.sl.id }}">
     <td>{{ seqlib.p.name }}</td>
-    <td>{{ seqlib.u.getFullname() }}</td>
+    {% if seqlib.u is empty %}
+      <td>(Undefined PI)</td>
+    {% else %}
+      <td>{{ seqlib.u.getFullname() }}</td>
+    {% endif %}
     <td>{{ seqlib.sl.name }}</td>
     <td>{{ seqlib.s.name }}</td>
     <td>{{ seqlib.sl.getOligobarcodeA().name }}</td>

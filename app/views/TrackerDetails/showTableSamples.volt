@@ -5,7 +5,11 @@
     <ol class="breadcrumb">
       <li>{{ link_to("tracker", "Tracker") }}</li>
       <li>{{ link_to("summary/" ~ previousAction, "Project Overview") }}</li>
-      <li>{{ project.PIs.getFullname() }}</li>
+      {% if project.PIs is empty %}
+        <li>(Undefined PI)</li>
+      {% else %}
+        <li>{{ project.PIs.getFullname() }}</li>
+      {% endif %}
       <li class="active">{{ project.name }}</li>
     </ol>
     <div
