@@ -727,6 +727,7 @@ class OrderController extends ControllerBase
         $projects->lab_id = $this->session->get('lab')->id;
         $projects->user_id = $this->session->get('auth')['id'];
         $projects->pi_user_id = $this->session->get('pi_user')->id;
+        $projects->active = 'Y';
         //$projects->created_at = '2014-02-07';
 
         $prev_projects = Projects::find(array(

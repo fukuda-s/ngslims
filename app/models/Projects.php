@@ -26,6 +26,12 @@ class Projects extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var string
+     */
+    public $project_code;
+
+    /**
+     *
      * @var integer
      */
     public $user_id;
@@ -73,6 +79,7 @@ class Projects extends \Phalcon\Mvc\Model
             'id' => 'id',
             'lab_id' => 'lab_id',
             'name' => 'name',
+            'project_code' => 'project_code',
             'user_id' => 'user_id',
             'pi_user_id' => 'pi_user_id',
             'project_type_id' => 'project_type_id',

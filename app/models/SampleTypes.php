@@ -25,6 +25,12 @@ class SampleTypes extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var string
+     */
+    public $sample_type_code;
+
+    /**
+     *
      * @var integer
      */
     public $sort_order;
@@ -45,6 +51,7 @@ class SampleTypes extends \Phalcon\Mvc\Model
             'id' => 'id',
             'name' => 'name',
             'nucleotide_type' => 'nucleotide_type',
+            'sample_type_code' => 'sample_type_code',
             'sort_order' => 'sort_order',
             'active' => 'active'
         );
