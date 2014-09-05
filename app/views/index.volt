@@ -7,8 +7,8 @@
   {{ stylesheet_link('js/jquery-ui-1.11.0/jquery-ui.min.css') }}
   {{ stylesheet_link('js/DataTables-1.10.2/media/css/jquery.dataTables.css') }}
   {{ stylesheet_link('js/DataTables-1.10.2/examples/resources/bootstrap/3/dataTables.bootstrap.css') }}
-  {{ stylesheet_link('css/jquery.handsontable.full.css') }}
-  {{ stylesheet_link('css/jquery.handsontable.bootstrap.css') }}
+  {{ stylesheet_link('js/jquery-handsontable-0.11.0-beta3/dist/jquery.handsontable.css') }}
+  {{ stylesheet_link('js/jquery-handsontable-0.11.0-beta3/plugins/bootstrap/jquery.handsontable.bootstrap.css') }}
   {{ stylesheet_link('css/font-awesome.css') }}
   {{ stylesheet_link('css/bootstrap-multiselect.css') }}
   {{ stylesheet_link('css/style.css') }}
@@ -17,7 +17,7 @@
   {{ javascript_include('bootstrap/js/bootstrap.js') }}
   {{ javascript_include('js/DataTables-1.10.2/media/js/jquery.dataTables.js') }}
   {{ javascript_include('js/DataTables-1.10.2/examples/resources/bootstrap/3/dataTables.bootstrap.js') }}
-  {{ javascript_include('js/handsontable/jquery.handsontable.full.js') }}
+  {{ javascript_include('js/jquery-handsontable-0.11.0-beta3/dist/jquery.handsontable.full.js') }}
   {{ javascript_include('js/bootstrap-multiselect/bootstrap-multiselect.js') }}
   {{ javascript_include('js/utils.js') }}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
