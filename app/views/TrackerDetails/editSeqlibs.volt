@@ -135,26 +135,9 @@ $(document).ready(function () {
     $(td).text(protocolAr[value]);
   };
 
-  // Cleaved edited row from whole data of handsontable.
-  function cleaveData(changes) {
-    var data = handsontable.getData();
-    var cleavedData = Object();
-    //for (var i = 0; i < changes.length; i++) {
-    $.each(changes, function (rowIndex, rowValues) {
-      $.each(rowValues, function (colIndex, value) {
-        if (value) {
-          console.log('changes[' + colIndex + '] = ' + value);
-          var rowNumToChange = value[0];
-          if (!cleavedData[rowNumToChange]) {
-            cleavedData[rowNumToChange] = data[rowNumToChange];
-          }
-        }
-      });
-    });
-    return cleavedData;
-  }
-
-  // Integrate 'changes' on handsontable, because editor can change same cell at several times.
+  /*
+   * Integrate 'changes' on handsontable, because editor can change same cell at several times.
+   */
   var isDirtyAr = Object();
 
   function integrateIsDirtyAr(changes) {
@@ -163,10 +146,13 @@ $(document).ready(function () {
       if (value) {
         var rowNumToChange = value[0];
         var columnToChange = value[1];
-        if (!isDirtyAr[rowNumToChange]) {
-          isDirtyAr[rowNumToChange] = Object();
+        var valueChangeTo = value[3];
+        var rowData = $handsontable.getDataAtRow(rowNumToChange);
+        var seqlib_id = rowData[0];
+        if (!isDirtyAr[seqlib_id]) {
+          isDirtyAr[seqlib_id] = Object();
         }
-        isDirtyAr[rowNumToChange][columnToChange] = value; //Over write isDirtyAr with current changes.
+        isDirtyAr[seqlib_id][columnToChange] = valueChangeTo; //Over write isDirtyAr with current changes.
       }
     });
     console.log(isDirtyAr);
@@ -180,9 +166,10 @@ $(document).ready(function () {
   $container.handsontable({
     stretchH: 'all',
     height: 500,
-    rowHeaders: true,
-    colWidths: [80, 50, 150, 80, 80, , , , 160, 160, 90],
+    rowHeaders: false,
+    //colWidths: [160, 160, 150, 80, 80, 80, 80, 80, 160, 160, 90],
     columns: [
+      { data: "sl.id", title: "Seqlib ID" },
       { data: "sl.name", title: "Seqlib Name" },
       { data: "sl.sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer },
       { data: "sl.protocol_id", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer },
@@ -197,9 +184,15 @@ $(document).ready(function () {
     ],
     minSpareCols: 0,
     minSpareRows: 0,
-    contextMenu: true,
+    contextMenu: false,
     columnSorting: true,
     manualColumnResize: true,
+    manualRowResize: true,
+    autoColumnSize: true,
+    fixedColumnsLeft: 2,
+    currentRowClassName: 'currentRow',
+    autoWrapRow: true,
+    search: true,
     afterChange: function (changes, source) {
       if (source === 'loadData') {
         return; // don't save this change
@@ -213,7 +206,7 @@ $(document).ready(function () {
         integrateIsDirtyAr(changes);
 
         // Show alert dialog when this page moved before save.
-        $(window).on('beforeunload', function() {
+        $(window).on('beforeunload', function () {
           return 'CAUTION! You have not yet saved. Are you sure you want to leave?';
         });
       }
@@ -224,7 +217,7 @@ $(document).ready(function () {
           url: '{{ url("trackerdetails/saveSeqlibs") }}',
           dataType: "json",
           type: "POST",
-          data: {data: cleaveData(changes), changes: changes} // returns "data" as all data and "changes" as changed data
+          data: {changes: isDirtyAr} // returns "data" as all data and "changes" as changed data
         })
             .done(function () {
               $console.text('Autosaved (' + changes.length + ' cell' + (changes.length > 1 ? 's' : '') + ')')
@@ -242,7 +235,7 @@ $(document).ready(function () {
     },
     afterSelectionEnd: function (r, c, r2, c2) {
       if (c >= 3 && c <= 4) {
-        var protocol_id = handsontable.getData(r, 2, r, 2).toString();
+        var protocol_id = $handsontable.getData(r, 2, r, 2).toString();
         $.ajax({
           url: '{{ url("oligobarcodes/loadjson/") }}',
           dataType: "json",
@@ -257,7 +250,7 @@ $(document).ready(function () {
       }
     }
   });
-  var handsontable = $container.data('handsontable');
+  var $handsontable = $container.data('handsontable');
 
   function loadData() {
     $.ajax({
@@ -281,7 +274,7 @@ $(document).ready(function () {
     //alert("save! "+handsontable.getData());
     $.ajax({
       url: '{{ url("trackerdetails/saveSeqlibs") }}',
-      data: {data: cleaveData(isDirtyAr), changes: isDirtyAr }, // returns all cells
+      data: { changes: isDirtyAr }, // returns all cells
       dataType: 'text',
       type: 'POST'
     })
@@ -303,15 +296,15 @@ $(document).ready(function () {
   $toolbar.find('#undo').click(function () {
     // alert("undo! "+handsontable.isUndoAvailable()+"
     // "+handsontable.isRedoAvailable())
-    handsontable.undo();
+    $handsontable.undo();
     // $console.text('Undo!');
-    if (handsontable.isUndoAvailable()) {
+    if ($handsontable.isUndoAvailable()) {
       $toolbar.find("#undo").removeClass("disabled");
     } else {
       $toolbar.find("#undo").addClass("disabled");
     }
 
-    if (handsontable.isRedoAvailable()) {
+    if ($handsontable.isRedoAvailable()) {
       $toolbar.find("#redo").removeClass("disabled");
     } else {
       $toolbar.find("#redo").addClass("disabled");
@@ -321,15 +314,15 @@ $(document).ready(function () {
   $toolbar.find('#redo').click(function () {
     // alert("redo! "+handsontable.isUndoAvailable()+"
     // "+handsontable.isRedoAvailable());
-    handsontable.redo();
+    $handsontable.redo();
     // $console.text('Redo!');
-    if (handsontable.isUndoAvailable()) {
+    if ($handsontable.isUndoAvailable()) {
       $toolbar.find("#undo").removeClass("disabled");
     } else {
       $toolbar.find("#undo").addClass("disabled");
     }
 
-    if (handsontable.isRedoAvailable()) {
+    if ($handsontable.isRedoAvailable()) {
       $toolbar.find("#redo").removeClass("disabled");
     } else {
       $toolbar.find("#redo").addClass("disabled");
@@ -353,6 +346,20 @@ $(document).ready(function () {
       $console.text('Changes will not be autosaved').removeClass().addClass("alert alert-warning");
     }
   });
+
+  /*
+   * Set up search function.
+   */
+  $('#search_field').on('keyup', function (event) {
+    var hot = $handsontable('getInstance');
+
+    var queryResult = hot.search.query(this.value);
+
+    console.log(queryResult);
+
+    hot.render();
+  });
+
 
 });
 </script>

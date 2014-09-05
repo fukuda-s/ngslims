@@ -151,22 +151,13 @@ class TrackerdetailsController extends ControllerBase
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
-                if ($request->hasPost('data') && $request->hasPost('changes')) {
+                if ($request->hasPost('changes')) {
                     $changes = $request->getPost('changes');
-                    $data = $request->getPost('data');
-
                     /*
                      * $changes has array [["row number from 0", "row name", "before value", "changed value"]] ex.)[["3","qual_od260230","","1"]]
                      */
-                    $i = 0;
-                    foreach ($changes as $rowIndex => $rowValues) {
-                        foreach ($rowValues as $colIndex => $value) {
-                            $rowNumToChange = $value[0];
-                            $colNameToChange = $value[1];
-                            //$valueChangeFrom = $value[2];
-                            $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
-                            // Get sample_id from $data
-                            $sample_id = $data[$rowNumToChange]["id"];
+                    foreach ($changes as $sample_id => $rowValues) {
+                        foreach ($rowValues as $colNameToChange => $valueChangeTo) {
                             $sample = Samples::findFirstById($sample_id);
 
 
@@ -174,7 +165,7 @@ class TrackerdetailsController extends ControllerBase
                                 continue; //Skip for to_prep_protocol_name
                             } elseif ($colNameToChange === 'to_prep' && $valueChangeTo === 'true') {
                                 //Set up protocol values
-                                $protocol_name = $data[$rowNumToChange]["to_prep_protocol_name"];
+                                $protocol_name = $changes[$sample_id]["to_prep_protocol_name"];
                                 $protocol = Protocols::findFirst(array(
                                     "name = :name:",
                                     'bind' => array(
@@ -297,19 +288,14 @@ class TrackerdetailsController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 // echo "Request was made using POST and AJAX";
-                if ($request->hasPost('data') && $request->hasPost('changes')) {
+                if ($request->hasPost('changes')) {
                     $changes = $request->getPost('changes');
-                    $data = $request->getPost('data');
 
-                    foreach ($changes as $rowIndex => $rowValues) {
-                        foreach ($rowValues as $colIndex => $value) {
-                            $rowNumToChange = $value[0];
-                            $colStrToChange = preg_split('/\./', $value[1]);
+                    foreach ($changes as $seqlib_id => $rowValues) {
+                        foreach ($rowValues as $tblColNameToChange => $valueChangeTo) {
+                            $colStrToChange = preg_split('/\./', $tblColNameToChange);
                             $tblNameToChange = $colStrToChange[0];
                             $colNameToChange = $colStrToChange[1];
-
-                            $valueChangeTo = (empty($value[3])) ? NULL : $value[3];
-                            $seqlib_id = $data[$rowNumToChange]['sl']['id']; //'sl' is alias of Seqlibs on SeqlibsController->loadjson()
 
                             $seqlib = Seqlibs::findFirstById($seqlib_id);
 

@@ -35,8 +35,8 @@
         </div>
         <div class="col-md-2">
           <button type="button" class="btn btn-default btn-xs" id="show-inactive" data-toggle="collapse"
-                  data-target="#inactives" style="min-width: 87px">Show
-            inactive
+                  data-target="[id^=inactives]" style="min-width: 87px">
+            Show inactive
           </button>
         </div>
       </div>
@@ -46,10 +46,10 @@
 
 
   {% if user.project_count > 0 %}
-    <div class="panel panel-info">
-  {% else %}
-    <div class="panel panel-default collapse" id="inactives">
-  {% endif %}
+  <div class="panel panel-info">
+    {% else %}
+    <div class="panel panel-default collapse" id="inactives-{{ user.id }}">
+      {% endif %}
       <div class="panel-heading" data-toggle="collapse" data-target="#user_id_{{ user.id }}" id="OwnerList">
         <h4 class="panel-title">
           <div class="row">

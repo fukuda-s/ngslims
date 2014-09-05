@@ -7567,7 +7567,7 @@ Handsontable.PluginHooks = Handsontable.hooks; //in future move this line to leg
 
   function HandsontableAutoColumnSize() {
     var plugin = this
-      , sampleCount = 5; //number of samples to take of each value length
+      , sampleCount = 10000; //number of samples to take of each value length
 
     this.beforeInit = function () {
       var instance = this;

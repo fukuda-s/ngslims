@@ -116,7 +116,6 @@ $(document).ready(function () {
       }
   );
 
-
   var sampleTypeRenderer = function (instance, td, row, col, prop, value, cellProperties) {
     Handsontable.TextCell.renderer.apply(this, arguments);
     //alert("renderer: "+sampleTypeAr[value]);
@@ -140,30 +139,14 @@ $(document).ready(function () {
     $(td).text(sampleLocationAr[value]);
   };
 
-  // Cleaved edited row from whole data of handsontable.
-  function cleaveData(changes) {
-    var data = $handsontable.getData();
-    var cleavedData = Object();
-    //for (var i = 0; i < changes.length; i++) {
-    $.each(changes, function (rowIndex, rowValues) {
-      $.each(rowValues, function (colIndex, value) {
-        if (value) {
-          console.log('changes[' + colIndex + '] = ' + value);
-          var rowNumToChange = value[0];
-          if (!cleavedData[rowNumToChange]) {
-            cleavedData[rowNumToChange] = new Object();
-            cleavedData[rowNumToChange]["id"] = data[rowNumToChange]["id"];
-            if (data[rowNumToChange]["to_prep_protocol_name"] !== "") {
-              cleavedData[rowNumToChange]["to_prep_protocol_name"] = data[rowNumToChange]["to_prep_protocol_name"];
-            }
-          }
-        }
-      });
-    });
-    return cleavedData;
-  }
+  /*
+   * Cleaved edited row from whole data of handsontable.
+   */
+  var cleavedData = Object();
 
-  // Integrate 'changes' on handsontable, because editor can change same cell at several times.
+  /*
+   * Integrate 'changes' on handsontable, because editor can change same cell at several times.
+   */
   var isDirtyAr = Object();
 
   function integrateIsDirtyAr(changes) {
@@ -172,10 +155,13 @@ $(document).ready(function () {
       if (value) {
         var rowNumToChange = value[0];
         var columnToChange = value[1];
-        if (!isDirtyAr[rowNumToChange]) {
-          isDirtyAr[rowNumToChange] = Object();
+        var valueChangeTo = value[3];
+        var rowData = $handsontable.getDataAtRow(rowNumToChange);
+        var sample_id = rowData[0];
+        if (!isDirtyAr[sample_id]) {
+          isDirtyAr[sample_id] = Object();
         }
-        isDirtyAr[rowNumToChange][columnToChange] = value; //Over write isDirtyAr with current changes.
+        isDirtyAr[sample_id][columnToChange] = valueChangeTo; //Over write isDirtyAr with current changes.
       }
     });
     console.log(isDirtyAr);
@@ -193,28 +179,35 @@ $(document).ready(function () {
   ];
   var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 160, 80, 110
     {% for sample_property_type in sample_property_types %}
-      {% if sample_property_type.sample_count > 0 %}
-       , 120
-      {% else %}
-       , 0.1
-      {% endif %}
+    {% if sample_property_type.sample_count > 0 %}
+    , 120
+    {% else %}
+    , 0.1
+    {% endif %}
     {% endfor %}
     {% if type === 'PREP' %}
-      , 80, 150
+    , 80, 150
     {% endif %}
   ];
   var $samplePropertyTypesColumnsStartIdx = 14; //@TODO First index number(begin by 0) of sample_property_types
   $container.handsontable({
     stretchH: 'all',
     height: 500,
-    rowHeaders: true,
+    //rowHeaders: true,
     minSpareCols: 0,
     minSpareRows: 0,
-    contextMenu: true,
+    contextMenu: false,
     columnSorting: true,
     manualColumnResize: true,
-    colWidths: $defaultColWidths,
+    manualRowResize: true,
+    fixedColumnsLeft: 2,
+    currentRowClassName: 'currentRow',
+    autoWrapRow: true,
+    search: true,
+    //colWidths: $defaultColWidths,
+    autoColumnSize: true,
     columns: [
+      { data: "id", title: "ID", readOnly: true },
       { data: "name", title: "Sample Name", readOnly: true },
       { data: "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer },
       { data: "organism_id", title: "Organism", readOnly: true, renderer: organismRenderer, source: organismRenderer },
@@ -225,7 +218,7 @@ $(document).ready(function () {
       { data: "qual_fragmentsize", title: "Fragment Size", type: 'numeric' },
       { data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000' },
       { data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
-      { data: "qual_amount", data: 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
+      { data: "qual_amount", title: "Total (ng)", type: 'numeric', format: '0.00' },
       { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' },
       { data: "barcode_number", title: "2D barcode" },
       { data: "sample_location_id", title: "Sample Repos.", type: "dropdown", source: sampleLocationDrop, renderer: sampleLocationRenderer },
@@ -248,9 +241,10 @@ $(document).ready(function () {
         $toolbar.find("#save, #undo, #clear").removeClass("disabled");
         $console.text('Click "Save" to save data to server').removeClass().addClass("alert alert-info");
         integrateIsDirtyAr(changes);
+        //cleaveData(changes);
 
         // Show alert dialog when this page moved before save.
-        $(window).on('beforeunload', function() {
+        $(window).on('beforeunload', function () {
           return 'CAUTION! You have not yet saved. Are you sure you want to leave?';
         });
       }
@@ -263,7 +257,7 @@ $(document).ready(function () {
           url: '{{ url("trackerdetails/saveSamples") }}',
           dataType: "json",
           type: "POST",
-          data: {data: cleaveData(changes), changes: changes} // returns "data" as all data and "changes" as changed data
+          data: { changes: isDirtyAr }
         })
             .done(function () {
               $console.text('Autosaved (' + changes.length + ' cell' + (changes.length > 1 ? 's' : '') + ')')
@@ -307,7 +301,7 @@ $(document).ready(function () {
     //alert("save! "+$handsontable.getData());
     $.ajax({
       url: '{{ url("trackerdetails/saveSamples") }}',
-      data: {data: cleaveData(isDirtyAr), changes: isDirtyAr }, // returns all cells
+      data: { changes: isDirtyAr },
       dataType: 'text',
       type: 'POST'
     })
@@ -385,16 +379,16 @@ $(document).ready(function () {
     /*
      * Show/Hide sample_property_types columns when checkbox is checked/unchecked.
      */
-    onChange: function(element, checked) {
+    onChange: function (element, checked) {
 
       var changedColWidths = $defaultColWidths;
       console.log(changedColWidths);
 
-      for(var i = 0; i < $samplePropertyTypesColumns.length; i++){
+      for (var i = 0; i < $samplePropertyTypesColumns.length; i++) {
         var actualColWidthIdx = i + $samplePropertyTypesColumnsStartIdx;
-        if ($samplePropertyTypesColumns[i] == element.val()){
+        if ($samplePropertyTypesColumns[i] == element.val()) {
           //console.log($samplePropertyTypesColumns[i] + " : " + element.val());
-          if(checked == true){
+          if (checked == true) {
             changedColWidths[actualColWidthIdx] = 120;
           } else {
             changedColWidths[actualColWidthIdx] = 0.1;
@@ -407,9 +401,22 @@ $(document).ready(function () {
       //console.log($samplePropertyTypesChecked);
 
       //Change column width (Show checked sample_property_types column) on handsontable.
-      $handsontable.updateSettings( {'colWidths' : changedColWidths} );
+      $handsontable.updateSettings({'colWidths': changedColWidths});
       console.log(changedColWidths);
     }
+  });
+
+  /*
+   * Set up search function.
+   */
+  $('#search_field').on('keyup', function (event) {
+    var hot = $container.handsontable('getInstance');
+
+    var queryResult = hot.search.query(this.value);
+
+    console.log(queryResult);
+
+    hot.render();
   });
 
 });

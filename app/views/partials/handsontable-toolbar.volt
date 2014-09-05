@@ -27,7 +27,7 @@
         {% endfor %}
         </select>
         {% endif %}
-        <input type="text" class="form-control" placeholder="Search">
+        <input id="search_field" type="search" class="form-control" placeholder="Search">
       </div>
     </form>
     <ul class="nav navbar-nav navbar-right">
