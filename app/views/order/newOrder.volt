@@ -911,10 +911,15 @@ $(document).ready(function () {
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,
-    contextMenu: true,
+    contextMenu: false,
     minSpareRows: 1,
     columnSorting: true,
     manualColumnResize: true,
+    manualRowResize: true,
+    //fixedColumnsLeft: 1,
+    currentRowClassName: 'currentRow',
+    autoWrapRow: true,
+    autoColumnSize: true,
     data: [],
     dataSchema: {
       name: null,
@@ -928,11 +933,10 @@ $(document).ready(function () {
       qual_amount: null,
       qual_date: null,
       sample_property_types: {
-  {% for sample_property_type in sample_property_types %}
-  {{ sample_property_type.id }}:
-  null,
-  {% endfor %}
-}
+        {% for sample_property_type in sample_property_types %}
+          {{ sample_property_type.id }}: null,
+        {% endfor %}
+      }
 },
 columns: [
   { data: 'name', title: 'Sample Name', type: 'text'},
@@ -949,12 +953,8 @@ columns: [
   { data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', type: 'text'},
   {% endfor %}
 ],
-    colWidths
-:
-$defaultColWidths,
-    afterChange
-:
-function (changes, source) {
+    colWidths : $defaultColWidths,
+    afterChange : function (changes, source) {
   if (source === 'loadData') {//not used now
     // don't save this change
   }
@@ -971,10 +971,9 @@ function (changes, source) {
     //console.log(source);
     //console.log(sample_data);
   }
-}
+    }
 
-})
-;
+  });
 
 //var handsontable = $container.data('handsontable');
 var $handsontable = $container.handsontable('getInstance');

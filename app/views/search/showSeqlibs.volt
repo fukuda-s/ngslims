@@ -211,8 +211,8 @@ $(document).ready(function () {
   $container.handsontable({
     stretchH: 'all',
     height: 400,
-    rowHeaders: true,
-    colWidths: [120, 120, 150, 80, 80, , , , 90, 90, 90],
+    rowHeaders: false,
+    //colWidths: [160, 160, 150, 80, 80, 80, 80, 80, 160, 160, 90],
     columns: [
       { data: "name", title: "Seqlib Name" },
       { data: "sample_name", title: "Sample Name", readOnly: true },
@@ -228,9 +228,14 @@ $(document).ready(function () {
     ],
     minSpareCols: 0,
     minSpareRows: 0,
-    contextMenu: true,
+    contextMenu: false,
     columnSorting: true,
     manualColumnResize: true,
+    manualRowResize: true,
+    autoColumnSize: true,
+    fixedColumnsLeft: 2,
+    currentRowClassName: 'currentRow',
+    autoWrapRow: true,
     /*
     afterChange: function (changes, source) {
       if (source === 'loadData') {

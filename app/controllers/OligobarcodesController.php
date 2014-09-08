@@ -18,51 +18,37 @@ class OligobarcodesController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 // echo "Request was made using POST and AJAX";
-                $protocol_id = $this->request->getPost('protocol_id');
-                //After editing protocol on handsontable, protocol_id is sent by '(protocol_)name' not '(protocol_)id'.
-                //Then protocol_name changed to protocol_id
-                if (!is_numeric($protocol_id)) {
-                    $protocol = Protocols::findFirst(array(
-                        "name = :name:",
-                        'bind' => array(
-                            'name' => $protocol_id
-                        )
-                    ));
-                    $protocol_id = $protocol->id;
-                }
+                $protocol_id = $request->getPost('protocol_id', array('int', 'string'));
 
                 if ($protocol_id == 0) { //Case that requested from editSeqlibs first (before edit protocol on handsontable) Action
-                    $phql = "
-                        SELECT
-                            o.id, o.name, o.barcode_seq, os.is_oligobarcodeB
-                        FROM
-                            Oligobarcodes o
-                                LEFT JOIN
-                            OligobarcodeSchemes os ON os.id = o.oligobarcode_scheme_id
-                                LEFT JOIN
-                            OligobarcodeSchemeAllows osa ON osa.oligobarcode_scheme_id = os.id
-                        WHERE
-                            os.active = 'Y'
-                    ";
-                    $oligobarcodes = $this->modelsManager->executeQuery($phql);
-                } else {
-                    $phql = "
-                        SELECT
-                            o.id, o.name, o.barcode_seq, os.is_oligobarcodeB
-                        FROM
-                            Oligobarcodes o
-                                LEFT JOIN
-                            OligobarcodeSchemes os ON os.id = o.oligobarcode_scheme_id
-                                LEFT JOIN
-                            OligobarcodeSchemeAllows osa ON osa.oligobarcode_scheme_id = os.id
-                        WHERE osa.protocol_id = :protocol_id:
-                        AND os.active = 'Y'
-                    ";
-                    $oligobarcodes = $this->modelsManager->executeQuery($phql, array(
-                        'protocol_id' => $protocol_id
-                    ));
+                    $oligobarcodes = $this->modelsManager->createBuilder()
+                        ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'os.is_oligobarcodeB'))
+                        ->addFrom('Oligobarcodes', 'o')
+                        ->join('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id', 'os')
+                        ->where('o.active = "Y"')
+                        ->andWhere('os.active = "Y"')
+                        ->groupBy('o.id')
+                        ->orderBy('os.id ASC, o.sort_order ASC')
+                        ->getQuery()
+                        ->execute();
+                    echo json_encode($oligobarcodes->toArray());
+                    return;
+                } else if (is_numeric($protocol_id)) {
+                    $oligobarcodes = $this->modelsManager->createBuilder()
+                    ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'os.is_oligobarcodeB'))
+                        ->addFrom('Oligobarcodes', 'o')
+                        ->join('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id', 'os')
+                        ->join('OligobarcodeSchemeAllows', 'osa.oligobarcode_scheme_id = os.id', 'osa')
+                        ->where('o.active = "Y"')
+                        ->andWhere('os.active = "Y"')
+                        ->andWhere('osa.protocol_id = :protocol_id:', array('protocol_id' => $protocol_id))
+                        ->groupBy('o.id')
+                        ->orderBy('os.id ASC, o.sort_order ASC')
+                        ->getQuery()
+                        ->execute();
+                    echo json_encode($oligobarcodes->toArray());
+                    return;
                 }
-                echo json_encode($oligobarcodes->toArray());
             }
         }
     }

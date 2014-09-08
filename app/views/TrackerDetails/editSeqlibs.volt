@@ -169,7 +169,7 @@ $(document).ready(function () {
     rowHeaders: false,
     //colWidths: [160, 160, 150, 80, 80, 80, 80, 80, 160, 160, 90],
     columns: [
-      { data: "sl.id", title: "Seqlib ID" },
+      { data: "sl.id", title: "Seqlib ID", readOnly: true, type: 'numeric' },
       { data: "sl.name", title: "Seqlib Name" },
       { data: "sl.sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer },
       { data: "sl.protocol_id", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer },
@@ -234,8 +234,8 @@ $(document).ready(function () {
 
     },
     afterSelectionEnd: function (r, c, r2, c2) {
-      if (c >= 3 && c <= 4) {
-        var protocol_id = $handsontable.getData(r, 2, r, 2).toString();
+      if (c >= 4 && c <= 5) {
+        var protocol_id = $handsontable.getData(r, 3, r, 3).toString();
         $.ajax({
           url: '{{ url("oligobarcodes/loadjson/") }}',
           dataType: "json",
@@ -246,7 +246,7 @@ $(document).ready(function () {
               getOligobarcodeAr(data);
             });
 
-        console.log(protocol_id);
+        console.log('protocol_id: ' + protocol_id);
       }
     }
   });

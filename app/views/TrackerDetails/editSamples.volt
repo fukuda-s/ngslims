@@ -207,7 +207,7 @@ $(document).ready(function () {
     //colWidths: $defaultColWidths,
     autoColumnSize: true,
     columns: [
-      { data: "id", title: "ID", readOnly: true },
+      { data: "id", title: "ID", type: 'numeric', readOnly: true },
       { data: "name", title: "Sample Name", readOnly: true },
       { data: "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer },
       { data: "organism_id", title: "Organism", readOnly: true, renderer: organismRenderer, source: organismRenderer },
