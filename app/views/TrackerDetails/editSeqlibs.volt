@@ -106,10 +106,10 @@ $(document).ready(function () {
   }
 
   $.ajax({
-    url: '{{ url("oligobarcodes/loadjson/") }}',
+    url: '{{ url("oligobarcodes/loadjson/") ~ step.id }}',
     dataType: "json",
     type: "POST",
-    data: { protocol_id: 0 }
+    data: {}
   })
       .done(function (data, status, xhr) {
         getOligobarcodeAr(data);
@@ -233,9 +233,10 @@ $(document).ready(function () {
       }
 
     },
-    afterSelectionEnd: function (r, c, r2, c2) {
-      if (c >= 4 && c <= 5) {
-        var protocol_id = $handsontable.getData(r, 3, r, 3).toString();
+    afterSelectionByProp: function (r, p, r2, c2) {
+      console.log(p);
+      if (p === 'sl.oligobarcodeA_id' || p === 'sl.oligobarcodeB_id') {
+        var protocol_id = $handsontable.getDataAtRowProp(r, 'sl.protocol_id').toString();
         $.ajax({
           url: '{{ url("oligobarcodes/loadjson/") }}',
           dataType: "json",

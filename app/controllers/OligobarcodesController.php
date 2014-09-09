@@ -9,7 +9,7 @@ class OligobarcodesController extends ControllerBase
         echo "This is index of OligobarcodesController";
     }
 
-    public function loadjsonAction()
+    public function loadjsonAction($step_id = 0)
     {
         $this->view->disable();
         $request = $this->request;
@@ -20,13 +20,16 @@ class OligobarcodesController extends ControllerBase
                 // echo "Request was made using POST and AJAX";
                 $protocol_id = $request->getPost('protocol_id', array('int', 'string'));
 
-                if ($protocol_id == 0) { //Case that requested from editSeqlibs first (before edit protocol on handsontable) Action
+                if ($step_id !== 0) { //Case that requested from editSeqlibs first (before edit protocol on handsontable) Action
                     $oligobarcodes = $this->modelsManager->createBuilder()
                         ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'os.is_oligobarcodeB'))
                         ->addFrom('Oligobarcodes', 'o')
                         ->join('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id', 'os')
+                        ->join('OligobarcodeSchemeAllows', 'osa.oligobarcode_scheme_id = os.id', 'osa')
+                        ->join('Protocols', 'p.id = osa.protocol_id', 'p')
                         ->where('o.active = "Y"')
                         ->andWhere('os.active = "Y"')
+                        ->andWhere('p.step_id = :step_id:', array("step_id" => $step_id))
                         ->groupBy('o.id')
                         ->orderBy('os.id ASC, o.sort_order ASC')
                         ->getQuery()
