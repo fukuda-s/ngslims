@@ -25,10 +25,13 @@ class ProjectsController extends ControllerBase
                 foreach ($projects as $project) {
                     $projects_array[$i]['id'] = $project->id;
                     $projects_array[$i]['name'] = $project->name;
+                    $projects_array[$i]['user_id'] = $project->user_id;
                     $projects_array[$i]['user_name'] = $project->Users->getFullname();
                     if ($project->PIs) {
+                        $projects_array[$i]['pi_user_id'] = $project->pi_user_id;
                         $projects_array[$i]['pi_name'] = $project->PIs->getFullname();
                     } else {
+                        $projects_array[$i]['pi_user_id'] = '';
                         $projects_array[$i]['pi_name'] = 'Undefined';
                     }
                     $projects_array[$i]['project_type_name'] = $project->ProjectTypes->name;

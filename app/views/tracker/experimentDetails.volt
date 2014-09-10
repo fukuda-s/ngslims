@@ -46,11 +46,11 @@
 
 
   {% if user.project_count > 0 %}
-  <div class="panel panel-info">
+  <div class="panel panel-info" id="pi_user_id_{{ user.id }}">
     {% else %}
     <div class="panel panel-default collapse" id="inactives-{{ user.id }}">
       {% endif %}
-      <div class="panel-heading" data-toggle="collapse" data-target="#user_id_{{ user.id }}" id="OwnerList">
+      <div class="panel-heading" data-toggle="collapse" data-target="#list_user_id_{{ user.id }}" id="OwnerList">
         <h4 class="panel-title">
           <div class="row">
             <div class="col-md-8">
@@ -71,7 +71,7 @@
         </h4>
       </div>
       <ul class="list-group">
-        <div id="user_id_{{ user.id }}" class="panel-body panel-collapse collapse">
+        <div id="list_user_id_{{ user.id }}" class="panel-body panel-collapse collapse">
           {{ elements.getTrackerExperimentDetailProjectList( user.id, step.nucleotide_type, step.step_phase_code, step.id ) }}
         </div>
       </ul>

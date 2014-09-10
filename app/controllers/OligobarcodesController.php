@@ -38,13 +38,25 @@ class OligobarcodesController extends ControllerBase
                     return;
                 } else if (is_numeric($protocol_id)) {
                     $oligobarcodes = $this->modelsManager->createBuilder()
-                    ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'os.is_oligobarcodeB'))
+                        ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'os.is_oligobarcodeB'))
                         ->addFrom('Oligobarcodes', 'o')
                         ->join('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id', 'os')
                         ->join('OligobarcodeSchemeAllows', 'osa.oligobarcode_scheme_id = os.id', 'osa')
                         ->where('o.active = "Y"')
                         ->andWhere('os.active = "Y"')
                         ->andWhere('osa.protocol_id = :protocol_id:', array('protocol_id' => $protocol_id))
+                        ->groupBy('o.id')
+                        ->orderBy('os.id ASC, o.sort_order ASC')
+                        ->getQuery()
+                        ->execute();
+                    echo json_encode($oligobarcodes->toArray());
+                    return;
+                } else {
+                    $oligobarcodes = $this->modelsManager->createBuilder()
+                        ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'os.is_oligobarcodeB'))
+                        ->addFrom('Oligobarcodes', 'o')
+                        ->join('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id', 'os')
+                        ->join('OligobarcodeSchemeAllows', 'osa.oligobarcode_scheme_id = os.id', 'osa')
                         ->groupBy('o.id')
                         ->orderBy('os.id ASC, o.sort_order ASC')
                         ->getQuery()

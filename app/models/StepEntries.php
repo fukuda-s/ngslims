@@ -114,6 +114,9 @@ class StepEntries extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->belongsTo('sample_id', 'Samples', 'id');
+        $this->belongsTo('seqlib_id', 'Seqlibs', 'id');
+        $this->belongsTo('seqtemplate_id', 'Seqtemplates', 'id');
         $this->belongsTo('flowcell_id', 'Flowcells', 'id');
 
         $this->addBehavior(new Timestampable(

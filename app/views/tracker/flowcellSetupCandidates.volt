@@ -81,7 +81,7 @@
         </div>
         <div class="panel-group"  style="overflow: auto; height: 400px;">
       {% endif %}
-      {% if seqtemplate.se.id != null and seqtemplate.se.status != 'Completed' %}
+      {% if seqtemplate.se.id != null and seqtemplate.se.status != 'Completed' and seqtemplate.se.status != 'On Hold' %}
         <div class="panel panel-info" id="seqtemplate-panel-{{ seqtemplate.st.id }}" data-toggle="collapse"
              data-target="#seqtemplate-table-{{ seqtemplate.st.id }}" seqtemplate_id="{{ seqtemplate.st.id }}"
              seqtemplate_name="{{ seqtemplate.st.name }}">

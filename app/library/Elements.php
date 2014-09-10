@@ -376,7 +376,7 @@ class Elements extends Phalcon\Mvc\User\Component
                     $sample_count = $this->modelsManager->createBuilder()
                         ->addFrom('Samples', 's')
                         ->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
-                        ->join('StepEntries', 'ste.sample_id = s.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
+                        ->leftJoin('StepEntries', 'ste.sample_id = s.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
                         ->where('s.project_id = :project_id: AND st.nucleotide_type = :nucleotide_type:')
                         ->getQuery()
                         ->execute(array(
@@ -388,7 +388,7 @@ class Elements extends Phalcon\Mvc\User\Component
                 } elseif ($step_phase_code == 'PREP') {
                     $sample_count = $this->modelsManager->createBuilder()
                         ->addFrom('Seqlibs', 'slib')
-                        ->join('StepEntries', 'ste.seqlib_id = slib.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
+                        ->leftJoin('StepEntries', 'ste.seqlib_id = slib.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
                         ->where('slib.project_id = :project_id:')
                         ->getQuery()
                         ->execute(array(

@@ -8,7 +8,9 @@
       <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "Samples") }}</li>
       <li class="active">{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLibs") }}</li>
       {% if type !== 'PREP' %}
+        <!--
         <li>{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLanes") }}</li>
+        -->
       {% endif %}
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
@@ -285,6 +287,7 @@ $(document).ready(function () {
           $toolbar.find("#save").addClass("disabled");
           isDirtyAr = Object(); //Clear isDirtyAr
 
+          loadData(); //Refresh with saved data.
           // Disable alert dialog when this page is saved.
           $(window).off('beforeunload');
         })

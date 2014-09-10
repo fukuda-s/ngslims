@@ -134,7 +134,7 @@ $(document).ready(function () {
     url: '{{ url("oligobarcodes/loadjson/") }}',
     dataType: "json",
     type: "POST",
-    data: { protocol_id: 0 }
+    data: {}
   })
       .done(function (data, status, xhr) {
         getOligobarcodeAr(data);

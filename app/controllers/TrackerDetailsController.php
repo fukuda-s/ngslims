@@ -318,21 +318,48 @@ class TrackerdetailsController extends ControllerBase
                             }
 
                             if ($colNameToChange === 'protocol_id') {
-                                $seqlib_protocol = Protocols::findFirstByName($valueChangeTo);
-                                $seqlib_step = Steps::findFirstById($seqlib_protocol->step_id);
+                                if (is_numeric($valueChangeTo)) {
+                                    $seqlib_protocol = Protocols::findFirstById($valueChangeTo);
+                                    if (!$seqlib_protocol) {
+                                        $this->flashSession->error("Couldn't found Protocol by \"" . $valueChangeTo . "\"");
+                                        return FALSE;
+                                    }
+
+                                    $seqlib_step = Steps::findFirstById($seqlib_protocol->step_id);
+                                    if (!$seqlib_step) {
+                                        $this->flashSession->error("Couldn't found Experimental Step by " . $valueChangeTo);
+                                        return FALSE;
+                                    }
+
+                                } else {
+                                    $seqlib_protocol = Protocols::findFirstByName($valueChangeTo);
+                                    if (!$seqlib_protocol) {
+                                        $this->flashSession->error("Couldn't found Protocol by \"" . $valueChangeTo . "\"");
+                                        return FALSE;
+                                    }
+
+                                    $seqlib_step = Steps::findFirstById($seqlib_protocol->step_id);
+                                    if (!$seqlib_step) {
+                                        $this->flashSession->error("Couldn't found Experimental Step by " . $valueChangeTo);
+                                        return FALSE;
+                                    }
+                                }
+
 
                                 $seqlib->protocol_id = $seqlib_protocol->id;
                                 $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
                                 $seqlib_step_entries->step_phase_code = $seqlib_step->step_phase_code;; //Should be 'PREP'
                                 $seqlib_step_entries->protocol_id = $seqlib_protocol->id;
 
+
                             } elseif (preg_match("/^oligobarcode[AB]_id$/", $colNameToChange, $columnName)) {
                                 $oligobarcodeStr = preg_split("/ : /", $valueChangeTo);
-                                if (count($oligobarcodeStr) > 1) { //Case if oligobarcode_id selected null (then $valueToChange should be blank).
+                                $oligobarcodeABSeq = preg_split("/-/", $valueChangeTo);
+                                if (count($oligobarcodeStr) > 1) { //Case if oligobarcode_id selected from dropdown (then $valueToChange should be "<barcode_name : barcode_seq>" ex) AD001 : ATCACG ).
                                     $oligobarcode_name = $oligobarcodeStr[0];
                                     $oligobarcode_seq = $oligobarcodeStr[1];
                                     $oligobarcode = Oligobarcodes::findFirst(array(
-                                        "name = :name: AND barcode_seq = :barcode_seq:",
+                                        "name = :name: AND barcode_seq = :barcode_seq: AND active = 'Y'",
                                         'bind' => array(
                                             'name' => $oligobarcode_name,
                                             'barcode_seq' => $oligobarcode_seq
@@ -340,8 +367,38 @@ class TrackerdetailsController extends ControllerBase
                                     ));
 
                                     $seqlib->$columnName[0] = $oligobarcode->id;
-                                } else {
-                                    $seqlib->$columnName[0] = null;
+
+                                } else if (count($oligobarcodeABSeq) > 1) { //Case if oligobarcodeA/B is direct inputted (then $valueToChange should be "<oligobarcodeA_seq-oligobarcodeB_seq>" ex) TAAGGCGA-TAGATCGC).
+                                    $oligobarcodeA_seq = $oligobarcodeABSeq[0];
+                                    $oligobarcodeA = Oligobarcodes::findFirst(array(
+                                        "barcode_seq = :barcode_seq: AND active = 'Y'",
+                                        'bind' => array(
+                                            'barcode_seq' => $oligobarcodeA_seq
+                                        )
+                                    ));
+
+                                    $oligobarcodeB_seq = $oligobarcodeABSeq[1];
+                                    $oligobarcodeB = Oligobarcodes::findFirst(array(
+                                        "barcode_seq = :barcode_seq: AND active = 'Y'",
+                                        'bind' => array(
+                                            'barcode_seq' => $oligobarcodeB_seq
+                                        )
+                                    ));
+
+                                    $seqlib->oligobarcodeA_id = $oligobarcodeA->id;
+                                    $seqlib->oligobarcodeB_id = $oligobarcodeB->id;
+
+                                } else { //Case if oligobarcode_id is direct inputted (then $valueToChange should be "<barcode_name>" or "<barcode_seq>" ex) AD001 or ATCACG ).
+                                    $oligobarcode_name = $oligobarcodeStr[0];
+                                    $oligobarcode_seq = $oligobarcodeStr[0];
+                                    $oligobarcode = Oligobarcodes::findFirst(array(
+                                        "( name = :name: OR barcode_seq = :barcode_seq: ) AND active = 'Y'",
+                                        'bind' => array(
+                                            'name' => $oligobarcode_name,
+                                            'barcode_seq' => $oligobarcode_seq
+                                        )
+                                    ));
+                                    $seqlib->$columnName[0] = $oligobarcode->id;
                                 }
                             } elseif ($tblNameToChange === 'se') { //'se' is alias of StepEntries on SeqlibsController->loadjson()
                                 $seqlib_step_entries->$colNameToChange = $valueChangeTo;
@@ -437,6 +494,7 @@ class TrackerdetailsController extends ControllerBase
                 $step_id = $this->request->getPost("step_id", "int");
                 $project_id = $this->request->getPost("project_id", "int");
 
+                /*
                 $phql = "
                     SELECT
                         sl . *,
@@ -476,6 +534,26 @@ class TrackerdetailsController extends ControllerBase
                     'project_id' => $project_id,
                     'step_id' => $step_id
                 ));
+                */
+
+                $seqlibs = $this->modelsManager->createBuilder()
+                    ->columns(array('sl.*', 'se.*', 'pt.*', 'r.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*'))
+                    ->addFrom('Seqlibs', 'sl')
+                    ->join('Samples', 's.id = sl.sample_id', 's')
+                    ->join('Requests', 'r.id = s.request_id', 'r')
+                    ->leftJoin('SeqRunTypeSchemes', 'r.seq_run_type_scheme_id = srts.id', 'srts')
+                    ->leftJoin('InstrumentTypes', 'it.id = srts.instrument_type_id', 'it')
+                    ->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
+                    ->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
+                    ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
+                    ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
+                    ->leftJoin('Protocols', 'pt.id = sl.protocol_id', 'pt')
+                    ->leftJoin('Steps', 'st.step_phase_code = pt.next_step_phase_code', 'st')
+                    ->where('sl.project_id = :project_id:', array("project_id" => $project_id))
+                    ->andWhere('st.id = :step_id:', array("step_id" => $step_id))
+                    ->orderBy('sl.name ASC')
+                    ->getQuery()
+                    ->execute();
 
                 $this->view->setVar('seqlibs', $seqlibs);
             }

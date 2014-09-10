@@ -10,7 +10,9 @@
       {% if type !== 'QC' %}
         <li>{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLibs") }}</li>
         {% if type !== 'PREP' %}
+          <!--
           <li>{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLanes") }}</li>
+          -->
         {% endif %}
       {% endif %}
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
@@ -177,10 +179,11 @@ $(document).ready(function () {
     "sample_property_type_id_{{ sample_property_type.id }}",
     {% endfor %}
   ];
-  var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 160, 80, 110
+  //var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 160, 80, 110
+  var $defaultColWidths = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
     {% for sample_property_type in sample_property_types %}
     {% if sample_property_type.sample_count > 0 %}
-    , 120
+    , ''
     {% else %}
     , 0.1
     {% endif %}
@@ -189,7 +192,7 @@ $(document).ready(function () {
     , 80, 150
     {% endif %}
   ];
-  var $samplePropertyTypesColumnsStartIdx = 14; //@TODO First index number(begin by 0) of sample_property_types
+  var $samplePropertyTypesColumnsStartIdx = 15; //@TODO First index number(begin by 0) of sample_property_types
   $container.handsontable({
     stretchH: 'all',
     height: 500,
@@ -292,6 +295,26 @@ $(document).ready(function () {
             value["to_prep_protocol_name"] = '';
           });
           $handsontable.loadData(data);
+
+          var changedColWidths = $defaultColWidths;
+          console.log(changedColWidths);
+
+          //Set column width of SamplePropertyTypes to 0.1 (not shown) or '' (auto column width) if sample has SampleProperty.
+          $('#sample_property_types').children('option').each(function (index, domEle) {
+            var actualColWidthIdx = index + $samplePropertyTypesColumnsStartIdx;
+            if ($(domEle).attr('selected')) {
+              changedColWidths[actualColWidthIdx] = '';
+            } else {
+              changedColWidths[actualColWidthIdx] = 0.1;
+            }
+          });
+          //Set session value for sample_property_types checked of checked/unchecked.
+          //setOrderSessionVal('sample_property_types_checked', 0, $samplePropertyTypesChecked);
+          //console.log($samplePropertyTypesChecked);
+
+          //Change column width (Show checked sample_property_types column) on handsontable.
+          $handsontable.updateSettings({'colWidths': changedColWidths});
+          console.log(changedColWidths);
         });
   }
 
@@ -311,6 +334,7 @@ $(document).ready(function () {
           $toolbar.find("#save").addClass("disabled");
           isDirtyAr = Object(); //Clear isDirtyAr
 
+          loadData(); //Refresh with saved data.
           // Disable alert dialog when this page is saved.
           $(window).off('beforeunload');
         })
@@ -389,7 +413,7 @@ $(document).ready(function () {
         if ($samplePropertyTypesColumns[i] == element.val()) {
           //console.log($samplePropertyTypesColumns[i] + " : " + element.val());
           if (checked == true) {
-            changedColWidths[actualColWidthIdx] = 120;
+            changedColWidths[actualColWidthIdx] = "";
           } else {
             changedColWidths[actualColWidthIdx] = 0.1;
           }
