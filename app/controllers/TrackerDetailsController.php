@@ -494,48 +494,6 @@ class TrackerdetailsController extends ControllerBase
                 $step_id = $this->request->getPost("step_id", "int");
                 $project_id = $this->request->getPost("project_id", "int");
 
-                /*
-                $phql = "
-                    SELECT
-                        sl . *,
-                        se . *,
-                        pt . *,
-                        r . *,
-                        it . *,
-                        srmt . *,
-                        srrt . *,
-                        srct . *
-                    FROM
-                        Seqlibs sl
-                            LEFT JOIN
-                        Samples s ON sl.sample_id = s.id
-                            LEFT JOIN
-                        Requests r ON r.id = s.request_id
-                            LEFT JOIN
-                        SeqRunTypeSchemes srts ON r.seq_run_type_scheme_id = srts.id
-                            LEFT JOIN
-                        InstrumentTypes it ON it.id = srts.instrument_type_id
-                            LEFT JOIN
-                        SeqRunmodeTypes srmt ON srmt.id = srts.seq_runmode_type_id
-                            LEFT JOIN
-                        SeqRunreadTypes srrt ON srrt.id = srts.seq_runread_type_id
-                            LEFT JOIN
-                        SeqRuncycleTypes srct ON srct.id = srts.seq_runcycle_type_id
-                            LEFT JOIN
-                        StepEntries se ON se.seqlib_id = sl.id
-                            LEFT JOIN
-                        Protocols pt ON pt.id = sl.protocol_id
-                            LEFT JOIN
-                        Steps st ON st.step_phase_code = pt.next_step_phase_code
-                    WHERE
-                        sl.project_id = :project_id: AND st.id = :step_id:
-                ";
-                $seqlibs = $this->modelsManager->executeQuery($phql, array(
-                    'project_id' => $project_id,
-                    'step_id' => $step_id
-                ));
-                */
-
                 $seqlibs = $this->modelsManager->createBuilder()
                     ->columns(array('sl.*', 'se.*', 'pt.*', 'r.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*'))
                     ->addFrom('Seqlibs', 'sl')
