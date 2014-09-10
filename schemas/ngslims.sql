@@ -259,6 +259,7 @@ DROP TABLE IF EXISTS `projects`;
 CREATE TABLE `projects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
+  `project_code` char(4) DEFAULT NULL,
   `lab_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `pi_user_id` int(11) NOT NULL,
@@ -267,6 +268,7 @@ CREATE TABLE `projects` (
   `description` varchar(255) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `project_code_UNIQUE` (`project_code`),
   KEY `fk_projects_labs_idx` (`lab_id`),
   KEY `fk_projects_users_idx` (`user_id`),
   KEY `fk_projects_project_types_idx` (`project_type_id`),
@@ -397,9 +399,11 @@ CREATE TABLE `sample_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `nucleotide_type` varchar(45) NOT NULL,
+  `sample_type_code` char(3) DEFAULT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `sample_type_code_UNIQUE` (`sample_type_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -793,4 +797,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-08-25 15:19:55
+-- Dump completed on 2014-09-09 15:22:44
