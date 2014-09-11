@@ -50,6 +50,12 @@
           </tr>
           </thead>
           <tbody id="seqtemplate-matrix-body">
+          <tr id="oligobarcodeA_id_null">
+            <td class="tube tube-sm tube-sm-header sort-disabled">No Barcode</td>
+            {% for index in 1..seqtemplates|length %}
+              <td class="tube tube-sm tube-empty"></td>
+            {% endfor %}
+          </tr>
         {% endif %}
         <tr id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}">
           <td class="tube tube-sm tube-sm-header sort-disabled">{{ oligobarcodeA.o.name }}
@@ -60,10 +66,12 @@
               {% if seqlib.se.status == 'Completed' %}
                 <td class="tube tube-sm tube-active" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
                   <button type="button" class="close pull-right">&times;</button>
+                  <button type="button" class="copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i></button>
                 </td>
               {% else %}
                 <td class="tube tube-sm tube-inactive" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
                   <button type="button" class="close pull-right">&times;</button>
+                  <button type="button" class="copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i></button>
                 </td>
               {% endif %}
             {% else %}
@@ -106,11 +114,13 @@
                   <td class="tube tube-sm tube-active sort-disabled"
                       id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
                     <button type="button" class="close pull-right">&times;</button>
+                    <button type="button" class="copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i></button>
                   </td>
                 {% else %}
                   <td class="tube tube-sm tube-inactive sort-disabled"
                       id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
                     <button type="button" class="close pull-right">&times;</button>
+                    <button type="button" class="copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i></button>
                   </td>
                 {% endif %}
               {% else %}
@@ -144,8 +154,12 @@
      */
     $('tr[id^=oligobarcodeA_id_]').sortable({
       items: "td:not(.sort-disabled)",
-      placeholder: "tube-placeholder",
+      //placeholder: "tube-placeholder",
       opacity: 0.5,
+      axis: "x",
+      //revert: true,
+      tolerance: "point",
+      cursorAt: { left: 10 },
       receive: function (event, ui) {
         // Append close button on sorted seqlib tube
         ui.item.append('<button type="button" class="close pull-right">&times;</button>');
@@ -247,7 +261,7 @@
           if (!seqlibs[seqtemplate_index]) {
             seqlibs[seqtemplate_index] = new Object();
           }
-          if ( $(this).is('td[id^=seqlib_id_]') ){
+          if ($(this).is('td[id^=seqlib_id_]')) {
             var seqlib_id = $(this).attr('id').replace('seqlib_id_', '');
             seqlibs[seqtemplate_index][seqlib_id] = {seqlib_id: seqlib_id, oligobarcodeA_id: oligobarcodeA_id, seqtemplate_index: seqtemplate_index};
           }
@@ -287,12 +301,12 @@
     });
 
     $('#add-seqtemplate-button').click(function () {
-      $('#seqtemplate-matrix-header').find('th[id^=seqtemplate_index_]').filter(':last').html( function(){
-        var new_seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_','');
+      $('#seqtemplate-matrix-header').find('th[id^=seqtemplate_index_]').filter(':last').html(function () {
+        var new_seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_', '');
         new_seqtemplate_index++;
 
         //Add new column header with new_seqtemplate_index.
-        $(this).after('<th id="seqtemplate_index_'+new_seqtemplate_index+'" class="tube tube-sm-header">'+new_seqtemplate_index+'</th>');
+        $(this).after('<th id="seqtemplate_index_' + new_seqtemplate_index + '" class="tube tube-sm-header">' + new_seqtemplate_index + '</th>');
         console.log(this);
       })
       $('#seqtemplate-matrix-body').find('tr').each(function () {

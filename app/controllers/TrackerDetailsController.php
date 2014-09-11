@@ -495,7 +495,7 @@ class TrackerdetailsController extends ControllerBase
                 $project_id = $this->request->getPost("project_id", "int");
 
                 $seqlibs = $this->modelsManager->createBuilder()
-                    ->columns(array('sl.*', 'se.*', 'pt.*', 'r.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*'))
+                    ->columns(array('sl.*', 'se.*', 'pt.*', 'r.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'COUNT(sta.id) AS sta_count'))
                     ->addFrom('Seqlibs', 'sl')
                     ->join('Samples', 's.id = sl.sample_id', 's')
                     ->join('Requests', 'r.id = s.request_id', 'r')
@@ -507,8 +507,10 @@ class TrackerdetailsController extends ControllerBase
                     ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
                     ->leftJoin('Protocols', 'pt.id = sl.protocol_id', 'pt')
                     ->leftJoin('Steps', 'st.step_phase_code = pt.next_step_phase_code', 'st')
+                    ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
                     ->where('sl.project_id = :project_id:', array("project_id" => $project_id))
                     ->andWhere('st.id = :step_id:', array("step_id" => $step_id))
+                    ->groupBy('sl.id')
                     ->orderBy('sl.name ASC')
                     ->getQuery()
                     ->execute();

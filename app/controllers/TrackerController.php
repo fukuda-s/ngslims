@@ -364,9 +364,37 @@ class TrackerController extends ControllerBase
         //var_dump($selected_seqlibs);
         $this->view->setVar('selected_seqlibs', $selected_seqlibs);
 
+        /*
+         * Find today's last seqtemplate name (ex. INDEX20140312-001)
+         */
+        $seqtemplate_prefix = 'INDEX' . date('Ymd');
+        $prev_seqtemplates = Seqtemplates::find(array(
+            'conditions' => "name LIKE :name:",
+            'bind' => array(
+                'name' => $seqtemplate_prefix . '%'
+            ),
+            'order' => 'name'
+        ));
+
+        $prev_seqtemplate_last = $prev_seqtemplates->getLast();
+        $prev_seqtemplate_serial = 0;
+        if ($prev_seqtemplate_last) {
+            $prev_seqtemplate_serial_array = preg_split('/-/', $prev_seqtemplate_last->name);
+            if (count($prev_seqtemplate_serial_array) > 1) {
+                $prev_seqtemplate_serial = end($prev_seqtemplate_serial_array);
+            }
+        }
+
         $seqlibs = array();
         $oligobarcodes = array();
+        $seqtemplate_serial = $prev_seqtemplate_serial;
         foreach ($selected_seqtemplates as $selected_seqtemplate_index) {
+            $seqtemplate_serial++;
+            $seqtemplate_serial_str = sprintf("%03d", $seqtemplate_serial);
+            $seqtemplate_name = $seqtemplate_prefix . '-' . $seqtemplate_serial_str;
+            $seqtemplate_name_selector = 'seqtemplate_name-' . $selected_seqtemplate_index;
+            Tag::setDefault($seqtemplate_name_selector, $seqtemplate_name);
+
             if (isset($selected_seqlibs[$selected_seqtemplate_index])) {
                 foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
                     $seqlibs[$selected_seqlib['seqlib_id']] = Seqlibs::findFirstById($selected_seqlib['seqlib_id']);
@@ -390,48 +418,29 @@ class TrackerController extends ControllerBase
         $step = Steps::findFirst($step_id);
         $step_phase_code = $step->step_phase_code;
 
-        /*
-         * Find today's last seqtemplate name (ex. INDEX20140312-001)
-         */
-        $seqtemplate_prefix = 'INDEX' . date('Ymd');
-        $prev_seqtemplates = Seqtemplates::find(array(
-            'conditions' => "name LIKE :name:",
-            'bind' => array(
-                'name' => $seqtemplate_prefix . '%'
-            ),
-            'order' => 'name'
-        ));
-
-        $prev_seqtemplate_last = $prev_seqtemplates->getLast();
-        $prev_seqtemplate_serial = 0;
-        if ($prev_seqtemplate_last) {
-            $prev_seqtemplate_serial_array = preg_split('/-/', $prev_seqtemplate_last->name);
-            if (count($prev_seqtemplate_serial_array) > 1) {
-                $prev_seqtemplate_serial = end($prev_seqtemplate_serial_array);
-            }
-        }
-
 
         /*
          * Save Seqtemplates, SeqtemplateAssocs and Seqlibs
          */
         $selected_seqtemplates = $this->session->get('seqtemplates');
         $selected_seqlibs = $this->session->get('indexedSeqlibs');
-        $seqtemplate_serial = $prev_seqtemplate_serial;
         foreach ($selected_seqtemplates as $selected_seqtemplate_index) {
-            $seqtemplate_serial++;
-            $seqtemplate_serial_str = sprintf("%03d", $seqtemplate_serial);
 
             $seqtemplate = new Seqtemplates();
-            $seqtemplate->name = $seqtemplate_prefix . '-' . $seqtemplate_serial_str;
-            $seqtemplate->target_conc = $request->getPost('target_conc-' . $selected_seqtemplate_index);
-            $seqtemplate->target_vol = $request->getPost('target_vol-' . $selected_seqtemplate_index);
-            $seqtemplate->target_dw_vol = $request->getPost('dw_for_dilution_vol-' . $selected_seqtemplate_index);
-            $seqtemplate->final_dw_vol = $request->getPost('added_dw_vol-' . $selected_seqtemplate_index);
-            $seqtemplate->initial_vol = $request->getPost('library_vol_total-' . $selected_seqtemplate_index);
-            $seqtemplate->initial_conc = $request->getPost('seqtemplate_initial_conc-' . $selected_seqtemplate_index);
-            $seqtemplate->final_vol = $request->getPost('seqtemplate_final_vol-' . $selected_seqtemplate_index);
-            $seqtemplate->final_conc = $request->getPost('seqtemplate_final_conc-' . $selected_seqtemplate_index);
+            $seqtemplate->name = $request->getPost('seqtemplate_name-' . $selected_seqtemplate_index);
+
+            $calculator_used = $request->getPost('calculator_used-' . $selected_seqtemplate_index);
+
+            if ((int)$calculator_used === 1) {
+                $seqtemplate->target_conc = $request->getPost('target_conc-' . $selected_seqtemplate_index);
+                $seqtemplate->target_vol = $request->getPost('target_vol-' . $selected_seqtemplate_index);
+                $seqtemplate->target_dw_vol = $request->getPost('dw_for_dilution_vol-' . $selected_seqtemplate_index);
+                $seqtemplate->final_dw_vol = $request->getPost('added_dw_vol-' . $selected_seqtemplate_index);
+                $seqtemplate->initial_vol = $request->getPost('library_vol_total-' . $selected_seqtemplate_index);
+                $seqtemplate->initial_conc = $request->getPost('seqtemplate_initial_conc-' . $selected_seqtemplate_index);
+                $seqtemplate->final_vol = $request->getPost('seqtemplate_final_vol-' . $selected_seqtemplate_index);
+                $seqtemplate->final_conc = $request->getPost('seqtemplate_final_conc-' . $selected_seqtemplate_index);
+            }
 
             $seqtemplate_step_entries = array();
             $seqtemplate_step_entries[0] = new StepEntries;
@@ -443,7 +452,9 @@ class TrackerController extends ControllerBase
             $seqtemplate_assocs = array();
             foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
                 $seqlib = Seqlibs::findFirstById($selected_seqlib['seqlib_id']);
-                $seqlib->oligobarcodeA_id = $selected_seqlib['oligobarcodeA_id'];
+                if ($selected_seqlib['oligobarcodeA_id'] !== 'null'){
+                    $seqlib->oligobarcodeA_id = $selected_seqlib['oligobarcodeA_id'];
+                }
                 if (!empty($selected_seqlib['oligobarcodeB_id'])) {
                     $seqlib->oligobarcodeB_id = $selected_seqlib['oligobarcodeB_id'];
                 }
@@ -456,7 +467,9 @@ class TrackerController extends ControllerBase
                 $seqtemplate_assocs[$index] = new SeqtemplateAssocs();
                 $seqtemplate_assocs[$index]->seqlib_id = $seqlib->id;
                 $seqtemplate_assocs[$index]->conc_factor = $request->getPost('seqlib_conc_factor-' . $seqlib->id);
-                $seqtemplate_assocs[$index]->input_vol = $request->getPost('seqlib_input_vol-' . $seqlib->id);
+                if ((int)$calculator_used === 1) {
+                    $seqtemplate_assocs[$index]->input_vol = $request->getPost('seqlib_input_vol-' . $seqlib->id);
+                }
 
                 $index++;
             }
@@ -628,6 +641,20 @@ class TrackerController extends ControllerBase
                     if (array_key_exists("seqtemplate_id", $seqlane)) {
                         $seqtemplate_id = $this->filter->sanitize($seqlane["seqtemplate_id"], array("int"));
                         $seqlanes_model[$index]->seqtemplate_id = $seqtemplate_id;
+
+                        $seqtemplate_step_entries = StepEntries::find(array(
+                            "seqtemplate_id = :seqtemplate_id",
+                            "bind" => array(
+                                "seqtemplate_id" => $seqtemplate_id
+                            )
+                        ));
+                        $seqtemplate_step_entries->status = 'Completed';
+                        if (!$seqtemplate_step_entries->save()) {
+                            foreach ($seqtemplate_step_entries->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
+                            }
+                            $this->flashSession->error("Seqtemplate " . $seqtemplate_step_entries->Seqtemplates->name . " is not saved.");
+                        }
                     }
 
                     if (array_key_exists("control_id", $seqlane)) {
@@ -764,7 +791,7 @@ class TrackerController extends ControllerBase
             'instrument_type_id' => $instrument_type_id
         ));
 
-        if(count($flowcells) < 1) {
+        if (count($flowcells) < 1) {
             $this->flash->error("Any flowcells for " . $instrument_type->name . " does not available. Please set up flowcells before set up sequencing run.");
         }
 
@@ -967,7 +994,7 @@ class TrackerController extends ControllerBase
                 $seqlanes = $flowcell->Seqlanes;
                 $seqlane_model = array();
                 $index = 0;
-                foreach ( $seqlanes as $seqlane) {
+                foreach ($seqlanes as $seqlane) {
                     $seqlane_id = $seqlane->id;
                     $seqlane_model[$index] = Seqlanes::findFirst($seqlane_id);
                     $seqlane_model[$index]->first_cycle_date = $run_started_date;

@@ -2,18 +2,40 @@
 
 <form class="form-horizontal" role="form" action="{{ url("tracker/multiplexSave/" ~ step_id ) }}" method="POST">
   {% for selected_seqtemplate_index in selected_seqtemplates %}
-    <div class="panel panel-default">
-      <div class="panel-heading">#{{ selected_seqtemplate_index }}</div>
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <div class="form-inline">
+          <div class="input-group">
+            <div class="input-group-addon">#{{ selected_seqtemplate_index }}</div>
+            {{ text_field('seqtemplate_name-' ~ selected_seqtemplate_index, 'class': "form-control") }}
+          </div>
+          <div class="pull-right">
+            <label>Calculator&nbsp;<i class="fa fa-calculator"></i></label>
+            <div class="btn-group btn-toggle">
+              <button type="button" class="btn btn-default btn-sm" data-toggle="collapse"
+                      data-target="#calculator-{{ selected_seqtemplate_index }}">ON
+              </button>
+              <button type="button" class="btn btn-success btn-sm active" data-toggle="collapse"
+                      data-target="#calculator-{{ selected_seqtemplate_index }}">OFF
+              </button>
+            </div>
+            <input type="hidden" id="calculator_used-{{ selected_seqtemplate_index }}"
+                   name="calculator_used-{{ selected_seqtemplate_index }}" value="0">
+          </div>
+        </div>
+      </div>
       {% if selected_seqlibs[selected_seqtemplate_index] is defined %}
         {% for selected_seqlib in selected_seqlibs[selected_seqtemplate_index] %}
           {% if loop.first %}
-            <div class="panel-body">
+            <div class="panel-body collapse" id="calculator-{{ selected_seqtemplate_index }}">
+              <!--
               <div class="form-group">
                 <label for="multiplex-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Multiplex</label>
                 <div class="col-sm-10">
                   <p class="form-control-static" id="multiplex-{{ selected_seqtemplate_index }}">{{ loop.length }}</p>
                 </div>
               </div>
+              -->
               <div class="form-group">
                 <label for="target_conc-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Target Conc.
                   (nM)</label>
@@ -110,9 +132,14 @@
             <tbody>
           {% endif %}
           {% set seqlib = seqlibs[selected_seqlib['seqlib_id']] %}
-          {% set oligobarcodeA = oligobarcodes[selected_seqlib['oligobarcodeA_id']] %}
-          {% set oligobarcodeName = oligobarcodeA.name %}
-          {% set oligobarcodeSeq = oligobarcodeA.barcode_seq %}
+          {% if selected_seqlib['oligobarcodeA_id'] === 'null' %}
+            {% set oligobarcodeName = 'No Barcode' %}
+            {% set oligobarcodeSeq = '' %}
+          {% else %}
+            {% set oligobarcodeA = oligobarcodes[selected_seqlib['oligobarcodeA_id']] %}
+            {% set oligobarcodeName = oligobarcodeA.name %}
+            {% set oligobarcodeSeq = oligobarcodeA.barcode_seq %}
+          {% endif %}
           {% if selected_seqlib['oligobarcodeB_id'] is defined %}
             {% set oligobarcodeB = oligobarcodes[selected_seqlib['oligobarcodeB_id']] %}
             {% set oligobarcodeName = oligobarcodeName ~ '-' ~ oligobarcodeB.name %}
@@ -146,6 +173,9 @@
   </div>
 </form>
 <script>
+  /*
+   * Functions for the calculator.
+   */
   function calcTargetTotalMol(selected_seqtemplate_index) {
     var target_conc = parseFloat($('input#target_conc-' + selected_seqtemplate_index).val());
     var target_vol = parseFloat($('input#target_vol-' + selected_seqtemplate_index).val());
@@ -216,6 +246,43 @@
   }
 
   $(document).ready(function () {
+
+    /*
+     * Function for the calculator on/off button.
+     */
+    $('.btn-toggle').click(function () {
+      $(this).find('.btn').toggleClass('active');
+
+      if ($(this).find('.btn-primary').size() > 0) {
+        $(this).find('.btn').toggleClass('btn-primary');
+      }
+      if ($(this).find('.btn-danger').size() > 0) {
+        $(this).find('.btn').toggleClass('btn-danger');
+      }
+      if ($(this).find('.btn-success').size() > 0) {
+        $(this).find('.btn').toggleClass('btn-success');
+      }
+      if ($(this).find('.btn-info').size() > 0) {
+        $(this).find('.btn').toggleClass('btn-info');
+      }
+
+      $(this).find('.btn').toggleClass('btn-default');
+
+    });
+
+    $('[id^=calculator-]').each(function () {
+      var selected_seqtemplate_index = $(this).attr('id').split('-').pop();
+      $(this).on('hidden.bs.collapse', function () {
+        $("#calculator_used-" + selected_seqtemplate_index).val("0")
+      });
+      $(this).on('shown.bs.collapse', function () {
+        $("#calculator_used-" + selected_seqtemplate_index).val("1")
+      });
+    });
+
+    /*
+     * Calculator
+     */
     $('[id^=multiplex-]').each(function () {
       var selected_seqtemplate_index = $(this).attr('id').split('-').pop();
       var target_total_mol = calcTargetTotalMol(selected_seqtemplate_index);

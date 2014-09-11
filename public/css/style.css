@@ -75,10 +75,12 @@ table td.dup_b {
   font-size: 10px;
   line-height: 1.4;
   text-align: center;
+  vertical-align: middle !important;
   display: block;
 }
 
 .tube-sm-header {
+  font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
   text-align: center;
   background-color: #ffffff;
 }
@@ -96,8 +98,8 @@ table td.dup_b {
 }
 
 td.tube-sm {
-  font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
   display: table-cell;
+  line-height: 21px !important;
 }
 
 @media (min-width: 768px) {
@@ -117,6 +119,7 @@ td.tube-sm {
 
   .tube-sm-header {
     font-weight: bold;
+    min-width: 90px;
   }
 }
 
@@ -146,8 +149,8 @@ td.tube-sm {
 }
 
 .tube-placeholder {
-  border-color: #dcdeba;
-  background-color: #fffec9;
+  border-color: #dcdeba !important;
+  background-color: #fffec9 !important;
 }
 
 .tube-empty {
@@ -327,4 +330,34 @@ td > .form-inline > .form-group {
 
 .handsontable .currentCol {
   background-color: #F9F9FB;
+}
+
+/*
+ * Custom style for copy button (modify of close button style of bootstrap3)
+ */
+.copy {
+  float: right;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  filter: alpha(opacity=20);
+  opacity: .2;
+}
+.copy:hover,
+.copy:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  filter: alpha(opacity=50);
+  opacity: .5;
+}
+button.copy {
+  -webkit-appearance: none;
+  padding: 4px 8px 0px 0px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  vertical-align: middle !important;
 }
