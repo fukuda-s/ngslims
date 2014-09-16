@@ -31,6 +31,7 @@ table td.dup_b {
   background-color: #D5D3BD;
 }
 
+
 /*
  * Custom style tube
  */
@@ -59,7 +60,7 @@ ul.tube-list {
 
 .tube-header-list {
   padding-left: 0;
-  display: table-row;
+  display: table-header-group;
   list-style: none
 }
 
@@ -83,13 +84,16 @@ ul.tube-list {
 }
 
 .tube-sm-header {
-  min-width: 200px;
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
   border-radius: 0px;
   text-align: center;
   display: inline-block;
   background-color: #ffffff;
   margin: 1px 1px 1px 1px;
+}
+
+.tube-sm-row-header {
+  min-width: 200px;
 }
 
 .tube-heading {
@@ -100,7 +104,7 @@ ul.tube-list {
 }
 
 ul.tube-list > li.tube-sm {
-  min-width: 200px;
+
   display: inline-block;
   line-height: 18px !important;
 }
@@ -121,7 +125,6 @@ ul.tube-list > li.tube-sm {
 
   .tube-sm-header {
     font-weight: bold;
-    min-width: 200px;
   }
 }
 
