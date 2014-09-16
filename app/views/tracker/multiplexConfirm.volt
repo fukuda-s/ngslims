@@ -2,6 +2,7 @@
 
 <form class="form-horizontal" role="form" action="{{ url("tracker/multiplexSave/" ~ step_id ) }}" method="POST">
   {% for selected_seqtemplate_index in selected_seqtemplates %}
+    {% if selected_seqlibs[selected_seqtemplate_index] is defined %}
     <div class="panel panel-success">
       <div class="panel-heading">
         <div class="form-inline">
@@ -24,7 +25,6 @@
           </div>
         </div>
       </div>
-      {% if selected_seqlibs[selected_seqtemplate_index] is defined %}
         {% for selected_seqlib in selected_seqlibs[selected_seqtemplate_index] %}
           {% if loop.first %}
             <div class="panel-body collapse" id="calculator-{{ selected_seqtemplate_index }}">
