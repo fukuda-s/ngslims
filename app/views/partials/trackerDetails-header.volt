@@ -5,12 +5,10 @@
     {% if project.PIs is empty %}
       <li>(Undefined PI)</li>
     {% else %}
-      <li>{{ project.PIs.getFullname() }}</li>
+      <li>{{ linkTo("summary/projectPi#pi_user_id_" ~ project.PIs.id , project.PIs.getFullname() ) }}</li>
     {% endif %}
     <li class="active">{{ project.name }}</li>
   </ol>
-  <div
-      align="left">{{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre=" ~ previousAction, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
 {% else %}
   <ol class="breadcrumb">
     <li>{{ link_to("tracker", "Tracker") }}</li>

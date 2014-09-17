@@ -2,16 +2,7 @@
 
 <div class="row">
   <div class="col-md-12">
-    <ol class="breadcrumb">
-      <li>{{ link_to("tracker", "Tracker") }}</li>
-      <li>{{ link_to("summary/" ~ previousAction, "Project Overview") }}</li>
-      {% if project.PIs is empty %}
-        <li>(Undefined PI)</li>
-      {% else %}
-        <li>{{ project.PIs.getFullname() }}</li>
-      {% endif %}
-      <li class="active">{{ project.name }}</li>
-    </ol>
+    {{ partial('partials/trackerdetails-header') }}
     <div
         align="right">{{ link_to("trackerdetails/editSamples/SHOW/0/" ~ project.id ~ "?pre=" ~ previousAction, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
     <hr>

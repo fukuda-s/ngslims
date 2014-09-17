@@ -1,6 +1,8 @@
 <div class="row">
   <div class="col-md-12">
     {{ partial('partials/trackerdetails-header') }}
+    <div
+        align="left">{{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre=" ~ previousAction, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
     <hr>
     {{ flashSession.output() }}
     {# {{ dump(sample_property_types) }} #}

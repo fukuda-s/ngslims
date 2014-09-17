@@ -29,6 +29,8 @@ class TrackerdetailsController extends ControllerBase
         ));
         // $this->flash->success($project_id);
 
+        $this->view->setVar('type', 'SHOW');
+
         $phql = 'SELECT
 					s.id AS sample_id,
 					s.name AS sample_name,
