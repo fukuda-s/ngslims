@@ -16,7 +16,7 @@
   {% if loop.first %}
   <div class="tube-list" id="sample-holder">
     {% endif %}
-    {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
+    {% if seqlib.se.status == 'Completed' or seqlib.sta_count === 0 %}
     <div class="tube tube-active" id="seqlib-id-{{ seqlib.sl.id }}">
       {% else %}
       <div class="tube tube-inactive" id="seqlib-id-{{ seqlib.sl.id }}">
