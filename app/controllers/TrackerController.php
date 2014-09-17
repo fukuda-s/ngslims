@@ -189,21 +189,25 @@ class TrackerController extends ControllerBase
             $this->flash->warning("Couldn't find any selected seqlibs.");
         }
         $seqlibs_all = $this->modelsManager->createBuilder()
-            ->columns(array('sl.*', 'se.*'))
+            ->columns(array('sl.*', 'se.*', 'COUNT(sta.id) AS sta_count'))
             ->addFrom('Seqlibs', 'sl')
             ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
+            ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
             ->inWhere('sl.id', $seqlib_ids)
+            ->groupBy('sl.id')
             ->getQuery()
             ->execute();
 
         if ($step_phase_code === 'MULTIPLEX') {
             // @TODO Is seqlib_nobarcode able to generate from $seqlib_all?
             $seqlibs_nobarcode = $this->modelsManager->createBuilder()
-                ->columns(array('sl.*', 'se.*'))
+                ->columns(array('sl.*', 'se.*', 'COUNT(sta.id) AS sta_count'))
                 ->addFrom('Seqlibs', 'sl')
                 ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
+                ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
                 ->inWhere('sl.id', $seqlib_ids)
                 ->andWhere('sl.oligobarcodeA_id IS NULL')
+                ->groupBy('sl.id')
                 ->getQuery()
                 ->execute();
 
@@ -254,11 +258,13 @@ class TrackerController extends ControllerBase
         } elseif ($step_phase_code === 'DUALMULTIPLEX') {
             // @TODO Is seqlib_nobarcode able to generate from $seqlib_all?
             $seqlibs_nobarcode = $this->modelsManager->createBuilder()
-                ->columns(array('sl.*', 'se.*'))
+                ->columns(array('sl.*', 'se.*', 'COUNT(sta.id) AS sta_count'))
                 ->addFrom('Seqlibs', 'sl')
                 ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
+                ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
                 ->inWhere('sl.id', $seqlib_ids)
                 ->andWhere('(sl.oligobarcodeA_id IS NULL OR sl.oligobarcodeB_id IS NULL)')
+                ->groupBy('sl.id')
                 ->getQuery()
                 ->execute();
 

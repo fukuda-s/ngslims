@@ -6,7 +6,7 @@
 
     <ul class="tube-list" id="seqlibs-nobarcode-holder">
   {% endif %}
-  {% if seqlib.se.status == 'Completed' %}
+  {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
     <li class="tube tube-sm tube-active" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}</li>
   {% else %}
     <li class="tube tube-sm tube-inactive" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}</li>
@@ -56,7 +56,7 @@
         {% for seqtemplate_index, seqtemplate in seqtemplates %}
           {% if seqlibs_inbarcode[seqtemplate_index][oligobarcodeA.o.id] is defined %}
             {% set seqlib = seqlibs_inbarcode[seqtemplate_index][oligobarcodeA.o.id] %}
-            {% if seqlib.se.status == 'Completed' %}
+            {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
               <li class="tube tube-sm tube-active" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
                 <button type="button" class="tube-close pull-right">&times;</button>
                 <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
@@ -104,7 +104,7 @@
           {% for oligobarcodeA in oligobarcodeAs %}
             {% if seqlibs_inbarcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] is defined %}
               {% set seqlib = seqlibs_inbarcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] %}
-              {% if seqlib.se.status == 'Completed' %}
+              {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
                 <td class="tube tube-sm tube-active sort-disabled"
                     id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
                   <button type="button" class="tube-close pull-right">&times;</button>
@@ -141,9 +141,25 @@
 <script>
 $(document).ready(function () {
 
-  $("div.item-list").sortable({
-    axis: "x"
-  });
+  /*
+   * Function of fix width of tubes with most longest tube.
+   */
+  function fixTubeWidth(target) {
+    var multiplex_sortable_max_len = 0;
+    $(target).each(function () {
+      $(this).children('li:not(.sort-disabled, .tube-empty)').each(function () {
+        var textStrLen = this.offsetWidth;
+        if (textStrLen > multiplex_sortable_max_len) {
+          multiplex_sortable_max_len = textStrLen;
+          //console.log(this.innerText + " : " + textStrLen);
+        }
+      });
+    });
+    $("li.tube").filter("li:not(.tube-sm-row-header)").css("width", multiplex_sortable_max_len + 20);
+    return multiplex_sortable_max_len + 20;
+  }
+
+  var final_multiplex_sortable_max_len = fixTubeWidth($('ul[id^=oligobarcodeA_id_]'));
 
   /*
    * Set function tube-close button on each seqlib tubes
@@ -152,7 +168,7 @@ $(document).ready(function () {
     var clicked_li = $(e.target).parent('li');
     //@TODO The tube which clicked closed button should be back to #saqlibs-nobarcode-holder
     //$('#seqlibs-nobarcode-holder').append(clicked_td.html());
-    clicked_li.replaceWith('<li class="tube tube-sm tube-empty"></li>');
+    clicked_li.replaceWith('<li class="tube tube-sm tube-empty" style="width: ' + final_multiplex_sortable_max_len + 'px"></li>');
   }
 
   $('button.tube-close').click(closeTube);
@@ -173,25 +189,7 @@ $(document).ready(function () {
 
   $('button.tube-copy').click(copyTube);
 
-  /*
-   * Function of fix width of tubes with most longest tube.
-   */
-  function fixTubeWidth(target) {
-    var multiplex_sortable_max_len = 0;
-    $(target).each(function () {
-      $(this).children('li:not(.sort-disabled, .tube-empty)').each(function () {
-        var textStrLen = this.offsetWidth;
-        if (textStrLen > multiplex_sortable_max_len) {
-          multiplex_sortable_max_len = textStrLen;
-          //console.log(this.innerText + " : " + textStrLen);
-        }
-      });
-    });
-    $("li.tube").filter("li:not(.tube-sm-row-header)").css("width", multiplex_sortable_max_len + 20);
-    return multiplex_sortable_max_len + 20;
-  }
 
-  var final_multiplex_sortable_max_len = fixTubeWidth($('ul[id^=oligobarcodeA_id_]'));
 
   /*
    * Set jQuery-UI sortable to #seqlibs-nobarcode-holder

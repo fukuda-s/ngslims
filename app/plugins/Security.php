@@ -121,6 +121,9 @@ class Security extends Plugin
                 'seqlibs' => array(
                     'loadjson'
                 ),
+                'seqtemplates' => array(
+                    'loadjson'
+                ),
                 'report' => array(
                     'index'
                 ),
