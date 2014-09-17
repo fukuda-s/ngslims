@@ -6,10 +6,6 @@
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/ngslims</jdbc-url>
-      <user-name>ngslims</user-name>
-      <user-password>dfc4dfcddfd9dfc6dfc3dfc7dfd9df9bdf98df99</user-password>
-      <schema-pattern>ngslims.* test.*</schema-pattern>
-      <default-schemas>test.*</default-schemas>
       <driver-properties>
         <property name="zeroDateTimeBehavior" value="convertToNull" />
         <property name="tinyInt1isBit" value="false" />
