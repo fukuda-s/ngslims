@@ -458,15 +458,18 @@ class TrackerController extends ControllerBase
             $seqtemplate_assocs = array();
             foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
                 $seqlib = Seqlibs::findFirstById($selected_seqlib['seqlib_id']);
+                $seqlib_update = 0;
                 if ($selected_seqlib['oligobarcodeA_id'] !== 'null'){
                     $seqlib->oligobarcodeA_id = $selected_seqlib['oligobarcodeA_id'];
+                    $seqlib_update = 1;
                 }
                 if (!empty($selected_seqlib['oligobarcodeB_id'])) {
                     $seqlib->oligobarcodeB_id = $selected_seqlib['oligobarcodeB_id'];
+                    $seqlib_update = 1;
                 }
-                if (!$seqlib->save()) {
+                if (!$seqlib->save() and $seqlib_update === 1) {
                     foreach ($seqlib->getMessages() as $message) {
-                        $this->flashSession->error((string)$message);
+                        $this->flashSession->error("seqlib: " . (string)$message);
                     }
                     //return;
                 }
@@ -487,7 +490,7 @@ class TrackerController extends ControllerBase
 
             if (!$seqtemplate->save()) {
                 foreach ($seqtemplate->getMessages() as $message) {
-                    $this->flashSession->error((string)$message);
+                    $this->flashSession->error("seqtemplate: " . (string)$message);
                 }
                 //return;
             } else {

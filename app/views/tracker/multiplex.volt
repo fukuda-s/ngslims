@@ -25,115 +25,112 @@
 <br>
 
 {# Begin seqtemplate-matrix part. #}
-<div class="tube-responsive">
   {% if step.step_phase_code == 'MULTIPLEX' %}
-    {% for index, oligobarcodeA in oligobarcodeAs %}
-      {% if index == 0 %} {# @TODO loop.first couldn't use here, it is bug of phalcon. #}
-        <ul class="tube-header-list" id="seqtemplate-matrix-header">
-          <li class="tube tube-sm-header tube-sm-row-header">OligoBarcode</li>
-          {% for seqtemplate_index, seqtempalte in seqtemplates %}
-            <li id="seqtemplate_index_{{ seqtemplate_index }}"
-                class="tube tube-sm-header">{{ seqtemplate_index }}</li>
-            {% elsefor %} No records on seqtemplates
-          {% endfor %}
-          <li class="" style="display: inline-block;">
-            <button type="button" id="add-seqtemplate-button" class="btn btn-primary btn-xs"><i
-                  class="glyphicon glyphicon-plus" style="min-height: 20px; padding: 2px 2px"></i></button>
-          </li>
-        </ul>
-        <div id="seqtemplate-matrix-body">
-        <ul class="tube-list" id="oligobarcodeA_id_null">
-          <li class="tube tube-sm tube-sm-header sort-disabled tube-sm-row-header">No Barcode</li>
-          {% for index in 1..seqtemplates|length %}
-            <li class="tube tube-sm tube-empty"></li>
-          {% endfor %}
-        </ul>
+    <div class="tube-responsive">
+      {% for index, oligobarcodeA in oligobarcodeAs %}
+        {% if index == 0 %} {# @TODO loop.first couldn't use here, it is bug of phalcon. #}
+          <ul class="tube-header-list" id="seqtemplate-matrix-header">
+            <li class="tube tube-sm-header tube-sm-row-header">OligoBarcode</li>
+            {% for seqtemplate_index, seqtempalte in seqtemplates %}
+              <li id="seqtemplate_index_{{ seqtemplate_index }}"
+                  class="tube tube-sm-header">{{ seqtemplate_index }}</li>
+              {% elsefor %} No records on seqtemplates
+            {% endfor %}
+            <li class="" style="display: inline-block;">
+              <button type="button" id="add-seqtemplate-button" class="btn btn-primary btn-xs"><i
+                    class="glyphicon glyphicon-plus" style="min-height: 20px; padding: 2px 2px"></i></button>
+            </li>
+          </ul>
+          <div id="seqtemplate-matrix-body">
+          <ul class="tube-list" id="oligobarcodeA_id_null">
+            <li class="tube tube-sm tube-sm-header sort-disabled tube-sm-row-header">No Barcode</li>
+            {% for index in 1..seqtemplates|length %}
+              <li class="tube tube-sm tube-empty"></li>
+            {% endfor %}
+          </ul>
 
-      {% endif %}
-      <ul class="tube-list" id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}">
-        <li class="tube tube-sm tube-sm-header sort-disabled tube-sm-row-header">{{ oligobarcodeA.o.name }}
-          : {{ oligobarcodeA.o.barcode_seq }}</li>
-        {% for seqtemplate_index, seqtemplate in seqtemplates %}
-          {% if seqlibs_inbarcode[seqtemplate_index][oligobarcodeA.o.id] is defined %}
-            {% set seqlib = seqlibs_inbarcode[seqtemplate_index][oligobarcodeA.o.id] %}
-            {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
-              <li class="tube tube-sm tube-active" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
-                <button type="button" class="tube-close pull-right">&times;</button>
-                <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
-                </button>
-              </li>
+        {% endif %}
+        <ul class="tube-list" id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}">
+          <li class="tube tube-sm tube-sm-header sort-disabled tube-sm-row-header">{{ oligobarcodeA.o.name }}
+            : {{ oligobarcodeA.o.barcode_seq }}</li>
+          {% for seqtemplate_index, seqtemplate in seqtemplates %}
+            {% if seqlibs_inbarcode[seqtemplate_index][oligobarcodeA.o.id] is defined %}
+              {% set seqlib = seqlibs_inbarcode[seqtemplate_index][oligobarcodeA.o.id] %}
+              {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
+                <li class="tube tube-sm tube-active" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
+                  <button type="button" class="tube-close pull-right">&times;</button>
+                  <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
+                  </button>
+                </li>
+              {% else %}
+                <li class="tube tube-sm tube-inactive" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
+                  <button type="button" class="tube-close pull-right">&times;</button>
+                  <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
+                  </button>
+                </li>
+              {% endif %}
             {% else %}
-              <li class="tube tube-sm tube-inactive" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
-                <button type="button" class="tube-close pull-right">&times;</button>
-                <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
-                </button>
-              </li>
+              <li class="tube tube-sm tube-empty"></li>
             {% endif %}
-          {% else %}
-            <li class="tube tube-sm tube-empty"></li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-      {% if loop.last %}
-        </div>
-      {% endif %}
-      {% elsefor %} No records on oligobarcodeAs
-    {% endfor %}
+          {% endfor %}
+        </ul>
+        {% if loop.last %}
+          </div>
+        {% endif %}
+        {% elsefor %} No records on oligobarcodeAs
+      {% endfor %}
+    </div>
   {% endif %}
   {# @TODO Could not use 'elseif' at here. Is it Bug? #}
   {% if step.step_phase_code == 'DUALMULTIPLEX' %}
     {% for seqtemplate_index, seqtemplate in seqtemplates %}
-      {% for indexB, oligobarcodeB in oligobarcodeBs %}
-        {% if indexB == 0 %} {# @TODO loop.first couldn't use here, it is bug of phalcon. #}
-          <table class="tube-matrix table table-hover table-condensed">
-          <thead>
-          <tr>
-            <td class="tube tube-sm-header">{{ seqtemplate_index }}</td>
+      <div class="tube-responsive tube-dualmultiplex" id="seqtemplate_index_{{ seqtemplate_index }}">
+        {% for indexB, oligobarcodeB in oligobarcodeBs %}
+          {% if indexB == 0 %} {# @TODO loop.first couldn't use here, it is bug of phalcon. #}
+            <ul class="tube-header-list" id="seqtemplate-matrix-header">
+              <li class="tube tube-sm tube-sm-header tube-sm-row-header">{{ seqtemplate_index }}</li>
+              {% for oligobarcodeA in oligobarcodeAs %}
+                <li id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}"
+                    class="tube tube-sm tube-sm-header tube-sm-col-header sort-disabled">{{ oligobarcodeA.o.name }}
+                  <br>{{ oligobarcodeA.o.barcode_seq }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          <ul class="tube-list" id="oligobarcodeB_id_{{ oligobarcodeB.o.id }}">
+            <li class="tube tube-sm tube-sm-header tube-sm-row-header sort-disabled">{{ oligobarcodeB.o.name }}
+              : {{ oligobarcodeB.o.barcode_seq }}</li>
             {% for oligobarcodeA in oligobarcodeAs %}
-              <td id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}"
-                  class="tube tube-sm tube-sm-header sort-disabled">{{ oligobarcodeA.o.name }}
-                <br>{{ oligobarcodeA.o.barcode_seq }}</td>
-            {% endfor %}
-          </tr>
-          </thead>
-          <tbody id="seqtemplate_index_{{ seqtemplate_index }}">
-        {% endif %}
-        <tr id="oligobarcodeB_id_{{ oligobarcodeB.o.id }}">
-          <td class="tube tube-sm tube-sm-header sort-disabled">{{ oligobarcodeB.o.name }}
-            : {{ oligobarcodeB.o.barcode_seq }}</td>
-          {% for oligobarcodeA in oligobarcodeAs %}
-            {% if seqlibs_inbarcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] is defined %}
-              {% set seqlib = seqlibs_inbarcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] %}
-              {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
-                <td class="tube tube-sm tube-active sort-disabled"
-                    id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
-                  <button type="button" class="tube-close pull-right">&times;</button>
-                  <!--
-                  <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
-                  -->
-                  </button>
-                </td>
+              {% if seqlibs_inbarcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] is defined %}
+                {% set seqlib = seqlibs_inbarcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] %}
+                {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
+                  <li class="tube tube-sm tube-active sort-disabled"
+                      id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
+                    <button type="button" class="tube-close pull-right">&times;</button>
+                    <!--
+                    <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
+                    -->
+                    </button>
+                  </li>
+                {% else %}
+                  <li class="tube tube-sm tube-inactive sort-disabled"
+                      id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
+                    <button type="button" class="tube-close pull-right">&times;</button>
+                    <!--
+                    <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
+                    -->
+                    </button>
+                  </li>
+                {% endif %}
               {% else %}
-                <td class="tube tube-sm tube-inactive sort-disabled"
-                    id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
-                  <button type="button" class="tube-close pull-right">&times;</button>
-                  <!--
-                  <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
-                  -->
-                  </button>
-                </td>
+                <li class="tube tube-sm tube-empty"></li>
               {% endif %}
-            {% else %}
-              <td class="tube tube-sm tube-empty"></td>
-            {% endif %}
-          {% endfor %}
-        </tr>
-        {% if loop.last %}
-          </tbody>
-          </table>
-        {% endif %}
-        {% elsefor %} No records on oligobarcodeBs
-      {% endfor %}
+            {% endfor %}
+          </ul>
+          {% if loop.last %}
+          {% endif %}
+          {% elsefor %} No records on oligobarcodeBs
+        {% endfor %}
+      </div>
     {% endfor %}
   {% endif %}
 </div>
@@ -147,7 +144,7 @@ $(document).ready(function () {
   function fixTubeWidth(target) {
     var multiplex_sortable_max_len = 0;
     $(target).each(function () {
-      $(this).children('li:not(.sort-disabled, .tube-empty)').each(function () {
+      $(this).children('li:not(.tube-sm-header, .tube-empty)').each(function () {
         var textStrLen = this.offsetWidth;
         if (textStrLen > multiplex_sortable_max_len) {
           multiplex_sortable_max_len = textStrLen;
@@ -159,7 +156,7 @@ $(document).ready(function () {
     return multiplex_sortable_max_len + 20;
   }
 
-  var final_multiplex_sortable_max_len = fixTubeWidth($('ul[id^=oligobarcodeA_id_]'));
+  var final_multiplex_sortable_max_len = fixTubeWidth($('ul.tube-list'));
 
   /*
    * Set function tube-close button on each seqlib tubes
@@ -190,12 +187,11 @@ $(document).ready(function () {
   $('button.tube-copy').click(copyTube);
 
 
-
   /*
    * Set jQuery-UI sortable to #seqlibs-nobarcode-holder
    */
   $('#seqlibs-nobarcode-holder').sortable({
-    connectWith: "ul[id^=oligobarcodeA_id_], tbody[id^=seqtemplate_index_]",
+    connectWith: "ul[id^=oligobarcodeA_id_], div.tube-dualmultiplex",
     placeholder: "tube-placeholder",
     opacity: 0.5
   });
@@ -210,13 +206,15 @@ $(document).ready(function () {
     axis: "x",
     //revert: true,
     tolerance: "pointer",
-    cursorAt: { left: 10 },
+    cursorAt: {left: 10},
     receive: function (event, ui) {
       // Append close button on sorted seqlib tube from #seqlibs-nobarcode-holder'
       ui.item
           .append('<button type="button" class="tube-close pull-right">&times;</button>')
           .append('<button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>')
           .find('button.tube-close').click(closeTube);
+
+      final_multiplex_sortable_max_len = fixTubeWidth($('ul.tube-list'));
 
       // Remove tube-empty which dragged seqlib tube from #seqlibs-nobarcode-holder
       if (ui.item.next('li.tube-empty').length) {
@@ -235,7 +233,7 @@ $(document).ready(function () {
   /*
    * Set jQuery-UI sortable to #seqtemplate_index_XX matrix table for DUALMULTIPLEX
    */
-  $('tbody[id^=seqtemplate_index_]').sortable({
+  $('div[id^=seqtemplate_index_]').sortable({
     items: "li:not(.sort-disabled)",
     placeholder: "tube tube-sm tube-placeholder",
     opacity: 0.5,
@@ -245,6 +243,9 @@ $(document).ready(function () {
           .append('<button type="button" class="tube-close pull-right">&times;</button>')
           .append('<button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>')
           .find('button.tube-close').click(closeTube);
+
+      final_multiplex_sortable_max_len = fixTubeWidth($('ul.tube-list'));
+
       // Remove tube-empty which dragged seqlib tube from #seqlibs-nobarcode-holder
       if (ui.item.next('td.tube-empty').length) {
         ui.item.next('td.tube-empty').remove();
@@ -272,14 +273,14 @@ $(document).ready(function () {
       }
     });
     //For DUALMULTIPLEX
-    $('tbody[id^=seqtemplate_index_]').each(function () {
+    $('div[id^=seqtemplate_index_]').each(function () {
       var seqtemplate_index = $(this).attr('id');
       if (seqtemplate_index) {
         seqtemplates.push(seqtemplate_index.replace('seqtemplate_index_', ''));
       }
     });
     var oligobarcodeAs = [];
-    $('td[id^=oligobarcodeA_id_]').each(function () {
+    $('li[id^=oligobarcodeA_id_]').each(function () {
       var oligobarcodeA_id = $(this).attr('id');
       if (oligobarcodeA_id) {
         oligobarcodeAs.push(oligobarcodeA_id.replace('oligobarcodeA_id_', ''));
@@ -302,22 +303,31 @@ $(document).ready(function () {
         }
         if ($(this).is('li[id^=seqlib_id_]')) {
           var seqlib_id = $(this).attr('id').replace('seqlib_id_', '');
-          seqlibs[seqtemplate_index][seqlib_id] = {seqlib_id: seqlib_id, oligobarcodeA_id: oligobarcodeA_id, seqtemplate_index: seqtemplate_index};
+          seqlibs[seqtemplate_index][seqlib_id] = {
+            seqlib_id: seqlib_id,
+            oligobarcodeA_id: oligobarcodeA_id,
+            seqtemplate_index: seqtemplate_index
+          };
         }
       })
     });
 
     //For DUALMULTIPLEX
-    $('tbody[id^=seqtemplate_index_]').each(function () {
+    $('div[id^=seqtemplate_index_]').each(function () {
       var seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_', '');
       if (!seqlibs[seqtemplate_index]) {
         seqlibs[seqtemplate_index] = new Object();
       }
-      $(this).find('tr[id^=oligobarcodeB_id_]').each(function () {
+      $(this).find('ul[id^=oligobarcodeB_id_]').each(function () {
         var oligobarcodeB_id = $(this).attr('id').replace('oligobarcodeB_id_', '');
-        $(this).find('td[id^=seqlib_id_]').each(function (index) {
+        $(this).find('li[id^=seqlib_id_]').each(function (index) {
           var seqlib_id = $(this).attr('id').replace('seqlib_id_', '');
-          seqlibs[seqtemplate_index][seqlib_id] = {seqlib_id: seqlib_id, oligobarcodeA_id: oligobarcodeAs[index], oligobarcodeB_id: oligobarcodeB_id, seqtemplate_index: seqtemplate_index};
+          seqlibs[seqtemplate_index][seqlib_id] = {
+            seqlib_id: seqlib_id,
+            oligobarcodeA_id: oligobarcodeAs[index],
+            oligobarcodeB_id: oligobarcodeB_id,
+            seqtemplate_index: seqtemplate_index
+          };
         })
       })
     });
@@ -330,7 +340,7 @@ $(document).ready(function () {
         url: '{{ url("tracker/multiplexSetSession") }}',
         dataType: 'json',
         type: 'POST',
-        data: { indexedSeqlibs: seqlibs, seqtemplates: seqtemplates}
+        data: {indexedSeqlibs: seqlibs, seqtemplates: seqtemplates}
       })
           .done(function () {
             console.log(seqlibs);

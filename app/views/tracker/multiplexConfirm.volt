@@ -402,7 +402,11 @@ $(document).ready(function () {
           }
         })
 
+  }).on('hide.bs.modal', function(){
+    $('#saveConfirmModalBody').html('');
+    $('#saveConfirmModalSubmitButton').removeClass('disabled')
   });
+
 });
 
 </script>
