@@ -10,6 +10,10 @@
             <div class="input-group-addon">#{{ selected_seqtemplate_index }}</div>
             {{ text_field('seqtemplate_name-' ~ selected_seqtemplate_index, 'class': "form-control") }}
           </div>
+          {% if loop.first and selected_seqtemplates|length > 1 %}
+            <button type="button" id="increment-copy-name-button" class="btn btn-primary btn-xs"><i
+                  class="glyphicon glyphicon-plus"></i></button>
+          {% endif %}
           <div class="pull-right">
             <label>Calculator&nbsp;<i class="fa fa-calculator"></i></label>
             <div class="btn-group btn-toggle">
@@ -397,14 +401,33 @@ $(document).ready(function () {
             });
             saveConfirmModalBody.append('</ul>');
             $('#saveConfirmModalSubmitButton').addClass('disabled')
-          } else if (!duplicatesInView.length){
+          } else if (!duplicatesInView.length) {
             saveConfirmModalBody.append('<h5>Please press \'Save\' to record seqtemplates.</h5>')
           }
         })
 
-  }).on('hide.bs.modal', function(){
+  }).on('hide.bs.modal', function () {
     $('#saveConfirmModalBody').html('');
     $('#saveConfirmModalSubmitButton').removeClass('disabled')
+  });
+
+  /*
+   * Function for #increment-copy-name-button
+   *  Copy seqtemplate name with incrementation of serial number
+   */
+  $('#increment-copy-name-button').click(function () {
+    var first_seqtemplate_name = $(this).parent().find('input').val();
+    var this_panel = $(this).parents('.panel');
+    var incremented_seqtemplate_name = first_seqtemplate_name;
+    this_panel.nextAll('.panel').each(function () {
+      incremented_seqtemplate_name = incremented_seqtemplate_name.replace(/\d+$/, function (n) {
+        var length = n.length;
+        ++n;
+        //Increment last number with zerofill.
+        return n.toLocaleString("ja-JP", {useGrouping: false, minimumIntegerDigits: length});
+      });
+      $(this).children('.panel-heading').find('input').val(incremented_seqtemplate_name);
+    });
   });
 
 });
