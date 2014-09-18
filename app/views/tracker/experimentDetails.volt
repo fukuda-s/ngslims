@@ -96,9 +96,14 @@
             $(target_id).html(data);
             console.log(target_id);
 
+            /*
+             * Add selectable function to seqlib tubes.
+             */
             $(target_id).find("#sample-holder").selectable();
 
-            // put function to "Show inactive" button.
+            /*
+             * put function to "Show inactive" button.
+             */
             $(target_id)
                 .find('#show-inactive').click(function (e) {
                   // @TODO 'Show/Hide Inactive' button should be hidden if .tube-inactive(s) are not exist.
