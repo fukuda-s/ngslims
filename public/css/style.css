@@ -145,8 +145,10 @@ ul.tube-list > li.tube-sm {
 }
 
 .tube-placeholder {
+  min-width: 150px;
   border-color: #dcdeba !important;
   background-color: #fffec9 !important;
+  display: inline-block;
 }
 
 .tube-empty {

@@ -87,7 +87,7 @@
       <div class="tube-responsive tube-dualmultiplex" id="seqtemplate_index_{{ seqtemplate_index }}">
         {% for indexB, oligobarcodeB in oligobarcodeBs %}
           {% if indexB == 0 %} {# @TODO loop.first couldn't use here, it is bug of phalcon. #}
-            <ul class="tube-header-list" id="seqtemplate-matrix-header">
+            <ul class="tube-header-list">
               <li class="tube tube-sm tube-sm-header tube-sm-row-header">{{ seqtemplate_index }}</li>
               {% for oligobarcodeA in oligobarcodeAs %}
                 <li id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}"
@@ -186,13 +186,35 @@ $(document).ready(function () {
 
   $('button.tube-copy').click(copyTube);
 
+  /*
+   * Function to add new column as new seqtemplate.
+   *  It is used with #add-seqtemplate-button.
+   */
+  function addSeqtemplate() {
+    $('#seqtemplate-matrix-header').find('li[id^=seqtemplate_index_]').filter(':last').html(function () {
+      var new_seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_', '');
+      new_seqtemplate_index++;
+
+      //Add new column header with new_seqtemplate_index.
+      $(this).after('<li id="seqtemplate_index_' + new_seqtemplate_index + '" class="tube tube-sm-header">' + new_seqtemplate_index + '</li>');
+      //console.log(this);
+    })
+    $('#seqtemplate-matrix-body').find('ul').each(function () {
+      //Add new column with new_seqtemplate_index for each row.
+      $(this).append('<li class="tube tube-sm tube-empty"></li>');
+    })
+
+    $('li.tube').filter("li:not(.tube-sm-row-header)").css("width", final_multiplex_sortable_max_len);
+  }
+
+  $('#add-seqtemplate-button').click(addSeqtemplate);
 
   /*
    * Set jQuery-UI sortable to #seqlibs-nobarcode-holder
    */
   $('#seqlibs-nobarcode-holder').sortable({
     connectWith: "ul[id^=oligobarcodeA_id_], div.tube-dualmultiplex",
-    placeholder: "tube-placeholder",
+    placeholder: "tube tube-sm tube-placeholder",
     opacity: 0.5
   });
 
@@ -222,6 +244,17 @@ $(document).ready(function () {
       } else {
         ui.item.prev('li.tube-empty').remove();
       }
+
+      // Add new seqtemplate if the seqtemplate+oligobarcode doesn't have tube-empty.
+      var num_of_column = $('#seqtemplate-matrix-header').children('li.tube').length;
+      var num_of_column_dropped = $(event.target).children('li.tube').siblings().length;
+      if ( num_of_column !== num_of_column_dropped ) {
+        addSeqtemplate();
+        $(event.target).children('li.tube-empty').remove();
+      }
+      //console.log(event.target);
+      //console.log(num_of_column + " : " + num_of_column_dropped);
+
     },
     start: function (event, ui) {
       //console.log(ui.placeholder.css());
@@ -349,28 +382,7 @@ $(document).ready(function () {
     }
   });
 
-  /*
-   * Function to add new column as new seqtemplate.
-   *  It is used with #add-seqtemplate-button.
-   */
-  function addSeqtemplate() {
-    $('#seqtemplate-matrix-header').find('li[id^=seqtemplate_index_]').filter(':last').html(function () {
-      var new_seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_', '');
-      new_seqtemplate_index++;
 
-      //Add new column header with new_seqtemplate_index.
-      $(this).after('<li id="seqtemplate_index_' + new_seqtemplate_index + '" class="tube tube-sm-header">' + new_seqtemplate_index + '</li>');
-      //console.log(this);
-    })
-    $('#seqtemplate-matrix-body').find('ul').each(function () {
-      //Add new column with new_seqtemplate_index for each row.
-      $(this).append('<li class="tube tube-sm tube-empty"></li>');
-    })
-
-    $('li.tube').filter("li:not(.tube-sm-row-header)").css("width", final_multiplex_sortable_max_len);
-  }
-
-  $('#add-seqtemplate-button').click(addSeqtemplate);
 
 });
 </script>
