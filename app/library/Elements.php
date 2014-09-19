@@ -389,11 +389,13 @@ class Elements extends Phalcon\Mvc\User\Component
                     $sample_count = $this->modelsManager->createBuilder()
                         ->addFrom('Seqlibs', 'slib')
                         ->leftJoin('StepEntries', 'ste.seqlib_id = slib.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
-                        ->where('slib.project_id = :project_id:')
+                        ->join('Steps', 'st.id = ste.step_id', 'st')
+                        ->where('slib.project_id = :project_id: AND st.nucleotide_type = :nucleotide_type:')
                         ->getQuery()
                         ->execute(array(
                             'step_id' => $step_id,
-                            'project_id' => $project->id
+                            'project_id' => $project->id,
+                            'nucleotide_type' => $nucleotide_type
                         ))
                         ->count();
                 }
