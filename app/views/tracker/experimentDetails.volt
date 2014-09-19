@@ -20,36 +20,32 @@
   </div>
   <hr>
 {% endif %}
-{% for user in pi_users %}
-  {% if loop.first %}
 <div class="panel-group" id="projectOverview">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-8">PI</div>
-        <div class="col-md-1">
-          <small>#project</small>
-        </div>
-        <div class="col-md-1">
-          <small>#sample</small>
-        </div>
-        <div class="col-md-2">
-          <button type="button" class="btn btn-default btn-xs" id="show-inactive" data-toggle="collapse"
-                  data-target="[id^=inactives]" style="min-width: 87px">
-            Show inactive
-          </button>
+  {% for user in pi_users %}
+    {% if loop.first %}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-md-8">PI</div>
+            <div class="col-md-1">
+              <small>#project</small>
+            </div>
+            <div class="col-md-1">
+              <small>#sample</small>
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn btn-default btn-xs" id="show-inactive" data-toggle="collapse"
+                      data-target="[id^=inactives]" style="min-width: 87px">
+                Show inactive
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-  {% endif %}
+    {% endif %}
 
-
-  {% if user.project_count > 0 %}
-  <div class="panel panel-info" id="pi_user_id_{{ user.id }}">
-    {% else %}
-    <div class="panel panel-default collapse" id="inactives-{{ user.id }}">
-      {% endif %}
+    <div {% if user.project_count > 0 %} class="panel panel-info" id="pi_user_id_{{ user.id }}"
+    {% else %} class="panel panel-default collapse" id="inactives-{{ user.id }}" {% endif %}>
       <div class="panel-heading" data-toggle="collapse" data-target="#list_user_id_{{ user.id }}" id="OwnerList">
         <h4 class="panel-title">
           <div class="row">
@@ -76,78 +72,94 @@
         </div>
       </ul>
     </div>
-    {% if loop.last %}
-  </div>
-  {% endif %}
-  {% elsefor %} No projects are recorded
+    {% elsefor %} No projects are recorded
   {% endfor %}
-  <script>
-    function showTubeSeqlibs(step_id, project_id) {
-      var target_id = '#seqlib-tube-list-project-id-' + project_id;
-      $.ajax({
-        url: '{{ url("trackerdetails/showTubeSeqlibs") }}',
-        dataType: 'html',
-        type: 'POST',
-        data: {
-          step_id: step_id, project_id: project_id
-        }
-      })
-          .done(function (data) {
-            $(target_id).html(data);
-            console.log(target_id);
-
-            /*
-             * Add selectable function to seqlib tubes.
-             */
-            $(target_id).find("#sample-holder").selectable();
-
-            /*
-             * put function to "Show inactive" button.
-             */
-            $(target_id)
-                .find('#show-inactive').click(function (e) {
-                  // @TODO 'Show/Hide Inactive' button should be hidden if .tube-inactive(s) are not exist.
-                  if ($(e.target).hasClass('active') == false) {
-                    $(target_id)
-                        .find('.tube-inactive')
-                        .show('slow');
-                    $(e.target)
-                        .addClass('active')
-                        .text('Hide Inactive');
-                  } else {
-                    $(target_id)
-                        .find('.tube-inactive')
-                        .hide('slow');
-                    $(e.target)
-                        .removeClass('active')
-                        .text('Show Inactive');
-                  }
-                });
-          });
-    }
-
-    $(document).ready(function () {
-      $("#mixup-seqlibs-button").click(function () {
-        var selectedSeqlibs = [];
-        console.log("Clicked mixup-seqlibs-button");
-        $(document).find(".ui-selected[id^=seqlib-id-]").each(function () {
-          var seqlib_id = $(this).attr("id").replace("seqlib-id-", "");
-          selectedSeqlibs.push(seqlib_id);
-        });
-        if (selectedSeqlibs.length) {
-          $.ajax({
-            url: '{{ url("tracker/multiplexSetSession") }}',
-            dataType: 'json',
-            type: 'POST',
-            data: { selectedSeqlibs: selectedSeqlibs}
-          })
-              .done(function () {
-                console.log(selectedSeqlibs);
-                window.location = "{{ url("tracker/multiplex/") ~ step.id }}"
-              });
-        }
-      })
-      ;
+</div>
+<script>
+  function showTubeSeqlibs(step_id, project_id) {
+    var target_id = '#seqlib-tube-list-project-id-' + project_id;
+    $.ajax({
+      url: '{{ url("trackerdetails/showTubeSeqlibs") }}',
+      dataType: 'html',
+      type: 'POST',
+      data: {
+        step_id: step_id, project_id: project_id
+      }
     })
-    ;
-  </script>
+        .done(function (data) {
+          $(target_id).html(data);
+          console.log(target_id);
+
+          /*
+           * Add selectable function to seqlib tubes.
+           */
+          $(target_id).find("#sample-holder").selectable();
+
+          /*
+           * put function to "Show inactive" button.
+           */
+          $(target_id)
+              .find('button#show-inactive').click(function (e) {
+                // @TODO 'Show/Hide Inactive' button should be hidden if .tube-inactive(s) are not exist.
+                if ($(e.target).hasClass('active') == false) {
+                  $(target_id)
+                      .find('.tube-inactive')
+                      .show('slow');
+                  $(e.target)
+                      .addClass('active')
+                      .text('Hide Inactive');
+                } else {
+                  $(target_id)
+                      .find('.tube-inactive')
+                      .hide('slow');
+                  $(e.target)
+                      .removeClass('active')
+                      .text('Show Inactive');
+                }
+              });
+          $(target_id)
+              .find('button#select-all').click(function (e) {
+                $(target_id).find('.tube.ui-selectee').addClass('ui-selected')
+                if ($(e.target).hasClass('active') == false) {
+                  $(target_id)
+                      .find('.tube.ui-selectee')
+                      .addClass('ui-selected')
+                  $(e.target)
+                      .addClass('active')
+                      .text('Un-select all');
+                } else {
+                  $(target_id)
+                      .find('.tube.ui-selectee')
+                      .removeClass('ui-selected')
+                  $(e.target)
+                      .removeClass('active')
+                      .text('Select all');
+                }
+              });
+
+        });
+  }
+
+  $(document).ready(function () {
+    $("#mixup-seqlibs-button").click(function () {
+      var selectedSeqlibs = [];
+      console.log("Clicked mixup-seqlibs-button");
+      $(document).find(".ui-selected[id^=seqlib-id-]").each(function () {
+        var seqlib_id = $(this).attr("id").replace("seqlib-id-", "");
+        selectedSeqlibs.push(seqlib_id);
+      });
+      if (selectedSeqlibs.length) {
+        $.ajax({
+          url: '{{ url("tracker/multiplexSetSession") }}',
+          dataType: 'json',
+          type: 'POST',
+          data: {selectedSeqlibs: selectedSeqlibs}
+        })
+            .done(function () {
+              console.log(selectedSeqlibs);
+              window.location = "{{ url("tracker/multiplex/") ~ step.id }}"
+            });
+      }
+    });
+  });
+</script>

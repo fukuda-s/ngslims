@@ -8,7 +8,7 @@
         <button type="button" class="btn btn-default btn-xs" id="show-inactive"
                 style="max-height: 25px; min-width: 87px">Show Inactive
         </button>
-        <button type="button" class="btn btn-default btn-xs pull-right" id="add-all-to-icebox" disabled>Select All
+        <button type="button" class="btn btn-default btn-xs pull-right" id="select-all">Select All
         </button>
       </div>
     </div>
