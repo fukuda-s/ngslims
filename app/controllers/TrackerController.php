@@ -395,13 +395,13 @@ class TrackerController extends ControllerBase
         $oligobarcodes = array();
         $seqtemplate_serial = $prev_seqtemplate_serial;
         foreach ($selected_seqtemplates as $selected_seqtemplate_index) {
-            $seqtemplate_serial++;
-            $seqtemplate_serial_str = sprintf("%03d", $seqtemplate_serial);
-            $seqtemplate_name = $seqtemplate_prefix . '-' . $seqtemplate_serial_str;
-            $seqtemplate_name_selector = 'seqtemplate_name-' . $selected_seqtemplate_index;
-            Tag::setDefault($seqtemplate_name_selector, $seqtemplate_name);
-
             if (isset($selected_seqlibs[$selected_seqtemplate_index])) {
+                $seqtemplate_serial++;
+                $seqtemplate_serial_str = sprintf("%03d", $seqtemplate_serial);
+                $seqtemplate_name = $seqtemplate_prefix . '-' . $seqtemplate_serial_str;
+                $seqtemplate_name_selector = 'seqtemplate_name-' . $selected_seqtemplate_index;
+                Tag::setDefault($seqtemplate_name_selector, $seqtemplate_name);
+
                 foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
                     $seqlibs[$selected_seqlib['seqlib_id']] = Seqlibs::findFirstById($selected_seqlib['seqlib_id']);
                     $oligobarcodes[$selected_seqlib['oligobarcodeA_id']] = Oligobarcodes::findFirstById($selected_seqlib['oligobarcodeA_id']);
@@ -434,7 +434,7 @@ class TrackerController extends ControllerBase
             $seqtemplate_name = $request->getPost('seqtemplate_name-' . $selected_seqtemplate_index);
 
             //Skip if seqtemplate does not have any seqlibs then seqtemplate name should be empty.
-            if (empty($seqtemplate_name)){
+            if (empty($seqtemplate_name)) {
                 continue;
             }
 
@@ -465,7 +465,7 @@ class TrackerController extends ControllerBase
             foreach ($selected_seqlibs[$selected_seqtemplate_index] as $selected_seqlib) {
                 $seqlib = Seqlibs::findFirstById($selected_seqlib['seqlib_id']);
                 $seqlib_update = 0;
-                if ($selected_seqlib['oligobarcodeA_id'] !== 'null'){
+                if ($selected_seqlib['oligobarcodeA_id'] !== 'null') {
                     $seqlib->oligobarcodeA_id = $selected_seqlib['oligobarcodeA_id'];
                     $seqlib_update = 1;
                 }
