@@ -431,9 +431,15 @@ class TrackerController extends ControllerBase
         $selected_seqtemplates = $this->session->get('seqtemplates');
         $selected_seqlibs = $this->session->get('indexedSeqlibs');
         foreach ($selected_seqtemplates as $selected_seqtemplate_index) {
+            $seqtemplate_name = $request->getPost('seqtemplate_name-' . $selected_seqtemplate_index);
+
+            //Skip if seqtemplate does not have any seqlibs then seqtemplate name should be empty.
+            if (empty($seqtemplate_name)){
+                continue;
+            }
 
             $seqtemplate = new Seqtemplates();
-            $seqtemplate->name = $request->getPost('seqtemplate_name-' . $selected_seqtemplate_index);
+            $seqtemplate->name = $seqtemplate_name;
 
             $calculator_used = $request->getPost('calculator_used-' . $selected_seqtemplate_index);
 

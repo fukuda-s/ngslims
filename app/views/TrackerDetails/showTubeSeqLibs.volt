@@ -3,7 +3,8 @@
     <div class="row">
       <div class="col-md-3 col-sm-10">Sample Name</div>
       <div class="col-md-1 col-sm-2">#used</div>
-      <div class="col-md-4"></div>
+      <div class="col-md-2">Barcode</div>
+      <div class="col-md-2"></div>
       <div class="col-md-4">
         <button type="button" class="btn btn-default btn-xs" id="show-inactive"
                 style="max-height: 25px; min-width: 87px">Show Inactive

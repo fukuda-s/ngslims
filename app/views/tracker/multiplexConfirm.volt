@@ -4,35 +4,35 @@
   {% for selected_seqtemplate_index in selected_seqtemplates %}
     {% if selected_seqlibs[selected_seqtemplate_index] is defined %}
       <div class="panel panel-success">
-      <div class="panel-heading">
-        <div class="form-inline">
-          <div class="input-group">
-            <div class="input-group-addon">#{{ selected_seqtemplate_index }}</div>
-            {{ text_field('seqtemplate_name-' ~ selected_seqtemplate_index, 'class': "form-control") }}
-          </div>
-          {% if loop.first and selected_seqtemplates|length > 1 %}
-            <button type="button" id="increment-copy-name-button" class="btn btn-primary btn-xs"><i
-                  class="glyphicon glyphicon-plus"></i></button>
-          {% endif %}
-          <div class="pull-right">
-            <label>Calculator&nbsp;<i class="fa fa-calculator"></i></label>
-            <div class="btn-group btn-toggle">
-              <button type="button" class="btn btn-default btn-sm" data-toggle="collapse"
-                      data-target="#calculator-{{ selected_seqtemplate_index }}">ON
-              </button>
-              <button type="button" class="btn btn-success btn-sm active" data-toggle="collapse"
-                      data-target="#calculator-{{ selected_seqtemplate_index }}">OFF
-              </button>
+        <div class="panel-heading">
+          <div class="form-inline">
+            <div class="input-group">
+              <div class="input-group-addon">#{{ selected_seqtemplate_index }}</div>
+              {{ text_field('seqtemplate_name-' ~ selected_seqtemplate_index, 'class': "form-control") }}
             </div>
-            <input type="hidden" id="calculator_used-{{ selected_seqtemplate_index }}"
-                   name="calculator_used-{{ selected_seqtemplate_index }}" value="0">
+            {% if loop.first and selected_seqtemplates|length > 1 %}
+              <button type="button" id="increment-copy-name-button" class="btn btn-primary btn-xs"><i
+                    class="glyphicon glyphicon-plus"></i></button>
+            {% endif %}
+            <div class="pull-right">
+              <label>Calculator&nbsp;<i class="fa fa-calculator"></i></label>
+              <div class="btn-group btn-toggle">
+                <button type="button" class="btn btn-default btn-sm" data-toggle="collapse"
+                        data-target="#calculator-{{ selected_seqtemplate_index }}">ON
+                </button>
+                <button type="button" class="btn btn-success btn-sm active" data-toggle="collapse"
+                        data-target="#calculator-{{ selected_seqtemplate_index }}">OFF
+                </button>
+              </div>
+              <input type="hidden" id="calculator_used-{{ selected_seqtemplate_index }}"
+                     name="calculator_used-{{ selected_seqtemplate_index }}" value="0">
+            </div>
           </div>
         </div>
-      </div>
-      {% for selected_seqlib in selected_seqlibs[selected_seqtemplate_index] %}
-        {% if loop.first %}
-          <div class="panel-body collapse" id="calculator-{{ selected_seqtemplate_index }}">
-            <!--
+        {% for selected_seqlib in selected_seqlibs[selected_seqtemplate_index] %}
+          {% if loop.first %}
+            <div class="panel-body collapse" id="calculator-{{ selected_seqtemplate_index }}">
+              <!--
               <div class="form-group">
                 <label for="multiplex-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Multiplex</label>
                 <div class="col-sm-10">
@@ -40,137 +40,137 @@
                 </div>
               </div>
               -->
-            <div class="form-group">
-              <label for="target_conc-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Target Conc.
-                (nM)</label>
-              <div class="col-sm-2">
-                <input type="text" class="form-control" id="target_conc-{{ selected_seqtemplate_index }}"
-                       name="target_conc-{{ selected_seqtemplate_index }}" value="1.052">
-              </div>
+              <div class="form-group">
+                <label for="target_conc-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Target Conc.
+                  (nM)</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="target_conc-{{ selected_seqtemplate_index }}"
+                         name="target_conc-{{ selected_seqtemplate_index }}" value="1.052">
+                </div>
 
-              <label for="target_vol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Target Vol.
-                (uL)</label>
-              <div class="col-sm-2">
-                <input type="text" class="form-control" id="target_vol-{{ selected_seqtemplate_index }}"
-                       name="target_vol-{{ selected_seqtemplate_index }}" value="19.00">
-              </div>
+                <label for="target_vol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Target Vol.
+                  (uL)</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="target_vol-{{ selected_seqtemplate_index }}"
+                         name="target_vol-{{ selected_seqtemplate_index }}" value="19.00">
+                </div>
 
-              <label for="target_total_mol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">(total
-                mol)</label>
-              <div class="col-sm-2">
-                <p class="form-control-static" id="target_total_mol-{{ selected_seqtemplate_index }}"></p>
+                <label for="target_total_mol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">(total
+                  mol)</label>
+                <div class="col-sm-2">
+                  <p class="form-control-static" id="target_total_mol-{{ selected_seqtemplate_index }}"></p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="target_each_mol-{{ selected_seqtemplate_index }}"
+                       class="col-sm-2 col-sm-offset-8 control-label">(each mol)</label>
+                <div class="col-sm-2">
+                  <p class="form-control-static" id="target_each_mol-{{ selected_seqtemplate_index }}"></p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="dw_for_dilution_vol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Calculated
+                  DW For
+                  Dilution (uL)</label>
+                <div class="col-sm-2">
+                  <p class="form-control-static" id="dw_for_dilution_vol-{{ selected_seqtemplate_index }}"></p>
+                  <input type="hidden" id="dw_for_dilution_vol_hidden-{{ selected_seqtemplate_index }}"
+                         name="dw_for_dilution_vol-{{ selected_seqtemplate_index }}">
+                </div>
+
+                <label for="added_dw_vol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Actual Added
+                  DW
+                  (uL)</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="added_dw_vol-{{ selected_seqtemplate_index }}"
+                         name="added_dw_vol-{{ selected_seqtemplate_index }}">
+                </div>
+
+                <label for="library_vol_total-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Library
+                  Vol. Total (uL)</label>
+                <div class="col-sm-2">
+                  <p class="form-control-static" id="library_vol_total-{{ selected_seqtemplate_index }}"></p>
+                  <input type="hidden" id="library_vol_total_hidden-{{ selected_seqtemplate_index }}"
+                         name="library_vol_total-{{ selected_seqtemplate_index }}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="seqtemplate_initial_conc-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Initial
+                  Conc. (nM)</label>
+                <div class="col-sm-2">
+                  <p class="form-control-static" id="seqtemplate_initial_conc-{{ selected_seqtemplate_index }}"></p>
+                  <input type="hidden" id="seqtemplate_initial_conc_hidden-{{ selected_seqtemplate_index }}"
+                         name="seqtemplate_initial_conc-{{ selected_seqtemplate_index }}">
+                </div>
+
+                <label for="seqtemplate_final_vol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Final
+                  Vol. (uL)</label>
+                <div class="col-sm-2">
+                  <p class="form-control-static" id="seqtemplate_final_vol-{{ selected_seqtemplate_index }}"></p>
+                  <input type="hidden" id="seqtemplate_final_vol_hidden-{{ selected_seqtemplate_index }}"
+                         name="seqtemplate_final_vol-{{ selected_seqtemplate_index }}">
+                </div>
+
+                <label for="seqtemplate_final_conc-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Final
+                  Conc. (nM)</label>
+                <div class="col-sm-2">
+                  <p class="form-control-static" id="seqtemplate_final_conc-{{ selected_seqtemplate_index }}"></p>
+                  <input type="hidden" id="seqtemplate_final_conc_hidden-{{ selected_seqtemplate_index }}"
+                         name="seqtemplate_final_conc-{{ selected_seqtemplate_index }}">
+                </div>
               </div>
             </div>
-            <div class="form-group">
-              <label for="target_each_mol-{{ selected_seqtemplate_index }}"
-                     class="col-sm-2 col-sm-offset-8 control-label">(each mol)</label>
-              <div class="col-sm-2">
-                <p class="form-control-static" id="target_each_mol-{{ selected_seqtemplate_index }}"></p>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="dw_for_dilution_vol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Calculated
-                DW For
-                Dilution (uL)</label>
-              <div class="col-sm-2">
-                <p class="form-control-static" id="dw_for_dilution_vol-{{ selected_seqtemplate_index }}"></p>
-                <input type="hidden" id="dw_for_dilution_vol_hidden-{{ selected_seqtemplate_index }}"
-                       name="dw_for_dilution_vol-{{ selected_seqtemplate_index }}">
-              </div>
-
-              <label for="added_dw_vol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Actual Added
-                DW
-                (uL)</label>
-              <div class="col-sm-2">
-                <input type="text" class="form-control" id="added_dw_vol-{{ selected_seqtemplate_index }}"
-                       name="added_dw_vol-{{ selected_seqtemplate_index }}">
-              </div>
-
-              <label for="library_vol_total-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Library
-                Vol. Total (uL)</label>
-              <div class="col-sm-2">
-                <p class="form-control-static" id="library_vol_total-{{ selected_seqtemplate_index }}"></p>
-                <input type="hidden" id="library_vol_total_hidden-{{ selected_seqtemplate_index }}"
-                       name="library_vol_total-{{ selected_seqtemplate_index }}">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="seqtemplate_initial_conc-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Initial
-                Conc. (nM)</label>
-              <div class="col-sm-2">
-                <p class="form-control-static" id="seqtemplate_initial_conc-{{ selected_seqtemplate_index }}"></p>
-                <input type="hidden" id="seqtemplate_initial_conc_hidden-{{ selected_seqtemplate_index }}"
-                       name="seqtemplate_initial_conc-{{ selected_seqtemplate_index }}">
-              </div>
-
-              <label for="seqtemplate_final_vol-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Final
-                Vol. (uL)</label>
-              <div class="col-sm-2">
-                <p class="form-control-static" id="seqtemplate_final_vol-{{ selected_seqtemplate_index }}"></p>
-                <input type="hidden" id="seqtemplate_final_vol_hidden-{{ selected_seqtemplate_index }}"
-                       name="seqtemplate_final_vol-{{ selected_seqtemplate_index }}">
-              </div>
-
-              <label for="seqtemplate_final_conc-{{ selected_seqtemplate_index }}" class="col-sm-2 control-label">Final
-                Conc. (nM)</label>
-              <div class="col-sm-2">
-                <p class="form-control-static" id="seqtemplate_final_conc-{{ selected_seqtemplate_index }}"></p>
-                <input type="hidden" id="seqtemplate_final_conc_hidden-{{ selected_seqtemplate_index }}"
-                       name="seqtemplate_final_conc-{{ selected_seqtemplate_index }}">
-              </div>
-            </div>
-          </div>
-          <table id="seqtemplate-{{ selected_seqtemplate_index }}" class="table table-condensed">
-          <thead>
-          <tr>
-            <th>SeqLib Name</th>
-            <th>Oligobarcode Name</th>
-            <th>Oligobarcode Seq</th>
-            <th>Conc. (nmol/L)</th>
-            <th>Conc. Factor</th>
-            <th>Stocked Vol. (uL)</th>
-            <th>Calculated Input Vol. (uL)</th>
-            <th>Fragment Size (bp)</th>
+            <table id="seqtemplate-{{ selected_seqtemplate_index }}" class="table table-condensed">
+            <thead>
+            <tr>
+              <th>SeqLib Name</th>
+              <th>Oligobarcode Name</th>
+              <th>Oligobarcode Seq</th>
+              <th>Conc. (nmol/L)</th>
+              <th>Conc. Factor</th>
+              <th>Stocked Vol. (uL)</th>
+              <th>Calculated Input Vol. (uL)</th>
+              <th>Fragment Size (bp)</th>
+            </tr>
+            </thead>
+            <tbody>
+          {% endif %}
+          {% set seqlib = seqlibs[selected_seqlib['seqlib_id']] %}
+          {% if selected_seqlib['oligobarcodeA_id'] === 'null' %}
+            {% set oligobarcodeName = 'No Barcode' %}
+            {% set oligobarcodeSeq = '' %}
+          {% else %}
+            {% set oligobarcodeA = oligobarcodes[selected_seqlib['oligobarcodeA_id']] %}
+            {% set oligobarcodeName = oligobarcodeA.name %}
+            {% set oligobarcodeSeq = oligobarcodeA.barcode_seq %}
+          {% endif %}
+          {% if selected_seqlib['oligobarcodeB_id'] is defined %}
+            {% set oligobarcodeB = oligobarcodes[selected_seqlib['oligobarcodeB_id']] %}
+            {% set oligobarcodeName = oligobarcodeName ~ '-' ~ oligobarcodeB.name %}
+            {% set oligobarcodeSeq = oligobarcodeSeq ~ '-' ~ oligobarcodeB.barcode_seq %}
+          {% endif %}
+          <tr id="seqlib-{{ seqlib.id }}">
+            <td>{{ seqlib.name }}</td>
+            <td>{{ oligobarcodeName }}</td>
+            <td style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">{{ oligobarcodeSeq }}</td>
+            <td id="seqlib_conc-{{ seqlib.id }}">{{ seqlib.concentration }}</td>
+            <td><input type="text" id="seqlib_conc_factor-{{ seqlib.id }}" name="seqlib_conc_factor-{{ seqlib.id }}"
+                       value="1.000">
+            </td>
+            <td id="seqlib_stock_vol-{{ seqlib.id }}">{{ seqlib.stock_seqlib_volume }}</td>
+            <td id="seqlib_input_vol-{{ seqlib.id }}"></td>
+            <td style="display: none"><input type="hidden" id="seqlib_input_vol_hidden-{{ seqlib.id }}"
+                                             name="seqlib_input_vol-{{ seqlib.id }}"></td>
+            <td>{{ seqlib.fragment_size }}</td>
+            <td></td>
           </tr>
-          </thead>
-          <tbody>
-        {% endif %}
-        {% set seqlib = seqlibs[selected_seqlib['seqlib_id']] %}
-        {% if selected_seqlib['oligobarcodeA_id'] === 'null' %}
-          {% set oligobarcodeName = 'No Barcode' %}
-          {% set oligobarcodeSeq = '' %}
-        {% else %}
-          {% set oligobarcodeA = oligobarcodes[selected_seqlib['oligobarcodeA_id']] %}
-          {% set oligobarcodeName = oligobarcodeA.name %}
-          {% set oligobarcodeSeq = oligobarcodeA.barcode_seq %}
-        {% endif %}
-        {% if selected_seqlib['oligobarcodeB_id'] is defined %}
-          {% set oligobarcodeB = oligobarcodes[selected_seqlib['oligobarcodeB_id']] %}
-          {% set oligobarcodeName = oligobarcodeName ~ '-' ~ oligobarcodeB.name %}
-          {% set oligobarcodeSeq = oligobarcodeSeq ~ '-' ~ oligobarcodeB.barcode_seq %}
-        {% endif %}
-        <tr id="seqlib-{{ seqlib.id }}">
-          <td>{{ seqlib.name }}</td>
-          <td>{{ oligobarcodeName }}</td>
-          <td style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">{{ oligobarcodeSeq }}</td>
-          <td id="seqlib_conc-{{ seqlib.id }}">{{ seqlib.concentration }}</td>
-          <td><input type="text" id="seqlib_conc_factor-{{ seqlib.id }}" name="seqlib_conc_factor-{{ seqlib.id }}"
-                     value="1.000">
-          </td>
-          <td id="seqlib_stock_vol-{{ seqlib.id }}">{{ seqlib.stock_seqlib_volume }}</td>
-          <td id="seqlib_input_vol-{{ seqlib.id }}"></td>
-          <td style="display: none"><input type="hidden" id="seqlib_input_vol_hidden-{{ seqlib.id }}"
-                                           name="seqlib_input_vol-{{ seqlib.id }}"></td>
-          <td>{{ seqlib.fragment_size }}</td>
-          <td></td>
-        </tr>
-        {% if loop.last %}
-          </tbody>
-          </table>
-        {% endif %}
-      {% endfor %}
+          {% if loop.last %}
+            </tbody>
+            </table>
+          {% endif %}
+        {% endfor %}
+      </div>
     {% endif %}
-    </div>
   {% endfor %}
   <div class="row">
     <!-- Button trigger modal -->
