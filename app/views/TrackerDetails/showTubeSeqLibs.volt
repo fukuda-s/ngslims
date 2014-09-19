@@ -4,11 +4,12 @@
       <div class="col-md-3 col-sm-10">Sample Name</div>
       <div class="col-md-1 col-sm-2">#used</div>
       <div class="col-md-4"></div>
-      <div class="col-md-4 col-sm-0">
+      <div class="col-md-4">
         <button type="button" class="btn btn-default btn-xs" id="show-inactive"
                 style="max-height: 25px; min-width: 87px">Show Inactive
         </button>
-        <button type="button" class="btn btn-default btn-xs pull-right" id="add-all-to-icebox">Select All</button>
+        <button type="button" class="btn btn-default btn-xs pull-right" id="add-all-to-icebox" disabled>Select All
+        </button>
       </div>
     </div>
   </div>
@@ -28,7 +29,16 @@
           <div class="col-md-1 col-sm-2">
             {{ seqlib.sta_count }}
           </div>
-          <div class="col-md-4">
+          <div class="col-md-2">
+            {% if seqlib.sl.oligobarcodeA_id is empty %}
+              (Undefined)
+            {% elseif seqlib.sl.oligobarcodeB_id is empty %}
+              {{ seqlib.sl.OligobarcodeA.barcode_seq }}
+            {% else %}
+              {{ seqlib.sl.OligobarcodeA.barcode_seq ~ '-' ~ seqlib.sl.OligobarcodeB.barcode_seq }}
+            {% endif %}
+          </div>
+          <div class="col-md-2">
             {{ seqlib.pt.name }}
           </div>
           <div class="col-md-4">

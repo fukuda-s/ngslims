@@ -37,8 +37,6 @@ table td.dup_b {
  */
 
 .tube {
-  max-height: 25px;
-  min-height: 20px;
   padding: 2px 20px 2px 20px;
   margin: 2px 50px 2px 50px;
   color: #333333;
@@ -47,6 +45,7 @@ table td.dup_b {
   border-radius: 4px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  vertical-align: middle;
 }
 
 .tube-list {
@@ -89,12 +88,6 @@ ul.tube-list {
   min-width: 200px;
 }
 
-.tube-heading {
-  /* padding: 10px 15px; */
-  border-bottom: 1px solid transparent;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-}
 
 ul.tube-list > li.tube-sm {
 
@@ -128,7 +121,6 @@ ul.tube-list > li.tube-sm {
 }
 
 .tube-header {
-  max-height: 30px;
 }
 
 .tube-active {

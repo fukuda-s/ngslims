@@ -83,7 +83,7 @@
   {% endfor %}
   <script>
     function showTubeSeqlibs(step_id, project_id) {
-      target_id = '#seqlib-tube-list-project-id-' + project_id;
+      var target_id = '#seqlib-tube-list-project-id-' + project_id;
       $.ajax({
         url: '{{ url("trackerdetails/showTubeSeqlibs") }}',
         dataType: 'html',
