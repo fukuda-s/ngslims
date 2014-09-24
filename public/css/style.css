@@ -50,11 +50,20 @@ table td.dup_b {
 
 .tube-list {
   padding-left: 0;
-  list-style: none
+  list-style: none;
 }
 
 ul.tube-list {
   display: table-row;
+}
+
+ul.tube-list-row {
+  display: table-row-group;
+  white-space: nowrap;
+}
+
+div.tube-list-col {
+  display: inline-block;
 }
 
 .tube-header-list {
@@ -88,9 +97,17 @@ ul.tube-list {
   min-width: 200px;
 }
 
+ul.tube-list-row > ul.tube-list-col {
+  padding: 0;
+  display: inline-block;
+}
+
+ul.tube-list-row > ul > li.tube-sm {
+  display: inline-block;
+  line-height: 18px !important;
+}
 
 ul.tube-list > li.tube-sm {
-
   display: inline-block;
   line-height: 18px !important;
 }
@@ -145,7 +162,7 @@ ul.tube-list > li.tube-sm {
 }
 
 .tube-placeholder {
-  min-width: 150px;
+  /* min-width: 150px; */
   border-color: #dcdeba !important;
   background-color: #fffec9 !important;
   display: inline-block;
