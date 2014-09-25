@@ -161,6 +161,9 @@ class TrackerdetailsController extends ControllerBase
                     foreach ($changes as $sample_id => $rowValues) {
                         foreach ($rowValues as $colNameToChange => $valueChangeTo) {
                             $sample = Samples::findFirstById($sample_id);
+                            if(empty($valueChangeTo)){
+                                $valueChangeTo = null;
+                            }
 
 
                             if ($colNameToChange == 'to_prep_protocol_name') {
@@ -298,6 +301,10 @@ class TrackerdetailsController extends ControllerBase
                             $colStrToChange = preg_split('/\./', $tblColNameToChange);
                             $tblNameToChange = $colStrToChange[0];
                             $colNameToChange = $colStrToChange[1];
+
+                            if(empty($valueChangeTo)){
+                                $valueChangeTo = null;
+                            }
 
                             $seqlib = Seqlibs::findFirstById($seqlib_id);
 
