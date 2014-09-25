@@ -184,14 +184,11 @@ $(document).ready(function () {
   //var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 160, 80, 110
   var $defaultColWidths = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
     {% for sample_property_type in sample_property_types %}
-    {% if sample_property_type.sample_count > 0 %}
-    , ''
-    {% else %}
-    , 0.1
+    {% if sample_property_type.sample_count > 0 %}, ''
+    {% else %}, 0.1
     {% endif %}
     {% endfor %}
-    {% if type === 'PREP' %}
-    , 80, 150
+    {% if type === 'PREP' %}, 80, 150
     {% endif %}
   ];
   var $samplePropertyTypesColumnsStartIdx = 15; //@TODO First index number(begin by 0) of sample_property_types
@@ -212,27 +209,43 @@ $(document).ready(function () {
     //colWidths: $defaultColWidths,
     autoColumnSize: true,
     columns: [
-      { data: "id", title: "ID", type: 'numeric', readOnly: true },
-      { data: "name", title: "Sample Name", readOnly: true },
-      { data: "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer },
-      { data: "organism_id", title: "Organism", readOnly: true, renderer: organismRenderer, source: organismRenderer },
-      { data: "qual_concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
-      { data: "qual_od260280", title: "A260/A280", type: 'numeric', format: '0.00' },
-      { data: "qual_od260230", title: "A260/A230", type: 'numeric', format: '0.00' },
-      { data: "qual_RIN", title: "RIN", type: 'numeric', format: '0.00' },
-      { data: "qual_fragmentsize", title: "Fragment Size", type: 'numeric' },
-      { data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000' },
-      { data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
-      { data: "qual_amount", title: "Total (ng)", type: 'numeric', format: '0.00' },
-      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' },
-      { data: "barcode_number", title: "2D barcode" },
-      { data: "sample_location_id", title: "Sample Repos.", type: "dropdown", source: sampleLocationDrop, renderer: sampleLocationRenderer },
+      {data: "id", title: "ID", type: 'numeric', readOnly: true},
+      {data: "name", title: "Sample Name", readOnly: true},
+      {data: "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer},
+      {data: "organism_id", title: "Organism", readOnly: true, renderer: organismRenderer, source: organismRenderer},
+      {data: "qual_concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000'},
+      {data: "qual_od260280", title: "A260/A280", type: 'numeric', format: '0.00'},
+      {data: "qual_od260230", title: "A260/A230", type: 'numeric', format: '0.00'},
+      {data: "qual_RIN", title: "RIN", type: 'numeric', format: '0.00'},
+      {data: "qual_fragmentsize", title: "Fragment Size", type: 'numeric'},
+      {data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000'},
+      {data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
+      {data: "qual_amount", title: "Total (ng)", type: 'numeric', format: '0.00'},
+      {data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd'},
+      {data: "barcode_number", title: "2D barcode"},
+      {
+        data: "sample_location_id",
+        title: "Sample Repos.",
+        type: "dropdown",
+        source: sampleLocationDrop,
+        renderer: sampleLocationRenderer
+      },
       {% for sample_property_type in sample_property_types %}
-      { data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', type: 'text'},
+      {
+        data: 'sample_property_types.{{ sample_property_type.id }}',
+        title: '{{ sample_property_type.name }}',
+        type: 'text'
+      },
       {% endfor %}
       {% if type === 'PREP' %}
-      { data: "to_prep", title: "Create New SeqLib", type: 'checkbox' },
-      { data: "to_prep_protocol_name", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer }
+      {data: "to_prep", title: "Create New SeqLib", type: 'checkbox'},
+      {
+        data: "to_prep_protocol_name",
+        title: "Protocol",
+        type: "dropdown",
+        source: protocolDrop,
+        renderer: protocolRenderer
+      }
       {% endif %}
     ],
     afterChange: function (changes, source) {
@@ -262,7 +275,7 @@ $(document).ready(function () {
           url: '{{ url("trackerdetails/saveSamples") }}',
           dataType: "json",
           type: "POST",
-          data: { changes: isDirtyAr }
+          data: {changes: isDirtyAr}
         })
             .done(function () {
               $console.text('Autosaved (' + changes.length + ' cell' + (changes.length > 1 ? 's' : '') + ')')
@@ -286,8 +299,7 @@ $(document).ready(function () {
       url: '{{ url("samples/loadjson/") ~ step.id ~ '/' ~ project.id }}',
       dataType: 'json',
       type: 'POST',
-      data: {
-      }
+      data: {}
     })
         .done(function (data) {
           //alert(data);
@@ -326,7 +338,7 @@ $(document).ready(function () {
     //alert("save! "+$handsontable.getData());
     $.ajax({
       url: '{{ url("trackerdetails/saveSamples") }}',
-      data: { changes: isDirtyAr },
+      data: {changes: isDirtyAr},
       dataType: 'text',
       type: 'POST'
     })
@@ -408,7 +420,7 @@ $(document).ready(function () {
     onChange: function (element, checked) {
 
       var changedColWidths = $defaultColWidths;
-      console.log(changedColWidths);
+      //console.log(changedColWidths);
 
       for (var i = 0; i < $samplePropertyTypesColumns.length; i++) {
         var actualColWidthIdx = i + $samplePropertyTypesColumnsStartIdx;
@@ -428,7 +440,7 @@ $(document).ready(function () {
 
       //Change column width (Show checked sample_property_types column) on handsontable.
       $handsontable.updateSettings({'colWidths': changedColWidths});
-      console.log(changedColWidths);
+      //console.log(changedColWidths);
     }
   });
 
@@ -436,11 +448,10 @@ $(document).ready(function () {
    * Set up search function.
    */
   $('#search_field').on('keyup', function (event) {
+    var queryStr = event.target.value;
     var hot = $container.handsontable('getInstance');
-
-    var queryResult = hot.search.query(this.value);
-
-    console.log(queryResult);
+    var queryResult = hot.search.query(queryStr);
+    //console.log(queryResult);
 
     hot.render();
   });

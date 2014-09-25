@@ -78,7 +78,7 @@
                   {% endif %}
                 {% endfor %}
               </select>
-              <input type="text" class="form-control" placeholder="Search">
+              <input type="text" class="form-control" placeholder="Search" id="search_field">
             </div>
           </form>
           <ul class="nav navbar-nav navbar-right">
@@ -88,7 +88,7 @@
         <!-- /.navbar-collapse -->
       </nav>
       <!-- /Handsontable toolbar -->
-      <div id="handsontable-orderSamples-body"></div>
+      <div id="handsontable-orderSamples-body" style="overflow: scroll"></div>
     </div>
   </div>
   <div class="panel panel-success">
@@ -250,7 +250,7 @@ $(document).ready(function () {
       url: '{{ url('order/orderSetSession/')}}',
       dataType: 'html',
       type: 'POST',
-      data: { column: column, id: id, name: name}
+      data: {column: column, id: id, name: name}
     })
         .done(function (data) {
           $('#flash').html(data);
@@ -373,7 +373,7 @@ $(document).ready(function () {
       url: '{{ url('order/seqRunmodeTypesSelectList/')}}',
       dataType: 'html',
       type: 'POST',
-      data: { instrument_type_id: instrument_type_id }
+      data: {instrument_type_id: instrument_type_id}
     })
         .done(function (data) {
           $('#seq_runmode_types_radio').html(data);
@@ -403,7 +403,7 @@ $(document).ready(function () {
       url: '{{ url('order/seqRunreadTypesSelectList/')}}',
       dataType: 'html',
       type: 'POST',
-      data: { instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id }
+      data: {instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id}
     })
         .done(function (data) {
           $('#seq_runread_types_radio').html(data);
@@ -432,7 +432,11 @@ $(document).ready(function () {
       url: '{{ url('order/seqRuncycleTypesSelectList/')}}',
       dataType: 'html',
       type: 'POST',
-      data: { instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id, seq_runread_type_id: seq_runread_type_id }
+      data: {
+        instrument_type_id: instrument_type_id,
+        seq_runmode_type_id: seq_runmode_type_id,
+        seq_runread_type_id: seq_runread_type_id
+      }
     })
         .done(function (data) {
           $('#seq_runcycle_types_radio').html(data);
@@ -920,6 +924,7 @@ $(document).ready(function () {
     currentRowClassName: 'currentRow',
     autoWrapRow: true,
     autoColumnSize: true,
+    search: true,
     data: [],
     dataSchema: {
       name: null,
@@ -933,28 +938,38 @@ $(document).ready(function () {
       qual_amount: null,
       qual_date: null,
       sample_property_types: {
-        {% for sample_property_type in sample_property_types %}
-          {{ sample_property_type.id }}: null,
-        {% endfor %}
-      }
+  {% for sample_property_type in sample_property_types %}
+  {% if loop.last %}
+  {{ sample_property_type.id }}:
+  null
+  {% else %}
+  {{ sample_property_type.id }}:
+  null,
+  {% endif %}
+  {% endfor %}
+}
 },
 columns: [
-  { data: 'name', title: 'Sample Name', type: 'text'},
-  { data: 'qual_concentration', title: 'Conc. (ng/uL)', type: 'numeric', format: '0.000' },
-  { data: 'qual_od260280', title: 'A260/A280', type: 'numeric', format: '0.00' },
-  { data: 'qual_od260230', title: 'A260/A230', type: 'numeric', format: '0.00' },
-  { data: 'qual_RIN', title: 'RIN', type: 'numeric', format: '0.00' },
-  { data: 'qual_fragmentsize', title: 'Fragment Size', type: 'numeric' },
-  { data: 'qual_nanodrop_conc', title: 'Conc. (ng/uL) (NanoDrop)', type: 'numeric', format: '0.000' },
-  { data: 'qual_volume', title: 'Volume (uL)', type: 'numeric', format: '0.00' },
-  { data: 'qual_amount', title: 'Total (ng)', type: 'numeric', format: '0.00' },
-  { data: 'qual_date', title: 'QC Date', type: 'date', dateFormat: 'yy-mm-dd' },
+  {data: 'name', title: 'Sample Name', type: 'text'},
+  {data: 'qual_concentration', title: 'Conc. (ng/uL)', type: 'numeric', format: '0.000'},
+  {data: 'qual_od260280', title: 'A260/A280', type: 'numeric', format: '0.00'},
+  {data: 'qual_od260230', title: 'A260/A230', type: 'numeric', format: '0.00'},
+  {data: 'qual_RIN', title: 'RIN', type: 'numeric', format: '0.00'},
+  {data: 'qual_fragmentsize', title: 'Fragment Size', type: 'numeric'},
+  {data: 'qual_nanodrop_conc', title: 'Conc. (ng/uL) (NanoDrop)', type: 'numeric', format: '0.000'},
+  {data: 'qual_volume', title: 'Volume (uL)', type: 'numeric', format: '0.00'},
+  {data: 'qual_amount', title: 'Total (ng)', type: 'numeric', format: '0.00'},
+  {data: 'qual_date', title: 'QC Date', type: 'date', dateFormat: 'yy-mm-dd'},
   {% for sample_property_type in sample_property_types %}
-  { data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', type: 'text'},
+  {data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', type: 'text'},
   {% endfor %}
 ],
-    colWidths : $defaultColWidths,
-    afterChange : function (changes, source) {
+    colWidths
+:
+$defaultColWidths,
+    afterChange
+:
+function (changes, source) {
   if (source === 'loadData') {//not used now
     // don't save this change
   }
@@ -971,9 +986,10 @@ columns: [
     //console.log(source);
     //console.log(sample_data);
   }
-    }
+}
 
-  });
+})
+;
 
 //var handsontable = $container.data('handsontable');
 var $handsontable = $container.handsontable('getInstance');
@@ -984,8 +1000,7 @@ function loadData() {
     url: '{{ url("order/loadSessionSampleData") }}',
     dataType: 'json',
     type: 'POST',
-    data: {
-    }
+    data: {}
   })
       .done(function (data) {
         //alert(data);
@@ -1070,6 +1085,19 @@ $('#sample_property_types').multiselect({
     $handsontable.updateSettings({'colWidths': changedColWidths});
     //console.log(changedColWidths);
   }
+});
+
+
+/*
+ * Set up search function.
+ */
+$('#search_field').on('keyup', function (event) {
+  var queryStr = event.target.value;
+  var hot = $container.handsontable('getInstance');
+  var queryResult = hot.search.query(queryStr);
+  //console.log(queryResult);
+
+  hot.render();
 });
 
 })

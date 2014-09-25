@@ -357,11 +357,10 @@ $(document).ready(function () {
    * Set up search function.
    */
   $('#search_field').on('keyup', function (event) {
-    var hot = $handsontable('getInstance');
-
-    var queryResult = hot.search.query(this.value);
-
-    console.log(queryResult);
+    var queryStr = event.target.value;
+    var hot = $container.handsontable('getInstance');
+    var queryResult = hot.search.query(queryStr);
+    //console.log(queryResult);
 
     hot.render();
   });
