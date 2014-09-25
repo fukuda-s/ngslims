@@ -311,7 +311,7 @@ $(document).ready(function () {
           $handsontable.loadData(data);
 
           var changedColWidths = $defaultColWidths;
-          console.log(changedColWidths);
+          //console.log(changedColWidths);
 
           //Set column width of SamplePropertyTypes to 0.1 (not shown) or '' (auto column width) if sample has SampleProperty.
           $('#sample_property_types').children('option').each(function (index, domEle) {
@@ -328,7 +328,7 @@ $(document).ready(function () {
 
           //Change column width (Show checked sample_property_types column) on handsontable.
           $handsontable.updateSettings({'colWidths': changedColWidths});
-          console.log(changedColWidths);
+          //console.log(changedColWidths);
         });
   }
 
@@ -412,7 +412,7 @@ $(document).ready(function () {
     }
   });
 
-  //var $samplePropertyTypesChecked = new Object();
+  //var $samplePropertyTypesChecked = {};
   $('#sample_property_types').multiselect({
     /*
      * Show/Hide sample_property_types columns when checkbox is checked/unchecked.

@@ -724,7 +724,7 @@ $(document).ready(function () {
     //setOrderSessionVal('pipeline-undecided', 0, $(this).prop('checked'));
   });
 
-// @TODO pipeline select control
+  // @TODO pipeline select control
   /*
    var pipeline_selected_content;
    pipeline_selected = $('#pipeline_selected');
@@ -893,23 +893,48 @@ $(document).ready(function () {
   });
 
   /*
+   *
    * Build Handsontable
+   *
    */
   var $container = $('#handsontable-orderSamples-body');
   var $console = $('#handsontable-console');
   var $toolbar = $('#handsontable-toolbar');
   var sample_name_validator_fn = function (value, callback) {
   }
+
   var $samplePropertyTypesColumns = [
     {% for sample_property_type in sample_property_types %}
     "sample_property_type_id_{{ sample_property_type.id }}",
     {% endfor %}
   ];
-  var $defaultColWidths = [100, 80, 80, 80, 40, 80, 80, 80, 80, 80,
-    {% for sample_property_type in sample_property_types %}
-    0.1,
-    {% endfor %}
-  ];
+
+  /*
+   * Build $samplePropertyTypesDataSchema object.
+   * @TODO it's not smart to make object but it's good to use code formatter of PhpStorm.
+   */
+  var $samplePropertyTypesDataSchema = {};
+  {% for sample_property_type in sample_property_types %}
+  $samplePropertyTypesDataSchema["{{ sample_property_type.id }}"] = null;
+  {% endfor %}
+
+  /*
+   * Set up column width; if '' is shown but '0.1' is hidden.
+   */
+//var $defaultColWidths = [100, 80, 80, 80, 40, 80, 80, 80, 80, 80,
+  var $defaultColWidths = ['', '', '', '', '', '', '', '', '', ''];
+  var $samplePropertyTypesChecked = {};
+  {% for sample_property_type in sample_property_types %}
+  {% set sample_property_type_id_str = "sample_property_type_id_" ~ sample_property_type.id %}
+  {% if sample_property_types_checked.name[sample_property_type_id_str] is defined
+    and sample_property_types_checked.name[sample_property_type_id_str] == "true" %}
+  $defaultColWidths.push('');
+  $samplePropertyTypesChecked["{{ sample_property_type_id_str }}"] = 'true';
+  {% else %}
+  $defaultColWidths.push('0.1');
+  {% endif %}
+  {% endfor %}
+  //console.log($defaultColWidths);
   var $samplePropertyTypesColumnsStartIdx = 10; //@TODO First index number(begin by 0) of sample_property_types
 
   $container.handsontable({
@@ -937,169 +962,176 @@ $(document).ready(function () {
       qual_volume: null,
       qual_amount: null,
       qual_date: null,
-      sample_property_types: {
-  {% for sample_property_type in sample_property_types %}
-  {% if loop.last %}
-  {{ sample_property_type.id }}:
-  null
-  {% else %}
-  {{ sample_property_type.id }}:
-  null,
-  {% endif %}
-  {% endfor %}
-}
-},
-columns: [
-  {data: 'name', title: 'Sample Name', type: 'text'},
-  {data: 'qual_concentration', title: 'Conc. (ng/uL)', type: 'numeric', format: '0.000'},
-  {data: 'qual_od260280', title: 'A260/A280', type: 'numeric', format: '0.00'},
-  {data: 'qual_od260230', title: 'A260/A230', type: 'numeric', format: '0.00'},
-  {data: 'qual_RIN', title: 'RIN', type: 'numeric', format: '0.00'},
-  {data: 'qual_fragmentsize', title: 'Fragment Size', type: 'numeric'},
-  {data: 'qual_nanodrop_conc', title: 'Conc. (ng/uL) (NanoDrop)', type: 'numeric', format: '0.000'},
-  {data: 'qual_volume', title: 'Volume (uL)', type: 'numeric', format: '0.00'},
-  {data: 'qual_amount', title: 'Total (ng)', type: 'numeric', format: '0.00'},
-  {data: 'qual_date', title: 'QC Date', type: 'date', dateFormat: 'yy-mm-dd'},
-  {% for sample_property_type in sample_property_types %}
-  {data: 'sample_property_types.{{ sample_property_type.id }}', title: '{{ sample_property_type.name }}', type: 'text'},
-  {% endfor %}
-],
-    colWidths
-:
-$defaultColWidths,
-    afterChange
-:
-function (changes, source) {
-  if (source === 'loadData') {//not used now
-    // don't save this change
-  }
-  else {
-    // Enable 'Save', 'Undo' link on toolbar above of table after edit.
-    //alert('afterChange');
-    $toolbar.find('#save, #undo, #clear').removeClass('disabled');
-    $console.text('Click Save to save data to server').removeClass().addClass('alert alert-info');
+      sample_property_types: $samplePropertyTypesDataSchema
+    },
+    columns: [
+      {data: 'name', title: 'Sample Name', type: 'text'},
+      {data: 'qual_concentration', title: 'Conc. (ng/uL)', type: 'numeric', format: '0.000'},
+      {data: 'qual_od260280', title: 'A260/A280', type: 'numeric', format: '0.00'},
+      {data: 'qual_od260230', title: 'A260/A230', type: 'numeric', format: '0.00'},
+      {data: 'qual_RIN', title: 'RIN', type: 'numeric', format: '0.00'},
+      {data: 'qual_fragmentsize', title: 'Fragment Size', type: 'numeric'},
+      {data: 'qual_nanodrop_conc', title: 'Conc. (ng/uL) (NanoDrop)', type: 'numeric', format: '0.000'},
+      {data: 'qual_volume', title: 'Volume (uL)', type: 'numeric', format: '0.00'},
+      {data: 'qual_amount', title: 'Total (ng)', type: 'numeric', format: '0.00'},
+      {data: 'qual_date', title: 'QC Date', type: 'date', dateFormat: 'yy-mm-dd'},
+      {% for sample_property_type in sample_property_types %}
+      {
+        data: 'sample_property_types.{{ sample_property_type.id }}',
+        title: '{{ sample_property_type.name }}',
+        type: 'text'
+      },
+      {% endfor %}
+    ],
+    //colWidths: $defaultColWidths,
+    afterChange: function (changes, source) {
+      if (source === 'loadData') {//not used now
+        // don't save this change
+      }
+      else {
+        // Enable 'Save', 'Undo' link on toolbar above of table after edit.
+        //alert('afterChange');
+        $toolbar.find('#save, #undo, #clear').removeClass('disabled');
+        $console.text('Click Save to save data to server').removeClass().addClass('alert alert-info');
 
-    var sample_data_array = $container.handsontable('getData');
-    sample_data_array.pop(); //pop because last row is always null because of "minSpareRows: 1" option of handsontable.
-    var sample_data = JSON.stringify(sample_data_array);
-    setOrderSessionVal('sample', 0, sample_data);
-    //console.log(source);
-    //console.log(sample_data);
-  }
-}
-
-})
-;
-
-//var handsontable = $container.data('handsontable');
-var $handsontable = $container.handsontable('getInstance');
-
-
-function loadData() {
-  $.ajax({
-    url: '{{ url("order/loadSessionSampleData") }}',
-    dataType: 'json',
-    type: 'POST',
-    data: {}
-  })
-      .done(function (data) {
-        //alert(data);
-        //alert(location.href);
-        $handsontable.loadData(data);
-      });
-}
-
-loadData(); // loading data at first.
-
-//Build 'Undo' function on toolbar
-$toolbar.find('#undo').click(function () {
-  // alert('undo! '+$handsontable.isUndoAvailable()+'
-  // '+$handsontable.isRedoAvailable())
-  $handsontable.undo();
-  // $console.text('Undo!');
-  if ($handsontable.isUndoAvailable()) {
-    $toolbar.find('#undo').removeClass('disabled');
-  } else {
-    $toolbar.find('#undo').addClass('disabled');
-  }
-
-  if ($handsontable.isRedoAvailable()) {
-    $toolbar.find('#redo').removeClass('disabled');
-  } else {
-    $toolbar.find('#redo').addClass('disabled');
-  }
-});
-
-//Build 'Redo' function on toolbar
-$toolbar.find('#redo').click(function () {
-  // alert('redo! '+$handsontable.isUndoAvailable()+'
-  // '+$handsontable.isRedoAvailable());
-  $handsontable.redo();
-  // $console.text('Redo!');
-  if ($handsontable.isUndoAvailable()) {
-    $toolbar.find('#undo').removeClass('disabled');
-  } else {
-    $toolbar.find('#undo').addClass('disabled');
-  }
-
-  if ($handsontable.isRedoAvailable()) {
-    $toolbar.find('#redo').removeClass('disabled');
-  } else {
-    $toolbar.find('#redo').addClass('disabled');
-  }
-});
-
-$toolbar.find('#clear').click(function () {
-  $toolbar.find('#save, #undo, #redo, #clear').addClass('disabled');
-  $console.text('All changes is discarded').removeClass().addClass('alert alert-success');
-  $handsontable.loadData(null);
-});
-
-var $samplePropertyTypesChecked = new Object();
-$('#sample_property_types').multiselect({
-  /*
-   * Show/Hide sample_property_types columns when checkbox is checked/unchecked.
-   */
-  onChange: function (element, checked) {
-
-    var changedColWidths = $defaultColWidths;
-    //console.log(changedColWidths);
-
-    for (var i = 0; i < $samplePropertyTypesColumns.length; i++) {
-      var actualColWidthIdx = i + $samplePropertyTypesColumnsStartIdx;
-      if ($samplePropertyTypesColumns[i] == element.val()) {
-        //console.log($samplePropertyTypesColumns[i] + " : " + element.val());
-        if (checked == true) {
-          changedColWidths[actualColWidthIdx] = 120;
-        } else {
-          changedColWidths[actualColWidthIdx] = 0.1;
-        }
-        $samplePropertyTypesChecked[$samplePropertyTypesColumns[i]] = checked;
+        var sample_data_array = $container.handsontable('getData');
+        sample_data_array.pop(); //pop because last row is always null because of "minSpareRows: 1" option of handsontable.
+        var sample_data = JSON.stringify(sample_data_array);
+        setOrderSessionVal('sample', 0, sample_data);
+        //console.log(source);
+        //console.log(sample_data);
       }
     }
-    //Set session value for sample_property_types checked of checked/unchecked.
-    setOrderSessionVal('sample_property_types_checked', 0, $samplePropertyTypesChecked);
-    console.log($samplePropertyTypesChecked);
 
-    //Change column width (Show checked sample_property_types column) on handsontable.
-    $handsontable.updateSettings({'colWidths': changedColWidths});
-    //console.log(changedColWidths);
+  });
+
+  var $handsontable = $container.handsontable('getInstance');
+
+
+  function loadData() {
+    $.ajax({
+      url: '{{ url("order/loadSessionSampleData") }}',
+      dataType: 'json',
+      type: 'POST',
+      data: {}
+    })
+        .done(function (data) {
+          //alert(data);
+          //alert(location.href);
+          $handsontable.loadData(data);
+
+          var changedColWidths = $defaultColWidths;
+          //console.log(changedColWidths);
+
+          //Set column width of SamplePropertyTypes to 0.1 (not shown) or '' (auto column width) if sample has SampleProperty.
+          $('#sample_property_types').children('option').each(function (index, domEle) {
+            var actualColWidthIdx = index + $samplePropertyTypesColumnsStartIdx;
+            if ($(domEle).attr('selected')) {
+              changedColWidths[actualColWidthIdx] = '';
+            } else {
+              changedColWidths[actualColWidthIdx] = 0.1;
+            }
+          });
+          //Set session value for sample_property_types checked of checked/unchecked.
+          //setOrderSessionVal('sample_property_types_checked', 0, $samplePropertyTypesChecked);
+          //console.log($samplePropertyTypesChecked);
+
+          //Change column width (Show checked sample_property_types column) on handsontable.
+          $handsontable.updateSettings({'colWidths': changedColWidths});
+          //console.log(changedColWidths);
+        });
   }
+
+  loadData(); // loading data at first.
+
+  //Build 'Undo' function on toolbar
+  $toolbar.find('#undo').click(function () {
+    // alert('undo! '+$handsontable.isUndoAvailable()+'
+    // '+$handsontable.isRedoAvailable())
+    $handsontable.undo();
+    // $console.text('Undo!');
+    if ($handsontable.isUndoAvailable()) {
+      $toolbar.find('#undo').removeClass('disabled');
+    } else {
+      $toolbar.find('#undo').addClass('disabled');
+    }
+
+    if ($handsontable.isRedoAvailable()) {
+      $toolbar.find('#redo').removeClass('disabled');
+    } else {
+      $toolbar.find('#redo').addClass('disabled');
+    }
+  });
+
+  //Build 'Redo' function on toolbar
+  $toolbar.find('#redo').click(function () {
+    // alert('redo! '+$handsontable.isUndoAvailable()+'
+    // '+$handsontable.isRedoAvailable());
+    $handsontable.redo();
+    // $console.text('Redo!');
+    if ($handsontable.isUndoAvailable()) {
+      $toolbar.find('#undo').removeClass('disabled');
+    } else {
+      $toolbar.find('#undo').addClass('disabled');
+    }
+
+    if ($handsontable.isRedoAvailable()) {
+      $toolbar.find('#redo').removeClass('disabled');
+    } else {
+      $toolbar.find('#redo').addClass('disabled');
+    }
+  });
+
+  $toolbar.find('#clear').click(function () {
+    $toolbar.find('#save, #undo, #redo, #clear').addClass('disabled');
+    $console.text('All changes is discarded').removeClass().addClass('alert alert-success');
+    $handsontable.loadData(null);
+  });
+
+
+  $('#sample_property_types').multiselect({
+    /*
+     * Show/Hide sample_property_types columns when checkbox is checked/unchecked.
+     */
+    onChange: function (element, checked) {
+
+      var changedColWidths = $defaultColWidths;
+      //console.log(changedColWidths);
+
+      for (var i = 0; i < $samplePropertyTypesColumns.length; i++) {
+        var actualColWidthIdx = i + $samplePropertyTypesColumnsStartIdx;
+        if ($samplePropertyTypesColumns[i] == element.val()) {
+          //console.log($samplePropertyTypesColumns[i] + " : " + element.val());
+          if (checked == true) {
+            changedColWidths[actualColWidthIdx] = '';
+          } else {
+            changedColWidths[actualColWidthIdx] = 0.1;
+          }
+          $samplePropertyTypesChecked[$samplePropertyTypesColumns[i]] = checked;
+        }
+      }
+      //Set session value for sample_property_types checked of checked/unchecked.
+      setOrderSessionVal('sample_property_types_checked', 0, $samplePropertyTypesChecked);
+      console.log($samplePropertyTypesChecked);
+
+      //Change column width (Show checked sample_property_types column) on handsontable.
+      $handsontable.updateSettings({'colWidths': changedColWidths});
+      //console.log(changedColWidths);
+    }
+  });
+
+
+  /*
+   * Set up search function.
+   */
+  $('#search_field').on('keyup', function (event) {
+    var queryStr = event.target.value;
+    var hot = $container.handsontable('getInstance');
+    var queryResult = hot.search.query(queryStr);
+    //console.log(queryResult);
+
+    hot.render();
+  });
+
 });
-
-
-/*
- * Set up search function.
- */
-$('#search_field').on('keyup', function (event) {
-  var queryStr = event.target.value;
-  var hot = $container.handsontable('getInstance');
-  var queryResult = hot.search.query(queryStr);
-  //console.log(queryResult);
-
-  hot.render();
-});
-
-})
-;
 </script>

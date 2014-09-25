@@ -461,50 +461,45 @@ class OrderController extends ControllerBase
                 $seq_runmode_type_id = $this->request->getPost('seq_runmode_type_id', 'int');
                 $seq_runread_type_id = $this->request->getPost('seq_runread_type_id', 'int');
                 $slot = $this->request->getPost('slot', 'striptags');
-                $seq_run_type_schemes = SeqRunTypeSchemes::find(array(
-                    "instrument_type_id = :instrument_type_id: AND seq_runmode_type_id = :seq_runmode_type_id: AND seq_runread_type_id = :seq_runread_type_id: AND active = 'Y'",
-                    'bind' => array(
-                        'instrument_type_id' => $instrument_type_id,
-                        'seq_runmode_type_id' => $seq_runmode_type_id,
-                        'seq_runread_type_id' => $seq_runread_type_id
-                    )
-                ));
-
                 if (empty($slot)) {
                     $seq_runcycle_type_id_attr = 'seq_runcycle_type';
                 } else {
                     $seq_runcycle_type_id_attr = 'seq_runcycle_type_' . $slot;
                 }
-                $seq_runcycle_types_uniq = array(); // @TODO Could not use DISTINCT
+
+                $seq_runcycle_types = $this->modelsManager->createBuilder()
+                    ->columns('srct.*')
+                    ->addfrom('SeqRunCycleTypes', 'srct')
+                    ->join('SeqRunTypeSchemes', 'srts.seq_runcycle_type_id = srct.id', 'srts')
+                    ->where('srts.instrument_type_id = :instrument_type_id:', array("instrument_type_id" => $instrument_type_id))
+                    ->andWhere('srts.seq_runmode_type_id = :seq_runmode_type_id:', array("seq_runmode_type_id" => $seq_runmode_type_id))
+                    ->andWhere('srts.seq_runread_type_id = :seq_runread_type_id:', array("seq_runread_type_id" => $seq_runread_type_id))
+                    ->groupBy('srct.id')
+                    ->orderBy('srct.sort_order IS NULL ASC, srct.sort_order ASC')
+                    ->getQuery()
+                    ->execute();
+
                 echo '<label for="' . $seq_runcycle_type_id_attr . '">Read Cycle</label><br>';
-                foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
-                    //Build seq_runcycle_select
-                    $seq_runcycle_type = $seq_run_type_scheme->getSeqRuncycleTypes(array(
-                        "active = 'Y'",
-                        "order" => "sort_order IS NULL ASC, sort_order ASC"
-                    ));
-                    if (!empty($seq_runcycle_type) && !isset($seq_runcycle_types_uniq[$seq_runcycle_type->id])) {
-                        if ($this->session->has($seq_runcycle_type_id_attr) && $seq_runcycle_type->id == $this->session->get($seq_runcycle_type_id_attr)->id) {
-                            echo '<label class="radio-inline">';
-                            echo Tag::radioField(array(
-                                "seq_runcycle_type_id_" . $seq_runcycle_type->id,
-                                "name" => $seq_runcycle_type_id_attr,
-                                "value" => $seq_runcycle_type->id,
-                                'checked' => 'checked'
-                            ));
-                            echo $seq_runcycle_type->name;
-                            echo '</label>';
-                        } else {
-                            echo '<label class="radio-inline">';
-                            echo Tag::radioField(array(
-                                "seq_runcycle_type_id_" . $seq_runcycle_type->id,
-                                "name" => $seq_runcycle_type_id_attr,
-                                "value" => $seq_runcycle_type->id
-                            ));
-                            echo $seq_runcycle_type->name;
-                            echo '</label>';
-                        }
-                        $seq_runcycle_types_uniq[$seq_runcycle_type->id] = true;
+                foreach ($seq_runcycle_types as $seq_runcycle_type) {
+                    if ($this->session->has($seq_runcycle_type_id_attr) && $seq_runcycle_type->id == $this->session->get($seq_runcycle_type_id_attr)->id) {
+                        echo '<label class="radio-inline">';
+                        echo Tag::radioField(array(
+                            "seq_runcycle_type_id_" . $seq_runcycle_type->id,
+                            "name" => $seq_runcycle_type_id_attr,
+                            "value" => $seq_runcycle_type->id,
+                            'checked' => 'checked'
+                        ));
+                        echo $seq_runcycle_type->name;
+                        echo '</label>';
+                    } else {
+                        echo '<label class="radio-inline">';
+                        echo Tag::radioField(array(
+                            "seq_runcycle_type_id_" . $seq_runcycle_type->id,
+                            "name" => $seq_runcycle_type_id_attr,
+                            "value" => $seq_runcycle_type->id
+                        ));
+                        echo $seq_runcycle_type->name;
+                        echo '</label>';
                     }
                 }
             }
@@ -651,7 +646,7 @@ class OrderController extends ControllerBase
             $this->flashSession->warning("Please input Sample information");
             $warning++;
         } else {
-            $sample_data_str = str_replace('&#34;', '"', $this->session->get('sample')->name);
+            $sample_data_str = str_replace('&#34;', '"', $this->session->get('sample')->name); //replace code &#34 to "(double quotes).
             $sample_data = json_decode($sample_data_str, false);
             //var_dump($sample_data);
             $name = array();
@@ -660,9 +655,14 @@ class OrderController extends ControllerBase
             foreach ($sample_data as $row) {
                 $count++;
                 if (empty($row->name)) {
+                    /*
+                     * @TODO should be skipped null line with checking all columns on $sample_data array.
+                     *
                     $this->flashSession->warning("Please input Sample Name at line " . $count);
                     $warning++;
                     $name_exception++;
+                    */
+                    continue;
                 }
                 $name[] = $row->name;
             }
