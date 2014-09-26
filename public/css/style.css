@@ -309,3 +309,19 @@ button.tube-close {
   max-width: none;
 }
 
+/*
+ * Custom style input-xs and tube-hidden for tube-filter form
+ */
+.form-control.input-xs {
+  display: inline-block;
+  height: 22px;
+  max-width: 130px;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+
+.tube-hidden {
+  display: none !important;
+}

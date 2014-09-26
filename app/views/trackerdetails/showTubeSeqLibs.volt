@@ -9,6 +9,7 @@
         <button type="button" class="btn btn-default btn-xs" id="show-inactive"
                 style="max-height: 25px; min-width: 87px">Show Inactive
         </button>
+        <input id="tube-filter" type="search" class="form-control input-xs" placeholder="Filtering Search">
         <button type="button" class="btn btn-default btn-xs pull-right" id="select-all">Select All
         </button>
       </div>

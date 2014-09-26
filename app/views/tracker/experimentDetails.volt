@@ -116,6 +116,7 @@
                       .removeClass('active')
                       .text('Show Inactive');
                 }
+
               });
           /*
            * put function to "Select all" button.
@@ -146,7 +147,37 @@
                       .removeClass('active')
                       .text('Select all');
                 }
+
               });
+
+          /*
+           * Put function to 'Search' form on tube list header.
+           */
+          $('#tube-filter').on('keyup', function (event) {
+            var queryStr = new RegExp(event.target.value);
+            console.log(queryStr);
+            $(event.target)
+                .parents('.tube-group')
+                .children('.tube-list')
+                .find('.tube.ui-selectee')
+                .filter(function (index) {
+                  var css_display = $(this).css('display');
+                  var tube_textStr = $(this).text().toString();
+                  //console.log(index + ":" + css_display != 'none' && ! queryStr.test(tube_textStr));
+                  return css_display != 'none' && ! queryStr.test(tube_textStr);
+                })
+                .addClass('tube-hidden');
+
+            $(event.target)
+                .parents('.tube-group')
+                .children('.tube-list')
+                .find('.tube-hidden')
+                .filter(function (index) {
+                  var tube_textStr = $(this).text().toString();
+                  return queryStr.test(tube_textStr);
+                })
+                .removeClass('tube-hidden');
+          });
 
         });
   }
