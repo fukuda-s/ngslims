@@ -117,12 +117,19 @@
                       .text('Show Inactive');
                 }
               });
+          /*
+           * put function to "Select all" button.
+           */
           $(target_id)
               .find('button#select-all').click(function (e) {
-                $(target_id).find('.tube.ui-selectee').addClass('ui-selected')
+
                 if ($(e.target).hasClass('active') == false) {
                   $(target_id)
                       .find('.tube.ui-selectee')
+                      .filter(function () {
+                        var css_display = $(this).css('display');
+                        return css_display != 'none';
+                      })
                       .addClass('ui-selected')
                   $(e.target)
                       .addClass('active')
@@ -130,6 +137,10 @@
                 } else {
                   $(target_id)
                       .find('.tube.ui-selectee')
+                      .filter(function () {
+                        var css_display = $(this).css('display');
+                        return css_display != 'none';
+                      })
                       .removeClass('ui-selected')
                   $(e.target)
                       .removeClass('active')
