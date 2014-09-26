@@ -1019,32 +1019,33 @@ $(document).ready(function () {
           //alert(data);
           //alert(location.href);
           $handsontable.loadData(data);
-
-          var changedColWidths = $defaultColWidths;
-          //console.log(changedColWidths);
-
-          //Set column width of SamplePropertyTypes to 0.1 (not shown) or '' (auto column width) if sample has SampleProperty.
-          $('#sample_property_types').children('option').each(function (index, domEle) {
-            var actualColWidthIdx = index + $samplePropertyTypesColumnsStartIdx;
-            if ($(domEle).attr('selected')) {
-              changedColWidths[actualColWidthIdx] = '';
-            } else {
-              changedColWidths[actualColWidthIdx] = 0.1;
-            }
-          });
-          //Set session value for sample_property_types checked of checked/unchecked.
-          //setOrderSessionVal('sample_property_types_checked', 0, $samplePropertyTypesChecked);
-          //console.log($samplePropertyTypesChecked);
-
-          //Change column width (Show checked sample_property_types column) on handsontable.
-          $handsontable.updateSettings({'colWidths': changedColWidths});
-          //console.log(changedColWidths);
         });
   }
 
   loadData(); // loading data at first.
 
-  //Build 'Undo' function on toolbar
+  /*
+   * Set column width of SamplePropertyTypes to 0.1 (not shown) or '' (auto column width) if sample has SampleProperty.
+   */
+  var changedColWidths = $defaultColWidths;
+  //console.log(changedColWidths);
+
+  $('#sample_property_types').children('option').each(function (index, domEle) {
+    var actualColWidthIdx = index + $samplePropertyTypesColumnsStartIdx;
+    if ($(domEle).attr('selected')) {
+      changedColWidths[actualColWidthIdx] = '';
+    } else {
+      changedColWidths[actualColWidthIdx] = 0.1;
+    }
+  });
+
+  //Change column width (Show checked sample_property_types column) on handsontable.
+  $handsontable.updateSettings({'colWidths': changedColWidths});
+  //console.log(changedColWidths);
+
+  /*
+   * Build 'Undo' function on toolbar
+   */
   $toolbar.find('#undo').click(function () {
     // alert('undo! '+$handsontable.isUndoAvailable()+'
     // '+$handsontable.isRedoAvailable())
@@ -1063,7 +1064,9 @@ $(document).ready(function () {
     }
   });
 
-  //Build 'Redo' function on toolbar
+  /*
+   * Build 'Redo' function on toolbar
+   */
   $toolbar.find('#redo').click(function () {
     // alert('redo! '+$handsontable.isUndoAvailable()+'
     // '+$handsontable.isRedoAvailable());
@@ -1088,7 +1091,9 @@ $(document).ready(function () {
     $handsontable.loadData(null);
   });
 
-
+  /*
+   * Build sample_property_types multiselect on handsontable tool-bar
+   */
   $('#sample_property_types').multiselect({
     /*
      * Show/Hide sample_property_types columns when checkbox is checked/unchecked.
@@ -1133,5 +1138,6 @@ $(document).ready(function () {
     hot.render();
   });
 
-});
+})
+;
 </script>
