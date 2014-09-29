@@ -377,7 +377,8 @@ class Elements extends Phalcon\Mvc\User\Component
                         ->addFrom('Samples', 's')
                         ->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
                         ->leftJoin('StepEntries', 'ste.sample_id = s.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
-                        ->where('s.project_id = :project_id: AND st.nucleotide_type = :nucleotide_type:')
+                        ->where('s.project_id = :project_id:')
+                        ->andWhere('st.nucleotide_type = :nucleotide_type:')
                         ->getQuery()
                         ->execute(array(
                             'step_id' => $step_id,
@@ -389,8 +390,10 @@ class Elements extends Phalcon\Mvc\User\Component
                     $sample_count = $this->modelsManager->createBuilder()
                         ->addFrom('Seqlibs', 'slib')
                         ->leftJoin('StepEntries', 'ste.seqlib_id = slib.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
-                        ->join('Steps', 'st.id = ste.step_id', 'st')
-                        ->where('slib.project_id = :project_id: AND st.nucleotide_type = :nucleotide_type:')
+                        ->join('Protocols', 'p.id = slib.protocol_id', 'p')
+                        ->join('Steps', 'st.id = p.step_id', 'st')
+                        ->where('slib.project_id = :project_id:')
+                        ->andWhere('st.nucleotide_type = :nucleotide_type:')
                         ->getQuery()
                         ->execute(array(
                             'step_id' => $step_id,
