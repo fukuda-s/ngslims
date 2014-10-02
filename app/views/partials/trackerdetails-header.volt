@@ -17,7 +17,7 @@
     {% if project.PIs is empty %}
       <li>(Undefined PI)</li>
     {% else %}
-      <li>{{ linkTo('tracker/experimentDetails/' ~ step.id ~ '#pi_user_id_' ~ project.PIs.id , project.PIs.getFullname() ) }}</li>
+      <li>{{ linkTo('tracker/experimentDetails/' ~ step.id ~ '?pi_user_id=' ~ project.PIs.id ~ '&status=' ~ status, project.PIs.getFullname() ) }}</li>
     {% endif %}
     <li class="active">{{ project.name }}</li>
   </ol>

@@ -1,5 +1,4 @@
 <?php
-use Phalcon\Logger\Formatter\Json;
 
 class SeqlibsController extends ControllerBase
 {
@@ -9,7 +8,7 @@ class SeqlibsController extends ControllerBase
         echo "This is index of SeqlibsController";
     }
 
-    public function loadjsonAction($step_id, $project_id)
+    public function loadjsonAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -17,18 +16,38 @@ class SeqlibsController extends ControllerBase
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
-                // echo "Request was made using POST and AJAX";
-                $step_id = $this->filter->sanitize($step_id, array(
-                    "int"
-                ));
-                $project_id = $this->filter->sanitize($project_id, array(
-                    "int"
-                ));
+                $step_id = $request->getPost('step_id', 'int');
+                $project_id = $request->getPost('project_id', 'int');
+                $status = $request->getPost('status', 'striptags');
                 $query = $request->getPost('query', 'striptags');
-                $query = $this->filter->sanitize($query, array(
-                    "striptags"
-                ));
 
+                $seqlibs_tmp = $this->modelsManager->createBuilder()
+                    ->columns(array('sl.*', 'ste.*'))
+                    ->addFrom('Seqlibs', 'sl')
+                    ->join('StepEntries', 'ste.seqlib_id = sl.id', 'ste')
+                    ->where('sl.id IS NOT NULL'); /* dummy to concatenate andWhere as follows */
+
+                if ($step_id) {
+                    $seqlibs_tmp = $seqlibs_tmp->andWhere('ste.step_id = :step_id:', array('step_id' => $step_id));
+                }
+                if ($project_id) {
+                    $seqlibs_tmp = $seqlibs_tmp->andWhere('sl.project_id = :project_id:', array('project_id' => $project_id));
+                }
+                if (!empty($status)) {
+                    if ($status === 'NULL') {
+                        $seqlibs_tmp = $seqlibs_tmp->andWhere('ste.status IS NULL');
+                    } else {
+                        $seqlibs_tmp = $seqlibs_tmp->andWhere('ste.status = :status:', array('status' => $status));
+                    }
+                }
+                if (!empty($query)) {
+                    $seqlibs_tmp = $seqlibs_tmp->andWhere('sl.name LIKE :query:', array('query' => '%' . $query . '%'));
+                }
+
+                $seqlibs = $seqlibs_tmp->getQuery()
+                    ->execute();
+
+                /*
                 $seqlibs_array = [];
                 if (!empty($query)) {
                     $seqlibs = Seqlibs::find(array(
@@ -90,6 +109,8 @@ class SeqlibsController extends ControllerBase
                 }
                 //echo json_encode($this->handsontableHelper->getValuesArr($samples->toArray()));
                 echo json_encode($seqlibs_array);
+                */
+                echo json_encode($seqlibs->toArray());
             }
         }
     }

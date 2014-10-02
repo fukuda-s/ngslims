@@ -37,6 +37,7 @@ table td.dup_b {
  */
 
 .tube {
+  min-height: 25px;
   padding: 2px 20px 2px 20px;
   margin: 2px 50px 2px 50px;
   color: #333333;
@@ -48,32 +49,9 @@ table td.dup_b {
   vertical-align: middle;
 }
 
-.tube-list {
-  padding-left: 0;
-  list-style: none;
-}
-
-ul.tube-list {
-  display: table-row;
-}
-
-ul.tube-list-row {
-  display: table-row-group;
-  white-space: nowrap;
-}
-
-div.tube-list-col {
-  display: inline-block;
-}
-
-.tube-header-list {
-  padding-left: 0;
-  display: table-header-group;
-  list-style: none
-}
-
 .tube-sm {
-  height: 20px;
+  min-height: 20px !important;
+  height: 20px !important;
   padding: 1px 10px 1px 10px;
   margin: 1px 1px 1px 1px;
   border-radius: 2px;
@@ -93,9 +71,34 @@ div.tube-list-col {
   margin: 1px 1px 1px 1px;
 }
 
+.tube-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.tube-header-list {
+  padding-left: 0;
+  display: table-header-group;
+  list-style: none
+}
+
 .tube-sm-row-header {
   min-width: 200px;
 }
+
+ul.tube-list {
+  display: table-row;
+}
+
+ul.tube-list-row {
+  display: table-row-group;
+  white-space: nowrap;
+}
+
+div.tube-list-col {
+  display: inline-block;
+}
+
 
 ul.tube-list-row > ul.tube-list-col {
   padding: 0;
@@ -137,9 +140,6 @@ ul.tube-list > li.tube-sm {
   }
 }
 
-.tube-header {
-}
-
 .tube-active {
   color: #468847;
   border-color: #d6e9c6;
@@ -165,7 +165,7 @@ ul.tube-list > li.tube-sm {
   /* min-width: 150px; */
   border-color: #dcdeba !important;
   background-color: #fffec9 !important;
-  display: inline-block;
+  /* display: inline-block; */
 }
 
 .tube-empty {

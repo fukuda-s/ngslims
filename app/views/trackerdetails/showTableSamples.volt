@@ -4,7 +4,7 @@
   <div class="col-md-12">
     {{ partial('partials/trackerdetails-header') }}
     <div
-        align="right">{{ link_to("trackerdetails/editSamples/SHOW/0/" ~ project.id ~ "?pre=" ~ previousAction, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
+        align="right">{{ link_to("trackerdetails/editSamples/SHOW/0/" ~ project.id ~ "?pre_action=" ~ previousAction, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
     <hr>
     <table class="table table-bordered table-hover table-condensed" id="sampleInfo_table">
       <thead>

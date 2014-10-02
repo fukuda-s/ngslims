@@ -270,7 +270,7 @@ class Elements extends Phalcon\Mvc\User\Component
                 echo '	<div class="row">';
                 echo '		<div class="col-md-6">';
                 echo Tag::linkTo(array(
-                    "trackerdetails/showTableSamples/" . $project->id . "?pre=projectPi",
+                    "trackerdetails/showTableSamples/" . $project->id . "?pre_action=projectPi",
                     $project->name
                 ));
                 echo '		</div>';
@@ -307,12 +307,12 @@ class Elements extends Phalcon\Mvc\User\Component
         )
     );
 
-    public function getTrackerExperimentDetailProjectList($pi_user_id, $nucleotide_type, $step_phase_code, $step_id)
+    public function getTrackerExperimentDetailProjectList($pi_user_id, $step_phase_code, $step_id, $status)
     {
         $pi_user_id = $this->filter->sanitize($pi_user_id, array("int"));
-        $nucleotide_type = $this->filter->sanitize($nucleotide_type, array("string"));
         $step_phase_code = $this->filter->sanitize($step_phase_code, array("string"));
         $step_id = $this->filter->sanitize($step_id, array("int"));
+        $status = $this->filter->sanitize($status, array("string"));
 
         if ($step_phase_code === 'MULTIPLEX' or $step_phase_code === 'DUALMULTIPLEX') {
             $projects = $this->modelsManager->createBuilder()
@@ -373,35 +373,30 @@ class Elements extends Phalcon\Mvc\User\Component
             foreach ($projects as $project) {
                 // $this->flash->success(var_dump($project));
                 if ($step_phase_code == 'QC') {
-                    $sample_count = $this->modelsManager->createBuilder()
+                    $sample_count_tmp = $this->modelsManager->createBuilder()
                         ->addFrom('Samples', 's')
-                        ->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
-                        ->leftJoin('StepEntries', 'ste.sample_id = s.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
-                        ->where('s.project_id = :project_id:')
-                        ->andWhere('st.nucleotide_type = :nucleotide_type:')
-                        ->getQuery()
-                        ->execute(array(
-                            'step_id' => $step_id,
-                            'project_id' => $project->id,
-                            'nucleotide_type' => $nucleotide_type
-                        ))
-                        ->count();
+                        ->join('StepEntries', 'ste.sample_id = s.id AND ste.step_id = :step_id:', 'ste')
+                        ->where('s.project_id = :project_id:');
                 } elseif ($step_phase_code == 'PREP') {
-                    $sample_count = $this->modelsManager->createBuilder()
-                        ->addFrom('Seqlibs', 'slib')
-                        ->leftJoin('StepEntries', 'ste.seqlib_id = slib.id AND ste.step_id = :step_id: AND ( ste.status != "Completed" OR ste.status IS NULL )', 'ste')
-                        ->join('Protocols', 'p.id = slib.protocol_id', 'p')
-                        ->join('Steps', 'st.id = p.step_id', 'st')
-                        ->where('slib.project_id = :project_id:')
-                        ->andWhere('st.nucleotide_type = :nucleotide_type:')
-                        ->getQuery()
-                        ->execute(array(
-                            'step_id' => $step_id,
-                            'project_id' => $project->id,
-                            'nucleotide_type' => $nucleotide_type
-                        ))
-                        ->count();
+                    $sample_count_tmp = $this->modelsManager->createBuilder()
+                        ->addFrom('Seqlibs', 'sl')
+                        ->join('StepEntries', 'ste.seqlib_id = sl.id AND ste.step_id = :step_id:', 'ste')
+                        ->where('sl.project_id = :project_id:');
                 }
+
+                if (is_null($status)) {
+                    $sample_count_tmp = $sample_count_tmp->andWhere('ste.status IS NULL');
+                    $status_str = 'NULL';
+                } else {
+                    $sample_count_tmp = $sample_count_tmp->andWhere('ste.status = :status:', array("status" => $status));
+                    $status_str = $status;
+                }
+                $sample_count = $sample_count_tmp->getQuery()
+                    ->execute(array(
+                        'step_id' => $step_id,
+                        'project_id' => $project->id
+                    ))
+                    ->count();
 
                 if (!$sample_count) {
                     continue;
@@ -410,7 +405,7 @@ class Elements extends Phalcon\Mvc\User\Component
                 echo '	<div class="row">';
                 echo '		<div class="col-md-8">';
                 echo Tag::linkTo(array(
-                    "trackerdetails/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id,
+                    "trackerdetails/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id . '/' . $status_str,
                     $project->name
                 ));
                 echo '		</div>';

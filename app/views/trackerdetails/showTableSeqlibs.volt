@@ -1,7 +1,7 @@
 {% for seqlib in seqlibs %}
   {% if loop.first %}
     <table class="table table-bordered table-hover table-condensed table-responsive collapse in"
-    id="seqtemplate-table-{{ seqlib.st.id }}">
+    id="seqtemplate-table-{{ seqlib.st.id }}" style="overflow: auto;">
     <thead>
     <tr>
       <th>Project Name</th>

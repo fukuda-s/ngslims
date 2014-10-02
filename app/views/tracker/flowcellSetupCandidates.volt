@@ -38,7 +38,7 @@
               id="seqtemplate-tube-control" control_id="{{ seqlane["control_id"] }} seqtemplate_name="{{ seqlane["seqtemplate_name"] }}">{{ seqlane["seqtemplate_name"] }}</li>
             {% endif %}
           {% else %}
-            <li class="tube placeholder"></li>
+            <li class="tube"></li>
           {% endif %}
         {% endfor %}
       </ol>
@@ -84,7 +84,7 @@
       {% if seqtemplate.se.id != null and seqtemplate.se.status != 'Completed' and seqtemplate.se.status != 'On Hold' %}
         <div class="panel panel-info" id="seqtemplate-panel-{{ seqtemplate.st.id }}" data-toggle="collapse"
              data-target="#seqtemplate-table-{{ seqtemplate.st.id }}" seqtemplate_id="{{ seqtemplate.st.id }}"
-             seqtemplate_name="{{ seqtemplate.st.name }}">
+             seqtemplate_name="{{ seqtemplate.st.name }}" onclick="showTableSeqlibs(this, {{ seqtemplate.st.id }})">
           <div class="panel-heading" id="seqtemplate-header-{{ seqtemplate.st.id }}">
             {{ seqtemplate.st.name }}
           </div>
@@ -93,7 +93,8 @@
         <div class="panel panel-default collapse" id="seqtemplate-panel-{{ seqtemplate.st.id }}" data-toggle="collapse"
              data-target="#seqtemplate-table-{{ seqtemplate.st.id }}" seqtemplate_id="{{ seqtemplate.st.id }}"
              seqtemplate_name="{{ seqtemplate.st.name }}">
-          <div class="panel-heading" id="seqtemplate-header-{{ seqtemplate.st.id }}">
+          <div class="panel-heading" id="seqtemplate-header-{{ seqtemplate.st.id }}"
+               onclick="showTableSeqlibs(this, {{ seqtemplate.st.id }})">
             {{ seqtemplate.st.name }}
           </div>
         </div>
@@ -107,6 +108,10 @@
   </div>
 </div>
 <script>
+  /*
+   * Function: showTableSeqlibs
+   *  To show table of seqlibs which contains with selected seqtemplates.
+   */
   function showTableSeqlibs(obj, seqtemplate_id) {
     var table = $(obj).find("#seqtemplate-table-" + seqtemplate_id);
     //console.log(table.attr("id"));
@@ -129,29 +134,23 @@
   }
 
   $(document).ready(function () {
+    /*
+     * Set draggable for seqtemplate panels
+     */
     $(".panel[id^=seqtemplate-panel-]").draggable({
       addClasses: "false",
       appendTo: "body",
+      cursor: 'move',
       helper: "clone"
-    })
-        .each(function () {
-          //Append click function to show seqlib table as detail information.
-          if ($(this).attr("seqtemplate_id")) {
-            $(this).click(function () {
-              var seqtemplate_id = $(this).attr('seqtemplate_id');
-              showTableSeqlibs(this, seqtemplate_id);
-              //console.log(seqtemplate_id);
-            })
-          }
-        });
+    });
 
+    /*
+     * Set droppable to flowcell panel (not for 'ol' list-group) from seqtemplate panels.
+     */
     $("#flowcell-panel li").droppable({
-      hoverClass: "tube-placeholder",
+      //hoverClass: "tube tube-placeholder",
       accept: ":not(.ui-sortable-helper)",
       drop: function (event, ui) {
-        //console.log(ui.draggable);
-        $(this).removeClass("placeholder");
-
         var seqtemplate_name = ui.draggable.context.getAttribute("seqtemplate_name");
         var seqtemplate_id = ui.draggable.context.getAttribute("seqtemplate_id");
         var control_id = ui.draggable.context.getAttribute("control_id");
@@ -160,21 +159,27 @@
               .text(seqtemplate_name)
               .attr('seqtemplate_name', seqtemplate_name)
               .attr('seqtemplate_id', seqtemplate_id)
-              .addClass("tube-active")
+              .addClass("tube tube-active")
               .removeAttr("id");
         } else if (control_id) {
           $(this)
               .text(seqtemplate_name)
               .attr('seqtemplate_name', seqtemplate_name)
               .attr('control_id', control_id)
-              .addClass("tube-active")
+              .addClass("tube tube-active")
               .removeAttr("id");
         }
       }
     });
 
-    $("#flowcell-panel ol").sortable();
+    $("#flowcell-panel ol").sortable({
+      cursor: 'move',
+      placeholder: "tube tube-placeholder"
+    });
 
+    /*
+     * Build function for #flowcell-confirm-button
+     */
     $("#flowcell-confirm-button").click(function () {
       var parent_panel = $('#flowcell-panel');
       var flowcell_name = parent_panel.find('input#flowcell_name').val();
@@ -191,12 +196,22 @@
           seqtemplate_id = $(this).attr("seqtemplate_id");
           seqtemplate_name = $(this).attr("seqtemplate_name");
           is_control = 'N';
-          seqlanes[seqlane_number] = {seqlane_number: seqlane_number, seqtemplate_id: seqtemplate_id, seqtemplate_name: seqtemplate_name, is_control: is_control };
+          seqlanes[seqlane_number] = {
+            seqlane_number: seqlane_number,
+            seqtemplate_id: seqtemplate_id,
+            seqtemplate_name: seqtemplate_name,
+            is_control: is_control
+          };
         } else if ($(this).attr("control_id")) {
           control_id = $(this).attr("control_id");
           seqtemplate_name = $(this).attr("seqtemplate_name");
           is_control = 'Y';
-          seqlanes[seqlane_number] = {seqlane_number: seqlane_number, seqtemplate_name: seqtemplate_name, is_control: is_control, control_id: control_id };
+          seqlanes[seqlane_number] = {
+            seqlane_number: seqlane_number,
+            seqtemplate_name: seqtemplate_name,
+            is_control: is_control,
+            control_id: control_id
+          };
         }
       })
       //console.log(seqlanes);
@@ -215,6 +230,9 @@
 
     });
 
+    /*
+     * Build function for #flowcell-clear-button
+     */
     $("#flowcell-clear-button").click(function () {
       $.ajax({
         url: '{{ url("tracker/flowcellSetupSetSession/") ~ step.id }}',

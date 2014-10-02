@@ -13,8 +13,16 @@ class TrackerdetailsController extends ControllerBase
         /*
          * Get previous action name for breadcrumb
          */
-        $previousAction = $this->request->get('pre', 'striptags');
+        $previousAction = $this->request->get('pre_action', 'striptags');
         $this->view->setVar('previousAction', $previousAction);
+
+        /*
+         * Get nucleotide type and status for nav-tabs
+         */
+        $nuc_type = $this->request->get('nuc_type', 'striptags');
+        $this->view->setVar('nuc_type', $nuc_type);
+        $previousStatus = $this->request->get('pre_status', 'striptags');
+        $this->view->setVar('previousStatus', $previousStatus);
     }
 
     public function indexAction()
@@ -107,16 +115,16 @@ class TrackerdetailsController extends ControllerBase
         ));
     }
 
-    public function editSamplesAction($type, $step_id, $project_id)
+    public function editSamplesAction($type, $step_id, $project_id, $status = null)
     {
-        $project_id = $this->filter->sanitize($project_id, array(
-            "int"
-        ));
-        /*
-         * Get Project table
-         */
+        $type = $this->filter->sanitize($type, array("striptags"));
+        $project_id = $this->filter->sanitize($project_id, array("int"));
+        $step_id = $this->filter->sanitize($step_id, array("int"));
+        $status = $this->filter->sanitize($status, array("striptags"));
+
         $this->view->setVar('project', Projects::findFirstById($project_id));
         $this->view->setVar('type', $type);
+        $this->view->setVar('status', $status);
         if ($type == 'SHOW' && $step_id == 0) {
             $this->view->setVar('step', (object)array('id' => 0, 'tabtype' => 'sample'));
         } else {
@@ -159,10 +167,36 @@ class TrackerdetailsController extends ControllerBase
                      * $changes has array [["row number from 0", "row name", "before value", "changed value"]] ex.)[["3","qual_od260230","","1"]]
                      */
                     foreach ($changes as $sample_id => $rowValues) {
-                        foreach ($rowValues as $colNameToChange => $valueChangeTo) {
-                            $sample = Samples::findFirstById($sample_id);
+                        foreach ($rowValues as $tblColNameToChange  => $valueChangeTo) {
+                            $colStrToChange = preg_split('/\./', $tblColNameToChange);
+                            $tblNameToChange = $colStrToChange[0];
+                            $colNameToChange = $colStrToChange[1];
+
                             if(empty($valueChangeTo)){
                                 $valueChangeTo = null;
+                            }
+
+                            $sample = Samples::findFirstById($sample_id);
+
+                            //Set up StepEntries for this sample with QC step
+                            $sample_step_entries = StepEntries::findFirst(array(
+                                "sample_id = :sample_id:",
+                                'bind' => array(
+                                    'sample_id' => $sample_id
+                                )
+                            ));
+                            if (!$sample_step_entries) {
+                                $sample_step = Steps::findFirst(array(
+                                    "step_phase_code = 'QC' AND nucleotide_type = :nucleotide_type:",
+                                    'bind' => array(
+                                        'nucleotide_type' => $sample->getSampleTypes()->nucleotide_type
+                                    )
+                                ));
+
+                                //Set new step_entries is $sample doesn't have step_entries (it's should be illegal).
+                                $sample_step_entries = new StepEntries();
+                                $sample_step_entries->sample_id = $sample->id;
+                                $sample_step_entries->step_phase_code = $sample_step->step_phase_code; //Should be 'QC'
                             }
 
 
@@ -170,7 +204,7 @@ class TrackerdetailsController extends ControllerBase
                                 continue; //Skip for to_prep_protocol_name
                             } elseif ($colNameToChange === 'to_prep' && $valueChangeTo === 'true') {
                                 //Set up protocol values
-                                $protocol_name = $changes[$sample_id]["to_prep_protocol_name"];
+                                $protocol_name = $changes[$sample_id]["prep.to_prep_protocol_name"];
                                 $protocol = Protocols::findFirst(array(
                                     "name = :name:",
                                     'bind' => array(
@@ -230,6 +264,21 @@ class TrackerdetailsController extends ControllerBase
                                         }
                                         return;
                                     }
+                                } elseif ($tblNameToChange === 'ste') { //'ste' is alias of StepEntries on SamplesController->loadjson()
+                                    $sample_step_entries->$colNameToChange = $valueChangeTo;
+                                    $auth = $this->session->get('auth');
+                                    if($auth) {
+                                        $sample_step_entries->update_user_id = $auth['id'];
+                                    }
+
+                                    // @TODO Is it possible to tie $sample_step_entries to $sample and save (update) at onetime?
+                                    if (!$sample_step_entries->save()) {
+                                        foreach ($sample_step_entries->getMessages() as $message) {
+                                            $this->flashSession->error((string)$message);
+                                            echo "Error to save sample_step_entries: $message";
+                                        }
+                                        return;
+                                    }
                                 } else { //If the changes are samples own.
                                     if ($colNameToChange == 'sample_location_id') {
                                         //Set up sample_location values
@@ -249,6 +298,8 @@ class TrackerdetailsController extends ControllerBase
                                         $sample->$colNameToChange = $valueChangeTo;
                                     }
 
+
+
                                     if (!$sample->save()) {
                                         foreach ($sample->getMessages() as $message) {
                                             $this->flashSession->error((string)$message);
@@ -267,16 +318,16 @@ class TrackerdetailsController extends ControllerBase
         }
     }
 
-    public function editSeqlibsAction($type, $step_id, $project_id)
+    public function editSeqlibsAction($type, $step_id, $project_id, $status = null)
     {
-        $step_id = $this->filter->sanitize($step_id, array(
-            "int"
-        ));
-        $project_id = $this->filter->sanitize($project_id, array(
-            "int"
-        ));
+        $type = $this->filter->sanitize($type, array("striptags"));
+        $project_id = $this->filter->sanitize($project_id, array("int"));
+        $step_id = $this->filter->sanitize($step_id, array("int"));
+        $status = $this->filter->sanitize($status, array("striptags"));
+
         $this->view->setVar('project', Projects::findFirstById($project_id));
         $this->view->setVar('type', $type);
+        $this->view->setVar('status', $status);
         if ($type == 'SHOW') {
             $this->view->setVar('step', (object)array('id' => 0, 'tabtype' => 'seqlib'));
         } else {
@@ -319,6 +370,7 @@ class TrackerdetailsController extends ControllerBase
                                 $seqlib_protocol = Protocols::findFirstById($seqlib->protocol_id);
                                 $seqlib_step = Steps::findFirstById($seqlib_protocol->step_id);
 
+                                //Set new step_entries is $seqlib doesn't have step_entries (it's should be illegal).
                                 $seqlib_step_entries = new StepEntries();
                                 $seqlib_step_entries->seqlib_id = $seqlib->id;
                                 $seqlib_step_entries->step_id = $seqlib_protocol->step_id;
@@ -409,8 +461,12 @@ class TrackerdetailsController extends ControllerBase
                                     ));
                                     $seqlib->$columnName[0] = $oligobarcode->id;
                                 }
-                            } elseif ($tblNameToChange === 'se') { //'se' is alias of StepEntries on SeqlibsController->loadjson()
+                            } elseif ($tblNameToChange === 'ste') { //'ste' is alias of StepEntries on SeqlibsController->loadjson()
                                 $seqlib_step_entries->$colNameToChange = $valueChangeTo;
+                                $auth = $this->session->get('auth');
+                                if($auth) {
+                                    $seqlib_step_entries->update_user_id = $auth['id'];
+                                }
                             } else {
                                 $seqlib->$colNameToChange = $valueChangeTo;
                             }

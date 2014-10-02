@@ -65,79 +65,51 @@ class TrackerController extends ControllerBase
 
         $step_phase_code = $step->step_phase_code;
         if ($step_phase_code === 'QC') {
-            //project|sample_count_all are needed when the sample|seqlib does not have step_entry record caused by bulk import.
-            $phql = "
-                SELECT
-                    COUNT(DISTINCT s2.project_id) AS project_count,
-                    COUNT(DISTINCT s2.id) AS sample_count,
-                    COUNT(DISTINCT s.project_id) AS project_count_all,
-                    COUNT(DISTINCT s.id) AS sample_count_all,
-                    u.id,
-                    u.firstname,
-                    u.lastname,
-                    CONCAT(u.lastname, ', ', u.firstname) AS name
-                FROM
-                    Users u
-                        LEFT JOIN
-                    Projects p ON p.pi_user_id = u.id AND p.active = 'Y'
-                        JOIN
-                    Samples s ON s.project_id = p.id
-                        LEFT JOIN
-                    SampleTypes st ON st.id = s.sample_type_id
-                        JOIN
-                    Steps stp ON stp.nucleotide_type = st.nucleotide_type
-                          AND st.nucleotide_type = :nucleotide_type:
-                        LEFT JOIN
-                    StepEntries ste ON ste.sample_id = s.id
-                          AND ste.step_id = :step_id:
-                          AND ( ste.status != 'Completed' OR ste.status IS NULL )
-                        LEFT JOIN
-                    Samples s2 ON s2.id = ste.sample_id
-                GROUP BY u.id
-                ORDER BY sample_count DESC, u.lastname ASC
-            ";
-            $pi_users = $this->modelsManager->executeQuery($phql, array(
-                'step_id' => $step_id,
-                'nucleotide_type' => $step->nucleotide_type
-            ));
+            $pi_users = $this->modelsManager->createBuilder()
+                ->columns(array(
+                    'COUNT(DISTINCT s.project_id) AS project_count',
+                    'COUNT(DISTINCT s.id) AS sample_count',
+                    'ste.status AS status',
+                    /* @TODO PHQL doesn't allows CASE query
+                    "CASE
+                        WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                        ELSE 'inactive END AS active_status",
+                    */
+                    'u.*'))
+                ->addFrom('Users', 'u')
+                ->join('Projects', 'p.pi_user_id = u.id', 'p')
+                ->join('Samples', 's.project_id = p.id', 's')
+                //->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
+                ->join('StepEntries', 'ste.sample_id = s.id', 'ste')
+                ->where('p.active = "Y"')
+                //->andWhere('st.nucleotide_type = :nucleotide_type:', array("nucleotide_type" => $step->nucleotide_type ))
+                ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
+                ->groupBy(array('u.id', 'status'))
+                ->orderBy(array('u.lastname ASC', 'u.firstname'))
+                ->getQuery()
+                ->execute();
         } elseif ($step_phase_code === 'PREP') {
-            //project|sample_count_all are needed when the sample|seqlib does not have step_entry record caused by bulk import.
-            $phql = "
-                SELECT
-                    COUNT(DISTINCT sl2.project_id) AS project_count,
-                    COUNT(DISTINCT sl2.id) AS sample_count,
-                    COUNT(DISTINCT s.project_id) AS project_count_all,
-                    COUNT(DISTINCT s.id) AS sample_count_all,
-                    u.id,
-                    u.firstname,
-                    u.lastname,
-                    CONCAT(u.lastname, ', ', u.firstname) AS name
-                FROM
-                    Users u
-                        LEFT JOIN
-                    Projects p ON p.pi_user_id = u.id AND p.active = 'Y'
-                        JOIN
-                    Seqlibs sl ON sl.project_id = p.id
-                        JOIN
-                    Samples s ON s.id = sl.sample_id
-                        JOIN
-                    SampleTypes st ON st.id = s.sample_type_id
-                        JOIN
-                    Steps stp ON stp.nucleotide_type = st.nucleotide_type
-                          AND st.nucleotide_type = :nucleotide_type:
-                        LEFT JOIN
-                    StepEntries ste ON ste.seqlib_id = sl.id
-                          AND ste.step_id = :step_id:
-                          AND ( ste.status != 'Completed' OR ste.status IS NULL )
-                        LEFT JOIN
-                    Seqlibs sl2 ON sl2.id = ste.seqlib_id
-                GROUP BY u.id
-                ORDER BY sample_count DESC, u.lastname ASC
-            ";
-            $pi_users = $this->modelsManager->executeQuery($phql, array(
-                'step_id' => $step_id,
-                'nucleotide_type' => $step->nucleotide_type
-            ));
+            $pi_users = $this->modelsManager->createBuilder()
+                ->columns(array(
+                    'COUNT(DISTINCT sl.project_id) AS project_count',
+                    'COUNT(DISTINCT sl.id) AS sample_count',
+                    'ste.status AS status',
+                    /* @TODO PHQL doesn't allows CASE query
+                    "CASE
+                    WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                    ELSE 'inactive END AS active_status",
+                     */
+                    'u.*'))
+                ->addFrom('Users', 'u')
+                ->join('Projects', 'p.pi_user_id = u.id', 'p')
+                ->join('Seqlibs', 'sl.project_id = p.id', 'sl')
+                ->join('StepEntries', 'ste.seqlib_id = sl.id', 'ste')
+                ->where('p.active = "Y"')
+                ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
+                ->groupBy(array('u.id', 'status'))
+                ->orderBy(array('u.lastname ASC', 'u.firstname'))
+                ->getQuery()
+                ->execute();
         } elseif ($step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
             //project|sample_count_all are needed when the sample|seqlib does not have step_entry record caused by bulk import.
             $phql = "

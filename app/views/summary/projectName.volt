@@ -44,7 +44,7 @@
       </div>
       <div class="panel-body collapse" id="project_panel_body_{{ project.id }}">
         <p>
-          {{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre=projectName", "» Link to detail of project samples") }}
+          {{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre_action=projectName", "» Link to detail of project samples") }}
         </p>
         <div id="project_progress_{{ project.id }}"></div>
       </div>

@@ -1,19 +1,20 @@
-{{ flashSession.output() }}
 <div class="row">
   <div class="col-md-12">
     {{ partial('partials/trackerdetails-header') }}
-    <div
-        align="left">{{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre=" ~ previousAction, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
-    <hr>
+    {% if type === 'SHOW' %}
+      <div
+          align="left">{{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre_action=" ~ previousAction, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
+      <hr>
+    {% endif %}
+    {{ flashSession.output() }}
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
-      <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "Samples") }}</li>
-      <li class="active">{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLibs") }}</li>
-      {% if type !== 'PREP' %}
-        <!--
-        <li>{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLanes") }}</li>
-        -->
+      {% if type === 'PREP' %}
+        <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~  '/' ~ project.id ~ '?nuc_type=' ~ step.nucleotide_type ~ '&pre_status=' ~ status, "Samples") }}</li>
+      {% else %}
+        <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre_action=' ~ previousAction, "Samples") }}</li>
       {% endif %}
+      <li class="active"><a href="#">SeqLibs</a></li>
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
       </button>
@@ -42,18 +43,17 @@ $(document).ready(function () {
     //alert(parseAr);
     $.each(parseAr, function (key, value) {
       //alert(value["id"]+" : "+value["name"]);
-      var sample_id = value["id"];
-      var sample_name = value["name"];
+      var sample_id = value["s"]["id"];
+      var sample_name = value["s"]["name"];
       sampleNameAr[sample_id] = sample_name;
     });
   }
 
   $.ajax({
-    url: '{{ url("samples/loadjson/0/") ~ project.id }}',
+    url: '{{ url("samples/loadjson") }}',
     dataType: 'json',
     type: 'POST',
-    data: {
-    }
+    data: {project_id: {{ project.id }}}
   })
       .done(function (data) {
         //alert(data);
@@ -173,18 +173,30 @@ $(document).ready(function () {
     rowHeaders: false,
     //colWidths: [160, 160, 150, 80, 80, 80, 80, 80, 160, 160, 90],
     columns: [
-      { data: "sl.id", title: "Seqlib ID", readOnly: true, type: 'numeric' },
-      { data: "sl.name", title: "Seqlib Name" },
-      { data: "sl.sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer },
-      { data: "sl.protocol_id", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer },
-      { data: "sl.oligobarcodeA_id", title: "OligoBarcode A", type: "dropdown", source: oligobarcodeADrop, renderer: oligobarcodeARenderer },
-      { data: "sl.oligobarcodeB_id", title: "OligoBarcode B", type: "dropdown", source: oligobarcodeBDrop, renderer: oligobarcodeBRenderer },
-      { data: "sl.concentration", title: "Conc. (nmol/L)", type: 'numeric', format: '0.000' },
-      { data: "sl.stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
-      { data: "sl.fragment_size", title: "Fragment Size", type: 'numeric' },
-      { data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'yy-mm-dd' },
-      { data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'yy-mm-dd' },
-      { data: "se.status", title: "Status", type: 'dropdown', source: ['', 'Completed', 'In Progress', 'On Hold'] }
+      {data: "sl.id", title: "Seqlib ID", readOnly: true, type: 'numeric'},
+      {data: "sl.name", title: "Seqlib Name"},
+      {data: "sl.sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer},
+      {data: "sl.protocol_id", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer},
+      {
+        data: "sl.oligobarcodeA_id",
+        title: "OligoBarcode A",
+        type: "dropdown",
+        source: oligobarcodeADrop,
+        renderer: oligobarcodeARenderer
+      },
+      {
+        data: "sl.oligobarcodeB_id",
+        title: "OligoBarcode B",
+        type: "dropdown",
+        source: oligobarcodeBDrop,
+        renderer: oligobarcodeBRenderer
+      },
+      {data: "sl.concentration", title: "Conc. (nmol/L)", type: 'numeric', format: '0.000'},
+      {data: "sl.stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
+      {data: "sl.fragment_size", title: "Fragment Size", type: 'numeric'},
+      {data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'yy-mm-dd'},
+      {data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'yy-mm-dd'},
+      {data: "ste.status", title: "Status", type: 'dropdown', source: ['', 'Completed', 'In Progress', 'On Hold']}
     ],
     minSpareCols: 0,
     minSpareRows: 0,
@@ -245,7 +257,7 @@ $(document).ready(function () {
           url: '{{ url("oligobarcodes/loadjson/") }}',
           dataType: "json",
           type: "POST",
-          data: { protocol_id: protocol_id }
+          data: {protocol_id: protocol_id}
         })
             .done(function (data, status, xhr) {
               getOligobarcodeAr(data);
@@ -259,10 +271,17 @@ $(document).ready(function () {
 
   function loadData() {
     $.ajax({
-      url: '{{ url("seqlibs/loadjson/") ~ step.id ~ '/' ~ project.id }}',
+      url: '{{ url("seqlibs/loadjson") }}',
       dataType: 'json',
       type: 'POST',
       data: {
+        {% if not (status is empty) %}
+        status: '{{ status }}',
+        {% endif %}
+        {% if type is 'PREP' %}
+        step_id: {{ step.id }},
+        {% endif %}
+        project_id: {{ project.id }}
       }
     })
         .done(function (data) {
@@ -279,7 +298,7 @@ $(document).ready(function () {
     //alert("save! "+handsontable.getData());
     $.ajax({
       url: '{{ url("trackerdetails/saveSeqlibs") }}',
-      data: { changes: isDirtyAr }, // returns all cells
+      data: {changes: isDirtyAr}, // returns all cells
       dataType: 'text',
       type: 'POST'
     })

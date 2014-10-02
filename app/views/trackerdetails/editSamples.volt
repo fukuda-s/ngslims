@@ -1,21 +1,21 @@
 <div class="row">
   <div class="col-md-12">
     {{ partial('partials/trackerdetails-header') }}
-    <div
-        align="left">{{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre=" ~ previousAction, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
-    <hr>
+    {% if type === 'SHOW' %}
+      <div
+          align="left">{{ link_to("trackerdetails/showTableSamples/" ~ project.id ~ "?pre_action" ~ previousAction, "<< Back to Sample Info", "class": "btn btn-primary") }}</div>
+      <hr>
+    {% endif %}
     {{ flashSession.output() }}
     {# {{ dump(sample_property_types) }} #}
     {% include 'partials/handsontable-toolbar.volt' %}
     <ul class="nav nav-tabs">
-      <li class="active">{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "Samples") }}</li>
-      {% if type !== 'QC' %}
-        <li>{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLibs") }}</li>
-        {% if type !== 'PREP' %}
-          <!--
-          <li>{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre=' ~ previousAction, "SeqLanes") }}</li>
-          -->
-        {% endif %}
+      <!--
+      <li class="active">{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre_action=' ~ previousAction, "Samples") }}</li>
+      -->
+      <li class="active"><a href="#">Samples</a></li>
+      {% if type === 'PREP' %}
+        <li>{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '/' ~ previousStatus, "SeqLibs") }}</li>
       {% endif %}
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
@@ -182,7 +182,7 @@ $(document).ready(function () {
     {% endfor %}
   ];
   //var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 160, 80, 110
-  var $defaultColWidths = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
+  var $defaultColWidths = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
     {% for sample_property_type in sample_property_types %}
     {% if sample_property_type.sample_count > 0 %}, ''
     {% else %}, 0.1
@@ -209,22 +209,23 @@ $(document).ready(function () {
     //colWidths: $defaultColWidths,
     autoColumnSize: true,
     columns: [
-      {data: "id", title: "ID", type: 'numeric', readOnly: true},
-      {data: "name", title: "Sample Name", readOnly: true},
-      {data: "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer},
-      {data: "organism_id", title: "Organism", readOnly: true, renderer: organismRenderer, source: organismRenderer},
-      {data: "qual_concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000'},
-      {data: "qual_od260280", title: "A260/A280", type: 'numeric', format: '0.00'},
-      {data: "qual_od260230", title: "A260/A230", type: 'numeric', format: '0.00'},
-      {data: "qual_RIN", title: "RIN", type: 'numeric', format: '0.00'},
-      {data: "qual_fragmentsize", title: "Fragment Size", type: 'numeric'},
-      {data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000'},
-      {data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
-      {data: "qual_amount", title: "Total (ng)", type: 'numeric', format: '0.00'},
-      {data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd'},
-      {data: "barcode_number", title: "2D barcode"},
+      {data: "s.id", title: "ID", type: 'numeric', readOnly: true},
+      {data: "s.name", title: "Sample Name", readOnly: true},
+      {data: "s.sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer},
+      {data: "s.organism_id", title: "Organism", readOnly: true, renderer: organismRenderer, source: organismRenderer},
+      {data: "s.qual_concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000'},
+      {data: "s.qual_od260280", title: "A260/A280", type: 'numeric', format: '0.00'},
+      {data: "s.qual_od260230", title: "A260/A230", type: 'numeric', format: '0.00'},
+      {data: "s.qual_RIN", title: "RIN", type: 'numeric', format: '0.00'},
+      {data: "s.qual_fragmentsize", title: "Fragment Size", type: 'numeric'},
+      {data: "s.qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000'},
+      {data: "s.qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
+      {data: "s.qual_amount", title: "Total (ng)", type: 'numeric', format: '0.00'},
+      {data: "s.qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd'},
+      {data: "ste.status", title: "Status", type: 'dropdown', source: ['', 'Completed', 'In Progress', 'On Hold']},
+      {data: "s.barcode_number", title: "2D barcode"},
       {
-        data: "sample_location_id",
+        data: "s.sample_location_id",
         title: "Sample Repos.",
         type: "dropdown",
         source: sampleLocationDrop,
@@ -238,9 +239,9 @@ $(document).ready(function () {
       },
       {% endfor %}
       {% if type === 'PREP' %}
-      {data: "to_prep", title: "Create New SeqLib", type: 'checkbox'},
+      {data: "prep.to_prep", title: "Create New SeqLib", type: 'checkbox'},
       {
-        data: "to_prep_protocol_name",
+        data: "prep.to_prep_protocol_name",
         title: "Protocol",
         type: "dropdown",
         source: protocolDrop,
@@ -296,10 +297,21 @@ $(document).ready(function () {
 
   function loadData() {
     $.ajax({
-      url: '{{ url("samples/loadjson/") ~ step.id ~ '/' ~ project.id }}',
+      url: '{{ url("samples/loadjson") }}',
       dataType: 'json',
       type: 'POST',
-      data: {}
+      data: {
+        {% if not (status is empty) %}
+        status: '{{ status }}',
+        {% endif %}
+        {% if not (nuc_type is empty) %}
+        nucleotide_type: '{{ nuc_type }}',
+        {% endif %}
+        {% if type is 'QC' %}
+        step_id: {{ step.id }},
+        {% endif %}
+        project_id: {{ project.id }}
+      }
     })
         .done(function (data) {
           //alert(data);
