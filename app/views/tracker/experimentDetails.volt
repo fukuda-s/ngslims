@@ -35,7 +35,7 @@
             </div>
             <div class="col-md-2">
               <button type="button" class="btn btn-default btn-xs" id="show-inactive" data-toggle="collapse"
-                      data-target="[id^=inactives]" style="min-width: 87px">
+                      data-target="[id^=inactives]">
                 Show Completed/On Hold
               </button>
             </div>

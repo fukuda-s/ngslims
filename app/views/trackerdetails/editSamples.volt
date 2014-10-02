@@ -16,6 +16,8 @@
       <li class="active"><a href="#">Samples</a></li>
       {% if type === 'PREP' %}
         <li>{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '/' ~ previousStatus, "SeqLibs") }}</li>
+      {% else %}
+        <li>{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/0/' ~ project.id ~ '/?pre_action=' ~ previousAction, "SeqLibs") }}</li>
       {% endif %}
       <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
         <span class="fa fa-expand"></span>
