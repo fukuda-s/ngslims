@@ -63,7 +63,7 @@
 <script>
   $(document).ready(function () {
     $("#flowcell-save-button").click(function () {
-      var seqlanes_add = new Object();
+      var seqlanes_add = {};
       $('#flowcell-tbody').children('tr.success').each(function () {
         var lane_number = $(this).index() + 1;
         var apply_conc = $(this).find('input[id^=apply_conc-]').val();

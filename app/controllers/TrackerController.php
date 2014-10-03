@@ -506,7 +506,8 @@ class TrackerController extends ControllerBase
             ->columns(array('st.*', 'se.*'))
             ->addFrom('Seqtemplates', 'st')
             ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se')
-            ->orderBy(array('DATE(st.created_at) DESC', 'st.name ASC'))
+            //->orderBy(array('DATE(st.created_at) DESC', 'st.name ASC'))
+            ->orderBy(array('st.name ASC'))
             ->getQuery()
             ->execute();
 
@@ -618,7 +619,7 @@ class TrackerController extends ControllerBase
 
                 //Setup related StepEntries
                 $flowcell_step_entries = array();
-                $flowcell_step_entries[0] = new StepEntries;
+                $flowcell_step_entries[0] = new StepEntries();
                 $flowcell_step_entries[0]->step_phase_code = $step->step_phase_code; //Should be FLOWCELL;
                 $flowcell_step_entries[0]->step_id = $step_id;
                 $flowcell_step_entries[0]->user_id = $this->session->get('auth')['id'];
@@ -635,10 +636,10 @@ class TrackerController extends ControllerBase
                         $seqtemplate_id = $this->filter->sanitize($seqlane["seqtemplate_id"], array("int"));
                         $seqlanes_model[$index]->seqtemplate_id = $seqtemplate_id;
 
-                        $seqtemplate_step_entries = StepEntries::find(array(
-                            "seqtemplate_id = :seqtemplate_id",
-                            "bind" => array(
-                                "seqtemplate_id" => $seqtemplate_id
+                        $seqtemplate_step_entries = StepEntries::findFirst(array(
+                            "seqtemplate_id = :seqtemplate_id:",
+                            'bind' => array(
+                                'seqtemplate_id' => $seqtemplate_id
                             )
                         ));
                         $seqtemplate_step_entries->status = 'Completed';
@@ -672,7 +673,7 @@ class TrackerController extends ControllerBase
                     $this->flashSession->error("Flowcell " . $flowcell_name . " is not saved.");
                 } else {
                     //Return json if success.
-                    echo json_encode($flowcell);
+                    echo json_encode($flowcell->toArray());
                     $this->flashSession->success("Flowcell " . $flowcell_name . " is saved.");
 
                     $this->session->remove('flowcell_name');

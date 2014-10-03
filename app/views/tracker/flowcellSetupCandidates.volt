@@ -28,14 +28,16 @@
         {% for index in lane_index %}
           {% if seqlanes[index] is defined %}
             {% set seqlane = seqlanes[index] %}
-            {% if seqlane["seqtemplate_id"] %}
+            {% if seqlane["seqtemplate_id"] is defined %}
               <li
-              class="tube tube-active"
-              id="seqtemplate-tube-control" seqtemplate_id="{{ seqlane["seqtemplate_id"] }} seqtemplate_name="{{ seqlane["seqtemplate_name"] }}">{{ seqlane["seqtemplate_name"] }}</li>
-            {% elseif seqlane["control_id"] %}
+                  class="tube tube-active"
+                  id="seqtemplate-tube-control" seqtemplate_id="{{ seqlane["seqtemplate_id"] }}"
+                  seqtemplate_name="{{ seqlane["seqtemplate_name"] }}">{{ seqlane["seqtemplate_name"] }}</li>
+            {% elseif seqlane["control_id"] is defined %}
               <li
-              class="tube tube-active"
-              id="seqtemplate-tube-control" control_id="{{ seqlane["control_id"] }} seqtemplate_name="{{ seqlane["seqtemplate_name"] }}">{{ seqlane["seqtemplate_name"] }}</li>
+                  class="tube tube-warning"
+                  id="seqtemplate-tube-control" control_id="{{ seqlane["control_id"] }}"
+                  seqtemplate_name="{{ seqlane["seqtemplate_name"] }}">{{ seqlane["seqtemplate_name"] }}</li>
             {% endif %}
           {% else %}
             <li class="tube"></li>
@@ -67,11 +69,8 @@
         <div class="panel-heading">
           <div class="row">
             <div class="col-md-8">Sequence Template ID</div>
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
+              <input id="panel-filter" type="search" class="form-control input-xs" placeholder="Filtering Search">
               <button type="button" class="btn btn-default btn-xs" id="show-inactive" data-toggle="collapse"
                       data-target=".panel-default" style="min-width: 87px">Show
                 inactive
@@ -138,8 +137,7 @@
      * Set draggable for seqtemplate panels
      */
     $(".panel[id^=seqtemplate-panel-]").draggable({
-      addClasses: "false",
-      appendTo: "body",
+      addClasses: false,
       cursor: 'move',
       helper: "clone"
     });
@@ -147,29 +145,35 @@
     /*
      * Set droppable to flowcell panel (not for 'ol' list-group) from seqtemplate panels.
      */
-    $("#flowcell-panel li").droppable({
-      //hoverClass: "tube tube-placeholder",
-      accept: ":not(.ui-sortable-helper)",
-      drop: function (event, ui) {
-        var seqtemplate_name = ui.draggable.context.getAttribute("seqtemplate_name");
-        var seqtemplate_id = ui.draggable.context.getAttribute("seqtemplate_id");
-        var control_id = ui.draggable.context.getAttribute("control_id");
-        if (seqtemplate_id) {
-          $(this)
-              .text(seqtemplate_name)
-              .attr('seqtemplate_name', seqtemplate_name)
-              .attr('seqtemplate_id', seqtemplate_id)
-              .addClass("tube tube-active")
-              .removeAttr("id");
-        } else if (control_id) {
-          $(this)
-              .text(seqtemplate_name)
-              .attr('seqtemplate_name', seqtemplate_name)
-              .attr('control_id', control_id)
-              .addClass("tube tube-active")
-              .removeAttr("id");
+    $("#flowcell-panel li").each(function () {
+      $(this).droppable({
+        addClasses: false,
+        hoverClass: "tube tube-placeholder",
+        accept: ":not(.ui-sortable-helper)",
+        drop: function (event, ui) {
+          var seqtemplate_name = ui.draggable.context.getAttribute("seqtemplate_name");
+          var seqtemplate_id = ui.draggable.context.getAttribute("seqtemplate_id");
+          var control_id = ui.draggable.context.getAttribute("control_id");
+          if (seqtemplate_id) {
+            $(this)
+                .text(seqtemplate_name)
+                .attr('seqtemplate_name', seqtemplate_name)
+                .attr('seqtemplate_id', seqtemplate_id)
+                .addClass("tube tube-active")
+                .removeAttr("id");
+          } else if (control_id) {
+            $(this)
+                .text(seqtemplate_name)
+                .attr('seqtemplate_name', seqtemplate_name)
+                .attr('control_id', control_id)
+                .addClass("tube tube-warning")
+                .removeAttr("id");
+          }
+        },
+        out: function (event, ui) {
+          $(this).addClass('tube');
         }
-      }
+      });
     });
 
     $("#flowcell-panel ol").sortable({
@@ -185,7 +189,7 @@
       var flowcell_name = parent_panel.find('input#flowcell_name').val();
       console.log(flowcell_name);
 
-      var seqlanes = new Object();
+      var seqlanes = {};
       parent_panel.find("ol").children("li").each(function () {
         var seqlane_number = $(this).index() + 1;
         var seqtemplate_id;
@@ -245,6 +249,35 @@
           .done(function () {
             window.location = "{{ url("tracker/flowcellSetupCandidates/") ~ step.id }}"
           });
+    });
+
+    /*
+     * Put function to 'Search' form on tube list header.
+     */
+    $('#panel-filter').on('keyup', function (event) {
+      var queryStr = new RegExp(event.target.value);
+      console.log(queryStr);
+      $(event.target)
+          .parents('.panel')
+          .children('.panel-group')
+          .find('.panel.ui-draggable-handle')
+          .filter(function (index) {
+            var css_display = $(this).css('display');
+            var tube_textStr = $(this).attr('seqtemplate_name').toString();
+            //console.log(index + ":" + css_display != 'none' && ! queryStr.test(tube_textStr));
+            return css_display != 'none' && !queryStr.test(tube_textStr);
+          })
+          .addClass('tube-hidden');
+
+      $(event.target)
+          .parents('.panel')
+          .children('.panel-group')
+          .find('.tube-hidden')
+          .filter(function (index) {
+            var tube_textStr = $(this).attr('seqtemplate_name').toString();
+            return queryStr.test(tube_textStr);
+          })
+          .removeClass('tube-hidden');
     });
   })
 </script>

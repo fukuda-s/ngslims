@@ -161,6 +161,16 @@ ul.tube-list > li.tube-sm {
   background-color: #A398C4;
 }
 
+.tube-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+
+.tube-warning:hover {
+  background-color: #eadbba;
+}
+
 .tube-placeholder {
   /* min-width: 150px; */
   border-color: #dcdeba !important;
