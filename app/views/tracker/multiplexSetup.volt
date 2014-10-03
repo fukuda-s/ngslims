@@ -223,6 +223,7 @@ $(document).ready(function () {
     revert: true,
     pointer: "move",
     opacity: 0.5,
+    helper: "clone",
     remove: function (event, ui) {
       // Append close button on sorted seqlib tube
       //console.log(ui.item.find('button').length);
@@ -253,9 +254,8 @@ $(document).ready(function () {
     receive: function (event, ui) {
       // Append close button on sorted seqlib tube from #seqlibs-nobarcode-holder'
       ui.item
-          .append('<button type="button" class="tube-close pull-right">&times;</button>')
           .append('<button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>')
-          .find('button.tube-close').click(closeTube);
+          .find('button.tube-copy').click(copyTube);
 
       final_multiplex_sortable_max_len = fixTubeWidth($('ul.tube-list'));
 
@@ -288,15 +288,17 @@ $(document).ready(function () {
    * Set jQuery-UI sortable between .tube-dualmultiplex matrices to #seqtemplate_index_XX matrix table for DUALMULTIPLEX
    */
 
-  if($('.tube-dualmultiplex').length > 1) {
+  //if($('.tube-dualmultiplex').length > 1) {
     $('ul.tube-list-col[id^=oligobarcode_index_]').each(function () {
       var oligobarcode_index = $(this).attr('id');
       var oligobarcode_index_top = oligobarcode_index.replace(/\d+$/, '');
       $(this).sortable({
+        items: "li:not(.sort-disabled)",
         connectWith: "[id^=" + oligobarcode_index_top,
         revert: true,
         cursor: 'move',
         placeholder: "tube tube-sm tube-placeholder",
+        revert: true,
         opacity: 0.5,
         start: function (event, ui) {
           ui.placeholder.css("width", final_multiplex_sortable_max_len);
@@ -308,11 +310,10 @@ $(document).ready(function () {
         },
         receive: function (event, ui) {
           ui.item.siblings().appendTo(ui.sender).show('slow');
-
         }
       }).disableSelection();
     });
-  }
+  //}
 
   /*
    * Build function to save setting values (and redirected to confirm view) #seqtemplate-matrix table
@@ -402,7 +403,7 @@ $(document).ready(function () {
       })
           .done(function () {
             console.log(seqlibs);
-            window.location = "{{ url("tracker/multiplexConfirm/") ~ step.id }}"
+            window.location = "{{ url("tracker/multiplexSetupConfirm/") ~ step.id }}"
           });
     }
   });

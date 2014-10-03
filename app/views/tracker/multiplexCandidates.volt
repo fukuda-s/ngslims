@@ -10,6 +10,14 @@
   </li>
 </ol>
 {{ flashSession.output() }}
+  <div class="row">
+    <div class="col-md-10">
+    </div>
+    <div class="col-md-2">
+      <button id="mixup-seqlibs-button" type="button" class="btn btn-primary">Mixup Seqlibs &raquo;</button>
+    </div>
+  </div>
+  <hr>
 <div class="panel-group" id="projectOverview">
   {% for user in pi_users %}
     {% if loop.first %}

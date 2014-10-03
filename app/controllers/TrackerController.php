@@ -71,10 +71,10 @@ class TrackerController extends ControllerBase
                     'COUNT(DISTINCT s.id) AS sample_count',
                     'ste.status AS status',
                     /* @TODO PHQL doesn't allows CASE query
-                    "CASE
-                        WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
-                        ELSE 'inactive END AS active_status",
-                    */
+                     * "CASE
+                     * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                     * ELSE 'inactive END AS active_status",
+                     */
                     'u.*'))
                 ->addFrom('Users', 'u')
                 ->join('Projects', 'p.pi_user_id = u.id', 'p')
@@ -95,9 +95,9 @@ class TrackerController extends ControllerBase
                     'COUNT(DISTINCT sl.id) AS sample_count',
                     'ste.status AS status',
                     /* @TODO PHQL doesn't allows CASE query
-                    "CASE
-                    WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
-                    ELSE 'inactive END AS active_status",
+                     * "CASE
+                     * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                     * ELSE 'inactive END AS active_status",
                      */
                     'u.*'))
                 ->addFrom('Users', 'u')
@@ -110,18 +110,33 @@ class TrackerController extends ControllerBase
                 ->orderBy(array('u.lastname ASC', 'u.firstname'))
                 ->getQuery()
                 ->execute();
-        } elseif ($step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
+        }
+
+        // $this->flash->success(var_dump($pi_users));
+        $this->view->setVar('pi_users', $pi_users);
+    }
+
+    public function multiplexCandidatesAction($step_id)
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+        //$this->view->setLayout('main');
+        Tag::appendTitle(' | Experiments ');
+
+        $step_id = $this->filter->sanitize($step_id, array("int"));
+
+        $step = Steps::findFirst($step_id);
+        $this->view->setVar('step', $step);
+
+        $step_phase_code = $step->step_phase_code;
+        if ($step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
             //project|sample_count_all are needed when the sample|seqlib does not have step_entry record caused by bulk import.
             $phql = "
                 SELECT
-                    COUNT(DISTINCT sl2.project_id) AS project_count,
-                    COUNT(DISTINCT sl2.id) AS sample_count,
-                    COUNT(DISTINCT sl.project_id) AS project_count_all,
-                    COUNT(DISTINCT sl.id) AS sample_count_all,
-                    u.id,
-                    u.firstname,
-                    u.lastname,
-                    CONCAT(u.lastname, ', ', u.firstname) AS name
+                    COUNT(DISTINCT sl.project_id) AS project_count,
+                    COUNT(DISTINCT sl.id) AS sample_count,
+                    'Completed' AS status,
+                    u.*,
+                    CONCAT(u.lastname, ', ', u.firstname) AS name_for_sort
                 FROM
                     Users u
                         LEFT JOIN
@@ -132,11 +147,9 @@ class TrackerController extends ControllerBase
                     Protocols pt ON pt.id = sl.protocol_id
                         AND pt.next_step_phase_code = :next_step_phase_code:
                         LEFT JOIN
-                    StepEntries se ON se.seqlib_id = sl.id AND se.status = 'Completed'
-                        LEFT JOIN
-                    Seqlibs sl2 ON sl2.id = se.seqlib_id
+                    SeqtemplateAssocs sta ON sta.seqlib_id = sl.id
                 GROUP BY u.id
-                ORDER BY sample_count DESC, u.lastname ASC
+                ORDER BY name_for_sort ASC
             ";
             $pi_users = $this->modelsManager->executeQuery($phql, array(
                 'next_step_phase_code' => $step_phase_code
@@ -147,7 +160,7 @@ class TrackerController extends ControllerBase
         $this->view->setVar('pi_users', $pi_users);
     }
 
-    public function multiplexAction($step_id)
+    public function multiplexSetupAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Multiplexing ');
@@ -330,7 +343,7 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public function multiplexConfirmAction($step_id)
+    public function multiplexSetupConfirmAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Multiplex Confirm ');
@@ -476,7 +489,7 @@ class TrackerController extends ControllerBase
             }
         }
 
-        // Remove session values which set at multiplex.volt with multiplexSetSessionAction (via ajax) and used on multiplexConfirmAction
+        // Remove session values which set at multiplex.volt with multiplexSetSessionAction (via ajax) and used on multiplexSetupConfirmAction
         $this->session->remove('seqtemplates');
         $this->session->remove('indexedSeqlibs');
 

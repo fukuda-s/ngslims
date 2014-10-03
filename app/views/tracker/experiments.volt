@@ -53,7 +53,9 @@
     <div class="panel-heading" id="StepList">
       <h4 class="panel-title">
         <div class="row">
-          {% if step.step_phase_code == 'FLOWCELL' %}
+          {% if step.step_phase_code === 'MULTIPLEX' or step.step_phase_code === 'DUALMULTIPLEX' %}
+            <div class="col-md-8">{{ link_to("tracker/multiplexCandidates/" ~ step.id, step.name) }}</div>
+          {% elseif step.step_phase_code === 'FLOWCELL' %}
             <div class="col-md-8">{{ link_to("tracker/flowcellSetupCandidates/" ~ step.id, step.name) }}</div>
           {% else %}
             <div class="col-md-8">{{ link_to("tracker/experimentDetails/" ~ step.id, step.name) }}</div>
