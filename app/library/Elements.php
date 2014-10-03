@@ -314,116 +314,122 @@ class Elements extends Phalcon\Mvc\User\Component
         $step_id = $this->filter->sanitize($step_id, array("int"));
         $status = $this->filter->sanitize($status, array("string"));
 
-        if ($step_phase_code === 'MULTIPLEX' or $step_phase_code === 'DUALMULTIPLEX') {
-            $projects = $this->modelsManager->createBuilder()
-                ->from('Projects')
-                ->join('Seqlibs', 'sl.project_id = Projects.id', 'sl')
-                ->join('Protocols', 'pt.id = sl.protocol_id', 'pt')
-                ->where('Projects.pi_user_id = :pi_user_id:')
-                ->andWhere('Projects.active = "Y"')
-                ->andWhere('pt.next_step_phase_code = :next_step_phase_code:')
-                ->groupBy('Projects.id')
-                ->getQuery()
-                ->execute(array(
-                    'pi_user_id' => $pi_user_id,
-                    'next_step_phase_code' => $step_phase_code
-                ));
-            // $this->flash->success(var_dump($projects));
-            foreach ($projects as $project) {
-                // $this->flash->success(var_dump($project));
-                // @TODO Should be counted 'active' (in-completed on StepEntries).
-                $sample_count = $this->modelsManager->createBuilder()
+        $projects = Projects::find(array(
+            "pi_user_id = :pi_user_id: AND active = 'Y'",
+            'bind' => array(
+                'pi_user_id' => $pi_user_id
+            )
+        ));
+        foreach ($projects as $project) {
+            // $this->flash->success(var_dump($project));
+            if ($step_phase_code == 'QC') {
+                $sample_count_tmp = $this->modelsManager->createBuilder()
+                    ->addFrom('Samples', 's')
+                    ->join('StepEntries', 'ste.sample_id = s.id AND ste.step_id = :step_id:', 'ste')
+                    ->where('s.project_id = :project_id:');
+            } elseif ($step_phase_code == 'PREP') {
+                $sample_count_tmp = $this->modelsManager->createBuilder()
                     ->addFrom('Seqlibs', 'sl')
-                    ->join('Protocols', 'p.id = sl.protocol_id', 'p')
-                    ->where('sl.project_id = :project_id:', array('project_id' => $project->id))
-                    ->andWhere('p.next_step_phase_code = :next_step_phase_code:', array('next_step_phase_code' => $step_phase_code))
-                    ->getQuery()
-                    ->execute()
-                    ->count();
-
-                if (!$sample_count) {
-                    continue;
-                }
-                echo '  <div class="panel panel-warning">';
-                echo '      <div class="panel panel-heading" onclick="showTubeSeqlibs(' . $step_id . ', ' . $project->id . ')">';
-                echo '      	<div class="row">';
-                echo '	        	<div class="col-md-8">';
-                echo '                  <div>' . $project->name . '</div>';
-                echo '      		</div>';
-                echo '	        	<div class="col-md-1">';
-                echo '	        	</div>';
-                echo '	        	<div class="col-md-1">';
-                echo '		        	<span class="badge">' . $sample_count . '</span>';
-                echo '	        	</div>';
-                echo '      		<div class="col-md-2">';
-                echo '              </div>';
-                echo '      	</div>';
-                echo '     	</div>';
-                echo '      <div id="seqlib-tube-list-project-id-' . $project->id . '">';
-                echo '     	</div>';
-                echo ' 	</div>';
+                    ->join('StepEntries', 'ste.seqlib_id = sl.id AND ste.step_id = :step_id:', 'ste')
+                    ->where('sl.project_id = :project_id:');
             }
-        } else {
-            $projects = Projects::find(array(
-                "pi_user_id = :pi_user_id: AND active = 'Y'",
-                'bind' => array(
-                    'pi_user_id' => $pi_user_id
-                )
+
+            if (is_null($status)) {
+                $sample_count_tmp = $sample_count_tmp->andWhere('ste.status IS NULL');
+                $status_str = 'NULL';
+            } else {
+                $sample_count_tmp = $sample_count_tmp->andWhere('ste.status = :status:', array("status" => $status));
+                $status_str = $status;
+            }
+            $sample_count = $sample_count_tmp->getQuery()
+                ->execute(array(
+                    'step_id' => $step_id,
+                    'project_id' => $project->id
+                ))
+                ->count();
+
+            if (!$sample_count) {
+                continue;
+            }
+            echo '<li class="list-group-item">';
+            echo '	<div class="row">';
+            echo '		<div class="col-md-8">';
+            echo Tag::linkTo(array(
+                "trackerdetails/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id . '/' . $status_str,
+                $project->name
             ));
-            foreach ($projects as $project) {
-                // $this->flash->success(var_dump($project));
-                if ($step_phase_code == 'QC') {
-                    $sample_count_tmp = $this->modelsManager->createBuilder()
-                        ->addFrom('Samples', 's')
-                        ->join('StepEntries', 'ste.sample_id = s.id AND ste.step_id = :step_id:', 'ste')
-                        ->where('s.project_id = :project_id:');
-                } elseif ($step_phase_code == 'PREP') {
-                    $sample_count_tmp = $this->modelsManager->createBuilder()
-                        ->addFrom('Seqlibs', 'sl')
-                        ->join('StepEntries', 'ste.seqlib_id = sl.id AND ste.step_id = :step_id:', 'ste')
-                        ->where('sl.project_id = :project_id:');
-                }
+            echo '		</div>';
+            echo '		<div class="col-md-1">';
+            echo '		</div>';
+            echo '		<div class="col-md-1">';
+            echo '			<span class="badge">' . $sample_count . '</span>';
+            echo '		</div>';
+            echo '		<div class="col-md-2">';
+            echo '<!--';
+            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Import Excel file"><i class="glyphicon glyphicon-import"></i></a>';
+            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Export Excel file"><i class="glyphicon glyphicon-export"></i></a>';
+            echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Edit Project name"><i class="glyphicon glyphicon-pencil"></i></a>';
+            echo '-->';
+            echo '		</div>';
+            echo '	</div>';
+            echo '</li>';
+        }
+    }
 
-                if (is_null($status)) {
-                    $sample_count_tmp = $sample_count_tmp->andWhere('ste.status IS NULL');
-                    $status_str = 'NULL';
-                } else {
-                    $sample_count_tmp = $sample_count_tmp->andWhere('ste.status = :status:', array("status" => $status));
-                    $status_str = $status;
-                }
-                $sample_count = $sample_count_tmp->getQuery()
-                    ->execute(array(
-                        'step_id' => $step_id,
-                        'project_id' => $project->id
-                    ))
-                    ->count();
+    public function getTrackerMultiplexCandidatesProjectList($pi_user_id, $step_phase_code, $step_id, $status)
+    {
+        $pi_user_id = $this->filter->sanitize($pi_user_id, array("int"));
+        $step_phase_code = $this->filter->sanitize($step_phase_code, array("string"));
+        $step_id = $this->filter->sanitize($step_id, array("int"));
+        $status = $this->filter->sanitize($status, array("string"));
 
-                if (!$sample_count) {
-                    continue;
-                }
-                echo '<li class="list-group-item">';
-                echo '	<div class="row">';
-                echo '		<div class="col-md-8">';
-                echo Tag::linkTo(array(
-                    "trackerdetails/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id . '/' . $status_str,
-                    $project->name
-                ));
-                echo '		</div>';
-                echo '		<div class="col-md-1">';
-                echo '		</div>';
-                echo '		<div class="col-md-1">';
-                echo '			<span class="badge">' . $sample_count . '</span>';
-                echo '		</div>';
-                echo '		<div class="col-md-2">';
-                echo '<!--';
-                echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Import Excel file"><i class="glyphicon glyphicon-import"></i></a>';
-                echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Export Excel file"><i class="glyphicon glyphicon-export"></i></a>';
-                echo '			<a href="#" rel="tooltip" data-placement="top" data-original-title="Edit Project name"><i class="glyphicon glyphicon-pencil"></i></a>';
-                echo '-->';
-                echo '		</div>';
-                echo '	</div>';
-                echo '</li>';
+        $projects = $this->modelsManager->createBuilder()
+            ->from('Projects')
+            ->join('Seqlibs', 'sl.project_id = Projects.id', 'sl')
+            ->join('Protocols', 'pt.id = sl.protocol_id', 'pt')
+            ->where('Projects.pi_user_id = :pi_user_id:')
+            ->andWhere('Projects.active = "Y"')
+            ->andWhere('pt.next_step_phase_code = :next_step_phase_code:')
+            ->groupBy('Projects.id')
+            ->getQuery()
+            ->execute(array(
+                'pi_user_id' => $pi_user_id,
+                'next_step_phase_code' => $step_phase_code
+            ));
+        // $this->flash->success(var_dump($projects));
+        foreach ($projects as $project) {
+            // $this->flash->success(var_dump($project));
+            // @TODO Should be counted 'active' (in-completed on StepEntries).
+            $sample_count = $this->modelsManager->createBuilder()
+                ->addFrom('Seqlibs', 'sl')
+                ->join('Protocols', 'p.id = sl.protocol_id', 'p')
+                ->where('sl.project_id = :project_id:', array('project_id' => $project->id))
+                ->andWhere('p.next_step_phase_code = :next_step_phase_code:', array('next_step_phase_code' => $step_phase_code))
+                ->getQuery()
+                ->execute()
+                ->count();
+
+            if (!$sample_count) {
+                continue;
             }
+            echo '  <div class="panel panel-warning">';
+            echo '      <div class="panel panel-heading" onclick="showTubeSeqlibs(' . $step_id . ', ' . $project->id . ')">';
+            echo '      	<div class="row">';
+            echo '	        	<div class="col-md-8">';
+            echo '                  <div>' . $project->name . '</div>';
+            echo '      		</div>';
+            echo '	        	<div class="col-md-1">';
+            echo '	        	</div>';
+            echo '	        	<div class="col-md-1">';
+            echo '		        	<span class="badge">' . $sample_count . '</span>';
+            echo '	        	</div>';
+            echo '      		<div class="col-md-2">';
+            echo '              </div>';
+            echo '      	</div>';
+            echo '     	</div>';
+            echo '      <div id="seqlib-tube-list-project-id-' . $project->id . '">';
+            echo '     	</div>';
+            echo ' 	</div>';
         }
     }
 }

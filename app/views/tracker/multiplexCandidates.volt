@@ -75,7 +75,7 @@
         </h4>
       </div>
       <ul class="list-group collapse" id="list_user_id_{{ user.u.id }}" status="{{ user.status }}">
-        {{ elements.getTrackerExperimentDetailProjectList( user.u.id, step.step_phase_code, step.id, user.status ) }}
+        {{ elements.getTrackerMultiplexCandidatesProjectList( user.u.id, step.step_phase_code, step.id, user.status ) }}
       </ul>
     </div>
     {% elsefor %} No projects are recorded
@@ -226,14 +226,19 @@
           .addClass('in');
     }
 
-    $('[id^=inactives]')
-        .first()
-        .on('hidden.bs.collapse', function () {
+    /*
+     * @TODO Bug: if click panel own, then following event fired.
+     */
+    $('.panel[id^=inactives-]')
+        .last()
+        .on('hidden.bs.collapse', function (e) {
+          e.stopPropagation();
           var buttonObj = $('button#show-inactive')
           var buttonStr = buttonObj.text().replace('Hide', 'Show');
           buttonObj.text(buttonStr);
         })
-        .on('shown.bs.collapse', function () {
+        .on('shown.bs.collapse', function (e) {
+          e.stopPropagation();
           var buttonObj = $('button#show-inactive')
           var buttonStr = buttonObj.text().replace('Show', 'Hide');
           buttonObj.text(buttonStr);
