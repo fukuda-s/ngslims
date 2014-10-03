@@ -376,12 +376,11 @@ class Elements extends Phalcon\Mvc\User\Component
         }
     }
 
-    public function getTrackerMultiplexCandidatesProjectList($pi_user_id, $step_phase_code, $step_id, $status)
+    public function getTrackerMultiplexCandidatesProjectList($pi_user_id, $step_phase_code, $step_id)
     {
         $pi_user_id = $this->filter->sanitize($pi_user_id, array("int"));
         $step_phase_code = $this->filter->sanitize($step_phase_code, array("string"));
         $step_id = $this->filter->sanitize($step_id, array("int"));
-        $status = $this->filter->sanitize($status, array("string"));
 
         $projects = $this->modelsManager->createBuilder()
             ->from('Projects')
@@ -400,30 +399,40 @@ class Elements extends Phalcon\Mvc\User\Component
         foreach ($projects as $project) {
             // $this->flash->success(var_dump($project));
             // @TODO Should be counted 'active' (in-completed on StepEntries).
-            $sample_count = $this->modelsManager->createBuilder()
+            $seqlib_count = $this->modelsManager->createBuilder()
+                ->columns(array(
+                    "COUNT(DISTINCT sl.id) AS seqlib_count_all",
+                    "COUNT(DISTINCT sta.seqlib_id) AS seqlib_count_used",
+                ))
                 ->addFrom('Seqlibs', 'sl')
                 ->join('Protocols', 'p.id = sl.protocol_id', 'p')
+                ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
                 ->where('sl.project_id = :project_id:', array('project_id' => $project->id))
                 ->andWhere('p.next_step_phase_code = :next_step_phase_code:', array('next_step_phase_code' => $step_phase_code))
                 ->getQuery()
-                ->execute()
-                ->count();
+                ->execute()[0];
 
-            if (!$sample_count) {
+            if (!$seqlib_count) {
                 continue;
             }
-            echo '  <div class="panel panel-warning">';
+            $seqlib_count_unused = $seqlib_count->seqlib_count_all - $seqlib_count->seqlib_count_used;
+
+            if (!$seqlib_count_unused) {
+                echo '  <div class="panel panel-default collapse" id="inactives-' . $pi_user_id . '-' . $project->id . '">';
+            } else {
+                echo '  <div class="panel panel-warning">';
+            }
             echo '      <div class="panel panel-heading" onclick="showTubeSeqlibs(' . $step_id . ', ' . $project->id . ')">';
             echo '      	<div class="row">';
-            echo '	        	<div class="col-md-8">';
+            echo '	        	<div class="col-xs-8">';
             echo '                  <div>' . $project->name . '</div>';
             echo '      		</div>';
-            echo '	        	<div class="col-md-1">';
+            echo '	        	<div class="col-xs-1">';
             echo '	        	</div>';
-            echo '	        	<div class="col-md-1">';
-            echo '		        	<span class="badge">' . $sample_count . '</span>';
+            echo '	        	<div class="col-xs-1">';
+            echo '		        	<span class="badge">' . $seqlib_count_unused . '/' . $seqlib_count->seqlib_count_all . '</span>';
             echo '	        	</div>';
-            echo '      		<div class="col-md-2">';
+            echo '      		<div class="col-xs-2">';
             echo '              </div>';
             echo '      	</div>';
             echo '     	</div>';

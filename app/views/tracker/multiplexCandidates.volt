@@ -10,14 +10,14 @@
   </li>
 </ol>
 {{ flashSession.output() }}
-  <div class="row">
-    <div class="col-md-10">
-    </div>
-    <div class="col-md-2">
-      <button id="mixup-seqlibs-button" type="button" class="btn btn-primary">Mixup Seqlibs &raquo;</button>
-    </div>
+<div class="row">
+  <div class="col-md-10">
   </div>
-  <hr>
+  <div class="col-md-2">
+    <button id="mixup-seqlibs-button" type="button" class="btn btn-primary">Mixup Seqlibs &raquo;</button>
+  </div>
+</div>
+<hr>
 <div class="panel-group" id="projectOverview">
   {% for user in pi_users %}
     {% if loop.first %}
@@ -29,10 +29,10 @@
               <small>#project</small>
             </div>
             <div class="col-md-1">
-              <small>#sample</small>
+              <small>#seqlib</small>
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-default btn-xs" id="show-inactive" data-toggle="collapse"
+              <button type="button" class="btn btn-default btn-xs" id="show-inactive-panel" data-toggle="collapse"
                       data-target="[id^=inactives]">
                 Show Completed/On Hold
               </button>
@@ -42,31 +42,28 @@
       </div>
     {% endif %}
 
-    {% if user.status is empty or user.status is 'In Progress' %}
+    {% if user.seqlib_count_all !== user.seqlib_count_used %}
       {% set active_status = 'active' %}
+      {% set seqlib_count = user.seqlib_count_all - user.seqlib_count_used %}
     {% else %}
       {% set active_status = 'inactive' %}
+      {% set seqlib_count = user.seqlib_count_all %}
     {% endif %}
 
     <div {% if active_status is 'active' %} class="panel panel-info" id="pi_user_id_{{ user.u.id }}"
     {% else %} class="panel panel-default collapse" id="inactives-{{ user.u.id }}" {% endif %}>
       <div class="panel-heading" data-toggle="collapse"
-           data-target="#list_user_id_{{ user.u.id }}[status='{{ user.status }}']" id="OwnerList">
+           data-target="#list_user_id_{{ user.u.id }}" id="OwnerList">
         <h4 class="panel-title">
           <div class="row">
             <div class="col-md-8">
               <div class="">{{ user.u.getFullname() }}</div>
             </div>
             <div class="col-md-1">
-          <span
-              class="badge">{{ user.project_count }}</span>
+              <span class="badge">{{ user.project_count_all }}</span>
             </div>
-            <div class="col-md-1">
-          <span
-              class="badge">{{ user.sample_count }}</span>
-            </div>
-            <div class="col-md-1">
-              {{ user.status }}
+            <div class="col-md-2">
+              <span class="badge">{{ seqlib_count }}</span>
             </div>
             <div class="col-md-1">
               <i class="indicator glyphicon glyphicon-chevron-right pull-right"></i>
@@ -74,8 +71,8 @@
           </div>
         </h4>
       </div>
-      <ul class="list-group collapse" id="list_user_id_{{ user.u.id }}" status="{{ user.status }}">
-        {{ elements.getTrackerMultiplexCandidatesProjectList( user.u.id, step.step_phase_code, step.id, user.status ) }}
+      <ul class="list-group collapse" id="list_user_id_{{ user.u.id }}">
+        {{ elements.getTrackerMultiplexCandidatesProjectList( user.u.id, step.step_phase_code, step.id ) }}
       </ul>
     </div>
     {% elsefor %} No projects are recorded
@@ -105,7 +102,7 @@
            * put function to "Show inactive" button.
            */
           $(target_id)
-              .find('button#show-inactive').click(function (e) {
+              .find('button#show-inactive-tube').click(function (e) {
                 // @TODO 'Show/Hide Inactive' button should be hidden if .tube-inactive(s) are not exist.
                 if ($(e.target).hasClass('active') == false) {
                   $(target_id)
@@ -215,12 +212,8 @@
      */
     if (location.search) {
       var pi_user_id = $.getUrlVar('pi_user_id');
-      var status = decodeURIComponent($.getUrlVar('status'));
-      if(status === 'NULL'){
-        status = '';
-      }
-      console.log(pi_user_id + ":" + status);
-      $('#list_user_id_' + pi_user_id + '[status=\'' + status + '\']')
+      //console.log(pi_user_id);
+      $('#list_user_id_' + pi_user_id)
           .addClass('in')
           .parents('.panel')
           .addClass('in');
@@ -233,13 +226,13 @@
         .last()
         .on('hidden.bs.collapse', function (e) {
           e.stopPropagation();
-          var buttonObj = $('button#show-inactive')
+          var buttonObj = $('button#show-inactive-panel')
           var buttonStr = buttonObj.text().replace('Hide', 'Show');
           buttonObj.text(buttonStr);
         })
         .on('shown.bs.collapse', function (e) {
           e.stopPropagation();
-          var buttonObj = $('button#show-inactive')
+          var buttonObj = $('button#show-inactive-panel')
           var buttonStr = buttonObj.text().replace('Show', 'Hide');
           buttonObj.text(buttonStr);
         });
