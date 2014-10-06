@@ -103,27 +103,27 @@ class Elements extends Phalcon\Mvc\User\Component
             'param' => ''
         ),
         'hr1' => array(),
-        'QC Experiment View' => array(
+        'QC Experiment Setup' => array(
             'controller' => 'tracker',
             'action' => 'experiments',
             'param' => 'QC'
         ),
-        'SeqLib Experiment View' => array(
+        'SeqLib Experiment Setup' => array(
             'controller' => 'tracker',
             'action' => 'experiments',
             'param' => 'PREP'
         ),
-        'Indexing and Multiplexing View' => array(
+        'Multiplexing Setup' => array(
             'controller' => 'tracker',
             'action' => 'experiments',
             'param' => 'MULTIPLEX'
         ),
-        'Flowcell Setup View' => array(
+        'Flowcell Setup' => array(
             'controller' => 'tracker',
             'action' => 'experiments',
             'param' => 'FLOWCELL'
         ),
-        'Sequencing Setup View' => array(
+        'Sequencing Setup' => array(
             'controller' => 'tracker',
             'action' => 'sequence',
             'param' => ''
@@ -227,7 +227,8 @@ class Elements extends Phalcon\Mvc\User\Component
         if ($this->view->getParams()) {
             $paramName = $this->view->getParams()[0];
         }
-        echo '<ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="50" data-target="#">';
+        //echo '<ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="50" data-target="#">';
+        echo '<ul class="nav nav-stacked affix">';
         foreach ($this->_trackerSideMenu as $caption => $option) {
             if (preg_match("/^hr/", $caption)) {
                 echo '<hr />';
