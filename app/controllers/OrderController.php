@@ -840,15 +840,15 @@ class OrderController extends ControllerBase
             $samples[$i]->project_id = $requests->project_id;
             $samples[$i]->sample_type_id = $this->session->get('sample_type')->id;
             $samples[$i]->organism_id = $this->session->get('organism')->id;
-            $samples[$i]->qual_concentration = $sample_data->qual_concentration;
-            $samples[$i]->qual_od260280 = $sample_data->qual_od260280;
-            $samples[$i]->qual_od260230 = $sample_data->qual_od260230;
-            $samples[$i]->qual_RIN = $sample_data->qual_RIN;
-            $samples[$i]->qual_fragmentsize = $sample_data->qual_fragmentsize;
-            $samples[$i]->qual_nanodrop_conc = $sample_data->qual_nanodrop_conc;
-            $samples[$i]->qual_volume = $sample_data->qual_volume;
-            $samples[$i]->qual_amount = $sample_data->qual_amount;
-            $samples[$i]->qual_date = $sample_data->qual_date;
+            $samples[$i]->qual_concentration = (empty($sample_data->qual_concentration) ? null : $sample_data->qual_concentration);
+            $samples[$i]->qual_od260280 = (empty($sample_data->qual_od260280)) ? null : $sample_data->qual_od260280;
+            $samples[$i]->qual_od260230 = (empty($sample_data->qual_od260230)) ? null : $sample_data->qual_od260230;
+            $samples[$i]->qual_RIN = (empty($sample_data->qual_RIN)) ? null : $sample_data->qual_RIN;
+            $samples[$i]->qual_fragmentsize = (empty($sample_data->qual_fragmentsize)) ? null : $sample_data->qual_fragmentsize;
+            $samples[$i]->qual_nanodrop_conc = (empty($sample_data->qual_nanodrop_conc)) ? null : $sample_data->qual_nanodrop_conc;
+            $samples[$i]->qual_volume = (empty($sample_data->qual_volume)) ? null : $sample_data->qual_volume;
+            $samples[$i]->qual_amount = (empty($sample_data->qual_amount)) ? null : $sample_data->qual_amount;
+            $samples[$i]->qual_date = (empty($sample_data->qual_date)) ? null : $sample_data->qual_date;
 
             if ($qc_inside_val === "true") {
                 //Set QC step to StepEntries
@@ -882,7 +882,8 @@ class OrderController extends ControllerBase
                 if (isset($sample_data->sample_property_types->$sample_property_type_id)) {
                     $sample_property_entries[$j] = new SamplePropertyEntries();
                     $sample_property_entries[$j]->sample_property_type_id = $sample_property_type_id;
-                    $sample_property_entries[$j]->value = $sample_data->sample_property_types->$sample_property_type_id;
+                    $sample_property_entries[$j]->value
+                        = (empty($sample_data->sample_property_types->$sample_property_type_id)) ? null : $sample_data->sample_property_types->$sample_property_type_id;
                     $j++;
                 }
             }
