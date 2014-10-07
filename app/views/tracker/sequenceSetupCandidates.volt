@@ -73,7 +73,9 @@
       {% endfor %}
     </div>
     <div class="panel-footer clearfix">
+      <!--
       <button id="flowcell-clear-button" type="button" class="btn btn-default" disabled>Clear Flowcell Setup</button>
+      -->
       {{ submit_button('Confirm Flowcell Setup »', 'class': 'btn btn-primary pull-right') }}
     </div>
   </div>
@@ -188,7 +190,9 @@ function setMaxRunNumber(instrument_id) {
     var to_set_run_number = parseInt(max_run_number);
     $('input[id^=run_number_]').each(function () {
       to_set_run_number = to_set_run_number + 1;
-      $(this).attr("min", to_set_run_number).val(to_set_run_number);
+      $(this)
+          //.attr("min", to_set_run_number)
+          .val(to_set_run_number);
 
       var run_number_id_attr = $(this).attr('id');
       //Set inputed run_number to session values.
