@@ -125,7 +125,12 @@ class TrackerController extends ControllerBase
 
         $step_id = $this->filter->sanitize($step_id, array("int"));
 
-        $step = Steps::findFirst($step_id);
+        $step = Steps::findFirst(array(
+            "id = :step_id: AND step_phase_code LIKE '%MULTIPLEX'",
+            'bind' => array(
+                'step_id' => $step_id
+            )
+        ));
         $this->view->setVar('step', $step);
 
         $step_phase_code = $step->step_phase_code;
@@ -158,7 +163,12 @@ class TrackerController extends ControllerBase
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Multiplexing ');
 
-        $step = Steps::findFirst($step_id);
+        $step = Steps::findFirst(array(
+            "id = :step_id: AND step_phase_code LIKE '%MULTIPLEX'",
+            'bind' => array(
+                'step_id' => $step_id
+            )
+        ));
         $this->view->setVar('step', $step);
         $step_phase_code = $step->step_phase_code;
 
@@ -399,7 +409,12 @@ class TrackerController extends ControllerBase
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
 
-        $step = Steps::findFirst($step_id);
+        $step = Steps::findFirst(array(
+            "id = :step_id: AND step_phase_code LIKE '%MULTIPLEX'",
+            'bind' => array(
+                'step_id' => $step_id
+            )
+        ));
         $step_phase_code = $step->step_phase_code;
 
 
@@ -486,7 +501,7 @@ class TrackerController extends ControllerBase
         $this->session->remove('seqtemplates');
         $this->session->remove('indexedSeqlibs');
 
-        return $this->response->redirect("tracker/experimentDetails/$step_id");
+        return $this->response->redirect("tracker/multiplexCandidates/$step_id");
     }
 
     public function flowcellSetupCandidatesAction($step_id)
@@ -495,7 +510,12 @@ class TrackerController extends ControllerBase
         Tag::appendTitle(' | Flowcell Setup ');
 
         $step_id = $this->filter->sanitize($step_id, array("int"));
-        $step = Steps::findFirst($step_id);
+        $step = Steps::findFirst(array(
+            "id = :step_id: AND step_phase_code = 'FLOWCELL'",
+            'bind' => array(
+                'step_id' => $step_id
+            )
+        ));
         $this->view->setVar('step', $step);
 
         $lane_per_flowcell = $step->getSeqRunmodeTypes()->lane_per_flowcell;
@@ -536,6 +556,7 @@ class TrackerController extends ControllerBase
                 if ($request->getPost('flowcell_clear') == 'true') {
                     $this->session->remove('flowcell_name');
                     $this->session->remove('seqlanes');
+                    $this->session->remove('seqlanes_add');
                 }
 
                 if ($request->hasPost('flowcell_name')) {
@@ -547,18 +568,28 @@ class TrackerController extends ControllerBase
                     $seqlanes = $request->getPost('seqlanes');
                     $this->session->set('seqlanes', $seqlanes);
                 }
+
+                if ($request->hasPost('seqlanes_add')) {
+                    $seqlanes_add = $request->getPost('seqlanes_add');
+                    $this->session->set('seqlanes_add', $seqlanes_add);
+                }
             }
         }
 
     }
 
-    public function flowcellSetupConfirmAction($step_id)
+    public function flowcellSetupAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Flowcell Setup Confirm');
 
         $step_id = $this->filter->sanitize($step_id, array("int"));
-        $step = Steps::findFirst($step_id);
+        $step = Steps::findFirst(array(
+            "id = :step_id: AND step_phase_code = 'FLOWCELL'",
+            'bind' => array(
+                'step_id' => $step_id
+            )
+        ));
         $this->view->setVar('step', $step);
 
         $warn_flag = 0;
@@ -586,10 +617,56 @@ class TrackerController extends ControllerBase
         }
         $this->view->setVar('seqlanes', $seqlanes);
 
+        if ($this->session->has('seqlanes_add')) {
+            $seqlanes_add = $this->session->get('seqlanes_add');
+            $this->view->setVar('seqlanes_add', $seqlanes_add);
+        }
+
+        foreach ($seqlanes as $seqlane_number => $seqlane) {
+            if (isset($seqlanes_add[$seqlane_number])) {
+                $seqlane_add = $seqlanes_add[$seqlane_number];
+                Tag::setDefault('apply_conc-' . $seqlane_number, $seqlane_add['apply_conc']);
+                if ($seqlane_add['is_control'] === 'Y') {
+                    Tag::setDefault('is_control-' . $seqlane_number, true);
+                }
+            }
+        }
+
         if ($warn_flag > 0) {
             return $this->response->redirect("tracker/flowcellSetupCandidates/$step_id");
         }
 
+    }
+
+
+    public function flowcellSetupConfirmAction($step_id)
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+
+        $flowcell_name = $this->session->get('flowcell_name');
+        $flowcell_name = $this->filter->sanitize($flowcell_name, array("string"));
+        $this->view->setVar('flowcell_name', $flowcell_name);
+
+        $seqlanes = $this->session->get('seqlanes');
+        $this->view->setVar('seqlanes', $seqlanes);
+
+        if ($this->session->has('seqlanes_add')) {
+            $seqlanes_add = $this->session->get('seqlanes_add');
+            $this->view->setVar('seqlanes_add', $seqlanes_add);
+        }
+
+        $step_id = $this->filter->sanitize($step_id, array("int"));
+        $step = Steps::findFirst(array(
+            "id = :step_id: AND step_phase_code = 'FLOWCELL'",
+            'bind' => array(
+                'step_id' => $step_id
+            )
+        ));
+        $this->view->setVar('step', $step);
+
+        $lane_per_flowcell = $step->getSeqRunmodeTypes()->lane_per_flowcell;
+        $lane_index = range(1, $lane_per_flowcell);
+        $this->view->setVar('lane_index', $lane_index);
     }
 
     public function flowcellSetupSaveAction($step_id)
@@ -606,12 +683,17 @@ class TrackerController extends ControllerBase
 
                 $seqlanes = $this->session->get('seqlanes');
 
-                if ($request->hasPost('seqlanes_add')) {
-                    $seqlanes_add = $request->getPost('seqlanes_add');
+                if ($this->session->has('seqlanes_add')) {
+                    $seqlanes_add = $this->session->get('seqlanes_add');
                 }
 
                 $step_id = $this->filter->sanitize($step_id, array("int"));
-                $step = Steps::findFirstById($step_id);
+                $step = Steps::findFirst(array(
+                    "id = :step_id: AND step_phase_code = 'FLOWCELL'",
+                    'bind' => array(
+                        'step_id' => $step_id
+                    )
+                ));
 
                 $flowcell = new Flowcells();
                 $flowcell->name = $flowcell_name;
@@ -656,11 +738,9 @@ class TrackerController extends ControllerBase
                         $seqlanes_model[$index]->control_id = $control_id;
                     }
 
-                    $seqlanes_model[$index]->is_control = $this->filter->sanitize($seqlanes_add[$index]["is_control"], array("string"));
-
-                    //If $seqlanes_add[$index]["apply_conc"] = null/not float, the sanitize filter returns fail.
-                    if ($apply_conc = $this->filter->sanitize($seqlanes_add[$index]["apply_conc"], array("float"))) {
-                        $seqlanes_model[$index]->apply_conc = $apply_conc;
+                    if(isset($seqlanes_add[$index])) {
+                        $seqlanes_model[$index]->is_control = $this->filter->sanitize($seqlanes_add[$index]["is_control"], array("string"));
+                        $seqlanes_model[$index]->apply_conc = $this->filter->sanitize($seqlanes_add[$index]["apply_conc"], array("float"));
                     }
                 }
                 //Tied $seqlanes_model(Seqlanes) array to $flowcell(Flowcells) with using hasMany relation on Flowcells model.
@@ -678,30 +758,10 @@ class TrackerController extends ControllerBase
 
                     $this->session->remove('flowcell_name');
                     $this->session->remove('seqlanes');
+                    $this->session->remove('seqlanes_add');
                 }
             }
         }
-    }
-
-    public function flowcellAction($flowcell_id)
-    {
-        $this->view->cleanTemplateAfter()->setLayout('main');
-
-        $flowcell_id = $this->filter->sanitize($flowcell_id, array("int"));
-        $flowcell = Flowcells::findFirstById($flowcell_id);
-        Tag::appendTitle(' | Flowcell ' . $flowcell->name);
-        $this->view->setVar('flowcell', $flowcell);
-
-        $lane_per_flowcell = $flowcell->getSeqRunmodeTypes()->lane_per_flowcell;
-        $lane_index = range(1, $lane_per_flowcell);
-        $this->view->setVar('lane_index', $lane_index);
-
-        $seqlanes = array();
-        foreach ($flowcell->getSeqlanes() as $seqlane) {
-            $seqlanes[$seqlane->number] = $seqlane;
-        }
-        $this->view->setVar('seqlanes', $seqlanes);
-
     }
 
     public function sequenceAction()

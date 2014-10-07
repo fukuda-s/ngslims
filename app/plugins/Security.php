@@ -70,6 +70,7 @@ class Security extends Plugin
                     'multiplexSetupConfirm',
                     'multiplexSave',
                     'flowcellSetupCandidates',
+                    'flowcellSetup',
                     'flowcellSetupSetSession',
                     'flowcellSetupConfirm',
                     'flowcellSetupSave',

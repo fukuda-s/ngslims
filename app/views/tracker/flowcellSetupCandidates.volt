@@ -46,7 +46,7 @@
       </ol>
       <div class="panel-footer clearfix">
         <button id="flowcell-clear-button" type="button" class="btn btn-default">Clear Flowcell Setup</button>
-        <button id="flowcell-confirm-button" type="button" class="btn btn-primary pull-right">Confirm Flowcell
+        <button id="flowcell-setup-button" type="button" class="btn btn-primary pull-right">Flowcell
           Setup &raquo;</button>
       </div>
     </div>
@@ -150,6 +150,7 @@
         addClasses: false,
         hoverClass: "tube tube-placeholder",
         accept: ":not(.ui-sortable-helper)",
+        tolerance: "pointer",
         drop: function (event, ui) {
           var seqtemplate_name = ui.draggable.context.getAttribute("seqtemplate_name");
           var seqtemplate_id = ui.draggable.context.getAttribute("seqtemplate_id");
@@ -157,6 +158,9 @@
           if (seqtemplate_id) {
             $(this)
                 .text(seqtemplate_name)
+                .removeAttr('seqtemplate_id')
+                .removeAttr('control_id')
+                .removeClass()
                 .attr('seqtemplate_name', seqtemplate_name)
                 .attr('seqtemplate_id', seqtemplate_id)
                 .addClass("tube tube-active")
@@ -164,6 +168,9 @@
           } else if (control_id) {
             $(this)
                 .text(seqtemplate_name)
+                .removeAttr('seqtemplate_id')
+                .removeAttr('control_id')
+                .removeClass()
                 .attr('seqtemplate_name', seqtemplate_name)
                 .attr('control_id', control_id)
                 .addClass("tube tube-warning")
@@ -182,9 +189,9 @@
     });
 
     /*
-     * Build function for #flowcell-confirm-button
+     * Build function for #flowcell-setup-button
      */
-    $("#flowcell-confirm-button").click(function () {
+    $("#flowcell-setup-button").click(function () {
       var parent_panel = $('#flowcell-panel');
       var flowcell_name = parent_panel.find('input#flowcell_name').val();
       console.log(flowcell_name);
@@ -229,7 +236,7 @@
         }
       })
           .done(function () {
-            window.location = "{{ url("tracker/flowcellSetupConfirm/") ~ step.id }}"
+            window.location = "{{ url("tracker/flowcellSetup/") ~ step.id }}"
           });
 
     });
