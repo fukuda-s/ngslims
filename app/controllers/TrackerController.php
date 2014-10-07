@@ -1018,6 +1018,7 @@ class TrackerController extends ControllerBase
                 $dirname = implode('_', array(
                         date('ymd', strtotime($run_started_date)),
                         $instrument->name,
+                        sprintf('%04d', $run_number),
                         $side . $flowcell->name
                     )
                 );
