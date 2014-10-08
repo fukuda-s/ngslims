@@ -193,7 +193,16 @@ $(document).ready(function () {
     {% if type === 'PREP' %}, 80, 150
     {% endif %}
   ];
-  var $samplePropertyTypesColumnsStartIdx = 15; //@TODO First index number(begin by 0) of sample_property_types
+
+  /*
+   * Setup columns number of not sample_property_types. This number used for setting of column width of sample_propery_types on loadData() function.
+   * CAUTION: This number should be changed manually if the NOT sample_property_types column is added.
+   */
+  var $samplePropertyTypesColumnsStartIdx = 16; //@TODO First index number(begin by 0) of sample_property_types
+
+  /*
+   * Setting of Handsontable;
+   */
   $container.handsontable({
     stretchH: 'all',
     height: 500,
