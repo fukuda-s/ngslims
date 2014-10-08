@@ -139,6 +139,8 @@ class Seqlanes extends \Phalcon\Mvc\Model
         $this->belongsTo('seqtemplate_id', 'SeqTemplates', 'id');
         $this->belongsTo('control_id', 'Controls', 'id');
 
+        $this->hasMany('id', 'SeqDemultiplexResults', 'seqlane_id');
+
         $this->addBehavior(new Timestampable(
             array(
                 'beforeValidationOnCreate' => array(

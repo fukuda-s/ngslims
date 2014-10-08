@@ -222,8 +222,7 @@ class SummaryController extends ControllerBase
             ->addFrom('Seqlanes', 'slane')
             ->join('SeqtemplateAssocs', 'sta.seqtemplate_id = slane.seqtemplate_id', 'sta')
             ->join('Seqlibs', 'sl.id = sta.seqlib_id', 'sl')
-            ->leftJoin('Flowcells', 'fc.id = slane.flowcell_id', 'fc')
-            ->orderBy(array('fc.run_number', 'slane.number', 'sl.oligobarcodeA_id', 'sl.oligobarcodeB_id'));
+            ->leftJoin('Flowcells', 'fc.id = slane.flowcell_id', 'fc');
 
         if (!empty($year) and $year > 0) {
             $overall_tmp = $overall_tmp->where("YEAR(fc.run_started_date) = :year:", array("year" => $year));
@@ -231,7 +230,7 @@ class SummaryController extends ControllerBase
         if (!empty($month) and $month > 0) {
             $overall_tmp = $overall_tmp->andWhere("MONTH(fc.run_started_date) = :month:", array("month" => $month));
         }
-        $overall = $overall_tmp->orderBy(array('fc.run_started_date', 'slane.number', 'sl.oligobarcodeA_id', 'sl.oligobarcodeB_id'))
+        $overall = $overall_tmp->orderBy(array('fc.run_started_date', 'fc.run_number', 'slane.number', 'sl.oligobarcodeA_id', 'sl.oligobarcodeB_id'))
             ->getQuery()
             ->execute();
         $this->view->setVar('overall', $overall);

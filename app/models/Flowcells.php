@@ -103,6 +103,7 @@ class Flowcells extends \Phalcon\Mvc\Model
 
         $this->hasMany('id', 'Seqlanes', 'flowcell_id');
         $this->hasMany('id', 'StepEntries', 'flowcell_id');
+        $this->hasMany('id', 'SeqDemultiplexResults', 'flowcell_id');
 
         $this->hasOne('seq_runmode_type_id', 'SeqRunmodeTypes', 'id');
 

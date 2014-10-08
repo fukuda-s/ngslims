@@ -57,10 +57,48 @@
         <th>Multiplex Lib. Name</th>
         <th>Index1</th>
         <th>Index2</th>
+        <th></th>
+        <th>Lane #</th>
+        <th>Seqlib Name</th>
+        <th>Total</th>
+        <th>PF</th>
+        <th>PF(%)</th>
       </tr>
       </thead>
       <tbody>
       {% for d in overall %}
+        {% if fc_prev is defined and fc_prev.run_number !== d.fc.run_number %}
+          {% set seqDemultiplexResults = fc_prev.getSeqDemultiplexResults("is_undetermined = 'Y'") %}
+          {% for seqDemultiplexResult in seqDemultiplexResults %}
+            <tr>
+              <td></td>
+              <td>{{ fc_prev.run_number }}</td>
+              <td>{{ date('Y-m-d', strtotime(fc_prev.run_started_date)) }}</td>
+              <td>{{ fc_prev.Instruments.instrument_number ~ fc_prev.side }}</td>
+              <td>{{ fc_prev.name }}</td>
+              <td>{{ seqDemultiplexResult.SeqLanes.number }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{ seqDemultiplexResult.SeqLanes.number }}</td>
+              <td>Undet</td>
+              <td>{{ number_format(seqDemultiplexResult.reads_total) }}</td>
+              <td>{{ number_format(seqDemultiplexResult.reads_passedfilter) }}</td>
+              <td>{{ round(seqDemultiplexResult.reads_passedfilter / seqDemultiplexResult.reads_total * 100, 2) ~ '%' }}</td>
+            </tr>
+          {% endfor %}
+        {% endif %}
         <tr id="seqlib_id_{{ d.sl.id }}">
           <td>{{ d.sl.Projects.name }}</td>
           <td>{{ d.fc.run_number }}</td>
@@ -109,7 +147,53 @@
           {% else %}
             <td>{{ d.sl.OligobarcodeB.name }}</td>
           {% endif %}
+          <td></td>
+          <td>{{ d.slane.number }}</td>
+          <td>{{ d.sl.name }}</td>
+          {% if d.slane.getSeqDemultiplexResults()|length === 0 %}
+            <td></td>
+            <td></td>
+            <td></td>
+          {% else %}
+            {% set seqDemultiplexResults = d.slane.getSeqDemultiplexResults("is_undetermined = 'N'")[0] %}
+            <td>{{ number_format(seqDemultiplexResults.reads_total) }}</td>
+            <td>{{ number_format(seqDemultiplexResults.reads_passedfilter) }}</td>
+            <td>{{ round(seqDemultiplexResults.reads_passedfilter / seqDemultiplexResults.reads_total * 100, 2) ~ '%' }}</td>
+          {% endif %}
         </tr>
+        {% if fc_prev is defined and loop.last %}
+          {% set seqDemultiplexResults = fc_prev.getSeqDemultiplexResults("is_undetermined = 'Y'") %}
+          {% for seqDemultiplexResult in seqDemultiplexResults %}
+            <tr>
+              <td></td>
+              <td>{{ fc_prev.run_number }}</td>
+              <td>{{ date('Y-m-d', strtotime(fc_prev.run_started_date)) }}</td>
+              <td>{{ fc_prev.Instruments.instrument_number ~ fc_prev.side }}</td>
+              <td>{{ fc_prev.name }}</td>
+              <td>{{ seqDemultiplexResult.SeqLanes.number }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{ seqDemultiplexResult.SeqLanes.number }}</td>
+              <td>Undet</td>
+              <td>{{ number_format(seqDemultiplexResult.reads_total) }}</td>
+              <td>{{ number_format(seqDemultiplexResult.reads_passedfilter) }}</td>
+              <td>{{ round(seqDemultiplexResult.reads_passedfilter / seqDemultiplexResult.reads_total * 100, 2) ~ '%' }}</td>
+            </tr>
+          {% endfor %}
+        {% endif %}
+        {% set fc_prev = d.fc %}
       {% endfor %}
       </tbody>
     </table>
@@ -123,13 +207,8 @@
     $('#overall_table').dataTable({
       scrollX: true,
       responsive: true,
-      order: [
-        [ 2, 'asc' ],
-        [ 4, 'asc' ],
-        [ 5, 'asc' ],
-        [17, 'asc'],
-        [18, 'asc']
-      ] // fc.un_started_date > slane.number > sl.oligobarcodeA.name > sl.oligobarcodeB.name
+      paging: false,
+      order: []
     });
   });
 </script>

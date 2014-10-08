@@ -85,8 +85,12 @@ try {
 
 		$compiler = $volt->getCompiler();
 
-		//This binds the function name 'strtotime' in Volt to the PHP function 'strtotime'
+        /*
+         * Bind PHP function into VOLT.
+         */
 		$compiler->addFunction('strtotime', 'strtotime');
+        $compiler->addFunction('number_format', 'number_format');
+        $compiler->addFunction('round', 'round');
 
 		return $volt;
 	}, true);
