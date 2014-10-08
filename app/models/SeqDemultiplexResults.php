@@ -57,7 +57,7 @@ class SeqDemultiplexResults extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $create_at;
+    public $created_at;
 
     /**
      * Independent Column Mapping.
@@ -73,7 +73,7 @@ class SeqDemultiplexResults extends \Phalcon\Mvc\Model
             'reads_total' => 'reads_total',
             'reads_passedfilter' => 'reads_passedfilter',
             'software_version' => 'software_version',
-            'create_at' => 'create_at'
+            'created_at' => 'create_at'
         );
     }
 

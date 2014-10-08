@@ -458,7 +458,7 @@ DROP TABLE IF EXISTS `seq_demultiplex_results`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `seq_demultiplex_results` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `seqlib_id` int(11) DEFAULT NULL,
   `seqlane_id` int(11) DEFAULT NULL,
   `flowcell_id` int(11) DEFAULT NULL,
@@ -466,7 +466,7 @@ CREATE TABLE `seq_demultiplex_results` (
   `reads_total` bigint(20) DEFAULT NULL,
   `reads_passedfilter` bigint(20) DEFAULT NULL,
   `software_version` varchar(45) DEFAULT NULL,
-  `create_at` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_ seq_demultiplex_results_seqlibs_idx` (`seqlib_id`),
   KEY `fk_ seq_demultiplex_results_seqlanes_idx` (`seqlane_id`),
@@ -474,7 +474,7 @@ CREATE TABLE `seq_demultiplex_results` (
   CONSTRAINT `fk_ seq_demultiplex_results_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ seq_demultiplex_results_seqlanes` FOREIGN KEY (`seqlane_id`) REFERENCES `seqlanes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_ seq_demultiplex_results_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -684,7 +684,7 @@ CREATE TABLE `step_entries` (
   `seqlib_id` int(11) DEFAULT NULL,
   `seqtemplate_id` int(11) DEFAULT NULL,
   `flowcell_id` int(11) DEFAULT NULL,
-  `step_phase_code` varchar(10) NOT NULL,
+  `step_phase_code` varchar(100) NOT NULL,
   `step_id` int(11) NOT NULL,
   `protocol_id` int(11) DEFAULT NULL,
   `created_at` datetime NOT NULL,
@@ -797,4 +797,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-09-09 15:22:44
+-- Dump completed on 2014-10-08 16:30:16
