@@ -2,7 +2,6 @@
  * Validate Register. (session/register)
  * @type {{check: check, validate: validate}}
  */
-
 var SignUp = {
     check: function (id) {
         if ($.trim($("#" + id)[0].value) == '') {

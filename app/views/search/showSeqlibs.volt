@@ -209,7 +209,6 @@ $(document).ready(function () {
       }
     })
         .done(function (data) {
-          //alert(data);
           //alert(location.href);
           //console.log(data);
           $container.handsontable("loadData", data);
