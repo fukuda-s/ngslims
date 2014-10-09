@@ -8070,6 +8070,26 @@ function HandsontableColumnSorting() {
     }
   }
 
+    function numericSort(sortOrder) {
+        return function (a, b) {
+            if (a[1] !== null) a[1] = Number(a[1]);
+            if (b[1] !== null) b[1] = Number(b[1]);
+
+            if (a[1] === b[1]) {
+                return 0;
+            }
+            if (a[1] === null || a[1] === "") {
+                return 1;
+            }
+            if (b[1] === null || b[1] === "") {
+                return -1;
+            }
+            if (a[1] < b[1]) return sortOrder ? -1 : 1;
+            if (a[1] > b[1]) return sortOrder ? 1 : -1;
+            return 0;
+        }
+    }
+
   function dateSort(sortOrder) {
     return function (a, b) {
       if (a[1] === b[1]) {
@@ -8112,6 +8132,9 @@ function HandsontableColumnSorting() {
     switch (colMeta.type) {
       case 'date':
         sortFunction = dateSort;
+        break;
+      case 'numeric':
+        sortFunction = numericSort;
         break;
       default:
         sortFunction = defaultSort;
