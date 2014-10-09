@@ -205,7 +205,7 @@ $(document).ready(function () {
         format: '0.000'
       },
       {data: "s.qual_volume", title: "Volume (uL)", readOnly: true, type: 'numeric', format: '0.00'},
-      {data: "s.qual_amount", data: 0, title: "Total (ng)", readOnly: true, type: 'numeric', format: '0.00'},
+      {data: "s.qual_amount", title: "Total (ng)", readOnly: true, type: 'numeric', format: '0.00'},
       {data: "s.qual_date", title: "QC Date", readOnly: true, type: 'date', dateFormat: 'yy-mm-dd'},
       {data: "s.barcode_number", title: "2D barcode", readOnly: true},
       {
