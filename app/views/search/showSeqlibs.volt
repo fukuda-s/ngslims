@@ -171,7 +171,6 @@ $(document).ready(function () {
     stretchH: 'all',
     height: 400,
     rowHeaders: false,
-    //colWidths: [160, 160, 150, 80, 80, 80, 80, 80, 160, 160, 90],
     columns: [
       { data: "sl.name", title: "Seqlib Name" },
       //{ data: "sl.sample_id, title: "Sample Name", readOnly: true },
@@ -195,7 +194,6 @@ $(document).ready(function () {
     fixedColumnsLeft: 1,
     currentRowClassName: 'currentRow',
     autoWrapRow: true
-
   });
   var handsontable = $container.data('handsontable');
 

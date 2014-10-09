@@ -183,7 +183,6 @@ $(document).ready(function () {
     "sample_property_type_id_{{ sample_property_type.id }}",
     {% endfor %}
   ];
-  //var $defaultColWidths = [120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 160, 80, 110
   var $defaultColWidths = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
     {% for sample_property_type in sample_property_types %}
     {% if sample_property_type.sample_count > 0 %}, ''
@@ -217,7 +216,6 @@ $(document).ready(function () {
     currentRowClassName: 'currentRow',
     autoWrapRow: true,
     search: true,
-    //colWidths: $defaultColWidths,
     autoColumnSize: true,
     columns: [
       {data: "s.id", title: "ID", type: 'numeric', readOnly: true},

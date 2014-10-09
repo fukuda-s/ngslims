@@ -163,7 +163,6 @@ $(document).ready(function () {
 
   // Construct handsontable
   var $container = $("#handsontable-showSamples-body");
-  //var $defaultColWidths = [120, 80, 100, 120, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 150, 80, 110
   var $defaultColWidths = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
     {% for sample_property_type in sample_property_types %}
     {% if sample_property_type.sample_count > 0 %}, ''
@@ -185,7 +184,6 @@ $(document).ready(function () {
     fixedColumnsLeft: 4,
     currentRowClassName: 'currentRow',
     autoWrapRow: true,
-    //colWidths: $defaultColWidths,
     autoColumnSize: true,
     columns: [
       {data: "s.name", title: "Sample Name", readOnly: true},

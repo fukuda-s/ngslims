@@ -171,7 +171,6 @@ $(document).ready(function () {
     stretchH: 'all',
     height: 500,
     rowHeaders: false,
-    //colWidths: [160, 160, 150, 80, 80, 80, 80, 80, 160, 160, 90],
     columns: [
       {data: "sl.id", title: "Seqlib ID", readOnly: true, type: 'numeric'},
       {data: "sl.name", title: "Seqlib Name"},
