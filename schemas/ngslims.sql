@@ -335,6 +335,38 @@ CREATE TABLE `requests` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `role_users`
+--
+
+DROP TABLE IF EXISTS `role_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `role_users` (
+  `user_id` int(11) NOT NULL,
+  `role_code` varchar(255) NOT NULL,
+  PRIMARY KEY (`user_id`,`role_code`),
+  KEY `fk_role_users_users_idx` (`user_id`),
+  KEY `fk_role_users_roles_idx` (`role_code`),
+  CONSTRAINT `fk_role_users_roles` FOREIGN KEY (`role_code`) REFERENCES `roles` (`role_code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_role_users_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `roles`
+--
+
+DROP TABLE IF EXISTS `roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `roles` (
+  `role_code` varchar(255) NOT NULL,
+  `active` char(1) NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`role_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `sample_locations`
 --
 
@@ -797,4 +829,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-08 16:30:16
+-- Dump completed on 2014-10-17 17:23:55
