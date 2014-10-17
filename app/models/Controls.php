@@ -1,5 +1,6 @@
 <?php
 
+use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class Controls extends \Phalcon\Mvc\Model
 {
@@ -39,6 +40,20 @@ class Controls extends \Phalcon\Mvc\Model
             'platform_code' => 'platform_code',
             'active' => 'active'
         );
+    }
+
+    const ACTIVE = 'Y';
+
+    const NOT_ACTIVE = 'N';
+
+    public function initialize()
+    {
+        $this->addBehavior(new SoftDelete(
+            [
+                'field' => 'active',
+                'value' => Users::NOT_ACTIVE
+            ]
+        ));
     }
 
 }
