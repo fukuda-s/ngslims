@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.28, for osx10.6 (i386)
+-- MySQL dump 10.13  Distrib 5.6.21, for osx10.8 (x86_64)
 --
 -- Host: localhost    Database: ngslims
 -- ------------------------------------------------------
--- Server version	5.5.28-log
+-- Server version	5.6.21-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -29,6 +29,7 @@ CREATE TABLE `controls` (
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   KEY `fk_controls_platforms_idx` (`platform_code`),
+  KEY `controls_active` (`active`),
   CONSTRAINT `fk_controls_platforms` FOREIGN KEY (`platform_code`) REFERENCES `platforms` (`platform_code`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -57,9 +58,11 @@ CREATE TABLE `flowcells` (
   KEY `fk_flowcells_instruments_idx` (`instrument_id`),
   KEY `fk_flowcells_seq_run_type_schemes_idx` (`seq_run_type_scheme_id`),
   KEY `fk_flowcells_seq_runmode_types_idx` (`seq_runmode_type_id`),
+  KEY `flowcells_name_idx` (`name`),
+  KEY `flowcells_run_started_date_idx` (`run_started_date`),
   CONSTRAINT `fk_flowcells_instruments` FOREIGN KEY (`instrument_id`) REFERENCES `instruments` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_flowcells_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_flowcells_seq_run_type_schemes` FOREIGN KEY (`seq_run_type_scheme_id`) REFERENCES `seq_run_type_schemes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_flowcells_seq_run_type_schemes` FOREIGN KEY (`seq_run_type_scheme_id`) REFERENCES `seq_run_type_schemes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_flowcells_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -80,6 +83,8 @@ CREATE TABLE `instrument_types` (
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   KEY `fk_instrument_types_platforms_idx` (`platform_code`),
+  KEY `instrument_types_name_idx` (`name`),
+  KEY `instrument_types_active_idx` (`active`),
   CONSTRAINT `fk_instrument_types_platforms` FOREIGN KEY (`platform_code`) REFERENCES `platforms` (`platform_code`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -100,6 +105,8 @@ CREATE TABLE `instruments` (
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   KEY `fk_instruments_instrument_types_idx` (`instrument_type_id`),
+  KEY `instruments_name_idx` (`name`),
+  KEY `instruments_active_idx` (`active`),
   CONSTRAINT `fk_instruments_instrument_types` FOREIGN KEY (`instrument_type_id`) REFERENCES `instrument_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -139,7 +146,8 @@ CREATE TABLE `labs` (
   `fax` varchar(45) DEFAULT NULL,
   `email` varchar(45) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `labs_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -158,6 +166,7 @@ CREATE TABLE `oligobarcode_scheme_allows` (
   PRIMARY KEY (`id`),
   KEY `fk_oligobarcode_scheme_allows_oligobarcode_schemes_idx` (`oligobarcode_scheme_id`),
   KEY `fk_oligobarcode_scheme_allows_protocols_idx` (`protocol_id`),
+  KEY `oligobarcode_scheme_allows_has_oligobarcodeB_idx` (`has_oligobarcodeB`),
   CONSTRAINT `fk_oligobarcode_scheme_allows_oligobarcode_schemes` FOREIGN KEY (`oligobarcode_scheme_id`) REFERENCES `oligobarcode_schemes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_oligobarcode_scheme_allows_protocols` FOREIGN KEY (`protocol_id`) REFERENCES `protocols` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -176,7 +185,8 @@ CREATE TABLE `oligobarcode_schemes` (
   `description` varchar(200) DEFAULT NULL,
   `is_oligobarcodeB` char(1) NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `oligobarcode_schemes_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -196,6 +206,8 @@ CREATE TABLE `oligobarcodes` (
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   KEY `fk_oligobarcodes_oligobarcode_schemes_idx` (`oligobarcode_scheme_id`),
+  KEY `oligobarcodes_sort_order_idx` (`sort_order`),
+  KEY `oligobarcodes_active_idx` (`active`),
   CONSTRAINT `fk_oligobarcodes_oligobarcode_schemes` FOREIGN KEY (`oligobarcode_scheme_id`) REFERENCES `oligobarcode_schemes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -213,7 +225,9 @@ CREATE TABLE `organisms` (
   `taxonomy` varchar(200) DEFAULT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `organisms_sort_order_idx` (`sort_order`),
+  KEY `organisms_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -228,7 +242,8 @@ CREATE TABLE `platforms` (
   `platform_code` varchar(100) NOT NULL,
   `description` varchar(200) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`platform_code`)
+  PRIMARY KEY (`platform_code`),
+  KEY `platforms_active` (`active`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -245,7 +260,8 @@ CREATE TABLE `project_types` (
   `description` varchar(255) DEFAULT NULL,
   `create_at` datetime NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `project_types_active` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -272,6 +288,7 @@ CREATE TABLE `projects` (
   KEY `fk_projects_labs_idx` (`lab_id`),
   KEY `fk_projects_users_idx` (`user_id`),
   KEY `fk_projects_project_types_idx` (`project_type_id`),
+  KEY `projects_active_idx` (`active`),
   CONSTRAINT `fk_projects_labs` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_projects_project_types` FOREIGN KEY (`project_type_id`) REFERENCES `project_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_projects_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -299,8 +316,10 @@ CREATE TABLE `protocols` (
   UNIQUE KEY `protocols_name_UNIQUE` (`name`),
   KEY `fk_protocols_steps_idx` (`step_id`),
   KEY `fk_protocols_step_phases_idx` (`next_step_phase_code`),
-  CONSTRAINT `fk_protocols_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_protocols_step_phases` FOREIGN KEY (`next_step_phase_code`) REFERENCES `step_phases` (`step_phase_code`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `protocols_active_idx` (`active`),
+  KEY `protocols_next_step_phase_code_idx` (`next_step_phase_code`),
+  CONSTRAINT `fk_protocols_step_phases` FOREIGN KEY (`next_step_phase_code`) REFERENCES `step_phases` (`step_phase_code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_protocols_steps` FOREIGN KEY (`step_id`) REFERENCES `steps` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -362,7 +381,8 @@ DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
   `role_code` varchar(255) NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`role_code`)
+  PRIMARY KEY (`role_code`),
+  KEY `roles_active_idx` (`active`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -378,7 +398,8 @@ CREATE TABLE `sample_locations` (
   `name` varchar(45) NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
+  UNIQUE KEY `name_UNIQUE` (`name`),
+  KEY `sample_locations_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -416,7 +437,8 @@ CREATE TABLE `sample_property_types` (
   `mo_id` varchar(45) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `mo_term_name_UNIQUE` (`mo_term_name`)
+  UNIQUE KEY `mo_term_name_UNIQUE` (`mo_term_name`),
+  KEY `sample_property_types_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -435,7 +457,10 @@ CREATE TABLE `sample_types` (
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `sample_type_code_UNIQUE` (`sample_type_code`)
+  UNIQUE KEY `sample_type_code_UNIQUE` (`sample_type_code`),
+  KEY `sample_types_sort_order_idx` (`sort_order`),
+  KEY `sample_types_active_idx` (`active`),
+  KEY `sample_types_nucleotide_type` (`nucleotide_type`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -524,14 +549,15 @@ CREATE TABLE `seq_run_type_schemes` (
   `seq_runcycle_type_id` int(11) NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`,`instrument_type_id`,`seq_runmode_type_id`,`seq_runread_type_id`,`seq_runcycle_type_id`),
-  KEY `seq_run_type_schemes_seq_runcycle_types_idx` (`seq_runcycle_type_id`),
-  KEY `seq_run_type_schemes_seq_runmode_types_idx` (`seq_runmode_type_id`),
-  KEY `seq_run_type_schemes_seq_runread_types_idx` (`seq_runread_type_id`),
-  KEY `seq_run_type_schemes_instrument_types_idx` (`instrument_type_id`),
-  CONSTRAINT `seq_run_type_schemes_instrument_types` FOREIGN KEY (`instrument_type_id`) REFERENCES `instrument_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `seq_run_type_schemes_seq_runcycle_types` FOREIGN KEY (`seq_runcycle_type_id`) REFERENCES `seq_runcycle_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `seq_run_type_schemes_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `seq_run_type_schemes_seq_runread_types` FOREIGN KEY (`seq_runread_type_id`) REFERENCES `seq_runread_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_seq_run_type_schemes_seq_runcycle_types_idx` (`seq_runcycle_type_id`),
+  KEY `fk_seq_run_type_schemes_seq_runmode_types_idx` (`seq_runmode_type_id`),
+  KEY `fk_seq_run_type_schemes_seq_runread_types_idx` (`seq_runread_type_id`),
+  KEY `fk_seq_run_type_schemes_instrument_types_idx` (`instrument_type_id`),
+  KEY `seq_run_type_schemes_active_idx` (`active`),
+  CONSTRAINT `fk_seq_run_type_schemes_instrument_types` FOREIGN KEY (`instrument_type_id`) REFERENCES `instrument_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seq_run_type_schemes_seq_runcycle_types` FOREIGN KEY (`seq_runcycle_type_id`) REFERENCES `seq_runcycle_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seq_run_type_schemes_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seq_run_type_schemes_seq_runread_types` FOREIGN KEY (`seq_runread_type_id`) REFERENCES `seq_runread_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -547,7 +573,9 @@ CREATE TABLE `seq_runcycle_types` (
   `name` varchar(45) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `seq_runcycle_types_sort_order_idx` (`sort_order`),
+  KEY `seq_runcycle_types_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -564,7 +592,9 @@ CREATE TABLE `seq_runmode_types` (
   `lane_per_flowcell` int(11) NOT NULL,
   `sort_order` varchar(45) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `seq_runmode_types_sort_order_idx` (`sort_order`),
+  KEY `seq_runmode_types_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -580,7 +610,9 @@ CREATE TABLE `seq_runread_types` (
   `name` varchar(45) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `seq_runread_types_sort_order_idx` (`sort_order`),
+  KEY `seq_runread_types_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -699,7 +731,7 @@ CREATE TABLE `seqtemplates` (
   `finished_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `name_idx` (`name`)
+  KEY `seqtemplates_name_idx` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -731,6 +763,7 @@ CREATE TABLE `step_entries` (
   KEY `fk_step_entries_seqtemplates_idx` (`seqtemplate_id`),
   KEY `fk_step_entries_flowcells_idx` (`flowcell_id`),
   KEY `fk_step_entries_steps_idx` (`step_id`),
+  KEY `step_entries_status_idx` (`status`),
   CONSTRAINT `fk_step_entries_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_samples` FOREIGN KEY (`sample_id`) REFERENCES `samples` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_step_entries_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -770,7 +803,9 @@ CREATE TABLE `step_phases` (
   `description` varchar(100) NOT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`step_phase_code`)
+  PRIMARY KEY (`step_phase_code`),
+  KEY `step_phases_active_idx` (`active`),
+  KEY `step_phases_sort_order_idx` (`sort_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -794,6 +829,8 @@ CREATE TABLE `steps` (
   KEY `fk_steps_step_phases_idx` (`step_phase_code`),
   KEY `fk_steps_platforms_idx` (`platform_code`),
   KEY `fk_steps_seq_runmode_types_idx` (`seq_runmode_type_id`),
+  KEY `steps_active_idx` (`active`),
+  KEY `steps_sort_order_idx` (`sort_order`),
   CONSTRAINT `fk_steps_platforms` FOREIGN KEY (`platform_code`) REFERENCES `platforms` (`platform_code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_steps_seq_runmode_types` FOREIGN KEY (`seq_runmode_type_id`) REFERENCES `seq_runmode_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_steps_step_phases` FOREIGN KEY (`step_phase_code`) REFERENCES `step_phases` (`step_phase_code`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -816,7 +853,8 @@ CREATE TABLE `users` (
   `email` varchar(70) NOT NULL,
   `created_at` datetime NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `users_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -829,4 +867,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-17 17:23:55
+-- Dump completed on 2014-10-23 11:43:37
