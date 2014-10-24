@@ -469,7 +469,7 @@ class OrderController extends ControllerBase
 
                 $seq_runcycle_types = $this->modelsManager->createBuilder()
                     ->columns('srct.*')
-                    ->addfrom('SeqRunCycleTypes', 'srct')
+                    ->addfrom('SeqRuncycleTypes', 'srct')
                     ->join('SeqRunTypeSchemes', 'srts.seq_runcycle_type_id = srct.id', 'srts')
                     ->where('srts.instrument_type_id = :instrument_type_id:', array("instrument_type_id" => $instrument_type_id))
                     ->andWhere('srts.seq_runmode_type_id = :seq_runmode_type_id:', array("seq_runmode_type_id" => $seq_runmode_type_id))

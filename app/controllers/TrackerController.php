@@ -943,7 +943,7 @@ class TrackerController extends ControllerBase
                 $this->flashSession->warning("Please select Run Cycle for Slot" . $slot);
                 $warning++;
             } else {
-                $seq_runcycle_type = SeqRunCycleTypes::findFirst($seq_runcycle_type_id);
+                $seq_runcycle_type = SeqRuncycleTypes::findFirst($seq_runcycle_type_id);
                 $slots_data[$slot]['seq_runcycle_type']['id'] = $seq_runcycle_type->id;
                 $slots_data[$slot]['seq_runcycle_type']['name'] = $seq_runcycle_type->name;
             }
