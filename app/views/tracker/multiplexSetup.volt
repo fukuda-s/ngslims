@@ -298,7 +298,6 @@ $(document).ready(function () {
         revert: true,
         cursor: 'move',
         placeholder: "tube tube-sm tube-placeholder",
-        revert: true,
         opacity: 0.5,
         start: function (event, ui) {
           ui.placeholder.css("width", final_multiplex_sortable_max_len);
