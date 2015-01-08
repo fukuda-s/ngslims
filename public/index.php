@@ -124,6 +124,9 @@ try {
 	 */
 	$di->set('session', function(){
 		$session = new Phalcon\Session\Adapter\Files();
+        $session->setOptions(array(
+            'uniqueId' => 'ngslims'
+        ));
 		$session->start();
 		return $session;
 	});
