@@ -35,7 +35,7 @@
       </div>
     {% endfor %}
     <hr>
-    <table class="table table-bordered table-hover table-condensed" id="overall_table">
+    <table class="table table-bordered table-hover table-condensed" id="overall_table" style="font-size: 8pt">
       <thead>
       <tr>
         <th>Project Name</th>

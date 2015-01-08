@@ -6,7 +6,7 @@
     <div
         align="right">{{ link_to("trackerdetails/editSamples/SHOW/0/" ~ project.id ~ "?pre_action=" ~ previousAction, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
     <hr>
-    <table class="table table-bordered table-hover table-condensed" id="sampleInfo_table">
+    <table class="table table-bordered table-hover table-condensed" id="sampleInfo_table" style="font-size: 9pt">
       <thead>
       <tr>
         <th>Sample Name</th>
