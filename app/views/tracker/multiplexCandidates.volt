@@ -226,13 +226,13 @@
         .last()
         .on('hidden.bs.collapse', function (e) {
           e.stopPropagation();
-          var buttonObj = $('button#show-inactive-panel')
+          var buttonObj = $('button#show-inactive-panel');
           var buttonStr = buttonObj.text().replace('Hide', 'Show');
           buttonObj.text(buttonStr);
         })
         .on('shown.bs.collapse', function (e) {
           e.stopPropagation();
-          var buttonObj = $('button#show-inactive-panel')
+          var buttonObj = $('button#show-inactive-panel');
           var buttonStr = buttonObj.text().replace('Show', 'Hide');
           buttonObj.text(buttonStr);
         });
