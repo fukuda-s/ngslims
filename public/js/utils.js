@@ -94,7 +94,7 @@ $(document).ready(function () {
 });
 
 /*
- * Change cheveron icon with toggle panel
+ * Change chevron icon with toggle panel
  */
 function toggleChevron(e) {
     $(e.target).parents(".panel").find("i.indicator")
