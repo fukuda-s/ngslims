@@ -169,7 +169,7 @@ class Security extends Plugin
             // Grant access to public areas to both users and guests
             foreach ($roles as $role) {
                 foreach ($publicResources as $resource => $actions) {
-                    $acl->allow($role->getName(), $resource, '*');
+                    $acl->allow($role->getName(), $resource, $actions);
                 }
             }
 
