@@ -6,13 +6,11 @@
   {{ stylesheet_link('bootstrap/css/bootstrap.css') }}
   {{ stylesheet_link('js/jquery-ui-1.11.2/jquery-ui.min.css') }}
   {{ stylesheet_link('css/font-awesome.css') }}
-  {{ stylesheet_link('css/bootstrap-multiselect.css') }}
   {{ stylesheet_link('css/style.css') }}
   {{ assets.outputCss() }}
   {{ javascript_include('js/jquery/jquery-2.1.1.min.js') }}
   {{ javascript_include('js/jquery-ui-1.11.2/jquery-ui.min.js') }}
   {{ javascript_include('bootstrap/js/bootstrap.js') }}
-  {{ javascript_include('js/bootstrap-multiselect/bootstrap-multiselect.js') }}
   {{ assets.outputJs() }}
   {{ javascript_include('js/utils.js') }}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

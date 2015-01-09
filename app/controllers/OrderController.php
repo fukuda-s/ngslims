@@ -27,8 +27,10 @@ class OrderController extends ControllerBase
     {
         $this->assets
             ->addJs('js/handsontable-0.12.2/dist/handsontable.full.js')
+            ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
             ->addCss('js/handsontable-0.12.2/dist/handsontable.css')
-            ->addCss('js/handsontable-0.12.2/plugins/bootstrap/handsontable.bootstrap.css');
+            ->addCss('js/handsontable-0.12.2/plugins/bootstrap/handsontable.bootstrap.css')
+            ->addCss('js/bootstrap-multiselect/bootstrap-multiselect.js');
 
         // @TODO Should be filter labs which should have lab_users
         //Set default value from session value

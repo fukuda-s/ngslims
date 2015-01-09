@@ -127,8 +127,10 @@ class TrackerdetailsController extends ControllerBase
     {
         $this->assets
             ->addJs('js/handsontable-0.12.2/dist/handsontable.full.js')
+            ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
             ->addCss('js/handsontable-0.12.2/dist/handsontable.css')
-            ->addCss('js/handsontable-0.12.2/plugins/bootstrap/handsontable.bootstrap.css');
+            ->addCss('js/handsontable-0.12.2/plugins/bootstrap/handsontable.bootstrap.css')
+            ->addCss('js/bootstrap-multiselect/bootstrap-multiselect.js');
 
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
@@ -337,7 +339,7 @@ class TrackerdetailsController extends ControllerBase
             ->addJs('js/handsontable-0.12.2/dist/handsontable.full.js')
             ->addCss('js/handsontable-0.12.2/dist/handsontable.css')
             ->addCss('js/handsontable-0.12.2/plugins/bootstrap/handsontable.bootstrap.css');
-        
+
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
         $step_id = $this->filter->sanitize($step_id, array("int"));
