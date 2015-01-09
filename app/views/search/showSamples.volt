@@ -6,28 +6,32 @@
       <thead>
       <tr>
         <th>Project Name</th>
+        <th>PI Name</th>
+
+        <th>Sample Name</th>
+        <th>Sample Type</th>
+        <th>Organism</th>
+
+        <th>Seqlib Name</th>
+        <th>Exp. Type</th>
+        <th>Protocol</th>
+        <th>Index Seq</th>
+        <th>Index1</th>
+        <th>Index2</th>
+
+        <th>Multiplex Lib. Name</th>
+
         <th>Run ID</th>
         <th>Run Date</th>
+        <th>Instrument Type</th>
         <th>Machine</th>
         <th>FCID</th>
-        <th>Lane #</th>
-        <th>Instrument Type</th>
         <th>Run Mode Type</th>
         <th>Run Read Type</th>
         <th>Run Cycle Type</th>
-        <th>Sample Name</th>
-        <th>Seqlib Name</th>
-        <th>Organism</th>
-        <th>Index Seq</th>
-        <th>Description</th>
-        <th>Control</th>
-        <th>Exp. Type</th>
-        <th>PI Name</th>
-        <th>Protocol</th>
-        <th>Multiplex Lib. Name</th>
-        <th>Index1</th>
-        <th>Index2</th>
         <th>Lane #</th>
+        <th>Control</th>
+
         <th>Total</th>
         <th>PF</th>
         <th>PF(%)</th>
@@ -37,75 +41,89 @@
       {% for d in result %}
         <tr id="seqlib_id_{{ d.sl.id }}">
           <td>{{ d.p.name }}</td>
-          <td>{{ d.fc.run_number }}</td>
-          <td>{{ date('Y-m-d', strtotime(d.fc.run_started_date)) }}</td>
-          <td>{{ d.fc.Instruments.instrument_number ~ d.fc.side }}</td>
-          <td>{{ d.fc.name }}</td>
-          <td>{{ d.it.name }}</td>
-          <td>{{ d.srmt.name }}</td>
-          <td>{{ d.srrt.name }}</td>
-          <td>{{ d.srct.name }}</td>
-          <td>{{ d.slane.number }}</td>
-          <td>{{ d.s.name }}</td>
-          <td>{{ d.sl.name }}</td>
-          <td>{{ d.sl.Samples.Organisms.name }}</td>
-          {% if d.sl.oligobarcodeA_id is empty %}
-            <td></td>
-            <td></td>
-          {% elseif d.sl.oligobarcodeB_id is empty %}
-            <td>{{ d.sl.OligobarcodeA.barcode_seq }}</td>
-            <td>{{ d.sta.Seqtemplates.name ~ d.sl.OligobarcodeA.name }}</td>
-          {% else %}
-            <td>{{ d.sl.OligobarcodeA.barcode_seq ~ '-' ~ d.sl.OligobarcodeB.barcode_seq }}</td>
-            <td>{{ d.sta.Seqtemplates.name ~ d.sl.OligobarcodeA.name ~ d.sl.OligobarcodeB.name }}</td>
-          {% endif %}
 
-          <td>{{ d.slane.is_control }}</td>
-
-          {% if d.sl.Projects.pi_user_id is 0 %}
+          {% if d.p.pi_user_id is 0 %}
             <td>(Undefined)</td>
           {% else %}
-            <td>{{ d.sl.Projects.PIs.getFullName() }}</td>
+            <td>{{ d.p.PIs.getFullName() }}</td>
           {% endif %}
 
-          {% if d.sl.protocol_id is empty %}
-            <td></td>
+          <td>{{ d.s.name }}</td>
+          <td>{{ d.s.SampleTypes.name }}</td>
+          <td>{{ d.s.Organisms.name }}</td>
+
+          {% if d.sl is defined %}
+            <td>{{ d.sl.name }}</td>
+
+            {% if d.sl.protocol_id is empty %}
+              <td></td>
+              <td></td>
+            {% else %}
+              <td>{{ d.sl.Protocols.Steps.short_name }}</td>
+              <td>{{ d.sl.Protocols.name }}</td>
+            {% endif %}
+
+            {% if d.sl.oligobarcodeA_id is empty %}
+              <td></td>
+              <td></td>
+              <td></td>
+            {% elseif d.sl.oligobarcodeB_id is empty %}
+              <td>{{ d.sl.OligobarcodeA.barcode_seq }}</td>
+              <td>{{ d.sl.OligobarcodeA.name }}</td>
+              <td></td>
+            {% else %}
+              <td>{{ d.sl.OligobarcodeA.barcode_seq ~ '-' ~ d.sl.OligobarcodeB.barcode_seq }}</td>
+              <td>{{ d.sl.OligobarcodeA.name }}</td>
+              <td>{{ d.sl.OligobarcodeB.name }}</td>
+            {% endif %}
+          {% endif %}
+
+          {% if d.st is defined %}
+            <td>{{ d.st.name }}</td>
           {% else %}
-            <td>{{ d.sl.Protocols.Steps.short_name }}</td>
+            <td></td>
           {% endif %}
 
-          {% if d.sl.protocol_id is empty %}
-            <td></td>
+
+          {% if not d.fc.id is empty %}
+            {% set run_started_date = (d.fc.run_started_date is empty) ? '' : date('Y-m-d', strtotime(d.fc.run_started_date)) %}
+            <td>{{ d.fc.run_number }}</td>
+            <td>{{ run_started_date }}</td>
+            <td>{{ d.it.name }}</td>
+            <td>{{ d.fc.Instruments.instrument_number ~ d.fc.side }}</td>
+            <td>{{ d.fc.name }}</td>
+            <td>{{ d.srmt.name }}</td>
+            <td>{{ d.srrt.name }}</td>
+            <td>{{ d.srct.name }}</td>
+            <td>{{ d.slane.number }}</td>
+            <td>{{ d.slane.is_control }}</td>
+            {% if d.sdr is defined %}
+              <td>{{ number_format(d.sdr.reads_total) }}</td>
+              <td>{{ number_format(d.sdr.reads_passedfilter) }}</td>
+              {% set reads_passedfilter_percent = (d.sdr.reads_total > 0) ? round(d.sdr.reads_passedfilter / d.sdr.reads_total * 100, 2) ~ '%' : '' %}
+              <td>{{ reads_passedfilter_percent }}</td>
+            {% else %}
+              <td></td>
+              <td></td>
+              <td></td>
+            {% endif %}
           {% else %}
-            <td>{{ d.sl.Protocols.name }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
           {% endif %}
 
-          <td>{{ d.sta.Seqtemplates.name }}</td>
 
-          {% if d.sl.oligobarcodeA_id is empty %}
-            <td></td>
-          {% else %}
-            <td>{{ d.sl.OligobarcodeA.name }}</td>
-          {% endif %}
-
-          {% if d.sl.oligobarcodeB_id is empty %}
-            <td></td>
-          {% else %}
-            <td>{{ d.sl.OligobarcodeB.name }}</td>
-          {% endif %}
-
-          <td>{{ d.slane.number }}</td>
-
-          {% if d.slane.getSeqDemultiplexResults()|length === 0 %}
-            <td></td>
-            <td></td>
-            <td></td>
-          {% else %}
-            {% set seqDemultiplexResults = d.slane.getSeqDemultiplexResults("is_undetermined = 'N'")[0] %}
-            <td>{{ number_format(seqDemultiplexResults.reads_total) }}</td>
-            <td>{{ number_format(seqDemultiplexResults.reads_passedfilter) }}</td>
-            <td>{{ round(seqDemultiplexResults.reads_passedfilter / seqDemultiplexResults.reads_total * 100, 2) ~ '%' }}</td>
-          {% endif %}
         </tr>
       {% endfor %}
       </tbody>

@@ -103,7 +103,8 @@
               <td>Undet</td>
               <td>{{ number_format(seqDemultiplexResult.reads_total) }}</td>
               <td>{{ number_format(seqDemultiplexResult.reads_passedfilter) }}</td>
-              <td>{{ round(seqDemultiplexResult.reads_passedfilter / seqDemultiplexResult.reads_total * 100, 2) ~ '%' }}</td>
+              {% set reads_passedfilter_percent = (seqDemultiplexResult.reads_total > 0) ? round(seqDemultiplexResult.reads_passedfilter / seqDemultiplexResult.reads_total * 100, 2) ~ '%' : '' %}
+              <td>{{ reads_passedfilter_percent }}</td>
             </tr>
           {% endfor %}
         {% endif %}
@@ -162,15 +163,15 @@
           <td></td>
           <td>{{ d.slane.number }}</td>
           <td>{{ d.sl.name }}</td>
-          {% if d.slane.getSeqDemultiplexResults()|length === 0 %}
-            <td></td>
-            <td></td>
-            <td></td>
+          {% if d.sdr is defined %}
+            <td>{{ number_format(d.sdr.reads_total) }}</td>
+            <td>{{ number_format(d.sdr.reads_passedfilter) }}</td>
+            {% set reads_passedfilter_percent = (d.sdr.reads_total > 0) ? round(d.sdr.reads_passedfilter / d.sdr.reads_total * 100, 2) ~ '%' : '' %}
+            <td>{{ reads_passedfilter_percent }}</td>
           {% else %}
-            {% set seqDemultiplexResults = d.slane.getSeqDemultiplexResults("is_undetermined = 'N'")[0] %}
-            <td>{{ number_format(seqDemultiplexResults.reads_total) }}</td>
-            <td>{{ number_format(seqDemultiplexResults.reads_passedfilter) }}</td>
-            <td>{{ round(seqDemultiplexResults.reads_passedfilter / seqDemultiplexResults.reads_total * 100, 2) ~ '%' }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
           {% endif %}
         </tr>
         {% if fc_prev is defined and loop.last %}
@@ -205,7 +206,8 @@
               <td>Undet</td>
               <td>{{ number_format(seqDemultiplexResult.reads_total) }}</td>
               <td>{{ number_format(seqDemultiplexResult.reads_passedfilter) }}</td>
-              <td>{{ round(seqDemultiplexResult.reads_passedfilter / seqDemultiplexResult.reads_total * 100, 2) ~ '%' }}</td>
+              {% set reads_passedfilter_percent = (seqDemultiplexResult.reads_total > 0) ? round(seqDemultiplexResult.reads_passedfilter / seqDemultiplexResult.reads_total * 100, 2) ~ '%' : '' %}
+              <td>{{ reads_passedfilter_percent }}</td>
             </tr>
           {% endfor %}
         {% endif %}

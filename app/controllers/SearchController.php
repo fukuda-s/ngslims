@@ -40,18 +40,20 @@ class SearchController extends ControllerBase
          * Get data to display table withusing $year and $month
          */
         $result_tmp = $this->modelsManager->createBuilder()
-            ->columns(array('slane.*', 'sl.*', 's.*', 'p.*', 'sta.*', 'fc.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*'))
-            ->addFrom('Seqlanes', 'slane')
-            ->join('SeqtemplateAssocs', 'sta.seqtemplate_id = slane.seqtemplate_id', 'sta')
-            ->join('Seqlibs', 'sl.id = sta.seqlib_id', 'sl')
-            ->join('Samples', 's.id = sl.sample_id', 's')
+            ->columns(array('slane.*', 'sl.*', 's.*', 'p.*', 'sta.*', 'fc.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'sdr.*'))
+            ->addFrom('Samples', 's')
             ->join('Projects', 'p.id = s.project_id', 'p')
+            ->leftJoin('Seqlibs', 'sl.sample_id = s.id', 'sl')
+            ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
+            ->leftJoin('Seqtemplates', 'st.id = sta.seqtemplate_id', 'st')
+            ->leftJoin('Seqlanes', 'slane.seqtemplate_id = st.id', 'slane')
             ->leftJoin('Flowcells', 'fc.id = slane.flowcell_id', 'fc')
             ->leftJoin('SeqRunTypeSchemes', 'srts.id = fc.seq_run_type_scheme_id', 'srts')
             ->leftJoin('InstrumentTypes', 'it.id = srts.instrument_type_id', 'it')
             ->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
             ->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
-            ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct');
+            ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
+            ->leftJoin('SeqDemultiplexResults', 'sdr.seqlib_id = sl.id AND sdr.seqlane_id = slane.id', 'sdr');
 
         foreach ($terms as $term) {
             $result_tmp = $result_tmp
