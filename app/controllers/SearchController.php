@@ -17,6 +17,11 @@ class SearchController extends ControllerBase
 
     public function resultAction()
     {
+        $this->assets
+            ->addJs('js/handsontable-0.12.2/dist/handsontable.full.js')
+            ->addCss('js/handsontable-0.12.2/dist/handsontable.css')
+            ->addCss('js/handsontable-0.12.2/plugins/bootstrap/handsontable.bootstrap.css');
+
         $request = $this->request;
 
         $query = $request->get('q', 'striptags');

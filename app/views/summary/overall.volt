@@ -204,11 +204,36 @@
    * DataTables
    */
   $(document).ready(function () {
-    $('#overall_table').dataTable({
+     var table = $('#overall_table').DataTable({
       scrollX: true,
       responsive: true,
       paging: false,
       order: []
     });
+
+    var sFilenamePrefix = 'overall';
+    var tt = new $.fn.DataTable.TableTools(table, {
+      "dom": 'T<"clear">lfrtip',
+      "sSwfPath": "/ngsLIMS/js/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+      "sCharSet": "utf8",
+      "aButtons": [
+        {
+          "sExtends": "xls",
+          "sButtonText": "<i class='fa fa-file-excel-o'></i>&ensp;<strong>Excel</strong>",
+          "sFileName": sFilenamePrefix + ".xls"
+        },
+        {
+          "sExtends": "copy",
+          "sButtonText": "<i class='fa fa-clipboard'></i>&ensp;<strong>Copy To Clipboard</strong>"
+        },
+        {
+          "sExtends": "print",
+          "sButtonText": "<i class='fa fa-print'></i>&ensp;<strong>Print</strong>",
+          "sInfo": "Please press escape when done"
+        }
+      ]
+    });
+
+    $(tt.fnContainer()).insertBefore('div.dataTables_wrapper');
   });
 </script>

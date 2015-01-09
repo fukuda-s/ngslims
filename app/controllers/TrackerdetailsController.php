@@ -32,6 +32,14 @@ class TrackerdetailsController extends ControllerBase
 
     public function showTableSamplesAction($project_id)
     {
+        $this->assets
+            ->addJs('js/DataTables-1.10.4/media/js/jquery.dataTables.min.js')
+            ->addJs('js/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js')
+            ->addJs('js/DataTables-1.10.4/examples/resources/bootstrap/3/dataTables.bootstrap.js')
+            ->addCss('js/DataTables-1.10.4/media/css/jquery.dataTables.min.css')
+            ->addCss('js/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css')
+            ->addCss('js/DataTables-1.10.4/examples/resources/bootstrap/3/dataTables.bootstrap.css');
+
         $project_id = $this->filter->sanitize($project_id, array(
             "int"
         ));
@@ -117,6 +125,11 @@ class TrackerdetailsController extends ControllerBase
 
     public function editSamplesAction($type, $step_id, $project_id, $status = null)
     {
+        $this->assets
+            ->addJs('js/handsontable-0.12.2/dist/handsontable.full.js')
+            ->addCss('js/handsontable-0.12.2/dist/handsontable.css')
+            ->addCss('js/handsontable-0.12.2/plugins/bootstrap/handsontable.bootstrap.css');
+
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
         $step_id = $this->filter->sanitize($step_id, array("int"));
@@ -320,6 +333,11 @@ class TrackerdetailsController extends ControllerBase
 
     public function editSeqlibsAction($type, $step_id, $project_id, $status = null)
     {
+        $this->assets
+            ->addJs('js/handsontable-0.12.2/dist/handsontable.full.js')
+            ->addCss('js/handsontable-0.12.2/dist/handsontable.css')
+            ->addCss('js/handsontable-0.12.2/plugins/bootstrap/handsontable.bootstrap.css');
+        
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
         $step_id = $this->filter->sanitize($step_id, array("int"));
