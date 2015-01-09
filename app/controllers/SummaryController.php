@@ -226,11 +226,16 @@ class SummaryController extends ControllerBase
          * Get data to display table withusing $year and $month
          */
         $overall_tmp = $this->modelsManager->createBuilder()
-            ->columns(array('slane.*', 'sl.*', 'sta.*', 'fc.*'))
+            ->columns(array('slane.*', 'sl.*', 'sta.*', 'fc.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*' ))
             ->addFrom('Seqlanes', 'slane')
             ->join('SeqtemplateAssocs', 'sta.seqtemplate_id = slane.seqtemplate_id', 'sta')
             ->join('Seqlibs', 'sl.id = sta.seqlib_id', 'sl')
-            ->leftJoin('Flowcells', 'fc.id = slane.flowcell_id', 'fc');
+            ->leftJoin('Flowcells', 'fc.id = slane.flowcell_id', 'fc')
+            ->leftJoin('SeqRunTypeSchemes', 'srts.id = fc.seq_run_type_scheme_id', 'srts')
+            ->leftJoin('InstrumentTypes', 'it.id = srts.instrument_type_id', 'it')
+            ->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
+            ->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
+            ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct');
 
         if (!empty($year) and $year > 0) {
             $overall_tmp = $overall_tmp->where("YEAR(fc.run_started_date) = :year:", array("year" => $year));

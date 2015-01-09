@@ -44,6 +44,10 @@
         <th>Machine</th>
         <th>FCID</th>
         <th>Lane #</th>
+        <th>Instrument Type</th>
+        <th>Run Mode Type</th>
+        <th>Run Read Type</th>
+        <th>Run Cycle Type</th>
         <th>Seqlib Name</th>
         <th>Organism</th>
         <th>Index Seq</th>
@@ -91,6 +95,10 @@
               <td></td>
               <td></td>
               <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
               <td>{{ seqDemultiplexResult.SeqLanes.number }}</td>
               <td>Undet</td>
               <td>{{ number_format(seqDemultiplexResult.reads_total) }}</td>
@@ -105,6 +113,10 @@
           <td>{{ date('Y-m-d', strtotime(d.fc.run_started_date)) }}</td>
           <td>{{ d.fc.Instruments.instrument_number ~ d.fc.side }}</td>
           <td>{{ d.fc.name }}</td>
+          <td>{{ d.it.name }}</td>
+          <td>{{ d.srmt.name }}</td>
+          <td>{{ d.srrt.name }}</td>
+          <td>{{ d.srct.name }}</td>
           <td>{{ d.slane.number }}</td>
           <td>{{ d.sl.name }}</td>
           <td>{{ d.sl.Samples.Organisms.name }}</td>
@@ -171,6 +183,10 @@
               <td>{{ fc_prev.Instruments.instrument_number ~ fc_prev.side }}</td>
               <td>{{ fc_prev.name }}</td>
               <td>{{ seqDemultiplexResult.SeqLanes.number }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
               <td></td>
               <td></td>
               <td></td>
