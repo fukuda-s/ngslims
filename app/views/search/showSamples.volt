@@ -40,12 +40,12 @@
       <tbody>
       {% for d in result %}
         <tr id="seqlib_id_{{ d.sl.id }}">
-          <td>{{ d.p.name }}</td>
+          <td>{{ link_to("trackerdetails/showTableSamples/" ~ d.p.id ~ "?pre_action=projectName", d.p.name) }}</td>
 
           {% if d.p.pi_user_id is 0 %}
             <td>(Undefined)</td>
           {% else %}
-            <td>{{ d.p.PIs.getFullName() }}</td>
+            <td>{{ link_to("summary/projectPi/#pi_user_id_" ~ d.p.PIs.id, d.p.PIs.getFullName()) }}</td>
           {% endif %}
 
           <td>{{ d.s.name }}</td>

@@ -225,7 +225,7 @@
      var table = $('#overall_table').DataTable({
       scrollX: true,
       responsive: true,
-      paging: false,
+      paging: true,
       order: []
     });
 
