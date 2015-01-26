@@ -51,6 +51,8 @@ class TrackerdetailsController extends ControllerBase
 					s.id AS sample_id,
 					s.name AS sample_name,
 					st.name AS sample_type,
+					spe3.value AS cell_type,
+					spe12.value AS tissue,
 					stp.id AS seqtemplate_id,
 					stp.name AS seqtemplate_name,
 					slib.id AS seqlib_id,
@@ -63,12 +65,17 @@ class TrackerdetailsController extends ControllerBase
 					slane.number AS seqlane_num,
 					s.qual_date AS qual_date,
 					slib.finished_at AS seqlib_date,
-					slane.last_cycle_date AS last_cycle_date
+					fc.run_started_date AS run_started_date,
+					fc.run_finished_date AS run_finished_date
 				 FROM
 					Samples s
 						LEFT JOIN
 					SampleTypes st ON st.id = s.sample_type_id
 						LEFT JOIN
+                    SamplePropertyEntries spe3 ON spe3.sample_id = s.id AND spe3.sample_property_type_id = 3
+                        LEFT JOIN
+                    SamplePropertyEntries spe12 ON spe12.sample_id = s.id AND spe12.sample_property_type_id = 12
+                        LEFT JOIN
 					Seqlibs slib ON slib.sample_id = s.id
 						LEFT JOIN
 					Oligobarcodes oa ON oa.id = slib.oligobarcodeA_id
@@ -129,8 +136,7 @@ class TrackerdetailsController extends ControllerBase
             ->addJs('js/handsontable-0.12.3/dist/handsontable.full.js')
             ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
             ->addCss('js/handsontable-0.12.3/dist/handsontable.css')
-            ->addCss('js/handsontable-0.12.3/plugins/bootstrap/handsontable.bootstrap.css')
-            ->addCss('js/bootstrap-multiselect/bootstrap-multiselect.js');
+            ->addCss('js/handsontable-0.12.3/plugins/bootstrap/handsontable.bootstrap.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
@@ -259,11 +265,9 @@ class TrackerdetailsController extends ControllerBase
 
 
                             } else {
-                                $pattern = '/sample_property_types\.(\d+)/i';
                                 //If the changes are sample_property_entries.
-                                if (preg_match($pattern, $colNameToChange)) {
-                                    $replacement = '${1}';
-                                    $sample_property_type_id = preg_replace($pattern, $replacement, $colNameToChange);
+                                if ($tblNameToChange == 'sample_property_types') {
+                                    $sample_property_type_id = $colNameToChange;
                                     //@TODO Is it possible to bind with '$sample' object?
                                     $sample_property_entry = SamplePropertyEntries::findFirst(array(
                                         "sample_property_type_id = :sample_property_type_id: AND sample_id = :sample_id:",
@@ -272,6 +276,11 @@ class TrackerdetailsController extends ControllerBase
                                             "sample_id" => $sample_id
                                         )
                                     ));
+                                    if(!$sample_property_entry){
+                                        $sample_property_entry = new SamplePropertyEntries();
+                                        $sample_property_entry->sample_property_type_id = $sample_property_type_id;
+                                        $sample_property_entry->sample_id = $sample_id;
+                                    }
                                     $sample_property_entry->value = $valueChangeTo;
                                     if (!$sample_property_entry->save()) {
                                         foreach ($sample->getMessages() as $message) {

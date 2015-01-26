@@ -11,6 +11,8 @@
       <tr>
         <th>Sample Name</th>
         <th>Sample Type</th>
+        <th>Cell Type</th>
+        <th>Tissue/Organ</th>
         <th>Multiplex Lib Name</th>
         <th>Lib Name</th>
         <th>Index A</th>
@@ -21,7 +23,8 @@
         <th>Lane #</th>
         <th>QC Date</th>
         <th>Lib Date</th>
-        <th>Last Cycle Date</th>
+        <th>Run Started Date</th>
+        <th>Run Finished Date</th>
       </tr>
       </thead>
       <tbody>
@@ -29,6 +32,8 @@
         <tr id="sample_id_{{ data.sample_id }}">
           <td>{{ data.sample_name }}</td>
           <td>{{ data.sample_type }}</td>
+          <td>{{ data.cell_type }}</td>
+          <td>{{ data.tissue }}</td>
           <td>{{ data.seqtemplate_name }}</td>
           <td>{{ data.seqlib_name }}</td>
           <td>{{ data.oligobarcodeA_name }}</td>
@@ -47,8 +52,13 @@
           {% else %}
             <td></td>
           {% endif %}
-          {% if data.last_cycle_date is defined %}
-            <td>{{ date('Y-m-d', strtotime(data.last_cycle_date)) }}</td>
+          {% if data.run_started_date is defined %}
+            <td>{{ date('Y-m-d', strtotime(data.run_started_date)) }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+          {% if data.run_finished_date is defined %}
+            <td>{{ date('Y-m-d', strtotime(data.run_finished_date)) }}</td>
           {% else %}
             <td></td>
           {% endif %}
