@@ -90,7 +90,11 @@
             <td>{{ d.fc.run_number }}</td>
             <td>{{ run_started_date }}</td>
             <td>{{ d.it.name }}</td>
-            <td>{{ d.fc.Instruments.instrument_number ~ d.fc.side }}</td>
+            {% if not d.fc.instrument_id is empty %}
+              <td>{{ d.fc.Instruments.instrument_number ~ d.fc.side }}</td>
+            {% else %}
+              <td></td>
+            {% endif %}
             <td>{{ d.fc.name }}</td>
             <td>{{ d.srmt.name }}</td>
             <td>{{ d.srrt.name }}</td>

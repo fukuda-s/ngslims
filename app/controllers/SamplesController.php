@@ -26,9 +26,9 @@ class SamplesController extends ControllerBase
                 $samples_tmp = $this->modelsManager->createBuilder()
                     ->columns(array('s.*', 'ste.*'))
                     ->addFrom('Samples', 's')
-                    ->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
+                    ->leftJoin('SampleTypes', 'st.id = s.sample_type_id', 'st')
                     //->join('Steps', 'stp.nucleotide_type = st.nucleotide_type', 'stp')
-                    ->join('StepEntries', 'ste.sample_id = s.id', 'ste')
+                    ->leftJoin('StepEntries', 'ste.sample_id = s.id', 'ste')
                     ->where('s.id IS NOT NULL'); /* dummy to concatenate andWhere as follows. */
 
                 if ($step_id) {
