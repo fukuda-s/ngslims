@@ -33,12 +33,12 @@ class TrackerdetailsController extends ControllerBase
     public function showTableSamplesAction($project_id)
     {
         $this->assets
-            ->addJs('js/DataTables-1.10.4/media/js/jquery.dataTables.min.js')
-            ->addJs('js/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js')
-            ->addJs('js/DataTables-1.10.4/examples/resources/bootstrap/3/dataTables.bootstrap.js')
-            ->addCss('js/DataTables-1.10.4/media/css/jquery.dataTables.min.css')
-            ->addCss('js/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css')
-            ->addCss('js/DataTables-1.10.4/examples/resources/bootstrap/3/dataTables.bootstrap.css');
+            ->addJs('js/DataTables-1.10.5/media/js/jquery.dataTables.min.js')
+            ->addJs('js/DataTables-1.10.5/extensions/TableTools/js/dataTables.tableTools.min.js')
+            ->addJs('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.js')
+            ->addCss('js/DataTables-1.10.5/media/css/jquery.dataTables.min.css')
+            ->addCss('js/DataTables-1.10.5/extensions/TableTools/css/dataTables.tableTools.min.css')
+            ->addCss('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.css');
 
         $project_id = $this->filter->sanitize($project_id, array(
             "int"

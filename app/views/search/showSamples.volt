@@ -149,7 +149,7 @@
     var sFilenamePrefix = 'search_result';
     var tt = new $.fn.DataTable.TableTools(table, {
       "dom": 'T<"clear">lfrtip',
-      "sSwfPath": "/ngsLIMS/js/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+      "sSwfPath": "/ngsLIMS/js/DataTables-1.10.5/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
       "sCharSet": "utf8",
       "aButtons": [
         {
