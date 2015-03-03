@@ -40,7 +40,7 @@ class SearchController extends ControllerBase
          * Get data to display table withusing $year and $month
          */
         $result_tmp = $this->modelsManager->createBuilder()
-            ->columns(array('slane.*', 'sl.*', 's.*', 'p.*', 'sta.*', 'fc.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'sdr.*'))
+            ->columns(array('slane.*', 'sl.*', 's.*', 'p.*', 'sta.*', 'st.*', 'fc.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'sdr.*'))
             ->addFrom('Samples', 's')
             ->join('Projects', 'p.id = s.project_id', 'p')
             ->leftJoin('Seqlibs', 'sl.sample_id = s.id', 'sl')
@@ -60,6 +60,7 @@ class SearchController extends ControllerBase
                 ->orWhere('p.name LIKE :query:', array("query" => '%' . $term . '%'))
                 ->orWhere('s.name LIKE :query:', array("query" => '%' . $term . '%'))
                 ->orWhere('sl.name LIKE :query:', array("query" => '%' . $term . '%'))
+                ->orWhere('st.name LIKE :query:', array("query" => '%' . $term . '%'))
                 ->orWhere('fc.name LIKE :query:', array("query" => '%' . $term . '%'));
         }
         $result = $result_tmp->orderBy(array(
