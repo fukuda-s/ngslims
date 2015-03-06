@@ -6,41 +6,28 @@
 
 {{ form('session/password', 'id': 'passwordForm', 'class': 'form-horizontal', 'onbeforesubmit': 'return false') }}
 <fieldset>
-  <div class="control-group">
-    <label class="control-label" for="password">Password</label>
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="newPassword">New Password</label>
 
-    <div class="controls">
-      {{ password_field('password', 'class': 'input-xlarge') }}
+    <div class="col-sm-3">
+      {{ password_field('newPassword', 'class': 'form-control') }}
+      <!--
       <p class="help-block">(minimum 8 characters)</p>
-
-      <div class="alert" id="password_alert">
-        <strong>Warning!</strong> Please provide a valid password
-      </div>
+      -->
     </div>
   </div>
-  <div class="control-group">
-    <label class="control-label" for="repeatPassword">Repeat Password</label>
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="repeatPassword">Repeat Password</label>
 
-    <div class="controls">
-      {{ password_field('repeatPassword', 'class': 'input-xlarge') }}
+    <div class="col-sm-3">
+      {{ password_field('repeatPassword', 'class': 'form-control') }}
       <div class="alert" id="repeatPassword_alert">
         <strong>Warning!</strong> The password does not match
       </div>
     </div>
   </div>
-  <div class="control-group">
-    <label class="control-label" for="newPassword">New Password</label>
 
-    <div class="controls">
-      {{ password_field('newPassword', 'class': 'input-xlarge') }}
-      <p class="help-block">(minimum 8 characters)</p>
-
-      <div class="alert" id="password_alert">
-        <strong>Warning!</strong> The password does not change
-      </div>
-    </div>
-  </div>
-
+  <br>
   <div class="form-actions">
     {{ submit_button('Update', 'class': 'btn btn-info btn-large', 'onclick': 'return Password.validate();') }}
     &nbsp;

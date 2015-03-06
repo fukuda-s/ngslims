@@ -182,12 +182,15 @@ class SessionController extends ControllerBase
 
         if ($request->isPost()) {
 
-
-            $password = $request->getPost('password');
-            $repeatPassword = $this->request->getPost('repeatPassword');
             $newPassword = $request->getPost('newPassword');
+            $repeatPassword = $this->request->getPost('repeatPassword');
 
-            if ($password != $repeatPassword) {
+            if ($this->security->checkHash($newPassword, $user->password)) {
+                $this->flash->error('The password does not change');
+                return false;
+            };
+
+            if ($newPassword != $repeatPassword) {
                 $this->flash->error('Passwords are different');
                 return false;
             }

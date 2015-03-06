@@ -65,21 +65,12 @@ var Account = {
  */
 var Password = {
     validate: function () {
-        if (SignUp.check("password") == false) {
-            return false;
-        }
         if (SignUp.check("newPassword") == false) {
             return false;
         }
-        if ($("#password")[0].value != $("#repeatPassword")[0].value) {
+        if ($("#newPassword")[0].value != $("#repeatPassword")[0].value) {
             $("#repeatPassword")[0].focus();
             $("#repeatPassword_alert").show();
-
-            return false;
-        }
-        if ($("#password")[0].value == $("#newPassword")[0].value) {
-            $("#newPassword")[0].focus();
-            $("#newPassword_alert").show();
 
             return false;
         }
