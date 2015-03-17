@@ -1,187 +1,329 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
-  <data-source source="LOCAL" name="MySQL - ngslims@localhost" uuid="801f3b70-2c93-4a4b-bfe4-a424ba58a2c6">
-    <database-info product="MySQL" version="5.5.28-log" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.26 ( Revision: ${bzr.revision-id} )">
+  <data-source name="MySQL - ngslims@localhost" uuid="801f3b70-2c93-4a4b-bfe4-a424ba58a2c6">
+    <database-info product="MySQL" version="5.6.23-log" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.26 ( Revision: ${bzr.revision-id} )">
       <extra-name-characters>#@</extra-name-characters>
       <identifier-quote-string>`</identifier-quote-string>
     </database-info>
     <case-sensitivity plain-identifiers="mixed" quoted-identifiers="upper"/>
     <schema name="" catalog="ngslims"/>
-    <schema name="" catalog="test"/>
+    <table name="controls" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="200" scale="0" nullable="false" jdbcType="12"/>
+      <column name="platform_code" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <foreign-key name="fk_controls_platforms" columns="platform_code" ref-table="platforms" ref-schema="" ref-catalog="ngslims" ref-columns="platform_code" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="fk_seqlanes_controls_idx" table="seqlanes" schema="" catalog="ngslims" columns="control_id"/>
+      <index name="controls_active" unique="false" columns="active"/>
+      <index name="fk_controls_platforms_idx" unique="false" columns="platform_code"/>
+    </table>
     <table name="flowcells" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="seq_run_type_scheme_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="run_number" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="instrument_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="side" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1"/>
-      <column name="dirname" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
-      <column name="notes" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="seq_runmode_type_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="seq_run_type_scheme_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="run_number" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="instrument_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="side" sqlType="CHAR" precision="1" scale="0" nullable="true" jdbcType="1"/>
+      <column name="dirname" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
+      <column name="run_started_date" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="run_finished_date" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="notes" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_flowcells_instruments" columns="instrument_id" ref-table="instruments" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_flowcells_seq_run_type_schemes" columns="seq_run_type_scheme_id" ref-table="seq_run_type_schemes" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_flowcells_seq_runmode_types" columns="seq_runmode_type_id" ref-table="seq_runmode_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="fk_ seq_demultiplex_results_flowcells" table="seq_demultiplex_results" schema="" catalog="ngslims" columns="flowcell_id"/>
       <exported-key name="fk_seqlanes_flowcells" table="seqlanes" schema="" catalog="ngslims" columns="flowcell_id"/>
       <exported-key name="fk_step_entries_flowcells" table="step_entries" schema="" catalog="ngslims" columns="flowcell_id"/>
       <index name="fk_flowcells_instruments_idx" unique="false" columns="instrument_id"/>
       <index name="fk_flowcells_seq_run_type_schemes_idx" unique="false" columns="seq_run_type_scheme_id"/>
+      <index name="fk_flowcells_seq_runmode_types_idx" unique="false" columns="seq_runmode_type_id"/>
+      <index name="flowcells_name_idx" unique="false" columns="name"/>
+      <index name="flowcells_run_started_date_idx" unique="false" columns="run_started_date"/>
     </table>
     <table name="instrument_types" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="platform_code" sqlType="VARCHAR" length="20" precision="0" nullable="false" jdbcType="12"/>
-      <column name="sort_order" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="platform_code" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="sort_order" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="slots_per_run" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="slots_array_json" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_instrument_types_platforms" columns="platform_code" ref-table="platforms" ref-schema="" ref-catalog="ngslims" ref-columns="platform_code" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_instruments_instrument_types" table="instruments" schema="" catalog="ngslims" columns="instrument_type_id"/>
-      <exported-key name="seq_run_type_schemes_instrument_types" table="seq_run_type_schemes" schema="" catalog="ngslims" columns="instrument_type_id"/>
+      <exported-key name="fk_seq_run_type_schemes_instrument_types" table="seq_run_type_schemes" schema="" catalog="ngslims" columns="instrument_type_id"/>
+      <exported-key name="fk_ step_instrument_type_schemes_instrument_types" table="step_instrument_type_schemes" schema="" catalog="ngslims" columns="instrument_type_id"/>
       <index name="fk_instrument_types_platforms_idx" unique="false" columns="platform_code"/>
+      <index name="instrument_types_active_idx" unique="false" columns="active"/>
+      <index name="instrument_types_name_idx" unique="false" columns="name"/>
     </table>
     <table name="instruments" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="instrument_number" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="nickname" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="instrument_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="instrument_number" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="nickname" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="instrument_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_instruments_instrument_types" columns="instrument_type_id" ref-table="instrument_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_flowcells_instruments" table="flowcells" schema="" catalog="ngslims" columns="instrument_id"/>
       <index name="fk_instruments_instrument_types_idx" unique="false" columns="instrument_type_id"/>
+      <index name="instruments_active_idx" unique="false" columns="active"/>
+      <index name="instruments_name_idx" unique="false" columns="name"/>
     </table>
     <table name="lab_users" schema="" catalog="ngslims" type="TABLE">
-      <column name="lab_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="user_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
+      <column name="lab_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="user_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
       <primary-key name="PRIMARY" columns="lab_id,user_id"/>
       <foreign-key name="fk_lab_users_labs" columns="lab_id" ref-table="labs" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_lab_users_users" columns="user_id" ref-table="users" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <index name="fk_lab_users_users_idx" unique="false" columns="user_id"/>
     </table>
     <table name="labs" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="255" precision="0" nullable="false" jdbcType="12"/>
-      <column name="department" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
-      <column name="zipcode" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="address1" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
-      <column name="address2" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
-      <column name="phone" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="fax" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="email" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="department" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="zipcode" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="address1" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="address2" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="phone" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="fax" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="email" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="fk_lab_users_labs" table="lab_users" schema="" catalog="ngslims" columns="lab_id"/>
       <exported-key name="fk_projects_labs" table="projects" schema="" catalog="ngslims" columns="lab_id"/>
       <exported-key name="fk_requests_labs" table="requests" schema="" catalog="ngslims" columns="lab_id"/>
+      <index name="labs_active_idx" unique="false" columns="active"/>
     </table>
     <table name="oligobarcode_scheme_allows" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="oligobarcode_scheme_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="protocol_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="has_oligobarcodeB" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="oligobarcode_scheme_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="protocol_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="has_oligobarcodeB" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_oligobarcode_scheme_allows_oligobarcode_schemes" columns="oligobarcode_scheme_id" ref-table="oligobarcode_schemes" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_oligobarcode_scheme_allows_protocols" columns="protocol_id" ref-table="protocols" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <index name="fk_oligobarcode_scheme_allows_oligobarcode_schemes_idx" unique="false" columns="oligobarcode_scheme_id"/>
       <index name="fk_oligobarcode_scheme_allows_protocols_idx" unique="false" columns="protocol_id"/>
+      <index name="oligobarcode_scheme_allows_has_oligobarcodeB_idx" unique="false" columns="has_oligobarcodeB"/>
     </table>
     <table name="oligobarcode_schemes" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="100" precision="0" nullable="false" jdbcType="12"/>
-      <column name="description" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12"/>
-      <column name="is_oligobarcodeB" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="description" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
+      <column name="is_oligobarcodeB" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="fk_oligobarcode_scheme_allows_oligobarcode_schemes" table="oligobarcode_scheme_allows" schema="" catalog="ngslims" columns="oligobarcode_scheme_id"/>
       <exported-key name="fk_oligobarcodes_oligobarcode_schemes" table="oligobarcodes" schema="" catalog="ngslims" columns="oligobarcode_scheme_id"/>
+      <index name="oligobarcode_schemes_active_idx" unique="false" columns="active"/>
     </table>
     <table name="oligobarcodes" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="barcode_seq" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="oligobarcode_scheme_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="sort_order" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="barcode_seq" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="oligobarcode_scheme_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="sort_order" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_oligobarcodes_oligobarcode_schemes" columns="oligobarcode_scheme_id" ref-table="oligobarcode_schemes" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_seqlibs_oligobarcodeA" table="seqlibs" schema="" catalog="ngslims" columns="oligobarcodeA_id"/>
       <exported-key name="fk_seqlibs_oligobarcodeB" table="seqlibs" schema="" catalog="ngslims" columns="oligobarcodeB_id"/>
       <index name="fk_oligobarcodes_oligobarcode_schemes_idx" unique="false" columns="oligobarcode_scheme_id"/>
+      <index name="oligobarcodes_active_idx" unique="false" columns="active"/>
+      <index name="oligobarcodes_barcode_seq_idx" unique="false" columns="barcode_seq"/>
+      <index name="oligobarcodes_name_idx" unique="false" columns="name"/>
+      <index name="oligobarcodes_sort_order_idx" unique="false" columns="sort_order"/>
     </table>
     <table name="organisms" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="taxonomy" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12"/>
-      <column name="sort_order" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="taxonomy" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
+      <column name="sort_order" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="fk_samples_organisms" table="samples" schema="" catalog="ngslims" columns="organism_id"/>
+      <index name="organisms_active_idx" unique="false" columns="active"/>
+      <index name="organisms_sort_order_idx" unique="false" columns="sort_order"/>
+    </table>
+    <table name="pipeline_analyses" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="pipeline_analysis_execution_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="pipeline_reference_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="sample_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="seqlib_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="seqlane_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="report_finished_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <primary-key name="PRIMARY" columns="id"/>
+    </table>
+    <table name="pipeline_analysis_executions" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="pipeline_analysis_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="working_directory_path" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="execution_user_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="started_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="finished_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <primary-key name="PRIMARY" columns="id"/>
+    </table>
+    <table name="pipeline_references" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="organism_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="released_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="data_path" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="description" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <primary-key name="PRIMARY" columns="id,active"/>
+    </table>
+    <table name="pipeline_type_protocol_schemes" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="pipeline_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="protocol_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <primary-key name="PRIMARY" columns="id"/>
+    </table>
+    <table name="pipeline_types" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <primary-key name="PRIMARY" columns="id"/>
+    </table>
+    <table name="pipelines" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="pipeline_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="version" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="developer" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <primary-key name="PRIMARY" columns="id"/>
     </table>
     <table name="platforms" schema="" catalog="ngslims" type="TABLE">
-      <column name="platform_code" sqlType="VARCHAR" length="20" precision="0" nullable="false" jdbcType="12"/>
-      <column name="description" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="platform_code" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="description" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="platform_code"/>
+      <exported-key name="fk_controls_platforms" table="controls" schema="" catalog="ngslims" columns="platform_code"/>
       <exported-key name="fk_instrument_types_platforms" table="instrument_types" schema="" catalog="ngslims" columns="platform_code"/>
       <exported-key name="fk_steps_platforms" table="steps" schema="" catalog="ngslims" columns="platform_code"/>
+      <index name="platforms_active" unique="false" columns="active"/>
+    </table>
+    <table name="project_types" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="200" scale="0" nullable="false" jdbcType="12"/>
+      <column name="description" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="create_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <exported-key name="fk_projects_project_types" table="projects" schema="" catalog="ngslims" columns="project_type_id"/>
+      <index name="project_types_active" unique="false" columns="active"/>
     </table>
     <table name="projects" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="100" precision="0" nullable="false" jdbcType="12"/>
-      <column name="lab_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="user_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="pi_user_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
-      <column name="description" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="project_code" sqlType="CHAR" precision="4" scale="0" nullable="true" jdbcType="1"/>
+      <column name="lab_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="user_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="pi_user_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="project_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" def="LTE="/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="description" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_projects_labs" columns="lab_id" ref-table="labs" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_projects_project_types" columns="project_type_id" ref-table="project_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_projects_users" columns="user_id" ref-table="users" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_requests_projects" table="requests" schema="" catalog="ngslims" columns="project_id"/>
       <exported-key name="fk_samples_projects" table="samples" schema="" catalog="ngslims" columns="project_id"/>
       <exported-key name="fk_seqlibs_projects" table="seqlibs" schema="" catalog="ngslims" columns="project_id"/>
+      <index name="project_code_UNIQUE" unique="true" columns="project_code"/>
       <index name="fk_projects_labs_idx" unique="false" columns="lab_id"/>
+      <index name="fk_projects_project_types_idx" unique="false" columns="project_type_id"/>
       <index name="fk_projects_users_idx" unique="false" columns="user_id"/>
+      <index name="projects_active_idx" unique="false" columns="active"/>
     </table>
     <table name="protocols" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="description" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12"/>
-      <column name="step_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="min_multiplex_number" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="max_multiplex_number" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="next_step_phase_code" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="description" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
+      <column name="step_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="min_multiplex_number" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="max_multiplex_number" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="next_step_phase_code" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
-      <foreign-key name="fk_protocols_steps" columns="step_id" ref-table="steps" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_protocols_step_phases" columns="next_step_phase_code" ref-table="step_phases" ref-schema="" ref-catalog="ngslims" ref-columns="step_phase_code" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_protocols_steps" columns="step_id" ref-table="steps" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_oligobarcode_scheme_allows_protocols" table="oligobarcode_scheme_allows" schema="" catalog="ngslims" columns="protocol_id"/>
       <exported-key name="fk_seqlibs_protocols" table="seqlibs" schema="" catalog="ngslims" columns="protocol_id"/>
       <index name="protocols_name_UNIQUE" unique="true" columns="name"/>
       <index name="fk_protocols_step_phases_idx" unique="false" columns="next_step_phase_code"/>
       <index name="fk_protocols_steps_idx" unique="false" columns="step_id"/>
+      <index name="protocols_active_idx" unique="false" columns="active"/>
+      <index name="protocols_next_step_phase_code_idx" unique="false" columns="next_step_phase_code"/>
     </table>
     <table name="requests" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="project_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="lab_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="user_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
-      <column name="description" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="project_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="lab_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="request_pi_user_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="user_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="seq_run_type_scheme_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="samples_per_seqtemplate" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="lanes_per_seqtemplate" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="description" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_requests_labs" columns="lab_id" ref-table="labs" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_requests_projects" columns="project_id" ref-table="projects" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_requests_seq_run_type_schemes" columns="seq_run_type_scheme_id" ref-table="seq_run_type_schemes" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_requests_users" columns="user_id" ref-table="users" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_samples_requests" table="samples" schema="" catalog="ngslims" columns="request_id"/>
       <index name="fk_requests_labs_idx" unique="false" columns="lab_id"/>
       <index name="fk_requests_projects_idx" unique="false" columns="project_id"/>
+      <index name="fk_requests_seq_run_type_schemes_idx" unique="false" columns="seq_run_type_scheme_id"/>
       <index name="fk_requests_users_idx" unique="false" columns="user_id"/>
     </table>
+    <table name="role_users" schema="" catalog="ngslims" type="TABLE">
+      <column name="user_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="role_code" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="user_id,role_code"/>
+      <foreign-key name="fk_role_users_roles" columns="role_code" ref-table="roles" ref-schema="" ref-catalog="ngslims" ref-columns="role_code" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_role_users_users" columns="user_id" ref-table="users" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="fk_role_users_roles_idx" unique="false" columns="role_code"/>
+      <index name="fk_role_users_users_idx" unique="false" columns="user_id"/>
+    </table>
+    <table name="roles" schema="" catalog="ngslims" type="TABLE">
+      <column name="role_code" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <primary-key name="PRIMARY" columns="role_code"/>
+      <exported-key name="fk_role_users_roles" table="role_users" schema="" catalog="ngslims" columns="role_code"/>
+      <index name="roles_active_idx" unique="false" columns="active"/>
+    </table>
+    <table name="sample_locations" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <exported-key name="fk_samples_sample_locations" table="samples" schema="" catalog="ngslims" columns="sample_location_id"/>
+      <index name="name_UNIQUE" unique="true" columns="name"/>
+      <index name="sample_locations_active_idx" unique="false" columns="active"/>
+    </table>
     <table name="sample_property_entries" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="sample_property_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="sample_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="value" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="sample_property_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="sample_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="value" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_sample_property_entries_sample_property_types" columns="sample_property_type_id" ref-table="sample_property_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_sample_property_entries_sampls" columns="sample_id" ref-table="samples" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="0" delete-rule="0" deferrability="2"/>
@@ -189,45 +331,56 @@
       <index name="fk_sample_property_entries_sampls_idx" unique="false" columns="sample_id"/>
     </table>
     <table name="sample_property_types" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="mo_term_name" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="mo_id" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="mo_term_name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="mo_id" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="fk_sample_property_entries_sample_property_types" table="sample_property_entries" schema="" catalog="ngslims" columns="sample_property_type_id"/>
+      <index name="mo_term_name_UNIQUE" unique="true" columns="mo_term_name"/>
+      <index name="sample_property_types_active_idx" unique="false" columns="active"/>
     </table>
     <table name="sample_types" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="nucleotide_type" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="sort_order" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="nucleotide_type" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="sample_type_code" sqlType="CHAR" precision="3" scale="0" nullable="true" jdbcType="1"/>
+      <column name="sort_order" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="fk_samples_sample_types" table="samples" schema="" catalog="ngslims" columns="sample_type_id"/>
+      <index name="sample_type_code_UNIQUE" unique="true" columns="sample_type_code"/>
+      <index name="sample_types_active_idx" unique="false" columns="active"/>
+      <index name="sample_types_nucleotide_type" unique="false" columns="nucleotide_type"/>
+      <index name="sample_types_sort_order_idx" unique="false" columns="sort_order"/>
     </table>
     <table name="samples" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="request_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="project_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="sample_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="organism_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="qual_concentration" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="qual_volume" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="qual_amount" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="qual_RIN" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="qual_od260280" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="qual_od260230" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="qual_nanodrop_conc" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="qual_fragment_size" sqlType="INT UNSIGNED" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="qual_date" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
-      <column name="description" sqlType="VARCHAR" length="255" precision="0" nullable="true" jdbcType="12"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="request_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="project_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="sample_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="organism_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="qual_concentration" sqlType="DECIMAL UNSIGNED" precision="8" scale="4" nullable="true" jdbcType="3"/>
+      <column name="qual_volume" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="qual_amount" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="qual_RIN" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="qual_od260280" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="qual_od260230" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="qual_nanodrop_conc" sqlType="DECIMAL UNSIGNED" precision="8" scale="4" nullable="true" jdbcType="3"/>
+      <column name="qual_fragment_size" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="qual_date" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="notes" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
+      <column name="barcode_number" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="sample_location_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="description" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_samples_organisms" columns="organism_id" ref-table="organisms" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_samples_projects" columns="project_id" ref-table="projects" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_samples_requests" columns="request_id" ref-table="requests" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_samples_sample_locations" columns="sample_location_id" ref-table="sample_locations" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_samples_sample_types" columns="sample_type_id" ref-table="sample_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_sample_property_entries_sampls" table="sample_property_entries" schema="" catalog="ngslims" columns="sample_id"/>
       <exported-key name="fk_seqlibs_samples" table="seqlibs" schema="" catalog="ngslims" columns="sample_id"/>
@@ -235,99 +388,130 @@
       <index name="fk_samples_organisms_idx" unique="false" columns="organism_id"/>
       <index name="fk_samples_projects_idx" unique="false" columns="project_id"/>
       <index name="fk_samples_requests_idx" unique="false" columns="request_id"/>
+      <index name="fk_samples_sample_locations_idx" unique="false" columns="sample_location_id"/>
       <index name="fk_samples_sample_types_idx" unique="false" columns="sample_type_id"/>
       <index name="samples_name_idx" unique="false" columns="name"/>
     </table>
+    <table name="seq_demultiplex_results" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="seqlib_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="seqlane_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="flowcell_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="is_undetermined" sqlType="CHAR" precision="1" scale="0" nullable="true" jdbcType="1"/>
+      <column name="reads_total" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="reads_passedfilter" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="software_version" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <foreign-key name="fk_ seq_demultiplex_results_flowcells" columns="flowcell_id" ref-table="flowcells" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_ seq_demultiplex_results_seqlanes" columns="seqlane_id" ref-table="seqlanes" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_ seq_demultiplex_results_seqlibs" columns="seqlib_id" ref-table="seqlibs" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="fk_ seq_demultiplex_results_flowcells_idx" unique="false" columns="flowcell_id"/>
+      <index name="fk_ seq_demultiplex_results_seqlanes_idx" unique="false" columns="seqlane_id"/>
+      <index name="fk_ seq_demultiplex_results_seqlibs_idx" unique="false" columns="seqlib_id"/>
+    </table>
     <table name="seq_run_type_schemes" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="instrument_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="seq_runmode_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="seq_runread_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="seq_runcycle_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="instrument_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="seq_runmode_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="seq_runread_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="seq_runcycle_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id,instrument_type_id,seq_runmode_type_id,seq_runread_type_id,seq_runcycle_type_id"/>
-      <foreign-key name="seq_run_type_schemes_instrument_types" columns="instrument_type_id" ref-table="instrument_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
-      <foreign-key name="seq_run_type_schemes_seq_runcycle_types" columns="seq_runcycle_type_id" ref-table="seq_runcycle_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
-      <foreign-key name="seq_run_type_schemes_seq_runmode_types" columns="seq_runmode_type_id" ref-table="seq_runmode_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
-      <foreign-key name="seq_run_type_schemes_seq_runread_types" columns="seq_runread_type_id" ref-table="seq_runread_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_seq_run_type_schemes_instrument_types" columns="instrument_type_id" ref-table="instrument_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_seq_run_type_schemes_seq_runcycle_types" columns="seq_runcycle_type_id" ref-table="seq_runcycle_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_seq_run_type_schemes_seq_runmode_types" columns="seq_runmode_type_id" ref-table="seq_runmode_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_seq_run_type_schemes_seq_runread_types" columns="seq_runread_type_id" ref-table="seq_runread_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_flowcells_seq_run_type_schemes" table="flowcells" schema="" catalog="ngslims" columns="seq_run_type_scheme_id"/>
-      <index name="seq_run_type_schemes_instrument_types_idx" unique="false" columns="instrument_type_id"/>
-      <index name="seq_run_type_schemes_seq_runcycle_types_idx" unique="false" columns="seq_runcycle_type_id"/>
-      <index name="seq_run_type_schemes_seq_runmode_types_idx" unique="false" columns="seq_runmode_type_id"/>
-      <index name="seq_run_type_schemes_seq_runread_types_idx" unique="false" columns="seq_runread_type_id"/>
+      <exported-key name="fk_requests_seq_run_type_schemes" table="requests" schema="" catalog="ngslims" columns="seq_run_type_scheme_id"/>
+      <index name="fk_seq_run_type_schemes_instrument_types_idx" unique="false" columns="instrument_type_id"/>
+      <index name="fk_seq_run_type_schemes_seq_runcycle_types_idx" unique="false" columns="seq_runcycle_type_id"/>
+      <index name="fk_seq_run_type_schemes_seq_runmode_types_idx" unique="false" columns="seq_runmode_type_id"/>
+      <index name="fk_seq_run_type_schemes_seq_runread_types_idx" unique="false" columns="seq_runread_type_id"/>
+      <index name="seq_run_type_schemes_active_idx" unique="false" columns="active"/>
     </table>
     <table name="seq_runcycle_types" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="sort_order" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="sort_order" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
-      <exported-key name="seq_run_type_schemes_seq_runcycle_types" table="seq_run_type_schemes" schema="" catalog="ngslims" columns="seq_runcycle_type_id"/>
+      <exported-key name="fk_seq_run_type_schemes_seq_runcycle_types" table="seq_run_type_schemes" schema="" catalog="ngslims" columns="seq_runcycle_type_id"/>
+      <index name="seq_runcycle_types_active_idx" unique="false" columns="active"/>
+      <index name="seq_runcycle_types_sort_order_idx" unique="false" columns="sort_order"/>
     </table>
     <table name="seq_runmode_types" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="lane_per_flowcell" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="sort_order" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="lane_per_flowcell" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="sort_order" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
-      <exported-key name="seq_run_type_schemes_seq_runmode_types" table="seq_run_type_schemes" schema="" catalog="ngslims" columns="seq_runmode_type_id"/>
+      <exported-key name="fk_flowcells_seq_runmode_types" table="flowcells" schema="" catalog="ngslims" columns="seq_runmode_type_id"/>
+      <exported-key name="fk_seq_run_type_schemes_seq_runmode_types" table="seq_run_type_schemes" schema="" catalog="ngslims" columns="seq_runmode_type_id"/>
+      <exported-key name="fk_steps_seq_runmode_types" table="steps" schema="" catalog="ngslims" columns="seq_runmode_type_id"/>
+      <index name="seq_runmode_types_active_idx" unique="false" columns="active"/>
+      <index name="seq_runmode_types_sort_order_idx" unique="false" columns="sort_order"/>
     </table>
     <table name="seq_runread_types" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="sort_order" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="sort_order" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
-      <exported-key name="seq_run_type_schemes_seq_runread_types" table="seq_run_type_schemes" schema="" catalog="ngslims" columns="seq_runread_type_id"/>
+      <exported-key name="fk_seq_run_type_schemes_seq_runread_types" table="seq_run_type_schemes" schema="" catalog="ngslims" columns="seq_runread_type_id"/>
+      <index name="seq_runread_types_active_idx" unique="false" columns="active"/>
+      <index name="seq_runread_types_sort_order_idx" unique="false" columns="sort_order"/>
     </table>
     <table name="seqlanes" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="number" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="flowcell_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="seqtemplate_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="number_sequencing_cycles_actual" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="filename" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="first_cycle_date" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93"/>
-      <column name="last_cycle_date" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93"/>
-      <column name="last_cycle_completed" sqlType="CHAR" length="1" precision="0" nullable="true" jdbcType="1"/>
-      <column name="last_cycle_failed" sqlType="CHAR" length="1" precision="0" nullable="true" jdbcType="1"/>
-      <column name="apply_conc" sqlType="DECIMAL" length="8" precision="2" nullable="true" jdbcType="3"/>
-      <column name="is_control" sqlType="CHAR" length="1" precision="0" nullable="true" jdbcType="1"/>
-      <column name="q30_yield" sqlType="DECIMAL" length="4" precision="1" nullable="true" jdbcType="3"/>
-      <column name="q30_percent" sqlType="DECIMAL" length="4" precision="3" nullable="true" jdbcType="3"/>
-      <column name="read1_clusters_total" sqlType="BIGINT" length="19" precision="0" nullable="true" jdbcType="-5"/>
-      <column name="read1_clusters_passed_filter" sqlType="BIGINT" length="19" precision="0" nullable="true" jdbcType="-5"/>
-      <column name="read2_clusters_total" sqlType="BIGINT" length="19" precision="0" nullable="true" jdbcType="-5"/>
-      <column name="read2_clusters_passed_filter" sqlType="BIGINT" length="19" precision="0" nullable="true" jdbcType="-5"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="number" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="flowcell_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="seqtemplate_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="number_sequencing_cycles_actual" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="filename" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="first_cycle_date" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="last_cycle_date" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="last_cycle_completed" sqlType="CHAR" precision="1" scale="0" nullable="true" jdbcType="1"/>
+      <column name="last_cycle_failed" sqlType="CHAR" precision="1" scale="0" nullable="true" jdbcType="1"/>
+      <column name="apply_conc" sqlType="DECIMAL" precision="8" scale="2" nullable="true" jdbcType="3"/>
+      <column name="is_control" sqlType="CHAR" precision="1" scale="0" nullable="true" jdbcType="1"/>
+      <column name="control_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="reads_total" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="reads_passed_filter" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="q30_percent" sqlType="DECIMAL" precision="4" scale="3" nullable="true" jdbcType="3"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
       <primary-key name="PRIMARY" columns="id"/>
+      <foreign-key name="fk_seqlanes_controls_idx" columns="control_id" ref-table="controls" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_seqlanes_flowcells" columns="flowcell_id" ref-table="flowcells" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_seqlanes_seqtemplates" columns="seqtemplate_id" ref-table="seqtemplates" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="fk_ seq_demultiplex_results_seqlanes" table="seq_demultiplex_results" schema="" catalog="ngslims" columns="seqlane_id"/>
+      <index name="fk_seqlanes_controls_idx" unique="false" columns="control_id"/>
       <index name="fk_seqlanes_flowcells_idx" unique="false" columns="flowcell_id"/>
       <index name="fk_seqlanes_seqtemplates_idx" unique="false" columns="seqtemplate_id"/>
     </table>
     <table name="seqlibs" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="100" precision="0" nullable="false" jdbcType="12"/>
-      <column name="sample_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="project_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="protocol_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="oligobarcodeA_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="oligobarcodeB_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="bioanalyser_chip_code" sqlType="VARCHAR" length="45" precision="0" nullable="true" jdbcType="12"/>
-      <column name="concentration" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="stock_seqlib_volume" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="fragment_size" sqlType="INT UNSIGNED" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="started_at" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93"/>
-      <column name="finished_at" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="sample_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="project_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="protocol_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="oligobarcodeA_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="oligobarcodeB_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="bioanalyser_chip_code" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="concentration" sqlType="DECIMAL UNSIGNED" precision="8" scale="4" nullable="true" jdbcType="3"/>
+      <column name="stock_seqlib_volume" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="fragment_size" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="started_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="finished_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_seqlibs_oligobarcodeA" columns="oligobarcodeA_id" ref-table="oligobarcodes" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_seqlibs_oligobarcodeB" columns="oligobarcodeB_id" ref-table="oligobarcodes" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_seqlibs_projects" columns="project_id" ref-table="projects" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_seqlibs_protocols" columns="protocol_id" ref-table="protocols" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_seqlibs_samples" columns="sample_id" ref-table="samples" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="fk_ seq_demultiplex_results_seqlibs" table="seq_demultiplex_results" schema="" catalog="ngslims" columns="seqlib_id"/>
       <exported-key name="fk_seqtemplate_assocs_seqtemplates" table="seqtemplate_assocs" schema="" catalog="ngslims" columns="seqlib_id"/>
       <exported-key name="fk_step_entries_seqlibs" table="step_entries" schema="" catalog="ngslims" columns="seqlib_id"/>
       <index name="fk_seqlibs_oligobarcodeA_idx" unique="false" columns="oligobarcodeA_id"/>
@@ -338,11 +522,11 @@
       <index name="seqlibs_name_idx" unique="false" columns="name"/>
     </table>
     <table name="seqtemplate_assocs" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="seqtemplate_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="seqlib_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="assoc_factor" sqlType="DECIMAL UNSIGNED" length="8" precision="4" nullable="true" jdbcType="3"/>
-      <column name="assoc_vol" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="seqtemplate_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="seqlib_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="conc_factor" sqlType="DECIMAL UNSIGNED" precision="8" scale="4" nullable="true" jdbcType="3" def="MS4wMDAw"/>
+      <column name="input_vol" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_seqtemplate_assocs_seqlibs" columns="seqtemplate_id" ref-table="seqtemplates" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_seqtemplate_assocs_seqtemplates" columns="seqlib_id" ref-table="seqlibs" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
@@ -350,37 +534,40 @@
       <index name="fk_seqtemplate_assocs_seqtemplates_idx" unique="false" columns="seqtemplate_id"/>
     </table>
     <table name="seqtemplates" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="init_conc" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="init_vol" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="target_conc" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="target_dw_vol" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="target_vol" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="final_conc" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="final_dw_vol" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="final_vol" sqlType="DECIMAL UNSIGNED" length="8" precision="3" nullable="true" jdbcType="3"/>
-      <column name="started_at" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93"/>
-      <column name="finished_at" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="target_conc" sqlType="DECIMAL UNSIGNED" precision="8" scale="4" nullable="true" jdbcType="3"/>
+      <column name="target_vol" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="target_dw_vol" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="initial_conc" sqlType="DECIMAL UNSIGNED" precision="8" scale="4" nullable="true" jdbcType="3"/>
+      <column name="initial_vol" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="final_conc" sqlType="DECIMAL UNSIGNED" precision="8" scale="4" nullable="true" jdbcType="3"/>
+      <column name="final_vol" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="final_dw_vol" sqlType="DECIMAL UNSIGNED" precision="8" scale="3" nullable="true" jdbcType="3"/>
+      <column name="started_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="finished_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="fk_seqlanes_seqtemplates" table="seqlanes" schema="" catalog="ngslims" columns="seqtemplate_id"/>
       <exported-key name="fk_seqtemplate_assocs_seqlibs" table="seqtemplate_assocs" schema="" catalog="ngslims" columns="seqtemplate_id"/>
       <exported-key name="fk_step_entries_seqtemplates" table="step_entries" schema="" catalog="ngslims" columns="seqtemplate_id"/>
-      <index name="name_idx" unique="false" columns="name"/>
+      <index name="seqtemplates_name_idx" unique="false" columns="name"/>
     </table>
     <table name="step_entries" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="sample_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="seqlib_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="seqtemplate_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="flowcell_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="step_phase_code" sqlType="VARCHAR" length="10" precision="0" nullable="false" jdbcType="12"/>
-      <column name="step_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="protocol_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
-      <column name="note" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12"/>
-      <column name="status" sqlType="VARCHAR" length="20" precision="0" nullable="true" jdbcType="12"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="sample_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="seqlib_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="seqtemplate_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="flowcell_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="step_phase_code" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="step_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="protocol_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="updated_at" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="note" sqlType="VARCHAR" precision="200" scale="0" nullable="true" jdbcType="12"/>
+      <column name="user_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="update_user_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="status" sqlType="VARCHAR" precision="20" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_step_entries_flowcells" columns="flowcell_id" ref-table="flowcells" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_step_entries_samples" columns="sample_id" ref-table="samples" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
@@ -392,64 +579,67 @@
       <index name="fk_step_entries_seqlibs_idx" unique="false" columns="seqlib_id"/>
       <index name="fk_step_entries_seqtemplates_idx" unique="false" columns="seqtemplate_id"/>
       <index name="fk_step_entries_steps_idx" unique="false" columns="step_id"/>
+      <index name="step_entries_status_idx" unique="false" columns="status"/>
+    </table>
+    <table name="step_instrument_type_schemes" schema="" catalog="ngslims" type="TABLE">
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="step_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="instrument_type_id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id,step_id,instrument_type_id"/>
+      <foreign-key name="fk_ step_instrument_type_schemes_instrument_types" columns="instrument_type_id" ref-table="instrument_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_ step_instrument_type_schemes_steps" columns="step_id" ref-table="steps" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="fk_ step_instrument_type_schemes_instrument_types_idx" unique="false" columns="instrument_type_id"/>
+      <index name="fk_ step_instrument_type_schemes_steps_idx" unique="false" columns="step_id"/>
     </table>
     <table name="step_phases" schema="" catalog="ngslims" type="TABLE">
-      <column name="step_phase_code" sqlType="VARCHAR" length="20" precision="0" nullable="false" jdbcType="12"/>
-      <column name="description" sqlType="VARCHAR" length="100" precision="0" nullable="false" jdbcType="12"/>
-      <column name="sort_order" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="step_phase_code" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="description" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="sort_order" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="step_phase_code"/>
       <exported-key name="fk_protocols_step_phases" table="protocols" schema="" catalog="ngslims" columns="next_step_phase_code"/>
       <exported-key name="fk_steps_step_phases" table="steps" schema="" catalog="ngslims" columns="step_phase_code"/>
+      <index name="step_phases_active_idx" unique="false" columns="active"/>
+      <index name="step_phases_sort_order_idx" unique="false" columns="sort_order"/>
     </table>
     <table name="steps" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="name" sqlType="VARCHAR" length="200" precision="0" nullable="false" jdbcType="12"/>
-      <column name="step_phase_code" sqlType="VARCHAR" length="20" precision="0" nullable="false" jdbcType="12"/>
-      <column name="platform_code" sqlType="VARCHAR" length="20" precision="0" nullable="false" jdbcType="12"/>
-      <column name="nucleotide_type" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="sort_order" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="name" sqlType="VARCHAR" precision="200" scale="0" nullable="false" jdbcType="12"/>
+      <column name="short_name" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="step_phase_code" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="seq_runmode_type_id" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="platform_code" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
+      <column name="nucleotide_type" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="sort_order" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="fk_steps_platforms" columns="platform_code" ref-table="platforms" ref-schema="" ref-catalog="ngslims" ref-columns="platform_code" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="fk_steps_seq_runmode_types" columns="seq_runmode_type_id" ref-table="seq_runmode_types" ref-schema="" ref-catalog="ngslims" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="fk_steps_step_phases" columns="step_phase_code" ref-table="step_phases" ref-schema="" ref-catalog="ngslims" ref-columns="step_phase_code" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="fk_protocols_steps" table="protocols" schema="" catalog="ngslims" columns="step_id"/>
       <exported-key name="fk_step_entries_steps" table="step_entries" schema="" catalog="ngslims" columns="step_id"/>
+      <exported-key name="fk_ step_instrument_type_schemes_steps" table="step_instrument_type_schemes" schema="" catalog="ngslims" columns="step_id"/>
       <index name="fk_steps_platforms_idx" unique="false" columns="platform_code"/>
+      <index name="fk_steps_seq_runmode_types_idx" unique="false" columns="seq_runmode_type_id"/>
       <index name="fk_steps_step_phases_idx" unique="false" columns="step_phase_code"/>
+      <index name="steps_active_idx" unique="false" columns="active"/>
+      <index name="steps_sort_order_idx" unique="false" columns="sort_order"/>
     </table>
     <table name="users" schema="" catalog="ngslims" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="username" sqlType="VARCHAR" length="32" precision="0" nullable="false" jdbcType="12"/>
-      <column name="password" sqlType="CHAR" length="40" precision="0" nullable="false" jdbcType="1"/>
-      <column name="firstname" sqlType="VARCHAR" length="120" precision="0" nullable="false" jdbcType="12"/>
-      <column name="lastname" sqlType="VARCHAR" length="45" precision="0" nullable="false" jdbcType="12"/>
-      <column name="email" sqlType="VARCHAR" length="70" precision="0" nullable="false" jdbcType="12"/>
-      <column name="created_at" sqlType="DATETIME" length="19" precision="0" nullable="false" jdbcType="93"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
+      <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="username" sqlType="VARCHAR" precision="32" scale="0" nullable="false" jdbcType="12"/>
+      <column name="password" sqlType="CHAR" precision="200" scale="0" nullable="true" jdbcType="1"/>
+      <column name="firstname" sqlType="VARCHAR" precision="120" scale="0" nullable="false" jdbcType="12"/>
+      <column name="lastname" sqlType="VARCHAR" precision="45" scale="0" nullable="false" jdbcType="12"/>
+      <column name="email" sqlType="VARCHAR" precision="70" scale="0" nullable="false" jdbcType="12"/>
+      <column name="created_at" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="active" sqlType="CHAR" precision="1" scale="0" nullable="false" jdbcType="1" def="J1kn"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="fk_lab_users_users" table="lab_users" schema="" catalog="ngslims" columns="user_id"/>
       <exported-key name="fk_projects_users" table="projects" schema="" catalog="ngslims" columns="user_id"/>
       <exported-key name="fk_requests_users" table="requests" schema="" catalog="ngslims" columns="user_id"/>
+      <exported-key name="fk_role_users_users" table="role_users" schema="" catalog="ngslims" columns="user_id"/>
+      <index name="users_active_idx" unique="false" columns="active"/>
     </table>
-    <table name="count_test" schema="" catalog="test" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="num" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <column name="pos" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4"/>
-      <primary-key name="PRIMARY" columns="id"/>
-    </table>
-    <table name="seq_run_type_schemes" schema="" catalog="test" type="TABLE">
-      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true"/>
-      <column name="instrument_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="seq_runmode_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="seq_runread_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="seq_runcycle_type_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4"/>
-      <column name="active" sqlType="CHAR" length="1" precision="0" nullable="false" jdbcType="1" def="J1kn"/>
-      <primary-key name="PRIMARY" columns="id,instrument_type_id,seq_runmode_type_id,seq_runread_type_id,seq_runcycle_type_id"/>
-      <index name="fk_seq_runcycle_type_allows_seq_runcycle_types_idx" unique="false" columns="seq_runcycle_type_id"/>
-      <index name="fk_seq_runcycle_type_allows_seq_runmode_types_idx" unique="false" columns="seq_runmode_type_id"/>
-      <index name="fk_seq_runcycle_type_allows_seq_runread_types_idx" unique="false" columns="seq_runread_type_id"/>
-    </table>
-    <procedure name="test_multi_sets" schema="" catalog="test" type="1"/>
   </data-source>
 </component>

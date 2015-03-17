@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="4128287222">
+  <component name="DataSourceManagerImpl" format="xml" hash="2658561934">
     <data-source source="LOCAL" name="MySQL - ngslims@localhost" uuid="801f3b70-2c93-4a4b-bfe4-a424ba58a2c6">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
@@ -14,4 +14,3 @@
     </data-source>
   </component>
 </project>
-
