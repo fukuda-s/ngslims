@@ -916,30 +916,49 @@ class OrderController extends ControllerBase
         } else {
             $this->flashSession->notice("Request " . $requests->id . " has been recorded.");
             // Remove session which has been saved.
-            $this->session->remove('lab');
-            $this->session->remove('pi_user');
-            $this->session->remove('project');
-            $this->session->remove('sample_type');
-            $this->session->remove('organism');
-            $this->session->remove('qc_inside');
-            $this->session->remove('sample');
-            $this->session->remove('sample_property_types_checked');
-            $this->session->remove('seqlib_undecided');
-            $this->session->remove('step');
-            $this->session->remove('protocol');
-            $this->session->remove('samples_per_seqtemplate');
-            $this->session->remove('seqrun_undecided');
-            $this->session->remove('instrument_type');
-            $this->session->remove('seq_runmode_type');
-            $this->session->remove('seq_runread_type');
-            $this->session->remove('seq_runcycle_type');
-            $this->session->remove('lanes_per_seqtemplate');
+            $this->_removeOrderSession();
         }
 
         // Input into step_entries
 
         // @TODO Remove session which has been saved.
         return $this->response->redirect("order/index");
+    }
+
+    private function _removeOrderSession()
+    {
+        // Remove session which has been saved.
+        $this->session->remove('lab');
+        $this->session->remove('pi_user');
+        $this->session->remove('project');
+        $this->session->remove('sample_type');
+        $this->session->remove('organism');
+        $this->session->remove('qc_inside');
+        $this->session->remove('sample');
+        $this->session->remove('sample_property_types_checked');
+        $this->session->remove('seqlib_undecided');
+        $this->session->remove('step');
+        $this->session->remove('protocol');
+        $this->session->remove('samples_per_seqtemplate');
+        $this->session->remove('seqrun_undecided');
+        $this->session->remove('instrument_type');
+        $this->session->remove('seq_runmode_type');
+        $this->session->remove('seq_runread_type');
+        $this->session->remove('seq_runcycle_type');
+        $this->session->remove('lanes_per_seqtemplate');
+    }
+
+    public function removeOrderSessionAction()
+    {
+        $this->view->disable();
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->_removeOrderSession();
+            }
+        }
     }
 
 }

@@ -49,7 +49,8 @@ class Security extends Plugin
                     'loadSessionSampleData',
                     'saveProject',
                     'confirm',
-                    'checkout'
+                    'checkout',
+                    'removeOrderSession'
                 ),
                 'summary' => array(
                     'index',
