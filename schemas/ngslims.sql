@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.21, for osx10.8 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.23, for osx10.10 (x86_64)
 --
 -- Host: localhost    Database: ngslims
 -- ------------------------------------------------------
--- Server version	5.6.21-log
+-- Server version	5.6.23-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -208,6 +208,8 @@ CREATE TABLE `oligobarcodes` (
   KEY `fk_oligobarcodes_oligobarcode_schemes_idx` (`oligobarcode_scheme_id`),
   KEY `oligobarcodes_sort_order_idx` (`sort_order`),
   KEY `oligobarcodes_active_idx` (`active`),
+  KEY `oligobarcodes_barcode_seq_idx` (`barcode_seq`),
+  KEY `oligobarcodes_name_idx` (`name`),
   CONSTRAINT `fk_oligobarcodes_oligobarcode_schemes` FOREIGN KEY (`oligobarcode_scheme_id`) REFERENCES `oligobarcode_schemes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -229,6 +231,116 @@ CREATE TABLE `organisms` (
   KEY `organisms_sort_order_idx` (`sort_order`),
   KEY `organisms_active_idx` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pipeline_analyses`
+--
+
+DROP TABLE IF EXISTS `pipeline_analyses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pipeline_analyses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pipeline_analysis_execution_id` int(11) NOT NULL,
+  `pipeline_reference_id` int(11) DEFAULT NULL,
+  `sample_id` int(11) NOT NULL,
+  `seqlib_id` int(11) NOT NULL,
+  `seqlane_id` int(11) NOT NULL,
+  `report_finished_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pipeline_analysis_executions`
+--
+
+DROP TABLE IF EXISTS `pipeline_analysis_executions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pipeline_analysis_executions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pipeline_analysis_id` int(11) NOT NULL,
+  `working_directory_path` varchar(255) DEFAULT NULL,
+  `execution_user_id` int(11) DEFAULT NULL,
+  `started_at` datetime DEFAULT NULL,
+  `finished_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pipeline_references`
+--
+
+DROP TABLE IF EXISTS `pipeline_references`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pipeline_references` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `organism_id` int(11) DEFAULT NULL,
+  `released_at` datetime DEFAULT NULL,
+  `data_path` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `active` char(1) NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`,`active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pipeline_type_protocol_schemes`
+--
+
+DROP TABLE IF EXISTS `pipeline_type_protocol_schemes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pipeline_type_protocol_schemes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pipeline_type_id` int(11) NOT NULL,
+  `protocol_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `active` char(1) NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pipeline_types`
+--
+
+DROP TABLE IF EXISTS `pipeline_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pipeline_types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `active` char(1) NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pipelines`
+--
+
+DROP TABLE IF EXISTS `pipelines`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pipelines` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `pipeline_type_id` int(11) NOT NULL,
+  `version` varchar(255) DEFAULT NULL,
+  `developer` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `active` char(1) NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -819,6 +931,7 @@ DROP TABLE IF EXISTS `steps`;
 CREATE TABLE `steps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
+  `short_name` varchar(45) DEFAULT NULL,
   `step_phase_code` varchar(20) NOT NULL,
   `seq_runmode_type_id` int(11) DEFAULT NULL,
   `platform_code` varchar(100) NOT NULL,
@@ -847,7 +960,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(32) NOT NULL,
-  `password` char(200) NOT NULL,
+  `password` char(200) DEFAULT NULL,
   `firstname` varchar(120) NOT NULL,
   `lastname` varchar(45) NOT NULL,
   `email` varchar(70) NOT NULL,
@@ -867,4 +980,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-23 11:43:37
+-- Dump completed on 2015-03-18 12:03:24
