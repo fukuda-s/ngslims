@@ -180,8 +180,8 @@ $(document).ready(function () {
       { data: "sl.concentration", title: "Conc. (nmol/L)", readOnly: true, type: 'numeric', format: '0.000' },
       { data: "sl.stock_seqlib_volume", title: "Volume (uL)", readOnly: true, type: 'numeric', format: '0.00' },
       { data: "sl.fragment_size", title: "Fragment Size", readOnly: true, type: 'numeric' },
-      { data: "sl.started_at", title: "Started Date", readOnly: true, type: 'date', dateFormat: 'yy-mm-dd' },
-      { data: "sl.finished_at", title: "Finished Date", readOnly: true, type: 'date', dateFormat: 'yy-mm-dd' },
+      { data: "sl.started_at", title: "Started Date", readOnly: true, type: 'date', dateFormat: 'YYYY-MM-DD' },
+      { data: "sl.finished_at", title: "Finished Date", readOnly: true, type: 'date', dateFormat: 'YYYY-MM-DD' },
       { data: "ste.status", title: "Status", readOnly: true/*, type: 'dropdown', source: ['', 'Completed', 'In Progress', 'On Hold'] */ }
     ],
     minSpareCols: 0,

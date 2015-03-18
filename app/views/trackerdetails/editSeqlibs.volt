@@ -175,27 +175,27 @@ $(document).ready(function () {
       {data: "sl.id", title: "Seqlib ID", readOnly: true, type: 'numeric'},
       {data: "sl.name", title: "Seqlib Name"},
       {data: "sl.sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer},
-      {data: "sl.protocol_id", title: "Protocol", type: "dropdown", source: protocolDrop, renderer: protocolRenderer},
+      {data: "sl.protocol_id", title: "Protocol", editor: "select", selectOptions: protocolDrop, renderer: protocolRenderer},
       {
         data: "sl.oligobarcodeA_id",
         title: "OligoBarcode A",
-        type: "dropdown",
-        source: oligobarcodeADrop,
+        editor: "select",
+        selectOptions: oligobarcodeADrop,
         renderer: oligobarcodeARenderer
       },
       {
         data: "sl.oligobarcodeB_id",
         title: "OligoBarcode B",
-        type: "dropdown",
-        source: oligobarcodeBDrop,
+        editor: "select",
+        selectOptions: oligobarcodeBDrop,
         renderer: oligobarcodeBRenderer
       },
       {data: "sl.concentration", title: "Conc. (nmol/L)", type: 'numeric', format: '0.000'},
       {data: "sl.stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
       {data: "sl.fragment_size", title: "Fragment Size", type: 'numeric'},
-      {data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'yy-mm-dd'},
-      {data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'yy-mm-dd'},
-      {data: "ste.status", title: "Status", type: 'dropdown', source: ['', 'Completed', 'In Progress', 'On Hold']}
+      {data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'YYYY-MM-DD'},
+      {data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'YYYY-MM-DD'},
+      {data: "ste.status", title: "Status", editor: "select", selectOptions: ['', 'Completed', 'In Progress', 'On Hold']}
     ],
     minSpareCols: 0,
     minSpareRows: 0,

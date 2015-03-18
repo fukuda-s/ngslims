@@ -103,7 +103,7 @@ $(document).ready(function () {
       { data: "qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000' },
       { data: "qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00' },
       { data: "qual_amount", data: 0, title: "Total (ng)", type: 'numeric', format: '0.00' },
-      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd' }
+      { data: "qual_date", title: "QC Date", type: 'date', dateFormat: 'YYYY-MM-DD' }
     ],
     minSpareCols: 0,
     minSpareRows: 0,

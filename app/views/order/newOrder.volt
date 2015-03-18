@@ -974,7 +974,7 @@ $(document).ready(function () {
       {data: 'qual_nanodrop_conc', title: 'Conc. (ng/uL) (NanoDrop)', type: 'numeric', format: '0.000'},
       {data: 'qual_volume', title: 'Volume (uL)', type: 'numeric', format: '0.00'},
       {data: 'qual_amount', title: 'Total (ng)', type: 'numeric', format: '0.00'},
-      {data: 'qual_date', title: 'QC Date', type: 'date', dateFormat: 'yy-mm-dd'},
+      {data: 'qual_date', title: 'QC Date', type: 'date', dateFormat: 'YYYY-MM-DD'},
       {% for sample_property_type in sample_property_types %}
       {
         data: 'sample_property_types.{{ sample_property_type.id }}',

@@ -133,10 +133,13 @@ class TrackerdetailsController extends ControllerBase
     public function editSamplesAction($type, $step_id, $project_id, $status = null)
     {
         $this->assets
-            ->addJs('js/handsontable-0.12.5/dist/handsontable.full.js')
+            ->addJs('js/handsontable-0.13.0/dist/handsontable.full.js')
+            ->addJs('js/handsontable-0.13.0/demo/js/moment/moment.js')
+            ->addJs('js/handsontable-0.13.0/demo/js/pikaday/pikaday.js')
+            ->addCss('js/handsontable-0.13.0/demo/js/pikaday/css/pikaday.css')
             ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
-            ->addCss('js/handsontable-0.12.5/dist/handsontable.css')
-            ->addCss('js/handsontable-0.12.5/plugins/bootstrap/handsontable.bootstrap.css');
+            ->addCss('js/handsontable-0.13.0/dist/handsontable.css')
+            ->addCss('js/handsontable-0.13.0/plugins/bootstrap/handsontable.bootstrap.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
@@ -345,9 +348,12 @@ class TrackerdetailsController extends ControllerBase
     public function editSeqlibsAction($type, $step_id, $project_id, $status = null)
     {
         $this->assets
-            ->addJs('js/handsontable-0.12.5/dist/handsontable.full.js')
-            ->addCss('js/handsontable-0.12.5/dist/handsontable.css')
-            ->addCss('js/handsontable-0.12.5/plugins/bootstrap/handsontable.bootstrap.css');
+            ->addJs('js/handsontable-0.13.0/dist/handsontable.full.js')
+            ->addJs('js/handsontable-0.13.0/demo/js/moment/moment.js')
+            ->addJs('js/handsontable-0.13.0/demo/js/pikaday/pikaday.js')
+            ->addCss('js/handsontable-0.13.0/demo/js/pikaday/css/pikaday.css')
+            ->addCss('js/handsontable-0.13.0/dist/handsontable.css')
+            ->addCss('js/handsontable-0.13.0/plugins/bootstrap/handsontable.bootstrap.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
