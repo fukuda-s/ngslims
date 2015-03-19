@@ -102,8 +102,10 @@
             <td>{{ d.slane.number }}</td>
             <td>{{ d.slane.is_control }}</td>
             {% if d.sdr is defined %}
-              <td>{{ number_format(d.sdr.reads_total) }}</td>
-              <td>{{ number_format(d.sdr.reads_passedfilter) }}</td>
+              {% set reads_total = (d.sdr.reads_total is empty) ? '' : number_format(d.sdr.reads_total) %}
+              <td>{{ reads_total }}</td>
+              {% set reads_passedfilter = (d.sdr.reads_passedfilter is empty) ? '' : number_format(d.sdr.reads_passedfilter) %}
+              <td>{{ reads_passedfilter }}</td>
               {% set reads_passedfilter_percent = (d.sdr.reads_total > 0) ? round(d.sdr.reads_passedfilter / d.sdr.reads_total * 100, 2) ~ '%' : '' %}
               <td>{{ reads_passedfilter_percent }}</td>
             {% else %}
