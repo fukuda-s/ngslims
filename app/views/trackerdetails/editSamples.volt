@@ -218,13 +218,13 @@
       search: true,
       autoColumnSize: true,
       columns: [
-        {data: "s.id", title: "ID", type: 'numeric', readOnly: true},
-        {data: "s.name", title: "Sample Name", readOnly: true},
-        {data: "s.sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer},
+        {data: "s.id", title: "ID", type: 'numeric', editor: false},
+        {data: "s.name", title: "Sample Name", editor: false},
+        {data: "s.sample_type_id", title: "Sample Type", editor: false, renderer: sampleTypeRenderer},
         {
           data: "s.organism_id",
           title: "Organism",
-          readOnly: true,
+          editor: false,
           renderer: organismRenderer,
           source: organismRenderer
         },

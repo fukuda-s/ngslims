@@ -172,9 +172,9 @@ $(document).ready(function () {
     height: 500,
     rowHeaders: false,
     columns: [
-      {data: "sl.id", title: "Seqlib ID", readOnly: true, type: 'numeric'},
+      {data: "sl.id", title: "Seqlib ID", editor: false, type: 'numeric'},
       {data: "sl.name", title: "Seqlib Name"},
-      {data: "sl.sample_id", title: "Sample Name", readOnly: true, renderer: sampleNameRenderer},
+      {data: "sl.sample_id", title: "Sample Name", editor: false, renderer: sampleNameRenderer},
       {data: "sl.protocol_id", title: "Protocol", editor: "select", selectOptions: protocolDrop, renderer: protocolRenderer},
       {
         data: "sl.oligobarcodeA_id",

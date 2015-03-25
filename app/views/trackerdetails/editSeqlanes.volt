@@ -92,9 +92,9 @@ $(document).ready(function () {
     stretchH: 'all',
     rowHeaders: true,
     columns: [
-      { data: "name", title: "Sample Name", readOnly: true },
-      { data: "sample_type_id", title: "Sample Type", readOnly: true, renderer: sampleTypeRenderer },
-      { data: "organism_id", title: "Organism", readOnly: true, renderer: organismRenderer, source: organismRenderer },
+      { data: "name", title: "Sample Name", editor: false },
+      { data: "sample_type_id", title: "Sample Type", editor: false, renderer: sampleTypeRenderer },
+      { data: "organism_id", title: "Organism", editor: false, renderer: organismRenderer, source: organismRenderer },
       { data: "qual_concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
       { data: "qual_od260280", title: "A260/A280", type: 'numeric', format: '0.00' },
       { data: "qual_od260230", title: "A260/A230", type: 'numeric', format: '0.00' },
