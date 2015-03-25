@@ -47,54 +47,54 @@ class TrackerdetailsController extends ControllerBase
 
         $this->view->setVar('type', 'SHOW');
 
-        $phql = 'SELECT
-					s.id AS sample_id,
-					s.name AS sample_name,
-					st.name AS sample_type,
-					spe3.value AS cell_type,
-					spe12.value AS tissue,
-					stp.id AS seqtemplate_id,
-					stp.name AS seqtemplate_name,
-					slib.id AS seqlib_id,
-					slib.name AS seqlib_name,
-					oa.name AS oligobarcodeA_name,
-					oa.barcode_seq AS oligobarcodeA_seq,
-					ob.name AS oligobarcodeB_name,
-					ob.barcode_seq AS oligobarcodeB_seq,
-					fc.name AS flowcell_name,
-					slane.number AS seqlane_num,
-					s.qual_date AS qual_date,
-					slib.finished_at AS seqlib_date,
-					fc.run_started_date AS run_started_date,
-					fc.run_finished_date AS run_finished_date
-				 FROM
-					Samples s
-						LEFT JOIN
-					SampleTypes st ON st.id = s.sample_type_id
-						LEFT JOIN
-                    SamplePropertyEntries spe3 ON spe3.sample_id = s.id AND spe3.sample_property_type_id = 3
-                        LEFT JOIN
-                    SamplePropertyEntries spe12 ON spe12.sample_id = s.id AND spe12.sample_property_type_id = 12
-                        LEFT JOIN
-					Seqlibs slib ON slib.sample_id = s.id
-						LEFT JOIN
-					Oligobarcodes oa ON oa.id = slib.oligobarcodeA_id
-						LEFT JOIN
-					Oligobarcodes ob ON ob.id = slib.oligobarcodeB_id
-						LEFT JOIN
-					SeqtemplateAssocs sta ON sta.seqlib_id = slib.id
-						LEFT JOIN
-					Seqtemplates stp ON stp.id = sta.seqtemplate_id
-						LEFT JOIN
-					Seqlanes slane ON slane.seqtemplate_id = stp.id
-						LEFT JOIN
-					Flowcells fc ON fc.id = slane.flowcell_id
-				WHERE
-					s.project_id = :project_id:
-				';
-        $datas = $this->modelsManager->executeQuery($phql, array(
-            'project_id' => $project_id
-        ));
+        $datas = $this->modelsManager->createBuilder()
+            ->columns(array(
+                's.id AS sample_id',
+				's.name AS sample_name',
+				'st.name AS sample_type',
+				'spe3.value AS cell_type',
+				'spe12.value AS tissue',
+				'stp.id AS seqtemplate_id',
+				'stp.name AS seqtemplate_name',
+				'slib.id AS seqlib_id',
+				'slib.name AS seqlib_name',
+                'p.name AS protocol_name',
+				'oa.name AS oligobarcodeA_name',
+				'oa.barcode_seq AS oligobarcodeA_seq',
+				'ob.name AS oligobarcodeB_name',
+				'ob.barcode_seq AS oligobarcodeB_seq',
+				'fc.name AS flowcell_name',
+				'slane.number AS seqlane_num',
+				's.qual_date AS qual_date',
+				'slib.finished_at AS seqlib_date',
+				'fc.run_started_date AS run_started_date',
+				'fc.run_finished_date AS run_finished_date',
+                'sdr.*'
+            ))
+            ->addFrom('Samples', 's')
+            ->leftJoin('SampleTypes', 'st.id = s.sample_type_id', 'st')
+            ->leftJoin('SamplePropertyEntries', 'spe3.sample_id = s.id AND spe3.sample_property_type_id = 3', 'spe3')
+            ->leftJoin('SamplePropertyEntries', 'spe12.sample_id = s.id AND spe12.sample_property_type_id = 12', 'spe12')
+            ->leftJoin('Seqlibs', 'slib.sample_id = s.id', 'slib')
+            ->leftJoin('Protocols', 'p.id = slib.protocol_id', 'p')
+            ->leftJoin('Oligobarcodes', 'oa.id = slib.oligobarcodeA_id', 'oa')
+            ->leftJoin('Oligobarcodes', 'ob.id = slib.oligobarcodeB_id', 'ob')
+            ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = slib.id', 'sta')
+            ->leftJoin('Seqtemplates', 'stp.id = sta.seqtemplate_id', 'stp')
+            ->leftJoin('Seqlanes', 'slane.seqtemplate_id = stp.id', 'slane')
+            ->leftJoin('Flowcells', 'fc.id = slane.flowcell_id', 'fc')
+            /*
+            ->leftJoin('SeqRunTypeSchemes', 'srts.id = fc.seq_run_type_scheme_id', 'srts')
+            ->leftJoin('InstrumentTypes', 'it.id = srts.instrument_type_id', 'it')
+            ->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
+            ->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
+            ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
+            */
+            ->leftJoin('SeqDemultiplexResults', 'sdr.seqlib_id = slib.id AND sdr.seqlane_id = slane.id', 'sdr')
+            ->where('s.project_id = :project_id:', array("project_id" => $project_id))
+            ->getQuery()
+            ->execute();
+
         $this->view->setVar('datas', $datas);
         // $this->flash->success(var_dump($data));
 
@@ -133,13 +133,13 @@ class TrackerdetailsController extends ControllerBase
     public function editSamplesAction($type, $step_id, $project_id, $status = null)
     {
         $this->assets
-            ->addJs('js/handsontable-0.13.0/dist/handsontable.full.js')
-            ->addJs('js/handsontable-0.13.0/demo/js/moment/moment.js')
-            ->addJs('js/handsontable-0.13.0/demo/js/pikaday/pikaday.js')
-            ->addCss('js/handsontable-0.13.0/demo/js/pikaday/css/pikaday.css')
+            ->addJs('js/handsontable/dist/handsontable.full.js')
+            ->addJs('js/handsontable/demo/js/moment/moment.js')
+            ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
+            ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
             ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
-            ->addCss('js/handsontable-0.13.0/dist/handsontable.css')
-            ->addCss('js/handsontable-0.13.0/plugins/bootstrap/handsontable.bootstrap.css');
+            ->addCss('js/handsontable/dist/handsontable.css')
+            ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
@@ -283,6 +283,10 @@ class TrackerdetailsController extends ControllerBase
                                         $sample_property_entry = new SamplePropertyEntries();
                                         $sample_property_entry->sample_property_type_id = $sample_property_type_id;
                                         $sample_property_entry->sample_id = $sample_id;
+                                        /*
+                                         * Continue if $valueChangeTo is empty because of dragdown on handsontable.
+                                         */
+                                        if (empty($valueChangeTo)) continue;
                                     }
                                     $sample_property_entry->value = $valueChangeTo;
                                     if (!$sample_property_entry->save()) {
@@ -348,12 +352,12 @@ class TrackerdetailsController extends ControllerBase
     public function editSeqlibsAction($type, $step_id, $project_id, $status = null)
     {
         $this->assets
-            ->addJs('js/handsontable-0.13.0/dist/handsontable.full.js')
-            ->addJs('js/handsontable-0.13.0/demo/js/moment/moment.js')
-            ->addJs('js/handsontable-0.13.0/demo/js/pikaday/pikaday.js')
-            ->addCss('js/handsontable-0.13.0/demo/js/pikaday/css/pikaday.css')
-            ->addCss('js/handsontable-0.13.0/dist/handsontable.css')
-            ->addCss('js/handsontable-0.13.0/plugins/bootstrap/handsontable.bootstrap.css');
+            ->addJs('js/handsontable/dist/handsontable.full.js')
+            ->addJs('js/handsontable/demo/js/moment/moment.js')
+            ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
+            ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
+            ->addCss('js/handsontable/dist/handsontable.css')
+            ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
