@@ -26,13 +26,13 @@ class OrderController extends ControllerBase
     public function newOrderAction()
     {
         $this->assets
-            ->addJs('js/handsontable-0.13.0/dist/handsontable.full.js')
-            ->addJs('js/handsontable-0.13.0/demo/js/moment/moment.js')
-            ->addJs('js/handsontable-0.13.0/demo/js/pikaday/pikaday.js')
-            ->addCss('js/handsontable-0.13.0/demo/js/pikaday/css/pikaday.css')
+            ->addJs('js/handsontable/dist/handsontable.full.js')
+            ->addJs('js/handsontable/demo/js/moment/moment.js')
+            ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
+            ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
             ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
-            ->addCss('js/handsontable-0.13.0/dist/handsontable.css')
-            ->addCss('js/handsontable-0.13.0/plugins/bootstrap/handsontable.bootstrap.css');
+            ->addCss('js/handsontable/dist/handsontable.css')
+            ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
 
         // @TODO Should be filter labs which should have lab_users
         //Set default value from session value
