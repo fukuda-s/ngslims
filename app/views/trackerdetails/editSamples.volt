@@ -236,7 +236,7 @@
         {data: "s.qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000'},
         {data: "s.qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
         {data: "s.qual_amount", title: "Total (ng)", type: 'numeric', format: '0.00'},
-        {data: "s.qual_date", title: "QC Date", type: 'date', dateFormat: 'YYYY-MM-DD'},
+        {data: "s.qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd'},
         {
           data: "ste.status",
           title: "Status",
