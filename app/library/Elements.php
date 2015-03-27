@@ -97,6 +97,11 @@ class Elements extends Phalcon\Mvc\User\Component
             'param' => ''
         ),
         */
+        'Instrument Overview' => array(
+            'controller' => 'summary',
+            'action' => 'instrument',
+            'param' => ''
+        ),
         'Overall View' => array(
             'controller' => 'summary',
             'action' => 'overall',

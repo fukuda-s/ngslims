@@ -58,6 +58,7 @@ class Security extends Plugin
                     'projectName',
                     'projectNameProgress',
                     'operation',
+                    'instrument',
                     'overall'
                 ),
                 'tracker' => array(

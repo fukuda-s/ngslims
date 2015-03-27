@@ -155,6 +155,53 @@ class SummaryController extends ControllerBase
         Tag::appendTitle(' | Summary By Operation');
     }
 
+    public function instrumentAction($instrument_id = null)
+    {
+        $this->view->cleanTemplateAfter()->setLayout('main');
+        Tag::appendTitle(' | Summary By Instrument');
+
+
+        $this->assets
+            ->addJs('js/DataTables-1.10.5/media/js/jquery.dataTables.min.js')
+            ->addJs('js/DataTables-1.10.5/extensions/TableTools/js/dataTables.tableTools.min.js')
+            ->addJs('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.js')
+            ->addCss('js/DataTables-1.10.5/media/css/jquery.dataTables.min.css')
+            ->addCss('js/DataTables-1.10.5/extensions/TableTools/css/dataTables.tableTools.min.css')
+            ->addCss('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.css');
+
+        /*
+         * Get Instrument list
+         */
+        $instruments = Instruments::find(array(
+                "active = 'Y'",
+                "order" => "instrument_number ASC"
+            )
+        );
+        $this->view->setVar('instruments', $instruments);
+
+        $instrument_id = $this->filter->sanitize($instrument_id, array('int'));
+
+        if(empty($instrument_id)){
+            $instrument_id = $instruments->getFirst()->id;
+        }
+        $this->view->setVar('instrument_id', $instrument_id);
+
+        $flowcells = $this->modelsManager->createBuilder()
+            ->columns(array('fc.*', 'i.*', 'srmt.*', 'srrt.*', 'srct.*'))
+            ->addFrom('Flowcells', 'fc')
+            ->leftJoin('Instruments', 'i.id = fc.instrument_id', 'i')
+            ->leftJoin('SeqRunTypeSchemes', 'srts.id = fc.seq_run_type_scheme_id', 'srts')
+            ->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
+            ->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
+            ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
+            ->where('i.id = :instrument_id:', array("instrument_id" => $instrument_id))
+            ->orderBy(array('fc.run_started_date DESC', 'fc.side ASC'))
+            ->getQuery()
+            ->execute();
+        $this->view->setVar('flowcells', $flowcells);
+
+    }
+
     public function overallAction($year, $month)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
@@ -226,7 +273,7 @@ class SummaryController extends ControllerBase
          * Get data to display table withusing $year and $month
          */
         $overall_tmp = $this->modelsManager->createBuilder()
-            ->columns(array('slane.*', 'sl.*', 'sta.*', 'fc.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'sdr.*' ))
+            ->columns(array('slane.*', 'sl.*', 'sta.*', 'fc.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'sdr.*'))
             ->addFrom('Seqlanes', 'slane')
             ->join('SeqtemplateAssocs', 'sta.seqtemplate_id = slane.seqtemplate_id', 'sta')
             ->join('Seqlibs', 'sl.id = sta.seqlib_id', 'sl')
