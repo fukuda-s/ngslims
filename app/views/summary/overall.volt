@@ -11,6 +11,8 @@
       ALL&nbsp;
       <i class="glyphicon glyphicon-download"></i>
     </button>
+    {% set run_year_active = 0 %}
+    {% set run_month_active = 0 %}
     {% for run_year, run_month_array in run_year_month_array %}
       {% if run_year is empty %} {# Case for run_started_date is NULL #}
         {% continue %}
@@ -22,6 +24,8 @@
                 class="glyphicon glyphicon-download"></i></button>
           {% for run_month, run_month_available in run_month_array %}
             {% if run_month_available == 2 %}
+              {% set run_year_active = run_year %}
+              {% set run_month_active = run_month %}
               <button type="button" class="btn btn-default active"
                       onclick="location.href='{{ url("summary/overall/" ~ run_year ~ '/' ~ run_month) }}'">{{ run_month }}</button>
             {% elseif run_month_available == 1 %}
@@ -113,7 +117,7 @@
           <td>{{ d.fc.run_number }}</td>
           <td>{{ date('Y-m-d', strtotime(d.fc.run_started_date)) }}</td>
           <td>{{ d.fc.Instruments.instrument_number ~ d.fc.side }}</td>
-          <td>{{ d.fc.name }}</td>
+          <td>{{ link_to('trackerdetails/showTableSeqlanes/' ~ d.fc.name ~ '?referer=summary/overall/' ~ run_year_active ~ '/' ~ run_month_active ~ '&type=OVERALL', d.fc.name ) }}</td>
           <td>{{ d.it.name }}</td>
           <td>{{ d.srmt.name }}</td>
           <td>{{ d.srrt.name }}</td>

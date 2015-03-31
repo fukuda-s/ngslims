@@ -50,25 +50,25 @@ class TrackerdetailsController extends ControllerBase
         $datas = $this->modelsManager->createBuilder()
             ->columns(array(
                 's.id AS sample_id',
-				's.name AS sample_name',
-				'st.name AS sample_type',
-				'spe3.value AS cell_type',
-				'spe12.value AS tissue',
-				'stp.id AS seqtemplate_id',
-				'stp.name AS seqtemplate_name',
-				'slib.id AS seqlib_id',
-				'slib.name AS seqlib_name',
+                's.name AS sample_name',
+                'st.name AS sample_type',
+                'spe3.value AS cell_type',
+                'spe12.value AS tissue',
+                'stp.id AS seqtemplate_id',
+                'stp.name AS seqtemplate_name',
+                'slib.id AS seqlib_id',
+                'slib.name AS seqlib_name',
                 'p.name AS protocol_name',
-				'oa.name AS oligobarcodeA_name',
-				'oa.barcode_seq AS oligobarcodeA_seq',
-				'ob.name AS oligobarcodeB_name',
-				'ob.barcode_seq AS oligobarcodeB_seq',
-				'fc.name AS flowcell_name',
-				'slane.number AS seqlane_num',
-				's.qual_date AS qual_date',
-				'slib.finished_at AS seqlib_date',
-				'fc.run_started_date AS run_started_date',
-				'fc.run_finished_date AS run_finished_date',
+                'oa.name AS oligobarcodeA_name',
+                'oa.barcode_seq AS oligobarcodeA_seq',
+                'ob.name AS oligobarcodeB_name',
+                'ob.barcode_seq AS oligobarcodeB_seq',
+                'fc.name AS flowcell_name',
+                'slane.number AS seqlane_num',
+                's.qual_date AS qual_date',
+                'slib.finished_at AS seqlib_date',
+                'fc.run_started_date AS run_started_date',
+                'fc.run_finished_date AS run_finished_date',
                 'sdr.*'
             ))
             ->addFrom('Samples', 's')
@@ -191,12 +191,12 @@ class TrackerdetailsController extends ControllerBase
                      * $changes has array [["row number from 0", "row name", "before value", "changed value"]] ex.)[["3","qual_od260230","","1"]]
                      */
                     foreach ($changes as $sample_id => $rowValues) {
-                        foreach ($rowValues as $tblColNameToChange  => $valueChangeTo) {
+                        foreach ($rowValues as $tblColNameToChange => $valueChangeTo) {
                             $colStrToChange = preg_split('/\./', $tblColNameToChange);
                             $tblNameToChange = $colStrToChange[0];
                             $colNameToChange = $colStrToChange[1];
 
-                            if(empty($valueChangeTo)){
+                            if (empty($valueChangeTo)) {
                                 $valueChangeTo = null;
                             }
 
@@ -279,7 +279,7 @@ class TrackerdetailsController extends ControllerBase
                                             "sample_id" => $sample_id
                                         )
                                     ));
-                                    if(!$sample_property_entry){
+                                    if (!$sample_property_entry) {
                                         $sample_property_entry = new SamplePropertyEntries();
                                         $sample_property_entry->sample_property_type_id = $sample_property_type_id;
                                         $sample_property_entry->sample_id = $sample_id;
@@ -298,7 +298,7 @@ class TrackerdetailsController extends ControllerBase
                                 } elseif ($tblNameToChange === 'ste') { //'ste' is alias of StepEntries on SamplesController->loadjson()
                                     $sample_step_entries->$colNameToChange = $valueChangeTo;
                                     $auth = $this->session->get('auth');
-                                    if($auth) {
+                                    if ($auth) {
                                         $sample_step_entries->update_user_id = $auth['id'];
                                     }
 
@@ -328,7 +328,6 @@ class TrackerdetailsController extends ControllerBase
                                     } else {
                                         $sample->$colNameToChange = $valueChangeTo;
                                     }
-
 
 
                                     if (!$sample->save()) {
@@ -392,7 +391,7 @@ class TrackerdetailsController extends ControllerBase
                             $tblNameToChange = $colStrToChange[0];
                             $colNameToChange = $colStrToChange[1];
 
-                            if(empty($valueChangeTo)){
+                            if (empty($valueChangeTo)) {
                                 $valueChangeTo = null;
                             }
 
@@ -503,7 +502,7 @@ class TrackerdetailsController extends ControllerBase
                             } elseif ($tblNameToChange === 'ste') { //'ste' is alias of StepEntries on SeqlibsController->loadjson()
                                 $seqlib_step_entries->$colNameToChange = $valueChangeTo;
                                 $auth = $this->session->get('auth');
-                                if($auth) {
+                                if ($auth) {
                                     $seqlib_step_entries->update_user_id = $auth['id'];
                                 }
                             } else {
@@ -669,6 +668,99 @@ class TrackerdetailsController extends ControllerBase
                 $this->view->setVar('oligobarcodeB_exists', $oligobarcodeB_exists);
             }
         }
+    }
+
+    public function showTableSeqlanesAction($flowcell_name)
+    {
+        //$this->view->cleanTemplateAfter()->setLayout('main');
+
+        $sample_sheet_type = $this->request->get('sample_sheet_type', "striptags");
+        $referer = $this->request->get('referer', "striptags");
+        $this->view->setVar('referer', $referer);
+        $type = $this->request->get('type', "striptags");
+        $this->view->setVar('type', $type);
+
+        $flowcell_name = $this->filter->sanitize($flowcell_name, array("striptags"));
+        Tag::appendTitle(' | Flowcell ' . $flowcell_name);
+        $this->view->setVar('flowcell_name', $flowcell_name);
+
+        $flowcells = $this->modelsManager->createBuilder()
+            ->columns(array('fc.*', 'srts.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*'))
+            ->addFrom('Flowcells', 'fc')
+            ->leftJoin('SeqRunTypeSchemes', 'srts.id = fc.seq_run_type_scheme_id', 'srts')
+            ->leftJoin('InstrumentTypes', 'it.id = srts.instrument_type_id', 'it')
+            ->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
+            ->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
+            ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
+            ->where('fc.name = :flowcell_name:', array("flowcell_name" => $flowcell_name))
+            ->getQuery()
+            ->execute();
+
+        if (count($flowcells)<1) {
+            return $this->flash->error('Could not find flowcell name ' . $flowcell_name);
+        }
+
+        $flowcell = $flowcells->getFirst();
+        $this->view->setVar('flowcell', $flowcell);
+
+        $flowcell_id = $flowcell->fc->id;
+
+        if ($sample_sheet_type) {
+            $response = new Phalcon\Http\Response();
+            #$response->setContentType("application/octet-stream", "UTF-8");
+            #$response->setHeader("Content-Disposition", "attachment; filename=SampleSheet.csv");
+            $response->setContentType("text/plain", "UTF-8");
+            $response->send();
+
+            $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
+            $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
+            $this->view->pick('samplesheet/' . $sample_sheet_type);
+        } else {
+            $this->assets
+                ->addJs('js/DataTables-1.10.5/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables-1.10.5/extensions/TableTools/js/dataTables.tableTools.min.js')
+                ->addJs('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.js')
+                ->addCss('js/DataTables-1.10.5/media/css/jquery.dataTables.min.css')
+                ->addCss('js/DataTables-1.10.5/extensions/TableTools/css/dataTables.tableTools.min.css')
+                ->addCss('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.css');
+        }
+
+
+        $seqtemplates = $this->modelsManager->createBuilder()
+            ->columns(array('slane.*', 'st.*'))
+            ->addFrom('Seqlanes', 'slane')
+            ->leftJoin('Seqtemplates', 'st.id = slane.seqtemplate_id', 'st')
+            ->where('slane.flowcell_id = :flowcell_id:', array("flowcell_id" => $flowcell_id))
+            ->orderBy('slane.number ASC')
+            ->getQuery()
+            ->execute();
+        $this->view->setVar('seqtemplates', $seqtemplates);
+
+        $seqlanes = $this->modelsManager->createBuilder()
+            ->columns(array('fc.*', 'slane.*', 'st.*', 'ct.*', 'slib.*', 'oa.*', 'ob.*', 's.*', 'p.*', 'u.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'pt.*', 'sdr.*'))
+            ->addFrom('Flowcells', 'fc')
+            ->leftJoin('Seqlanes', 'slane.flowcell_id = fc.id', 'slane')
+            ->leftJoin('Seqtemplates', 'st.id = slane.seqtemplate_id', 'st')
+            ->leftJoin('Controls', 'ct.id = slane.control_id', 'ct')
+            ->leftJoin('SeqtemplateAssocs', 'sta.seqtemplate_id = st.id', 'sta')
+            ->leftJoin('Seqlibs', 'slib.id = sta.seqlib_id', 'slib')
+            ->leftJoin('Oligobarcodes', 'oa.id = slib.oligobarcodeA_id', 'oa')
+            ->leftJoin('Oligobarcodes', 'ob.id = slib.oligobarcodeB_id', 'ob')
+            ->leftJoin('Samples', 's.id = slib.sample_id', 's')
+            ->leftJoin('Projects', 'p.id = s.project_id', 'p')
+            ->leftJoin('Users', 'u.id = p.pi_user_id', 'u')
+            ->leftJoin('SeqRunTypeSchemes', 'srts.id = fc.seq_run_type_scheme_id', 'srts')
+            ->leftJoin('InstrumentTypes', 'it.id = srts.instrument_type_id', 'it')
+            ->leftJoin('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
+            ->leftJoin('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
+            ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
+            ->leftJoin('Protocols', 'pt.id = slib.protocol_id', 'pt')
+            ->leftJoin('SeqDemultiplexResults', 'sdr.seqlib_id = slib.id AND sdr.seqlane_id = slane.id', 'sdr')
+            ->where('fc.id = :flowcell_id:', array("flowcell_id" => $flowcell_id))
+            ->orderBy('slane.number ASC')
+            ->getQuery()
+            ->execute();
+        $this->view->setVar('seqlanes', $seqlanes);
     }
 
     public function showTubeSeqtemplatesAction()

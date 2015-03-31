@@ -95,7 +95,7 @@
             {% else %}
               <td></td>
             {% endif %}
-            <td>{{ d.fc.name }}</td>
+            <td>{{ link_to('trackerdetails/showTableSeqlanes/' ~ d.fc.name, d.fc.name ) }}</td>
             <td>{{ d.srmt.name }}</td>
             <td>{{ d.srrt.name }}</td>
             <td>{{ d.srct.name }}</td>

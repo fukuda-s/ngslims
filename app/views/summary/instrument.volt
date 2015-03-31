@@ -39,7 +39,7 @@
         {% set run_started_date = (flowcell.fc.run_started_date is empty) ? '' : date('Y-m-d', strtotime(flowcell.fc.run_started_date)) %}
         {% set run_finished_date = (flowcell.fc.run_finished_date is empty) ? '' : date('Y-m-d', strtotime(flowcell.fc.run_finished_date)) %}
       <tr>
-        <td>{{ flowcell.fc.name }}</td>
+        <td>{{ link_to('trackerdetails/showTableSeqlanes/' ~ flowcell.fc.name ~ '?referer=summary/instrument/' ~ instrument.id, flowcell.fc.name ) }}</td>
         <td>{{ run_started_date }}</td>
         <td>{{ run_finished_date }}</td>
         <td>{{ flowcell.fc.run_number }}</td>

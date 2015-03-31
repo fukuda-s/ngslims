@@ -32,6 +32,8 @@ class Security extends Plugin
                 $acl->addRole($role);
             }
 
+
+
             // Private area resources
             $privateResources = array(
                 'order' => array(
@@ -91,6 +93,7 @@ class Security extends Plugin
                     'showTubeSeqlibs',
                     'showPanelSeqlanes',
                     'showTableSeqlibs',
+                    'showTableSeqlanes',
                     'showTubeSeqtemplates',
                     'loadSamples',
                     'editSamples',
@@ -141,6 +144,18 @@ class Security extends Plugin
             );
             foreach ($privateResources as $resource => $actions) {
                 $acl->addResource(new Phalcon\Acl\Resource($resource), $actions);
+            }
+
+            /*
+             * Add SampleSheet view as ACL resource
+             */
+            $platforms = Platforms::find(array(
+                "active = 'Y'",
+                "columns" => array("platform_code")
+            ));
+            foreach($platforms as $platform){
+                $acl->addResource(new Phalcon\Acl\Resource('samplesheet'), $platform->platform_code);
+                $acl->allow('Users', 'samplesheet', $platform->platform_code);
             }
 
             // Public area resources
