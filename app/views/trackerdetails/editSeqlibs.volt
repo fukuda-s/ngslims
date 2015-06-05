@@ -163,11 +163,14 @@ $(document).ready(function () {
   }
 
   // Construct handsontable
-  var $container = $("#handsontable-editSeqlibs-body");
+  //var $container = $("#handsontable-editSeqlibs-body");
+  var $container = document.getElementById('handsontable-editSeqlibs-body');
   var $console = $("#handsontable-console");
   var $toolbar = $("#handsontable-toolbar");
   var autosaveNotification = String();
-  $container.handsontable({
+
+  //$container.handsontable({
+  var hot = new Handsontable($container, {
     stretchH: 'all',
     height: 500,
     rowHeaders: false,
@@ -193,8 +196,8 @@ $(document).ready(function () {
       {data: "sl.concentration", title: "Conc. (nmol/L)", type: 'numeric', format: '0.000'},
       {data: "sl.stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
       {data: "sl.fragment_size", title: "Fragment Size", type: 'numeric'},
-      {data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'yy-mm-dd'},
-      {data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'yy-mm-dd'},
+      {data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'YYYY-MM-DD'},
+      {data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'YYYY-MM-DD'},
       {data: "ste.status", title: "Status", editor: "select", selectOptions: ['', 'Completed', 'In Progress', 'On Hold']}
     ],
     minSpareCols: 0,
@@ -266,7 +269,8 @@ $(document).ready(function () {
       }
     }
   });
-  var $handsontable = $container.data('handsontable');
+  //var $handsontable = $container.data('handsontable');
+  var $handsontable = hot;
 
   function loadData() {
     $.ajax({
@@ -287,7 +291,8 @@ $(document).ready(function () {
           //alert(data);
           //alert(location.href);
           //console.log(data);
-          $container.handsontable("loadData", data);
+          //$container.handsontable("loadData", data);
+          $handsontable.loadData(data);
         });
   }
 

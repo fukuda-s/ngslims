@@ -160,7 +160,7 @@ class TrackerController extends ControllerBase
 
     public function multiplexSetupAction($step_id)
     {
-        $this->view->cleanTemplateAfter()->setLayout('main');
+        $this->view->cleanTemplateAfter()->setLayout('main-wide');
         Tag::appendTitle(' | Multiplexing ');
 
         $step = Steps::findFirst(array(

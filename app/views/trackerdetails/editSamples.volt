@@ -174,7 +174,8 @@
     }
 
     // Construct handsontable
-    var $container = $("#handsontable-editSamples-body");
+    //var $container = $("#handsontable-editSamples-body");
+    var $container = document.getElementById('handsontable-editSamples-body');
     var $console = $("#handsontable-console");
     var $toolbar = $("#handsontable-toolbar");
     var autosaveNotification = String();
@@ -202,7 +203,8 @@
     /*
      * Setting of Handsontable;
      */
-    $container.handsontable({
+    //$container.handsontable({
+    var hot = new Handsontable($container, {
       stretchH: 'all',
       height: 500,
       //rowHeaders: true,
@@ -236,7 +238,7 @@
         {data: "s.qual_nanodrop_conc", title: "Conc. (ng/uL) (NanoDrop)", type: 'numeric', format: '0.000'},
         {data: "s.qual_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
         {data: "s.qual_amount", title: "Total (ng)", type: 'numeric', format: '0.00'},
-        {data: "s.qual_date", title: "QC Date", type: 'date', dateFormat: 'yy-mm-dd'},
+        {data: "s.qual_date", title: "QC Date", type: 'date', dateFormat: 'YYYY-MM-DD'},
         {
           data: "ste.status",
           title: "Status",
@@ -313,7 +315,8 @@
 
       }
     });
-    var $handsontable = $container.data('handsontable');
+    //var $handsontable = $container.data('handsontable');
+    var $handsontable = hot;
 
     function loadData() {
       $.ajax({

@@ -88,7 +88,8 @@
         <!-- /.navbar-collapse -->
       </nav>
       <!-- /Handsontable toolbar -->
-      <div id="handsontable-orderSamples-body" style="overflow: scroll"></div>
+      <!--<div id="handsontable-orderSamples-body" style="overflow: hidden"></div>-->
+      <div id="handsontable-orderSamples-body"></div>
     </div>
   </div>
   <div class="panel panel-success">
@@ -237,304 +238,304 @@
   </button>
 </div>
 <script>
-  $(document).ready(function () {
-    /*
-     * Fix cart on top
-     */
-    //$('#new_order_summary').stick_in_parent();
+  /*
+   * Fix cart on top
+   */
+  //$('#new_order_summary').stick_in_parent();
 
-    /*
-     * Function to set selected values to session.
-     * @TODO Should I use "ajaxSuccess" function?
-     */
-    function setOrderSessionVal(column, id, name) {
-      $.ajax({
-        url: '{{ url('order/orderSetSession/')}}',
-        dataType: 'html',
-        type: 'POST',
-        data: {column: column, id: id, name: name}
-      })
-          .done(function (data) {
-            $('#flash').html(data);
-            console.log(column + " : " + id + " : " + name);
-          });
-    }
+  /*
+   * Function to set selected values to session.
+   * @TODO Should I use "ajaxSuccess" function?
+   */
+  function setOrderSessionVal(column, id, name) {
+    $.ajax({
+      url: '{{ url('order/orderSetSession/')}}',
+      dataType: 'html',
+      type: 'POST',
+      data: {column: column, id: id, name: name}
+    })
+        .done(function (data) {
+          $('#flash').html(data);
+          console.log(column + " : " + id + " : " + name);
+        });
+  }
 
-    /*
-     * Get select list via ajax from OrderController.php
-     * To use this function, all "id" values should be named with rule as follows.
-     * - (class) : (id)
-     * - div.form-group : <column>_select
-     * - select.form-control : <column>_id
-     * - li(in #new_order_summary): <column>_name_selected
-     */
-    function getSelectList(column, key) {
-      //Make upper camel name for controller
-      var columnUpperCamel = column.
-          replace(
-          /_./g,
-          function (matched) {
-            return matched.charAt(1).toUpperCase();
-          });
-      var urlStr = {{ url() }}+"order/" + columnUpperCamel + "SelectList/" + key + "/";
-      $.ajax({
-        url: urlStr,
-        dataType: 'html',
-        type: 'POST'
-      })
-          .done(function (data) {
-            //rewrite select list by ajax data
-            $('#' + column + '_select').html(data);
+  /*
+   * Get select list via ajax from OrderController.php
+   * To use this function, all "id" values should be named with rule as follows.
+   * - (class) : (id)
+   * - div.form-group : <column>_select
+   * - select.form-control : <column>_id
+   * - li(in #new_order_summary): <column>_name_selected
+   */
+  function getSelectList(column, key) {
+    //Make upper camel name for controller
+    var columnUpperCamel = column.
+        replace(
+        /_./g,
+        function (matched) {
+          return matched.charAt(1).toUpperCase();
+        });
+    var urlStr = {{ url() }}+"order/" + columnUpperCamel + "SelectList/" + key + "/";
+    $.ajax({
+      url: urlStr,
+      dataType: 'html',
+      type: 'POST'
+    })
+        .done(function (data) {
+          //rewrite select list by ajax data
+          $('#' + column + '_select').html(data);
 
-            //set on change action to rewrite right-side summary when the select list will be changed
-            $('#' + column + '_id').on('change', function () {
-              var id_selected = $(this).val();
-              var name_selected = $('option:selected', this).text();
-              $('#' + column + '_name_selected').hide().show('normal').text(name_selected);
-
-              //Set selected value to session values.
-              setOrderSessionVal(column, id_selected, name_selected);
-            });
-
-            //Change project_name_selected value on right side summary with selected values
-            var name_selected = $('#' + column + '_id').find('option:selected').text();
+          //set on change action to rewrite right-side summary when the select list will be changed
+          $('#' + column + '_id').on('change', function () {
+            var id_selected = $(this).val();
+            var name_selected = $('option:selected', this).text();
             $('#' + column + '_name_selected').hide().show('normal').text(name_selected);
+
+            //Set selected value to session values.
+            setOrderSessionVal(column, id_selected, name_selected);
           });
-    }
 
-    function setSelectChangedVals(selector, followSelects) {
-      $('#' + selector + '_id').on('change', function () {
-        var id_selected = $(this).val();
-        var name_selected = $('option:selected', this).text();
-        $('#' + selector + '_name_selected').hide().show('normal').text(name_selected);
+          //Change project_name_selected value on right side summary with selected values
+          var name_selected = $('#' + column + '_id').find('option:selected').text();
+          $('#' + column + '_name_selected').hide().show('normal').text(name_selected);
+        });
+  }
 
-        //Set selected value to session values.
-        setOrderSessionVal(selector, id_selected, name_selected);
+  function setSelectChangedVals(selector, followSelects) {
+    $('#' + selector + '_id').on('change', function () {
+      var id_selected = $(this).val();
+      var name_selected = $('option:selected', this).text();
+      $('#' + selector + '_name_selected').hide().show('normal').text(name_selected);
 
-        for (var key in followSelects) {
-          getSelectList(followSelects[key], id_selected);
-        }
+      //Set selected value to session values.
+      setOrderSessionVal(selector, id_selected, name_selected);
 
-      });
-    }
+      for (var key in followSelects) {
+        getSelectList(followSelects[key], id_selected);
+      }
 
-    /*
-     * Build function to get seq run type radio buttons from selected instrument_type_id.
-     * These select lists are cascaded as follows.
-     * (Cascaded column should be changed when parent column has been changed.)
-     *
-     *  + Lab & User
-     *    lab_id -> pi_user_id (lab_id) -> project_id (pi_user_id)
-     *  + Sample
-     *    + sample_type_id
-     *    + organism_id
-     *  + Sequence Library & Multiplex
-     *    + step_id (sample_type_id)
-     *    + protocol_id
-     *  + Sequence Run
-     *    + instrument_id (step_id)
-     *    + seq_runmode_type_id (instrument_id)
-     *    + seq_runread_type_id (instrument_id)
-     *    + seq_runcycle_type_id (instrument_id)
-     *
-     */
-    /*
-     * Build function to get instrument type list from selected step_id.
-     */
-    function getInstrumentTypeList(step_id) {
-      $.ajax({
-        url: '{{ url('order/instrumentTypeSelectList/')}}' + step_id + '/',
-        dataType: 'html',
-        type: 'POST'
-      })
-          .done(function (data) {
-            $('#instrument_type_select').html(data);
+    });
+  }
 
-            //setSelectChangedVals('instrument_type', new Array('seq_run_type'));
-            $('#instrument_type').on('change', function () {
-              var instrument_type_id_selected = $(this).val();
-              var instrument_type_name_selected = $('option:selected', this).text();
-              $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
+  /*
+   * Build function to get seq run type radio buttons from selected instrument_type_id.
+   * These select lists are cascaded as follows.
+   * (Cascaded column should be changed when parent column has been changed.)
+   *
+   *  + Lab & User
+   *    lab_id -> pi_user_id (lab_id) -> project_id (pi_user_id)
+   *  + Sample
+   *    + sample_type_id
+   *    + organism_id
+   *  + Sequence Library & Multiplex
+   *    + step_id (sample_type_id)
+   *    + protocol_id
+   *  + Sequence Run
+   *    + instrument_id (step_id)
+   *    + seq_runmode_type_id (instrument_id)
+   *    + seq_runread_type_id (instrument_id)
+   *    + seq_runcycle_type_id (instrument_id)
+   *
+   */
+  /*
+   * Build function to get instrument type list from selected step_id.
+   */
+  function getInstrumentTypeList(step_id) {
+    $.ajax({
+      url: '{{ url('order/instrumentTypeSelectList/')}}' + step_id + '/',
+      dataType: 'html',
+      type: 'POST'
+    })
+        .done(function (data) {
+          $('#instrument_type_select').html(data);
 
-              //Set selected step to session values.
-              setOrderSessionVal('instrument_type', instrument_type_id_selected, instrument_type_name_selected);
+          //setSelectChangedVals('instrument_type', new Array('seq_run_type'));
+          $('#instrument_type').on('change', function () {
+            var instrument_type_id_selected = $(this).val();
+            var instrument_type_name_selected = $('option:selected', this).text();
+            $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
 
-              //Refresh seq_runmode_types_radio when instrument_type_id is changed
-              getSeqRunmodeTypesList(instrument_type_id_selected);
-            });
+            //Set selected step to session values.
+            setOrderSessionVal('instrument_type', instrument_type_id_selected, instrument_type_name_selected);
 
-            //Refresh seq_runmode_types_radio when instrument_type_id has session value
-            var instrument_type_id_selected = $('#instrument_type').val();
+            //Refresh seq_runmode_types_radio when instrument_type_id is changed
             getSeqRunmodeTypesList(instrument_type_id_selected);
-
           });
-    }
 
-    function getSeqRunmodeTypesList(instrument_type_id) {
-      $.ajax({
-        url: '{{ url('order/seqRunmodeTypesSelectList/')}}',
-        dataType: 'html',
-        type: 'POST',
-        data: {instrument_type_id: instrument_type_id}
-      })
-          .done(function (data) {
-            $('#seq_runmode_types_radio').html(data);
+          //Refresh seq_runmode_types_radio when instrument_type_id has session value
+          var instrument_type_id_selected = $('#instrument_type').val();
+          getSeqRunmodeTypesList(instrument_type_id_selected);
 
-            //Change seq_runmode_type_name_selected value on right side summary with selected values
-            $("input:radio[name='seq_runmode_type']").on('change', function () {
-              var seq_runmode_type_id_selected = $(this).filter(':checked').val();
-              var seq_runmode_type_name_selected = $(this).filter(':checked').parent('label').text();
-              $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
+        });
+  }
 
-              //Set selected seq_runmode_type to session values.
-              setOrderSessionVal('seq_runmode_type', seq_runmode_type_id_selected, seq_runmode_type_name_selected);
+  function getSeqRunmodeTypesList(instrument_type_id) {
+    $.ajax({
+      url: '{{ url('order/seqRunmodeTypesSelectList/')}}',
+      dataType: 'html',
+      type: 'POST',
+      data: {instrument_type_id: instrument_type_id}
+    })
+        .done(function (data) {
+          $('#seq_runmode_types_radio').html(data);
 
-              //Refresh seq_runread_types_radio when seq_runmode_type_id is changed
-              getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id_selected);
-            });
+          //Change seq_runmode_type_name_selected value on right side summary with selected values
+          $("input:radio[name='seq_runmode_type']").on('change', function () {
+            var seq_runmode_type_id_selected = $(this).filter(':checked').val();
+            var seq_runmode_type_name_selected = $(this).filter(':checked').parent('label').text();
+            $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
 
-            //Refresh seq_runread_types_radio when seq_runmode_type_id has session value
-            var seq_runmode_type_id_selected = $("input:radio[name='seq_runmode_type']").filter(':checked').val();
+            //Set selected seq_runmode_type to session values.
+            setOrderSessionVal('seq_runmode_type', seq_runmode_type_id_selected, seq_runmode_type_name_selected);
+
+            //Refresh seq_runread_types_radio when seq_runmode_type_id is changed
             getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id_selected);
-
           });
-    }
 
-    function getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id) {
-      $.ajax({
-        url: '{{ url('order/seqRunreadTypesSelectList/')}}',
-        dataType: 'html',
-        type: 'POST',
-        data: {instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id}
-      })
-          .done(function (data) {
-            $('#seq_runread_types_radio').html(data);
+          //Refresh seq_runread_types_radio when seq_runmode_type_id has session value
+          var seq_runmode_type_id_selected = $("input:radio[name='seq_runmode_type']").filter(':checked').val();
+          getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id_selected);
 
-            //Change seq_runread_type_name_selected value on right side summary with selected values
-            $("input:radio[name='seq_runread_type']").on('change', function () {
-              var seq_runread_type_id_selected = $(this).filter(':checked').val();
-              var seq_runread_type_name_selected = $(this).filter(':checked').parent('label').text();
-              $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
+        });
+  }
 
-              //Set selected seq_runread_type to session values.
-              setOrderSessionVal('seq_runread_type', seq_runread_type_id_selected, seq_runread_type_name_selected);
+  function getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id) {
+    $.ajax({
+      url: '{{ url('order/seqRunreadTypesSelectList/')}}',
+      dataType: 'html',
+      type: 'POST',
+      data: {instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id}
+    })
+        .done(function (data) {
+          $('#seq_runread_types_radio').html(data);
 
-              //Refresh seq_runcycle_types_radio when seq_runread_type_id is changed
-              getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id_selected);
-            });
+          //Change seq_runread_type_name_selected value on right side summary with selected values
+          $("input:radio[name='seq_runread_type']").on('change', function () {
+            var seq_runread_type_id_selected = $(this).filter(':checked').val();
+            var seq_runread_type_name_selected = $(this).filter(':checked').parent('label').text();
+            $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
 
-            //Refresh seq_runcycle_types_radio when seq_runread_type_id has session value
-            var seq_runread_type_id_selected = $("input:radio[name='seq_runread_type']").filter(':checked').val();
+            //Set selected seq_runread_type to session values.
+            setOrderSessionVal('seq_runread_type', seq_runread_type_id_selected, seq_runread_type_name_selected);
+
+            //Refresh seq_runcycle_types_radio when seq_runread_type_id is changed
             getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id_selected);
           });
-    }
 
-    function getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id) {
-      $.ajax({
-        url: '{{ url('order/seqRuncycleTypesSelectList/')}}',
-        dataType: 'html',
-        type: 'POST',
-        data: {
-          instrument_type_id: instrument_type_id,
-          seq_runmode_type_id: seq_runmode_type_id,
-          seq_runread_type_id: seq_runread_type_id
-        }
-      })
-          .done(function (data) {
-            $('#seq_runcycle_types_radio').html(data);
-            //Change seq_runcycle_type_name_selected value on right side summary with selected values
-            $("input:radio[name='seq_runcycle_type']").on('change', function () {
-              var seq_runcycle_type_id_selected = $(this).filter(':checked').val();
-              var seq_runcycle_type_name_selected = $(this).filter(':checked').parent('label').text();
-              $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
+          //Refresh seq_runcycle_types_radio when seq_runread_type_id has session value
+          var seq_runread_type_id_selected = $("input:radio[name='seq_runread_type']").filter(':checked').val();
+          getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id_selected);
+        });
+  }
 
-              //Set selected seq_runcycle_type to session values.
-              setOrderSessionVal('seq_runcycle_type', seq_runcycle_type_id_selected, seq_runcycle_type_name_selected);
-            });
+  function getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id) {
+    $.ajax({
+      url: '{{ url('order/seqRuncycleTypesSelectList/')}}',
+      dataType: 'html',
+      type: 'POST',
+      data: {
+        instrument_type_id: instrument_type_id,
+        seq_runmode_type_id: seq_runmode_type_id,
+        seq_runread_type_id: seq_runread_type_id
+      }
+    })
+        .done(function (data) {
+          $('#seq_runcycle_types_radio').html(data);
+          //Change seq_runcycle_type_name_selected value on right side summary with selected values
+          $("input:radio[name='seq_runcycle_type']").on('change', function () {
+            var seq_runcycle_type_id_selected = $(this).filter(':checked').val();
+            var seq_runcycle_type_name_selected = $(this).filter(':checked').parent('label').text();
+            $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
+
+            //Set selected seq_runcycle_type to session values.
+            setOrderSessionVal('seq_runcycle_type', seq_runcycle_type_id_selected, seq_runcycle_type_name_selected);
           });
-    }
+        });
+  }
 
 
-    /*
-     * Build function to get pi_user list from selected step_id.
-     */
-    function getStepSelectList(sample_type_id) {
-      $.ajax({
-        url: '{{ url('order/stepSelectList/')}}' + sample_type_id + '/',
-        dataType: 'html',
-        type: 'POST'
-      })
-          .done(function (data) {
-            //Make select
-            $('#step_select').html(data);
+  /*
+   * Build function to get pi_user list from selected step_id.
+   */
+  function getStepSelectList(sample_type_id) {
+    $.ajax({
+      url: '{{ url('order/stepSelectList/')}}' + sample_type_id + '/',
+      dataType: 'html',
+      type: 'POST'
+    })
+        .done(function (data) {
+          //Make select
+          $('#step_select').html(data);
 
 
-            $('#step_id').on('change', function () {
-              var step_id_selected = $(this).val();
-              var step_name_selected = $('option:selected', this).text();
-              $('#step_name_selected').hide().show('normal').text(step_name_selected);
-
-              //Set selected step to session values.
-              setOrderSessionVal('step', step_id_selected, step_name_selected);
-
-              //Refresh protocol_selected and instrument_select when step_id is changed
-              getSelectList('protocol', step_id_selected);
-              getInstrumentTypeList(step_id_selected);
-            });
-
-            //Refresh protocol_select when sample_type has been changed
-            var step_selected = $('#step_id').find('option:selected');
-            var step_id_selected = step_selected.val();
-            var step_name_selected = step_selected.text();
+          $('#step_id').on('change', function () {
+            var step_id_selected = $(this).val();
+            var step_name_selected = $('option:selected', this).text();
             $('#step_name_selected').hide().show('normal').text(step_name_selected);
 
+            //Set selected step to session values.
+            setOrderSessionVal('step', step_id_selected, step_name_selected);
+
+            //Refresh protocol_selected and instrument_select when step_id is changed
             getSelectList('protocol', step_id_selected);
             getInstrumentTypeList(step_id_selected);
           });
-    }
 
-    /*
-     * Build function to get pi_user list from selected step_id.
-     */
-    function getUserSelectList(lab_id) {
-      $.ajax({
-        url: '{{ url('order/userSelectList/')}}' + lab_id + '/',
-        dataType: 'html',
-        type: 'POST'
-      })
-          .done(function (data) {
-            //Make select
-            $('#pi_user_select').html(data);
-            //Change pi_user_id_selected value on right side summary with selected values
+          //Refresh protocol_select when sample_type has been changed
+          var step_selected = $('#step_id').find('option:selected');
+          var step_id_selected = step_selected.val();
+          var step_name_selected = step_selected.text();
+          $('#step_name_selected').hide().show('normal').text(step_name_selected);
 
-            setSelectChangedVals('pi_user', new Array('project'));
+          getSelectList('protocol', step_id_selected);
+          getInstrumentTypeList(step_id_selected);
+        });
+  }
 
-            //Refresh project_select when lab_id value has been changed.
-            var pi_user_selected = $('#pi_user_id').find('option:selected');
-            var pi_user_id_selected = pi_user_selected.val();
-            var pi_user_name_selected = pi_user_selected.text();
-            getSelectList('project', pi_user_id_selected);
+  /*
+   * Build function to get pi_user list from selected step_id.
+   */
+  function getUserSelectList(lab_id) {
+    $.ajax({
+      url: '{{ url('order/userSelectList/')}}' + lab_id + '/',
+      dataType: 'html',
+      type: 'POST'
+    })
+        .done(function (data) {
+          //Make select
+          $('#pi_user_select').html(data);
+          //Change pi_user_id_selected value on right side summary with selected values
 
-            //Change pi_user_name_selected value on right side summary with first value (current user's name has been set).
-            $('#pi_user_name_selected').hide().show('normal').text(pi_user_name_selected);
+          setSelectChangedVals('pi_user', new Array('project'));
 
-            //Change pi_user_name on project_modal
+          //Refresh project_select when lab_id value has been changed.
+          var pi_user_selected = $('#pi_user_id').find('option:selected');
+          var pi_user_id_selected = pi_user_selected.val();
+          var pi_user_name_selected = pi_user_selected.text();
+          getSelectList('project', pi_user_id_selected);
+
+          //Change pi_user_name_selected value on right side summary with first value (current user's name has been set).
+          $('#pi_user_name_selected').hide().show('normal').text(pi_user_name_selected);
+
+          //Change pi_user_name on project_modal
+          $("#modal_project_pi_user_name").text(pi_user_name_selected);
+          $('#pi_user_id').on('change', function () {
+            var pi_user_id_selected = $('option:selected', this).val();
+            var pi_user_name_selected = $('option:selected', this).text();
             $("#modal_project_pi_user_name").text(pi_user_name_selected);
-            $('#pi_user_id').on('change', function () {
-              var pi_user_id_selected = $('option:selected', this).val();
-              var pi_user_name_selected = $('option:selected', this).text();
-              $("#modal_project_pi_user_name").text(pi_user_name_selected);
-              getSelectList('project', pi_user_id_selected);
-              setOrderSessionVal('pi_user', pi_user_id_selected, pi_user_name_selected);
-              setOrderSessionVal('project', '@', '');
-            });
-
-            //Set selected pi_user to session values.
+            getSelectList('project', pi_user_id_selected);
             setOrderSessionVal('pi_user', pi_user_id_selected, pi_user_name_selected);
+            setOrderSessionVal('project', '@', '');
           });
-    }
+
+          //Set selected pi_user to session values.
+          setOrderSessionVal('pi_user', pi_user_id_selected, pi_user_name_selected);
+        });
+  }
 
 
+  $(function () {
     /*
      * Change child select list and right-side summary when parent select list is changed
      */
@@ -754,156 +755,155 @@
      * Check and load session values.
      * Some select list should be rewrite when cascaded (parent) value has session value
      */
-    $(function () {
-      var lab_selected = $('#lab_id').find('option:selected');
-      var lab_id_selected = lab_selected.val();
-      var lab_name_selected = lab_selected.text();
-      if (lab_selected.val() !== '@') {
-        $('#lab_name_selected').hide().show('normal').text(lab_name_selected);
+    var lab_selected = $('#lab_id').find('option:selected');
+    var lab_id_selected = lab_selected.val();
+    var lab_name_selected = lab_selected.text();
+    if (lab_selected.val() !== '@') {
+      $('#lab_name_selected').hide().show('normal').text(lab_name_selected);
 
-        //Change lab_name on project_modal
-        $("#modal_project_lab_name").text(lab_name_selected);
+      //Change lab_name on project_modal
+      $("#modal_project_lab_name").text(lab_name_selected);
 
-        getUserSelectList(lab_id_selected);
-      }
+      getUserSelectList(lab_id_selected);
+    }
 
-      var sample_type_selected = $('#sample_type_id').find('option:selected');
-      var sample_type_id_selected = sample_type_selected.val();
-      var sample_type_name_selected = sample_type_selected.text();
-      if (sample_type_id_selected !== '@') {
-        getStepSelectList(sample_type_id_selected);
+    var sample_type_selected = $('#sample_type_id').find('option:selected');
+    var sample_type_id_selected = sample_type_selected.val();
+    var sample_type_name_selected = sample_type_selected.text();
+    if (sample_type_id_selected !== '@') {
+      getStepSelectList(sample_type_id_selected);
 
-        //Change sample_type_name_selected value on right side summary with selected values
-        $('#sample_type_name_selected').hide().show('normal').text(sample_type_name_selected);
-      }
+      //Change sample_type_name_selected value on right side summary with selected values
+      $('#sample_type_name_selected').hide().show('normal').text(sample_type_name_selected);
+    }
 
-      var organism_selected = $('#organism_id').find('option:selected');
-      var organism_id_selected = organism_selected.val();
-      var organism_name_selected = organism_selected.text();
-      if (organism_id_selected !== '@') {
-        //Change organism_name_selected value on right side summary with selected values
-        $('#organism_name_selected').hide().show('normal').text(organism_name_selected);
-      }
+    var organism_selected = $('#organism_id').find('option:selected');
+    var organism_id_selected = organism_selected.val();
+    var organism_name_selected = organism_selected.text();
+    if (organism_id_selected !== '@') {
+      //Change organism_name_selected value on right side summary with selected values
+      $('#organism_name_selected').hide().show('normal').text(organism_name_selected);
+    }
 
-      var qc_inside_name_selected = $("input:radio[name='qc_inside']").filter(':checked').parent('label').text();
-      $('#qc_inside_selected').hide().show('normal').text('QC Inside?: ' + qc_inside_name_selected);
+    var qc_inside_name_selected = $("input:radio[name='qc_inside']").filter(':checked').parent('label').text();
+    $('#qc_inside_selected').hide().show('normal').text('QC Inside?: ' + qc_inside_name_selected);
 
-      var instrument_type_id_selected = $('#instrument_type').val();
-      if ($('#seqrun-undecided').prop('checked')) {
-        //Remove from right-side summary
-        $('#instrument_type_name_selected').hide();
-        $('#seq_runmode_type_name_selected').hide();
-        $('#seq_runread_type_name_selected').hide();
-        $('#seq_runcycle_type_name_selected').hide();
-        $('#samples_per_seqtemplate_inputted').hide();
-        $("#seqrun_undecided_selected").show('normal');
-      } else if (instrument_type_id_selected == '@') {
-        //Remove from right-side summary
-        $("#seqrun_undecided_selected").hide();
-        $('#seq_runmode_type_name_selected').hide();
-        $('#seq_runread_type_name_selected').hide();
-        $('#seq_runcycle_type_name_selected').hide();
-        $('#samples_per_seqtemplate_inputted').hide();
-      } else {
-        $("#seqrun_undecided_selected").hide();
+    var instrument_type_id_selected = $('#instrument_type').val();
+    if ($('#seqrun-undecided').prop('checked')) {
+      //Remove from right-side summary
+      $('#instrument_type_name_selected').hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
+      $('#samples_per_seqtemplate_inputted').hide();
+      $("#seqrun_undecided_selected").show('normal');
+    } else if (instrument_type_id_selected == '@') {
+      //Remove from right-side summary
+      $("#seqrun_undecided_selected").hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
+      $('#samples_per_seqtemplate_inputted').hide();
+    } else {
+      $("#seqrun_undecided_selected").hide();
 
-        var instrument_type_selected = $('#instrument_type').find('option:selected');
-        var instrument_type_name_selected = instrument_type_selected.text();
-        $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
+      var instrument_type_selected = $('#instrument_type').find('option:selected');
+      var instrument_type_name_selected = instrument_type_selected.text();
+      $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
 
-        var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type']").filter(':checked');
-        var seq_runmode_type_name_selected = seq_runmode_types_selected.parent('label').text();
-        $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
+      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type']").filter(':checked');
+      var seq_runmode_type_name_selected = seq_runmode_types_selected.parent('label').text();
+      $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
 
-        var seq_runread_types_selected = $("input:radio[name='seq_runread_type']").filter(':checked');
-        var seq_runread_type_name_selected = seq_runread_types_selected.parent('label').text();
-        $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
+      var seq_runread_types_selected = $("input:radio[name='seq_runread_type']").filter(':checked');
+      var seq_runread_type_name_selected = seq_runread_types_selected.parent('label').text();
+      $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
 
-        var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type']").filter(':checked');
-        var seq_runcycle_type_name_selected = seq_runcycle_types_selected.parent('label').text();
-        $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
+      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type']").filter(':checked');
+      var seq_runcycle_type_name_selected = seq_runcycle_types_selected.parent('label').text();
+      $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
 
-        var lanes_per_seqtemplate_inputted = $('#lanes_per_seqtemplate').val();
-        $('#lanes_per_seqtemplate_inputted').hide().show('normal').find('span').text(lanes_per_seqtemplate_inputted);
-      }
+      var lanes_per_seqtemplate_inputted = $('#lanes_per_seqtemplate').val();
+      $('#lanes_per_seqtemplate_inputted').hide().show('normal').find('span').text(lanes_per_seqtemplate_inputted);
+    }
 
-      var step_id_selected = $('#step_id').val();
-      if ($('#seqlib-undecided').prop('checked')) {
-        //Remove from right-side summary
-        $('#instrument_type_name_selected').hide();
-        $('#seq_runmode_type_name_selected').hide();
-        $('#seq_runread_type_name_selected').hide();
-        $('#seq_runcycle_type_name_selected').hide();
-        $('#lanes_per_seqtemplate_inputted').hide();
-        $("#seqlib_undecided_selected").show('normal');
+    var step_id_selected = $('#step_id').val();
+    if ($('#seqlib-undecided').prop('checked')) {
+      //Remove from right-side summary
+      $('#instrument_type_name_selected').hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
+      $('#lanes_per_seqtemplate_inputted').hide();
+      $("#seqlib_undecided_selected").show('normal');
 
-        $('#step_name_selected').hide();
-        $('#protocol_name_selected').hide();
-        $('#samples_per_seqtemplate_inputted').hide();
-        $("#seqrun_undecided_selected").show('normal');
-        //$("#pipeline_undecided_selected").show('normal');
-      } else if (step_id_selected === '@') {
-        //Remove from right-side summary
-        $('#instrument_type_name_selected').hide();
-        $('#seq_runmode_type_name_selected').hide();
-        $('#seq_runread_type_name_selected').hide();
-        $('#seq_runcycle_type_name_selected').hide();
-        $('#lanes_per_seqtemplate_inputted').hide();
-        $("#seqlib_undecided_selected").hide();
+      $('#step_name_selected').hide();
+      $('#protocol_name_selected').hide();
+      $('#samples_per_seqtemplate_inputted').hide();
+      $("#seqrun_undecided_selected").show('normal');
+      //$("#pipeline_undecided_selected").show('normal');
+    } else if (step_id_selected === '@') {
+      //Remove from right-side summary
+      $('#instrument_type_name_selected').hide();
+      $('#seq_runmode_type_name_selected').hide();
+      $('#seq_runread_type_name_selected').hide();
+      $('#seq_runcycle_type_name_selected').hide();
+      $('#lanes_per_seqtemplate_inputted').hide();
+      $("#seqlib_undecided_selected").hide();
 
-        $('#step_name_selected').hide();
-        $('#protocol_name_selected').hide();
-        $('#samples_per_seqtemplate_inputted').hide();
-        $("#seqrun_undecided_selected").hide();
-        //$("#pipeline_undecided_selected").show('normal');
-      } else {
-        $("#seqlib_undecided_selected").hide();
+      $('#step_name_selected').hide();
+      $('#protocol_name_selected').hide();
+      $('#samples_per_seqtemplate_inputted').hide();
+      $("#seqrun_undecided_selected").hide();
+      //$("#pipeline_undecided_selected").show('normal');
+    } else {
+      $("#seqlib_undecided_selected").hide();
 
-        //Restore right-side summary if #seqlib-undecided is un-checked
-        var step_selected = $('#step_id').find('option:selected');
-        var step_name_selected = step_selected.text();
-        $('#step_name_selected').hide().show('normal').text(step_name_selected);
+      //Restore right-side summary if #seqlib-undecided is un-checked
+      var step_selected = $('#step_id').find('option:selected');
+      var step_name_selected = step_selected.text();
+      $('#step_name_selected').hide().show('normal').text(step_name_selected);
 
-        var protocol_selected = $('#protocol_id').find('option:selected');
-        var protocol_name_selected = protocol_selected.text();
-        $('#protocol_name_selected').hide().show('normal').text(protocol_name_selected);
+      var protocol_selected = $('#protocol_id').find('option:selected');
+      var protocol_name_selected = protocol_selected.text();
+      $('#protocol_name_selected').hide().show('normal').text(protocol_name_selected);
 
-        var samples_per_seqtemplate_inputted = $('#samples_per_seqtemplate').val();
-        $('#samples_per_seqtemplate_inputted').hide().show('normal').find('span').text(samples_per_seqtemplate_inputted);
+      var samples_per_seqtemplate_inputted = $('#samples_per_seqtemplate').val();
+      $('#samples_per_seqtemplate_inputted').hide().show('normal').find('span').text(samples_per_seqtemplate_inputted);
 
-        $("#seqrun_undecided_selected").hide();
+      $("#seqrun_undecided_selected").hide();
 
-        var instrument_type_selected = $('#instrument_type').find('option:selected');
-        var instrument_type_name_selected = instrument_type_selected.text();
-        $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
+      var instrument_type_selected = $('#instrument_type').find('option:selected');
+      var instrument_type_name_selected = instrument_type_selected.text();
+      $('#instrument_type_name_selected').hide().show('normal').text(instrument_type_name_selected);
 
-        var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type']").filter(':checked');
-        var seq_runmode_type_name_selected = seq_runmode_types_selected.parent('label').text();
-        $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
+      var seq_runmode_types_selected = $("input:radio[name='seq_runmode_type']").filter(':checked');
+      var seq_runmode_type_name_selected = seq_runmode_types_selected.parent('label').text();
+      $('#seq_runmode_type_name_selected').hide().show('normal').text(seq_runmode_type_name_selected);
 
-        var seq_runread_types_selected = $("input:radio[name='seq_runread_type']").filter(':checked');
-        var seq_runread_type_name_selected = seq_runread_types_selected.parent('label').text();
-        $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
+      var seq_runread_types_selected = $("input:radio[name='seq_runread_type']").filter(':checked');
+      var seq_runread_type_name_selected = seq_runread_types_selected.parent('label').text();
+      $('#seq_runread_type_name_selected').hide().show('normal').text(seq_runread_type_name_selected);
 
-        var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type']").filter(':checked');
-        var seq_runcycle_type_name_selected = seq_runcycle_types_selected.parent('label').text();
-        $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
+      var seq_runcycle_types_selected = $("input:radio[name='seq_runcycle_type']").filter(':checked');
+      var seq_runcycle_type_name_selected = seq_runcycle_types_selected.parent('label').text();
+      $('#seq_runcycle_type_name_selected').hide().show('normal').text(seq_runcycle_type_name_selected);
 
-        var lanes_per_seqtemplate_inputted = $('#lanes_per_seqtemplate').val();
-        $('#lanes_per_seqtemplate_inputted').hide().show('normal').find('span').text(lanes_per_seqtemplate_inputted);
-      }
-    });
+      var lanes_per_seqtemplate_inputted = $('#lanes_per_seqtemplate').val();
+      $('#lanes_per_seqtemplate_inputted').hide().show('normal').find('span').text(lanes_per_seqtemplate_inputted);
+    }
 
     /*
      *
      * Build Handsontable
      *
      */
-    var $container = $('#handsontable-orderSamples-body');
+    //var $container = $('#handsontable-orderSamples-body');
+    var $container = document.getElementById('handsontable-orderSamples-body');
     var $console = $('#handsontable-console');
     var $toolbar = $('#handsontable-toolbar');
     var sample_name_validator_fn = function (value, callback) {
-    }
+    };
 
     var $samplePropertyTypesColumns = [
       {% for sample_property_type in sample_property_types %}
@@ -923,7 +923,7 @@
     /*
      * Set up column width; if '' is shown but '0.1' is hidden.
      */
-//var $defaultColWidths = [100, 80, 80, 80, 40, 80, 80, 80, 80, 80,
+    //var $defaultColWidths = [100, 80, 80, 80, 40, 80, 80, 80, 80, 80,
     var $defaultColWidths = ['', '', '', '', '', '', '', '', '', ''];
     var $samplePropertyTypesChecked = {};
     {% for sample_property_type in sample_property_types %}
@@ -939,7 +939,7 @@
     //console.log($defaultColWidths);
     var $samplePropertyTypesColumnsStartIdx = 10; //@TODO First index number(begin by 0) of sample_property_types
 
-    $container.handsontable({
+    var hot = new Handsontable($container, {
       stretchH: 'all',
       rowHeaders: true,
       contextMenu: false,
@@ -947,11 +947,12 @@
       columnSorting: true,
       manualColumnResize: true,
       manualRowResize: true,
-      //fixedColumnsLeft: 1,
+      fixedColumnsLeft: 1,
       currentRowClassName: 'currentRow',
       autoWrapRow: true,
       autoColumnSize: true,
       search: true,
+      copyPaste: true,
       data: [],
       dataSchema: {
         name: null,
@@ -976,7 +977,7 @@
         {data: 'qual_nanodrop_conc', title: 'Conc. (ng/uL) (NanoDrop)', type: 'numeric', format: '0.000'},
         {data: 'qual_volume', title: 'Volume (uL)', type: 'numeric', format: '0.00'},
         {data: 'qual_amount', title: 'Total (ng)', type: 'numeric', format: '0.00'},
-        {data: 'qual_date', title: 'QC Date', type: 'date', dateFormat: 'yy-mm-dd'},
+        {data: 'qual_date', title: 'QC Date', type: 'date', dateFormat: 'YYYY-MM-DD'},
         {% for sample_property_type in sample_property_types %}
         {
           data: 'sample_property_types.{{ sample_property_type.id }}',
@@ -996,7 +997,8 @@
           $toolbar.find('#save, #undo, #clear').removeClass('disabled');
           $console.text('Click Save to save data to server').removeClass().addClass('alert alert-info');
 
-          var sample_data_array = $container.handsontable('getData');
+          //var sample_data_array = $container.handsontable('getData');
+          var sample_data_array = hot.getData();
           sample_data_array.pop(); //pop because last row is always null because of "minSpareRows: 1" option of handsontable.
           var sample_data = JSON.stringify(sample_data_array);
           setOrderSessionVal('sample', 0, sample_data);
@@ -1007,7 +1009,8 @@
 
     });
 
-    var $handsontable = $container.handsontable('getInstance');
+    //var $handsontable = $container.handsontable('getInstance');
+    var $handsontable = hot.getInstance();
 
 
     function loadData() {
@@ -1024,13 +1027,14 @@
           });
     }
 
-    loadData(); // loading data at first.
+    //loadData(); // loading data at first.
 
     /*
      * Set column width of SamplePropertyTypes to 0.1 (not shown) or '' (auto column width) if sample has SampleProperty.
      */
     var changedColWidths = $defaultColWidths;
     //console.log(changedColWidths);
+
 
     $('#sample_property_types').children('option').each(function (index, domEle) {
       var actualColWidthIdx = index + $samplePropertyTypesColumnsStartIdx;
@@ -1153,7 +1157,6 @@
             window.location.reload();
           });
     });
+  });
 
-  })
-  ;
 </script>
