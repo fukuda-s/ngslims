@@ -223,6 +223,7 @@ td > .form-inline > .form-group {
 }
 
 .tube-responsive {
+  margin: 0 30px 0 30px;
   width: 100%;
   margin-bottom: 15px;
   overflow: scroll;
