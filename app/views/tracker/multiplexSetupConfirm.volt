@@ -10,9 +10,9 @@
               <div class="input-group-addon">#{{ selected_seqtemplate_index }}</div>
               {{ text_field('seqtemplate_name-' ~ selected_seqtemplate_index, 'class': "form-control") }}
             </div>
-            {% if loop.first and selected_seqtemplates|length > 1 %}
-              <button type="button" id="increment-copy-name-button" class="btn btn-primary btn-xs"><i
-                    class="glyphicon glyphicon-plus"></i></button>
+            {% if not loop.last and selected_seqtemplates|length > 1 %}
+              <button type="button" id="increment-copy-name-button-{{ selected_seqtemplate_index }}" class="btn btn-primary btn-xs"><i
+                    class="fa fa-arrow-circle-down"></i></button>
             {% endif %}
             <div class="pull-right">
               <label>Calculator&nbsp;<i class="fa fa-calculator"></i></label>
@@ -415,7 +415,7 @@ $(document).ready(function () {
    * Function for #increment-copy-name-button
    *  Copy seqtemplate name with incrementation of serial number
    */
-  $('#increment-copy-name-button').click(function () {
+  $('[id^=increment-copy-name-button-]').click(function () {
     var first_seqtemplate_name = $(this).parent().find('input').val();
     var this_panel = $(this).parents('.panel');
     var incremented_seqtemplate_name = first_seqtemplate_name;
