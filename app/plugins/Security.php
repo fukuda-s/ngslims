@@ -91,9 +91,9 @@ class Security extends Plugin
                     'showPanelSamples',
                     'showPanelSeqlibs',
                     'showTubeSeqlibs',
-                    'showPanelSeqlanes',
                     'showTableSeqlibs',
                     'showTableSeqlanes',
+                    'showPanelSeqlanes',
                     'showTubeSeqtemplates',
                     'loadSamples',
                     'editSamples',
@@ -173,6 +173,9 @@ class Security extends Plugin
                     'end',
                     'account',
                     'password'
+                ),
+                'trackerdetails' => array(
+                    'showTableSeqlanes'
                 ),
                 'contact' => array(
                     'index',

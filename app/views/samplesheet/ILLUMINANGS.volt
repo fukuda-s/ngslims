@@ -13,6 +13,6 @@ FCID,Lane,SampleID,SampleRef,Index,Description,Control,Recipe,Operator,SamplePro
 {% if not d.p.pi_user_id is 0 %}
 {% set operator = d.u.lastname %}
 {% endif %}
-{{ d.fc.name }},{{ d.slane.number }},{{ d.s.Organisms.name }},{{ index }},{{ description }},{{ d.slane.is_control }},{{ d.slib.Protocols.name }},{{ operator }},{{ d.p.name }}
+{{ d.fc.name }},{{ d.slane.number }},{{ d.slib.name }},{{ d.s.Organisms.name }},{{ index }},{{ description }},{{ d.slane.is_control }},{{ d.slib.Protocols.name }},{{ operator }},{{ d.p.name }}
 
 {% endfor %}
