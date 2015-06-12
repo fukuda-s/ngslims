@@ -947,7 +947,7 @@
       columnSorting: true,
       manualColumnResize: true,
       manualRowResize: true,
-      fixedColumnsLeft: 1,
+      //fixedColumnsLeft: 1,
       currentRowClassName: 'currentRow',
       autoWrapRow: true,
       autoColumnSize: true,
