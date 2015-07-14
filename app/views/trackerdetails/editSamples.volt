@@ -242,8 +242,10 @@
         {
           data: "ste.status",
           title: "Status",
-          editor: "select",
-          selectOptions: ['', 'Completed', 'In Progress', 'On Hold']
+          //editor: "select",
+          //selectOptions: ['', 'Completed', 'In Progress', 'On Hold']
+          type: "dropdown",
+          source: ['', 'Completed', 'In Progress', 'On Hold']
         },
         {data: "s.barcode_number", title: "2D barcode"},
         {

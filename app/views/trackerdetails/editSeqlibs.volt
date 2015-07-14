@@ -182,15 +182,19 @@ $(document).ready(function () {
       {
         data: "sl.oligobarcodeA_id",
         title: "OligoBarcode A",
-        editor: "select",
-        selectOptions: oligobarcodeADrop,
+        //editor: "select",
+        //selectOptions: oligobarcodeADrop,
+        editor: "dropdown",
+        source: oligobarcodeADrop,
         renderer: oligobarcodeARenderer
       },
       {
         data: "sl.oligobarcodeB_id",
         title: "OligoBarcode B",
-        editor: "select",
-        selectOptions: oligobarcodeBDrop,
+        //editor: "select",
+        //selectOptions: oligobarcodeBDrop,
+        editor: "dropdown",
+        source: oligobarcodeBDrop,
         renderer: oligobarcodeBRenderer
       },
       {data: "sl.concentration", title: "Conc. (nmol/L)", type: 'numeric', format: '0.000'},
@@ -198,7 +202,14 @@ $(document).ready(function () {
       {data: "sl.fragment_size", title: "Fragment Size", type: 'numeric'},
       {data: "sl.started_at", title: "Started Date", type: 'date', dateFormat: 'YYYY-MM-DD'},
       {data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'YYYY-MM-DD'},
-      {data: "ste.status", title: "Status", editor: "select", selectOptions: ['', 'Completed', 'In Progress', 'On Hold']}
+      {
+        data: "ste.status",
+        title: "Status",
+        //editor: "select",
+        //selectOptions: ['', 'Completed', 'In Progress', 'On Hold']
+        type: "dropdown",
+        source: ['', 'Completed', 'In Progress', 'On Hold']
+      }
     ],
     minSpareCols: 0,
     minSpareRows: 0,
