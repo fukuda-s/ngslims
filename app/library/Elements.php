@@ -25,6 +25,16 @@ class Elements extends Phalcon\Mvc\User\Component
                 'caption' => 'Tracker',
                 'action' => 'index'
             ),
+            'cherrypicking' => array(
+                'caption' => 'Cherry Picking',
+                'action' => 'index'
+            ),
+            /*
+            'kanban' => array(
+                'caption' => 'Kanban',
+                'action' => 'index'
+            ),
+            */
             'report' => array(
                 'caption' => 'Report',
                 'action' => 'index'
@@ -157,6 +167,8 @@ class Elements extends Phalcon\Mvc\User\Component
         } else {
             unset($this->_headerMenu['pull-left']['order']);
             unset($this->_headerMenu['pull-left']['tracker']);
+            unset($this->_headerMenu['pull-left']['cherrypicking']);
+            unset($this->_headerMenu['pull-left']['kanban']);
             unset($this->_headerMenu['pull-right']['search']);
         }
 

@@ -70,7 +70,7 @@ table td.dup_b {
 
 .tube-sm-header {
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
-  border-radius: 0px;
+  border-radius: 0;
   text-align: center;
   display: inline-block;
   background-color: #ffffff;

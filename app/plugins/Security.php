@@ -134,6 +134,18 @@ class Security extends Plugin
                 'report' => array(
                     'index'
                 ),
+                'cherrypicking' => array(
+                    'index',
+                    'showTubeSamples',
+                    'showTubeSeqlibs',
+                    'confirm',
+                    'cherryPickingSelectList',
+                    'createCherrypicking',
+                    'saveCherrypicking'
+                ),
+                'kanban' => array(
+                    'index'
+                ),
                 'search' => array(
                     'index',
                     'result',
