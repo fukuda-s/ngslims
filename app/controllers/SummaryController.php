@@ -164,7 +164,7 @@ class SummaryController extends ControllerBase
         $this->assets
             ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
             ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-            ->addJs('js/DataTables/extensions/Buttons/js/DataTables.buttons.min.js')
+            ->addJs('js/DataTables/extensions/Buttons/js/dataTables.buttons.min.js')
             ->addJs('js/DataTables/extensions/Buttons/js/buttons.bootstrap.min.js')
             ->addJs('js/DataTables/extensions/Buttons/js/buttons.html5.min.js')
             ->addCss('js/DataTables/media/css/dataTables.bootstrap.css')
@@ -211,7 +211,7 @@ class SummaryController extends ControllerBase
         $this->assets
             ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
             ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-            ->addJs('js/DataTables/extensions/Buttons/js/DataTables.buttons.min.js')
+            ->addJs('js/DataTables/extensions/Buttons/js/dataTables.buttons.min.js')
             ->addJs('js/DataTables/extensions/Buttons/js/buttons.bootstrap.min.js')
             ->addJs('js/DataTables/extensions/Buttons/js/buttons.html5.min.js')
             ->addCss('js/DataTables/media/css/dataTables.bootstrap.css')
