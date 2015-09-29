@@ -63,35 +63,22 @@
    * DataTables
    */
   $(document).ready(function () {
-    var table = $('#instrument_table').DataTable({
-      order: [],
+    $('#instrument_table').DataTable({
       scrollX: true,
-      responsive: true
-    });
-
-    var sFilenamePrefix = 'instrument';
-    var tt = new $.fn.DataTable.TableTools(table, {
-      "dom": 'T<"clear">lfrtip',
-      "sSwfPath": "/ngsLIMS/js/DataTables-1.10.5/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
-      "sCharSet": "utf8",
-      "aButtons": [
+      responsive: true,
+      paging: true,
+      order: [],
+      dom: 'Bfrtip',
+      buttons: [
         {
-          "sExtends": "xls",
-          "sButtonText": "<i class='fa fa-file-excel-o'></i>&ensp;<strong>Excel</strong>",
-          "sFileName": sFilenamePrefix + ".xls"
+          extend: "csvHtml5",
+          text: "<i class='fa fa-file-excel-o'></i>&ensp;<strong>CSV</strong>"
         },
         {
-          "sExtends": "copy",
-          "sButtonText": "<i class='fa fa-clipboard'></i>&ensp;<strong>Copy To Clipboard</strong>"
-        },
-        {
-          "sExtends": "print",
-          "sButtonText": "<i class='fa fa-print'></i>&ensp;<strong>Print</strong>",
-          "sInfo": "Please press escape when done"
+          extend: 'copyHtml5',
+          text: "<i class='fa fa-clipboard'></i>&ensp;<strong>Copy To Clipboard</strong>"
         }
       ]
     });
-
-    $(tt.fnContainer()).insertBefore('div.dataTables_wrapper');
   });
 </script>

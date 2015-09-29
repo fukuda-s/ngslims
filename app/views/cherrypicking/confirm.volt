@@ -200,7 +200,7 @@
               .children('.tube')
               .each(function () {
                 var seqlib_id = this.id;
-                console.log(seqlib_id);
+                //console.log(seqlib_id);
                 $('#picked-tube-holder')
                     .find('#' + seqlib_id)
                     .each(function () {

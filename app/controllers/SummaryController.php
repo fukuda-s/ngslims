@@ -162,12 +162,13 @@ class SummaryController extends ControllerBase
 
 
         $this->assets
-            ->addJs('js/DataTables-1.10.5/media/js/jquery.dataTables.min.js')
-            ->addJs('js/DataTables-1.10.5/extensions/TableTools/js/dataTables.tableTools.min.js')
-            ->addJs('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.js')
-            ->addCss('js/DataTables-1.10.5/media/css/jquery.dataTables.min.css')
-            ->addCss('js/DataTables-1.10.5/extensions/TableTools/css/dataTables.tableTools.min.css')
-            ->addCss('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.css');
+            ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+            ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+            ->addJs('js/DataTables/extensions/Buttons/js/DataTables.buttons.min.js')
+            ->addJs('js/DataTables/extensions/Buttons/js/buttons.bootstrap.min.js')
+            ->addJs('js/DataTables/extensions/Buttons/js/buttons.html5.min.js')
+            ->addCss('js/DataTables/media/css/dataTables.bootstrap.css')
+            ->addCss('js/DataTables/extensions/Buttons/css/buttons.bootstrap.min.css');
 
         /*
          * Get Instrument list
@@ -208,12 +209,13 @@ class SummaryController extends ControllerBase
         Tag::appendTitle(' | Overall');
 
         $this->assets
-            ->addJs('js/DataTables-1.10.5/media/js/jquery.dataTables.min.js')
-            ->addJs('js/DataTables-1.10.5/extensions/TableTools/js/dataTables.tableTools.min.js')
-            ->addJs('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.js')
-            ->addCss('js/DataTables-1.10.5/media/css/jquery.dataTables.min.css')
-            ->addCss('js/DataTables-1.10.5/extensions/TableTools/css/dataTables.tableTools.min.css')
-            ->addCss('js/DataTables-1.10.5/examples/resources/bootstrap/3/dataTables.bootstrap.css');
+            ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+            ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+            ->addJs('js/DataTables/extensions/Buttons/js/DataTables.buttons.min.js')
+            ->addJs('js/DataTables/extensions/Buttons/js/buttons.bootstrap.min.js')
+            ->addJs('js/DataTables/extensions/Buttons/js/buttons.html5.min.js')
+            ->addCss('js/DataTables/media/css/dataTables.bootstrap.css')
+            ->addCss('js/DataTables/extensions/Buttons/css/buttons.bootstrap.min.css');
 
         $year = $this->filter->sanitize($year, array("int"));
         $month = $this->filter->sanitize($month, array("int"));

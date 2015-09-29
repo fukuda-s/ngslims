@@ -6,6 +6,18 @@
     <div
         align="right">{{ link_to("trackerdetails/editSamples/SHOW/0/" ~ project.id ~ "?pre_action=" ~ previousAction, "Edit Sample Info >>", "class": "btn btn-primary") }}</div>
     <hr>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="panel panel-success">
+          <div class="panel-heading">
+            <h4 class="panel-title">Progress</h4>
+          </div>
+          <div class="panel-body" id="project_panel_body">
+            <div id="project_progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <table class="table table-bordered table-hover table-condensed" id="sampleInfo_table" style="font-size: 9pt">
       <thead>
       <tr>
@@ -90,34 +102,34 @@
    * DataTables
    */
   $(document).ready(function () {
-    var table = $('#sampleInfo_table').DataTable({
-      scrollX: true,
-      responsive: true
-    });
+    $.ajax({
+      url: '{{ url("summary/projectNameProgress") }}',
+      dataType: 'html',
+      type: 'POST',
+      data: {
+        project_id: {{ project.id }}
+      }
+    })
+        .done(function (data) {
+          $('#project_progress').replaceWith(data);
+        });
 
-    var sFilenamePrefix = 'sample';
-    var tt = new $.fn.DataTable.TableTools(table, {
-      "dom": 'T<"clear">lfrtip',
-      "sSwfPath": "/ngsLIMS/js/DataTables-1.10.5/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
-      "sCharSet": "utf8",
-      "aButtons": [
+    $('#sampleInfo_table').DataTable({
+      scrollX: true,
+      responsive: true,
+      paging: true,
+      order: [],
+      dom: 'Bfrtip',
+      buttons: [
         {
-          "sExtends": "xls",
-          "sButtonText": "<i class='fa fa-file-excel-o'></i>&ensp;<strong>Excel</strong>",
-          "sFileName": sFilenamePrefix + ".xls"
+          extend: "csvHtml5",
+          text: "<i class='fa fa-file-excel-o'></i>&ensp;<strong>CSV</strong>"
         },
         {
-          "sExtends": "copy",
-          "sButtonText": "<i class='fa fa-clipboard'></i>&ensp;<strong>Copy To Clipboard</strong>"
-        },
-        {
-          "sExtends": "print",
-          "sButtonText": "<i class='fa fa-print'></i>&ensp;<strong>Print</strong>",
-          "sInfo": "Please press escape when done"
+          extend: 'copyHtml5',
+          text: "<i class='fa fa-clipboard'></i>&ensp;<strong>Copy To Clipboard</strong>"
         }
       ]
     });
-
-    $(tt.fnContainer()).insertBefore('div.dataTables_wrapper');
   });
 </script>

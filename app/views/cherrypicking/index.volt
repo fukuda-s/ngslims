@@ -178,7 +178,7 @@
                       seqlibs.push(seqlib_id);
                     });
 
-            console.log(seqlibs);
+            //console.log(seqlibs);
             $('#cherrypick-seqlibs').val(seqlibs);
             $('#pick_query_hidden').val($('#pick_query').val());
             $('#tube-filter_hidden').val($('#tube-filter').val());
