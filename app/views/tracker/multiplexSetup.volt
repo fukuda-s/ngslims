@@ -203,11 +203,11 @@ $(document).ready(function () {
       //Add new column header with new_seqtemplate_index.
       $(this).after('<li id="seqtemplate_index_' + new_seqtemplate_index + '" class="tube tube-sm-header">' + new_seqtemplate_index + '</li>');
       //console.log(this);
-    })
+    });
     $('#seqtemplate-matrix-body').find('ul').each(function () {
       //Add new column with new_seqtemplate_index for each row.
       $(this).append('<li class="tube tube-sm tube-empty"></li>');
-    })
+    });
 
     $('li.tube').filter("li:not(.tube-sm-row-header)").css("width", final_multiplex_sortable_max_len);
   }
@@ -348,7 +348,7 @@ $(document).ready(function () {
     /*
      * Set seqlibs array
      */
-    var seqlibs = new Object();
+    var seqlibs = {};
     //For MULTIPLEX
     $('ul[id^=oligobarcodeA_id_]').each(function () {
       var oligobarcodeA_id = $(this).attr('id').replace('oligobarcodeA_id_', '');
@@ -357,7 +357,7 @@ $(document).ready(function () {
         var seqtemplate_index = seqtemplates[index];
         //console.log(oligobarcodeA_id + ' : ' + seqtemplate_index + " : " + index);
         if (!seqlibs[seqtemplate_index]) {
-          seqlibs[seqtemplate_index] = new Object();
+          seqlibs[seqtemplate_index] = {};
         }
         if ($(this).is('li[id^=seqlib_id_]')) {
           var seqlib_id = $(this).attr('id').replace('seqlib_id_', '');
@@ -374,7 +374,7 @@ $(document).ready(function () {
     $('div[id^=seqtemplate_index_]').each(function () {
       var seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_', '');
       if (!seqlibs[seqtemplate_index]) {
-        seqlibs[seqtemplate_index] = new Object();
+        seqlibs[seqtemplate_index] = {};
       }
       $(this).find('ul[id^=oligobarcodeB_id_]').each(function () {
         var oligobarcodeB_id = $(this).attr('id').replace('oligobarcodeB_id_', '');

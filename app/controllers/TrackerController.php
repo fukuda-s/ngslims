@@ -222,6 +222,8 @@ class TrackerController extends ControllerBase
              *  Row: oligobarcodeA
              *  Col: seqtemplates
              */
+            $seqlibs_per_seqtemplate = $this->session->get('seqlibs_per_seqtemplate', 'int');
+            $seqlibs_in_seqtemplate = array();
             $seqlibs_inbarcode = array();
             $seqtemplates = array();
             foreach ($oligobarcodeAs as $oligobarcodeA) {
@@ -230,12 +232,17 @@ class TrackerController extends ControllerBase
                     $seqtemplate_index = 1;
                     $seqtemplates[$seqtemplate_index] = 1;
                     foreach ($seqlibs_all as $seqlib) {
+                        if ($seqlibs_in_seqtemplate[$seqtemplate_index] == $seqlibs_per_seqtemplate) {
+                            $seqtemplate_index++;
+                            $seqtemplates[$seqtemplate_index] = 1;
+                        }
                         if ($seqlib->sl->oligobarcodeA_id && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id) {
                             if (!empty($seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id])) {
                                 $seqtemplate_index++;
                                 $seqtemplates[$seqtemplate_index] = 1;
                             }
                             $seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id] = $seqlib;
+                            $seqlibs_in_seqtemplate[$seqtemplate_index]++;
                         }
                     }
                 }
@@ -332,6 +339,8 @@ class TrackerController extends ControllerBase
                     $selectedSeqlibs = $request->getPost('selectedSeqlibs');
                     //$this->session->remove('selectedSeqlibs');
                     $this->session->set('selectedSeqlibs', $selectedSeqlibs);
+                    $seqlibs_per_seqtemplate = $request->getPost('seqlibs_per_seqtemplate');
+                    $this->session->set('seqlibs_per_seqtemplate', $seqlibs_per_seqtemplate);
                     echo json_encode($selectedSeqlibs);
                 }
                 if ($request->hasPost('indexedSeqlibs')) {
@@ -738,7 +747,7 @@ class TrackerController extends ControllerBase
                         $seqlanes_model[$index]->control_id = $control_id;
                     }
 
-                    if(isset($seqlanes_add[$index])) {
+                    if (isset($seqlanes_add[$index])) {
                         $seqlanes_model[$index]->is_control = $this->filter->sanitize($seqlanes_add[$index]["is_control"], array("string"));
                         $seqlanes_model[$index]->apply_conc = $this->filter->sanitize($seqlanes_add[$index]["apply_conc"], array("float"));
                     }

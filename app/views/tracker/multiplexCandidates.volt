@@ -11,7 +11,10 @@
 </ol>
 {{ flashSession.output() }}
 <div class="row">
-  <div class="col-md-10">
+  <div class="col-md-7">
+  </div>
+  <div class="col-md-3">
+    {{ numeric_field("seqlibs_per_seqtemplate", "placeholder": "# of seqlibs per seqtemplates", "class": "form-control") }}
   </div>
   <div class="col-md-2">
     <button id="mixup-seqlibs-button" type="button" class="btn btn-primary">Mixup Seqlibs &raquo;</button>
@@ -194,11 +197,15 @@
         selectedSeqlibs.push(seqlib_id);
       });
       if (selectedSeqlibs.length) {
+        var seqlibs_per_seqtemplate = $('#seqlibs_per_seqtemplate').val();
         $.ajax({
           url: '{{ url("tracker/multiplexSetSession") }}',
           dataType: 'json',
           type: 'POST',
-          data: {selectedSeqlibs: selectedSeqlibs}
+          data: {
+            selectedSeqlibs: selectedSeqlibs,
+            seqlibs_per_seqtemplate: seqlibs_per_seqtemplate
+          }
         })
             .done(function () {
               console.log(selectedSeqlibs);
