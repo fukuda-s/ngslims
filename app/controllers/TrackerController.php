@@ -182,6 +182,7 @@ class TrackerController extends ControllerBase
             ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
             ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
             ->inWhere('sl.id', $seqlib_ids)
+            ->orderBy('sl.name ASC')
             ->groupBy('sl.id')
             ->getQuery()
             ->execute();
@@ -195,6 +196,7 @@ class TrackerController extends ControllerBase
                 ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
                 ->inWhere('sl.id', $seqlib_ids)
                 ->andWhere('sl.oligobarcodeA_id IS NULL')
+                ->orderBy('sl.name ASC')
                 ->groupBy('sl.id')
                 ->getQuery()
                 ->execute();
@@ -226,27 +228,34 @@ class TrackerController extends ControllerBase
             $seqlibs_in_seqtemplate = array();
             $seqlibs_inbarcode = array();
             $seqtemplates = array();
-            foreach ($oligobarcodeAs as $oligobarcodeA) {
-                $oligobarcodeA_id = $oligobarcodeA->o->id;
-                if ($seqlibs_all) {
-                    $seqtemplate_index = 1;
-                    $seqtemplates[$seqtemplate_index] = 1;
-                    foreach ($seqlibs_all as $seqlib) {
-                        if ($seqlibs_in_seqtemplate[$seqtemplate_index] == $seqlibs_per_seqtemplate) {
+            //foreach ($oligobarcodeAs as $oligobarcodeA) {
+            //   $oligobarcodeA_id = $oligobarcodeA->o->id;
+            if ($seqlibs_all) {
+                $seqtemplate_index = 1;
+                $seqtemplates[$seqtemplate_index] = 1;
+                foreach ($seqlibs_all as $seqlib) {
+                    if ($seqlib->sl->oligobarcodeA_id
+                        && $seqlibs_per_seqtemplate
+                        && $seqlibs_in_seqtemplate[$seqtemplate_index] == $seqlibs_per_seqtemplate
+                    ) {
+                        $seqtemplate_index++;
+                        $seqtemplates[$seqtemplate_index] = 1;
+                    }
+                    if ($seqlib->sl->oligobarcodeA_id
+                        //     && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id
+                    ) {
+                        //if (!empty($seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id])) {
+                        if (!empty($seqlibs_inbarcode[$seqtemplate_index][$seqlib->sl->oligobarcodeA_id])) {
                             $seqtemplate_index++;
                             $seqtemplates[$seqtemplate_index] = 1;
                         }
-                        if ($seqlib->sl->oligobarcodeA_id && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id) {
-                            if (!empty($seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id])) {
-                                $seqtemplate_index++;
-                                $seqtemplates[$seqtemplate_index] = 1;
-                            }
-                            $seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id] = $seqlib;
-                            $seqlibs_in_seqtemplate[$seqtemplate_index]++;
-                        }
+                        //$seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id] = $seqlib;
+                        $seqlibs_inbarcode[$seqtemplate_index][$seqlib->sl->oligobarcodeA_id] = $seqlib;
+                        $seqlibs_in_seqtemplate[$seqtemplate_index]++;
                     }
                 }
             }
+            //}
             //var_dump($seqlibs_inbarcode);
             $this->view->setVar('seqlibs_inbarcode', $seqlibs_inbarcode);
             $this->view->setVar('seqtemplates', $seqtemplates);
