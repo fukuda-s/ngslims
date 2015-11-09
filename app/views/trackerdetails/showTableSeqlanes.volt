@@ -214,8 +214,8 @@
       dom: 'Bfrtip',
       buttons: [
         {
-          extend: "csvHtml5",
-          text: "<i class='fa fa-file-excel-o'></i>&ensp;<strong>CSV</strong>"
+          extend: "excelHtml5",
+          text: "<i class='fa fa-file-excel-o'></i>&ensp;<strong>Excel</strong>"
         },
         {
           extend: 'copyHtml5',

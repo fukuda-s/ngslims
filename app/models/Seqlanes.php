@@ -103,6 +103,18 @@ class Seqlanes extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $intensity;
+
+    /**
+     *
+     * @var integer
+     */
+    public $intensity_sd;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -129,6 +141,8 @@ class Seqlanes extends \Phalcon\Mvc\Model
             'q30_percent' => 'q30_percent',
             'reads_total' => 'reads_total',
             'reads_passed_filter' => 'reads_passed_filter',
+            'intensity' => 'intensity',
+            'intensity_sd' => 'intensity_sd',
             'created_at' => 'created_at'
         );
     }

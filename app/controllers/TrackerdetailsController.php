@@ -38,6 +38,7 @@ class TrackerdetailsController extends ControllerBase
             ->addJs('js/DataTables/extensions/Buttons/js/dataTables.buttons.min.js')
             ->addJs('js/DataTables/extensions/Buttons/js/buttons.bootstrap.min.js')
             ->addJs('js/DataTables/extensions/Buttons/js/buttons.html5.min.js')
+            ->addJs('js/jszip/dist/jszip.min.js')
             ->addCss('js/DataTables/media/css/dataTables.bootstrap.css')
             ->addCss('js/DataTables/extensions/Buttons/css/buttons.bootstrap.min.css');
 
@@ -723,6 +724,7 @@ class TrackerdetailsController extends ControllerBase
                 ->addJs('js/DataTables/extensions/Buttons/js/dataTables.buttons.min.js')
                 ->addJs('js/DataTables/extensions/Buttons/js/buttons.bootstrap.min.js')
                 ->addJs('js/DataTables/extensions/Buttons/js/buttons.html5.min.js')
+                ->addJs('js/jszip/dist/jszip.min.js')
                 ->addCss('js/DataTables/media/css/dataTables.bootstrap.css')
                 ->addCss('js/DataTables/extensions/Buttons/css/buttons.bootstrap.min.css');
         }
@@ -759,7 +761,7 @@ class TrackerdetailsController extends ControllerBase
             ->leftJoin('Protocols', 'pt.id = slib.protocol_id', 'pt')
             ->leftJoin('SeqDemultiplexResults', 'sdr.seqlib_id = slib.id AND sdr.seqlane_id = slane.id', 'sdr')
             ->where('fc.id = :flowcell_id:', array("flowcell_id" => $flowcell_id))
-            ->orderBy('slane.number ASC')
+            ->orderBy('slane.number ASC, slib.name ASC')
             ->getQuery()
             ->execute();
         $this->view->setVar('seqlanes', $seqlanes);
