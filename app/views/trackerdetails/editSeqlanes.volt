@@ -136,7 +136,7 @@ $(document).ready(function () {
           url: '{{ url("trackerdetails/saveSamples") }}',
           dataType: "json",
           type: "POST",
-          data: {data: handsontable.getData(), changes: changes} // returns "data" as all data and "changes" as changed data
+          data: {data: handsontable.getSourceData(), changes: changes} // returns "data" as all data and "changes" as changed data
         })
             .done(function () {
               $console.text('Autosaved (' + changes.length + ' cell' + (changes.length > 1 ? 's' : '') + ')')
@@ -176,7 +176,7 @@ $(document).ready(function () {
     //alert("save! "+handsontable.getData());
     $.ajax({
       url: '{{ url("trackerdetails/saveSamples") }}',
-      data: {data: handsontable.getData(), changes: isDirtyAr }, // returns all cells
+      data: {data: handsontable.getSourceData(), changes: isDirtyAr }, // returns all cells
       dataType: 'json',
       type: 'POST'
     })

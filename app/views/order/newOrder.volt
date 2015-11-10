@@ -998,7 +998,7 @@
           $console.text('Click Save to save data to server').removeClass().addClass('alert alert-info');
 
           //var sample_data_array = $container.handsontable('getData');
-          var sample_data_array = hot.getData();
+          var sample_data_array = hot.getSourceData();
           sample_data_array.pop(); //pop because last row is always null because of "minSpareRows: 1" option of handsontable.
           var sample_data = JSON.stringify(sample_data_array);
           setOrderSessionVal('sample', 0, sample_data);
