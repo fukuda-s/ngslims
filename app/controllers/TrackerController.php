@@ -183,9 +183,11 @@ class TrackerController extends ControllerBase
             ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
             ->inWhere('sl.id', $seqlib_ids)
             ->orderBy('sl.name ASC')
-            ->groupBy('sl.id')
+            ->groupBy('sl.id, se.id')
             ->getQuery()
             ->execute();
+
+        //$this->view->setVar('seqlibs_all', $seqlibs_all);
 
         if ($step_phase_code === 'MULTIPLEX') {
             // @TODO Is seqlib_nobarcode able to generate from $seqlib_all?
@@ -268,7 +270,7 @@ class TrackerController extends ControllerBase
                 ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
                 ->inWhere('sl.id', $seqlib_ids)
                 ->andWhere('(sl.oligobarcodeA_id IS NULL OR sl.oligobarcodeB_id IS NULL)')
-                ->groupBy('sl.id')
+                ->groupBy('sl.id, se.id')
                 ->getQuery()
                 ->execute();
 
@@ -282,7 +284,7 @@ class TrackerController extends ControllerBase
                 ->leftJoin('Seqlibs', 'sl.protocol_id = osa.protocol_id', 'sl')
                 ->inWhere('sl.id', $seqlib_ids)
                 ->andWhere('o.active = "Y"')
-                ->andWHere("os.is_oligobarcodeB = 'N'")
+                ->andWhere("os.is_oligobarcodeB = 'N'")
                 ->orderBy('os.id ASC, o.sort_order ASC')
                 ->groupBy('o.id')
                 ->getQuery()
@@ -296,7 +298,7 @@ class TrackerController extends ControllerBase
                 ->leftJoin('Seqlibs', 'sl.protocol_id = osa.protocol_id', 'sl')
                 ->inWhere('sl.id', $seqlib_ids)
                 ->andWhere('o.active = "Y"')
-                ->andWHere("os.is_oligobarcodeB = 'Y'")
+                ->andWhere("os.is_oligobarcodeB = 'Y'")
                 ->orderBy('os.id ASC, o.sort_order ASC')
                 ->groupBy('o.id')
                 ->getQuery()

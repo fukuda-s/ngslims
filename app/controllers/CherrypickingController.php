@@ -84,7 +84,7 @@ class CherrypickingController extends ControllerBase
                 } else {
                     return false;
                 }
-                $seqlibs = $seqlibs_tmp->groupBy('sl.id')
+                $seqlibs = $seqlibs_tmp->groupBy('sl.id, se.id, pt.id, r.id, it.id, srmt.id, srrt.id, srct.id, sta.id')
                     ->orderBy('sl.name ASC')
                     ->getQuery()
                     ->execute();

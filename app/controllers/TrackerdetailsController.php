@@ -615,7 +615,7 @@ class TrackerdetailsController extends ControllerBase
                     ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
                     ->where('sl.project_id = :project_id:', array("project_id" => $project_id))
                     ->andWhere('st.id = :step_id:', array("step_id" => $step_id))
-                    ->groupBy('sl.id')
+                    ->groupBy('sl.id, se.id, it.id, srmt.id, srrt.id, srct.id')
                     ->orderBy('sl.name ASC')
                     ->getQuery()
                     ->execute();
