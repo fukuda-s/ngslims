@@ -46,7 +46,7 @@
       <tbody>
       {% for data in datas %}
         {% if data.sample_status == 'On Hold' or data.seqlib_status == 'On Hold' %}
-        <tr id="sample_id_{{ data.sample_id }}" class="collapse">
+          {% continue %}
         {% else %}
           <tr id="sample_id_{{ data.sample_id }}">
         {% endif %}
