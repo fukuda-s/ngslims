@@ -71,6 +71,8 @@ class TrackerdetailsController extends ControllerBase
                 'slib.finished_at AS seqlib_date',
                 'fc.run_started_date AS run_started_date',
                 'fc.run_finished_date AS run_finished_date',
+                'ses.status AS sample_status',
+                'sel.status AS seqlib_status',
                 'sdr.*'
             ))
             ->addFrom('Samples', 's')
@@ -93,6 +95,8 @@ class TrackerdetailsController extends ControllerBase
             ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
             */
             ->leftJoin('SeqDemultiplexResults', 'sdr.seqlib_id = slib.id AND sdr.seqlane_id = slane.id', 'sdr')
+            ->leftJoin('StepEntries', 'ses.sample_id = s.id', 'ses')
+            ->leftJoin('StepEntries', 'sel.seqlib_id = slib.id', 'sel')
             ->where('s.project_id = :project_id:', array("project_id" => $project_id))
             ->getQuery()
             ->execute();
