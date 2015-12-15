@@ -1,3 +1,3 @@
 <footer>
-  <p>&copy; Genome Science Division, RCAST, Univ.Tokyo 2014</p>
+  <p>Copyright &copy; 2014-2016 Genome Science Division, RCAST, Univ.Tokyo. All Rights Reserved.</p>
 </footer>
