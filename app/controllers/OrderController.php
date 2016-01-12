@@ -843,7 +843,7 @@ class OrderController extends ControllerBase
         foreach ($sample_data_arr as $sample_data) {
             //Set data to Samples
             $samples[$i] = new Samples();
-            $samples[$i]->name = $sample_data->name;
+            $samples[$i]->name = trim($sample_data->name);
             //$samples[$i]->request_id = $requests->id; //It's not necessary because of hasMany relation.
             $samples[$i]->project_id = $requests->project_id;
             $samples[$i]->sample_type_id = $this->session->get('sample_type')->id;

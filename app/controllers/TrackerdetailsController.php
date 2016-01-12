@@ -360,6 +360,7 @@ class TrackerdetailsController extends ControllerBase
             ->addJs('js/handsontable/dist/handsontable.full.js')
             ->addJs('js/handsontable/demo/js/moment/moment.js')
             ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
+            ->addJs('js/numeral.min.js')
             ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
             ->addCss('js/handsontable/dist/handsontable.css')
             ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
