@@ -8,7 +8,7 @@
   {{ stylesheet_link('css/font-awesome.css') }}
   {{ stylesheet_link('css/style.css') }}
   {{ assets.outputCss() }}
-  {{ javascript_include('js/jquery/jquery-2.1.3.min.js') }}
+  {{ javascript_include('js/jquery/jquery-2.2.0.min.js') }}
   {{ javascript_include('js/jquery-ui-1.11.2/jquery-ui.min.js') }}
   {{ javascript_include('bootstrap/js/bootstrap.js') }}
   {{ assets.outputJs() }}
