@@ -218,12 +218,19 @@
         {data: "sl.stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
         {data: "sl.fragment_size", title: "Fragment Size", type: 'numeric'},
         {
-          data: "sl.StartedAtFmt",
+          data: "sl.started_at",
           title: "Started Date",
           type: 'date',
-          dateFormat: 'YYYY-MM-DD'
+          dateFormat: 'YYYY-MM-DD',
+          correctFormat: true
         },
-        {data: "sl.finished_at", title: "Finished Date", type: 'date', dateFormat: 'YYYY-MM-DD'},
+        {
+          data: "sl.finished_at",
+          title: "Finished Date",
+          type: 'date',
+          dateFormat: 'YYYY-MM-DD',
+          correctFormat: true
+        },
         {
           data: "ste.status",
           title: "Status",
