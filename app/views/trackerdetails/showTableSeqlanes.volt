@@ -124,6 +124,7 @@
           <th>PF(%)</th>
         </tr>
         </thead>
+        <tbody>
         {% for d in seqlanes %}
           <tr id="seqlib_id_{{ d.slib.id }}">
             <td>{{ link_to('trackerdetails/showTableSamples/' ~ d.p.id, d.slib.Projects.name) }}</td>
@@ -197,6 +198,39 @@
           {% elsefor %}
           <h5>Could not find any seqlanes</h5>
         {% endfor %}
+        {% set seqDemultiplexResults = d.fc.getSeqDemultiplexResults("is_undetermined = 'Y'") %}
+        {% for seqDemultiplexResult in seqDemultiplexResults %}
+          <tr>
+            <td></td>
+            <td>{{ d.fc.run_number }}</td>
+            <td>{{ date('Y-m-d', strtotime(d.fc.run_started_date)) }}</td>
+            <td>{{ d.fc.Instruments.instrument_number ~ d.fc.side }}</td>
+            <td>{{ d.fc.name }}</td>
+            <td>{{ seqDemultiplexResult.SeqLanes.number }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{ seqDemultiplexResult.SeqLanes.number }}</td>
+            <td>Undet</td>
+            <td>{{ number_format(seqDemultiplexResult.reads_total) }}</td>
+            <td>{{ number_format(seqDemultiplexResult.reads_passedfilter) }}</td>
+            {% set reads_passedfilter_percent = (seqDemultiplexResult.reads_total > 0) ? round(seqDemultiplexResult.reads_passedfilter / seqDemultiplexResult.reads_total * 100, 2) ~ '%' : '' %}
+            <td>{{ reads_passedfilter_percent }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
       </table>
     </div>
   </div>
