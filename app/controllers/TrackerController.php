@@ -199,7 +199,7 @@ class TrackerController extends ControllerBase
                 ->inWhere('sl.id', $seqlib_ids)
                 ->andWhere('sl.oligobarcodeA_id IS NULL')
                 ->orderBy('sl.name ASC')
-                ->groupBy('sl.id')
+                ->groupBy('sl.id, se.id')
                 ->getQuery()
                 ->execute();
 
