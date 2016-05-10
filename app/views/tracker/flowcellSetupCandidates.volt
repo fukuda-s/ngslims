@@ -68,8 +68,16 @@
         <div class="panel panel-default">
         <div class="panel-heading">
           <div class="row">
-            <div class="col-md-8">Sequence Template ID</div>
-            <div class="col-md-4">
+            <div class="col-md-2" style="padding: 6px 12px;">Sequence Template ID</div>
+            <div class="col-md-6">
+              <button type="button" class="btn btn-default pull-left" id="fill-seqtemplate">
+                <span>
+                  <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                  Fill Seq-template to Flowcell
+                </span>
+              </button>
+            </div>
+            <div class="col-md-4" style="padding: 6px 12px;">
               <input id="panel-filter" type="search" class="form-control input-xs" placeholder="Filtering Search">
               <button type="button" class="btn btn-default btn-xs" id="show-inactive" data-toggle="collapse"
                       data-target=".panel-default" style="min-width: 87px">Show
@@ -118,13 +126,13 @@
     if (!table.attr("id")) {
       var target_id = '#seqtemplate-header-' + seqtemplate_id;
       $.ajax({
-        url: '{{ url("trackerdetails/showTableSeqlibs") }}',
-        dataType: 'html',
-        type: 'POST',
-        data: {
-          seqtemplate_id: seqtemplate_id
-        }
-      })
+            url: '{{ url("trackerdetails/showTableSeqlibs") }}',
+            dataType: 'html',
+            type: 'POST',
+            data: {
+              seqtemplate_id: seqtemplate_id
+            }
+          })
           .done(function (data) {
             $(target_id).after(data);
             //console.log(target_id);
@@ -194,7 +202,7 @@
     $("#flowcell-setup-button").click(function () {
       var parent_panel = $('#flowcell-panel');
       var flowcell_name = parent_panel.find('input#flowcell_name').val();
-      console.log(flowcell_name);
+      //console.log(flowcell_name);
 
       var seqlanes = {};
       parent_panel.find("ol").children("li").each(function () {
@@ -224,17 +232,17 @@
             control_id: control_id
           };
         }
-      })
+      });
       //console.log(seqlanes);
 
       $.ajax({
-        url: '{{ url("tracker/flowcellSetupSetSession/") }}',
-        dataType: 'text',
-        type: 'POST',
-        data: {
-          flowcell_name: flowcell_name, seqlanes: seqlanes, flowcell_clear: 'false'
-        }
-      })
+            url: '{{ url("tracker/flowcellSetupSetSession/") }}',
+            dataType: 'text',
+            type: 'POST',
+            data: {
+              flowcell_name: flowcell_name, seqlanes: seqlanes, flowcell_clear: 'false'
+            }
+          })
           .done(function () {
             window.location = "{{ url("tracker/flowcellSetup/") ~ step.id }}"
           });
@@ -246,13 +254,13 @@
      */
     $("#flowcell-clear-button").click(function () {
       $.ajax({
-        url: '{{ url("tracker/flowcellSetupSetSession/") ~ step.id }}',
-        dataType: 'text',
-        type: 'POST',
-        data: {
-          flowcell_clear: 'true'
-        }
-      })
+            url: '{{ url("tracker/flowcellSetupSetSession/") ~ step.id }}',
+            dataType: 'text',
+            type: 'POST',
+            data: {
+              flowcell_clear: 'true'
+            }
+          })
           .done(function () {
             window.location = "{{ url("tracker/flowcellSetupCandidates/") ~ step.id }}"
           });
@@ -263,7 +271,7 @@
      */
     $('#panel-filter').on('keyup', function (event) {
       var queryStr = new RegExp(event.target.value);
-      console.log(queryStr);
+      //console.log(queryStr);
       $(event.target)
           .parents('.panel')
           .children('.panel-group')
@@ -285,6 +293,29 @@
             return queryStr.test(tube_textStr);
           })
           .removeClass('tube-hidden');
+    });
+
+    /*
+     * Fill Sequence Template to flowcell
+     */
+    $('#fill-seqtemplate').click(function(){
+      var lane_array = $("#flowcell-panel li:not(.tube-active)");
+      var num_of_lane = lane_array.length;
+      $('.panel-group > div.panel[id^="seqtemplate-panel-"]:visible').each(function(index){
+        if(index == num_of_lane) {
+          return false;
+        }
+        var seqtemplate_id = $(this).attr("seqtemplate_id");
+        var seqtemplate_name = $(this).attr("seqtemplate_name");
+
+        console.log(index + ":" + seqtemplate_id + ":" + seqtemplate_name);
+
+        $(lane_array[index])
+            .addClass('tube-active')
+            .attr('seqtemplate_id', seqtemplate_id)
+            .attr('seqtemplate_name', seqtemplate_name)
+            .text(seqtemplate_name)
+      });
     });
   })
 </script>
