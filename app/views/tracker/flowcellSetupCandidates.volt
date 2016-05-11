@@ -68,7 +68,7 @@
         <div class="panel panel-default">
         <div class="panel-heading">
           <div class="row">
-            <div class="col-md-2" style="padding: 6px 12px;">Sequence Template ID</div>
+            <div class="col-md-2" style="padding: 6px 12px;"><b>Sequence Template ID</b></div>
             <div class="col-md-6">
               <button type="button" class="btn btn-default pull-left" id="fill-seqtemplate">
                 <span>
@@ -78,11 +78,11 @@
               </button>
             </div>
             <div class="col-md-4" style="padding: 6px 12px;">
-              <input id="panel-filter" type="search" class="form-control input-xs" placeholder="Filtering Search">
-              <button type="button" class="btn btn-default btn-xs" id="show-inactive" data-toggle="collapse"
-                      data-target=".panel-default" style="min-width: 87px">Show
-                inactive
+              <button type="button" class="btn btn-default btn-xs clearfix" id="show-inactive" data-toggle="collapse"
+                      data-target=".panel-default" style="min-width: 87px">
+                Show inactive
               </button>
+              <input id="panel-filter" type="search" class="form-control input-xs" placeholder="Filtering Search">
             </div>
           </div>
         </div>
@@ -298,17 +298,17 @@
     /*
      * Fill Sequence Template to flowcell
      */
-    $('#fill-seqtemplate').click(function(){
+    $('#fill-seqtemplate').click(function () {
       var lane_array = $("#flowcell-panel li:not(.tube-active)");
       var num_of_lane = lane_array.length;
-      $('.panel-group > div.panel[id^="seqtemplate-panel-"]:visible').each(function(index){
-        if(index == num_of_lane) {
+      $('.panel-group > div.panel[id^="seqtemplate-panel-"]:visible').each(function (index) {
+        if (index == num_of_lane) {
           return false;
         }
         var seqtemplate_id = $(this).attr("seqtemplate_id");
         var seqtemplate_name = $(this).attr("seqtemplate_name");
 
-        console.log(index + ":" + seqtemplate_id + ":" + seqtemplate_name);
+        //console.log(index + ":" + seqtemplate_id + ":" + seqtemplate_name);
 
         $(lane_array[index])
             .addClass('tube-active')
