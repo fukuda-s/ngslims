@@ -237,6 +237,7 @@
   <button id="removeOrderSession" class="btn btn-warning pull-right"><span class="fa fa-trash"></span>&ensp;Clear Forms
   </button>
 </div>
+<div class="clearfix"></div>
 <script>
   /*
    * Fix cart on top
