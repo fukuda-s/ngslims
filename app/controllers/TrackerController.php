@@ -857,7 +857,7 @@ class TrackerController extends ControllerBase
             WHERE
                 sits.instrument_type_id = :instrument_type_id:
             AND se.status IS NULL
-            GROUP BY fc.id
+            GROUP BY fc.id, se.id
             ORDER BY fc.created_at
         ";
 
