@@ -116,7 +116,7 @@ class CherrypickingController extends ControllerBase
                 ->leftJoin('Steps', 'st.step_phase_code = pt.next_step_phase_code', 'st')
                 ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
                 ->inWhere('sl.id', $seqlib_id)
-                ->groupBy('sl.id')
+                ->groupBy('sl.id, se.id, it.id, srmt.id, srrt.id, srct.id')
                 ->orderBy('sl.name ASC')
                 ->getQuery()
                 ->execute();
