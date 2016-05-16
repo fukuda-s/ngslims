@@ -79,14 +79,14 @@
             </div>
             <div class="col-md-4" style="padding: 6px 12px;">
               <button type="button" class="btn btn-default btn-xs clearfix" id="show-inactive" data-toggle="collapse"
-                      data-target=".panel-default" style="min-width: 87px">
+                      data-target="#panel-group-seqtemplates > div.panel-default" style="min-width: 87px">
                 Show inactive
               </button>
               <input id="panel-filter" type="search" class="form-control input-xs" placeholder="Filtering Search">
             </div>
           </div>
         </div>
-        <div class="panel-group"  style="overflow: auto; height: 400px;">
+        <div id="panel-group-seqtemplates" class="panel-group"  style="overflow: auto; height: 400px;">
       {% endif %}
       {% if seqtemplate.se.id != null and seqtemplate.se.status != 'Completed' and seqtemplate.se.status != 'On Hold' %}
         <div class="panel panel-info" id="seqtemplate-panel-{{ seqtemplate.st.id }}" data-toggle="collapse"
