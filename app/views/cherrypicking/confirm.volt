@@ -69,9 +69,15 @@
 
 <hr>
 
-<h4>Selected Cherry Picking List</h4>
-<h5 id="prev_cherry_picking_list_title"></h5>
-<div id="prev_cherry_picking_tube_list"></div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Selected Cherry Picking List</h3>
+    <h5 id="prev_cherry_picking_list_title"></h5>
+  </div>
+  <div class="panel-body">
+    <div id="prev_cherry_picking_tube_list"></div>
+  </div>
+</div>
 
 <div class="row">
   <div class="col-md-2">
@@ -141,13 +147,13 @@
       }
     })
 
-      // 応答後
+    // 応答後
         .always(function (xhr, textStatus) {
           // ボタンを有効化し、再送信を許可
           $button.attr('disabled', false);
         })
 
-      // 通信成功時の処理
+        // 通信成功時の処理
         .done(function (data) {
           // 入力値を初期化
           $form[0].reset();
