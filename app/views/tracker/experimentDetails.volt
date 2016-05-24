@@ -10,13 +10,18 @@
   </li>
 </ol>
 {{ flashSession.output() }}
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#">PI</a></li>
+  <li><a href="#">Project</a></li>
+  <li><a href="#">Cherry Picking</a></li>
+</ul>
 <div class="panel-group" id="projectOverview">
   {% for user in pi_users %}
     {% if loop.first %}
       <div class="panel panel-default">
         <div class="panel-heading">
           <div class="row">
-            <div class="col-md-8">PI</div>
+            <div class="col-md-8">PI name</div>
             <div class="col-md-1">
               <small>#project</small>
             </div>
@@ -94,12 +99,12 @@
     $('[id^=inactives]')
         .first()
         .on('hidden.bs.collapse', function () {
-          var buttonObj = $('button#show-inactive')
+          var buttonObj = $('button#show-inactive');
           var buttonStr = buttonObj.text().replace('Hide', 'Show');
           buttonObj.text(buttonStr);
         })
         .on('shown.bs.collapse', function () {
-          var buttonObj = $('button#show-inactive')
+          var buttonObj = $('button#show-inactive');
           var buttonStr = buttonObj.text().replace('Show', 'Hide');
           buttonObj.text(buttonStr);
         });

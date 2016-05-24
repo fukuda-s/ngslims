@@ -454,9 +454,28 @@ class Elements extends Phalcon\Mvc\User\Component
             echo '              </div>';
             echo '      	</div>';
             echo '     	</div>';
-            echo '      <div id="seqlib-tube-list-project-id-' . $project->id . '">';
+            echo '      <div id="seqlib-tube-list-target-id-' . $project->id . '-0">';
             echo '     	</div>';
             echo ' 	</div>';
         }
+    }
+
+    public function getMyCherryPickingList()
+    {
+        $auth = $this->session->get('auth');
+        $cherry_pickings = $this->modelsManager->createBuilder()
+            ->columns(array('cp.id AS cp_id', 'CONCAT(cp.name, " (", COUNT(cps.id), ") -- ", cp.created_at) AS cp_name'))
+            ->addFrom('CherryPickings', 'cp')
+            ->leftJoin('CherryPickingSchemes', 'cp.id = cps.cherry_picking_id', 'cps')
+            ->where('cp.user_id = :user_id:', array("user_id" => $auth['id']))
+            ->groupBy('cp.id')
+            ->orderBy('cp.created_at DESC')
+            ->getQuery()
+            ->execute();
+
+        foreach ($cherry_pickings as $cherry_picking) {
+            echo '<li class="list-group-item">' . Tag::linkTo(array("trackerdetails/editSeqlibs/PICK/0/" . $cherry_picking->cp_id, $cherry_picking->cp_name)) . '</li>';
+        }
+
     }
 }

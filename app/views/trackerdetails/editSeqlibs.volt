@@ -53,7 +53,7 @@
           url: '{{ url("samples/loadjson") }}',
           dataType: 'json',
           type: 'POST',
-          data: {project_id: {{ project.id }}}
+          data: {type: '{{ type }}', project_id: {{ project.id }}}
         })
         .done(function (data) {
           //alert(data);
@@ -307,6 +307,9 @@
             dataType: 'json',
             type: 'POST',
             data: {
+              {% if not (type is empty) %}
+              type: '{{ type }}',
+              {% endif %}
               {% if not (status is empty) %}
               status: '{{ status }}',
               {% endif %}

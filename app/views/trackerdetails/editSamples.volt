@@ -334,6 +334,8 @@
           {% endif %}
           {% if type is 'QC' %}
           step_id: {{ step.id }},
+          {% elseif type is 'PICK' %}
+          type: '{{ type }}',
           {% endif %}
           project_id: {{ project.id }}
         }

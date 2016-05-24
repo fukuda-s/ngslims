@@ -16,6 +16,7 @@ class SeqlibsController extends ControllerBase
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
+                $type = $request->getPost('type', 'striptags');
                 $step_id = $request->getPost('step_id', 'int');
                 $project_id = $request->getPost('project_id', 'int');
                 $status = $request->getPost('status', 'striptags');
@@ -27,19 +28,28 @@ class SeqlibsController extends ControllerBase
                     ->join('StepEntries', 'ste.seqlib_id = sl.id', 'ste')
                     ->where('sl.id IS NOT NULL'); /* dummy to concatenate andWhere as follows */
 
+                if (!empty($type) and $type == 'PICK') { /* PICK is not status_id */
+                    $seqlibs_tmp = $seqlibs_tmp->leftJoin('CherryPickingSchemes', 'cps.seqlib_id = sl.id', 'cps');
+                    $seqlibs_tmp = $seqlibs_tmp->leftJoin('CherryPickings', 'cp.id = cps.cherry_picking_id', 'cp');
+                    $seqlibs_tmp = $seqlibs_tmp->andWhere('cp.id = :cherry_picking_id:', array('cherry_picking_id' => $project_id)); //$project_id has cherry_picking_id
+                } elseif ($project_id) {
+                    $seqlibs_tmp = $seqlibs_tmp->andWhere('sl.project_id = :project_id:', array('project_id' => $project_id));
+                }
+                
                 if ($step_id) {
                     $seqlibs_tmp = $seqlibs_tmp->andWhere('ste.step_id = :step_id:', array('step_id' => $step_id));
                 }
-                if ($project_id) {
-                    $seqlibs_tmp = $seqlibs_tmp->andWhere('sl.project_id = :project_id:', array('project_id' => $project_id));
-                }
+                
                 if (!empty($status)) {
                     if ($status === 'NULL') {
                         $seqlibs_tmp = $seqlibs_tmp->andWhere('ste.status IS NULL');
+                    } elseif ($project_id) {
+                        $seqlibs_tmp = $seqlibs_tmp->andWhere('sl.project_id = :project_id:', array('project_id' => $project_id));
                     } else {
                         $seqlibs_tmp = $seqlibs_tmp->andWhere('ste.status = :status:', array('status' => $status));
                     }
                 }
+                
                 if (!empty($query)) {
                     $seqlibs_tmp = $seqlibs_tmp->andWhere('sl.name LIKE :query:', array('query' => '%' . $query . '%'));
                 }

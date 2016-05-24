@@ -17,6 +17,7 @@ class SamplesController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 // echo "Request was made using POST and AJAX";
+                $type = $request->getPost('type', 'striptags');
                 $step_id = $request->getPost('step_id', 'int');
                 $project_id = $request->getPost('project_id', 'int');
                 $status = $request->getPost('status', 'striptags');
@@ -31,12 +32,18 @@ class SamplesController extends ControllerBase
                     ->leftJoin('StepEntries', 'ste.sample_id = s.id', 'ste')
                     ->where('s.id IS NOT NULL'); /* dummy to concatenate andWhere as follows. */
 
+                if (!empty($type) and $type == 'PICK') { /* PICK is not status_id */
+                    $samples_tmp = $samples_tmp->leftJoin('CherryPickingSchemes', 'cps.sample_id = s.id', 'cps');
+                    $samples_tmp = $samples_tmp->leftJoin('CherryPickings', 'cp.id = cps.cherry_picking_id', 'cp');
+                    $samples_tmp = $samples_tmp->andWhere('cp.id = :cherry_picking_id:', array('cherry_picking_id' => $project_id)); //$project_id has cherry_picking_id
+                } elseif ($project_id) {
+                    $samples_tmp = $samples_tmp->andWhere('s.project_id = :project_id:', array('project_id' => $project_id));
+                }
+
                 if ($step_id) {
                     $samples_tmp = $samples_tmp->andWhere('ste.step_id = :step_id:', array('step_id' => $step_id));
                 }
-                if ($project_id) {
-                    $samples_tmp = $samples_tmp->andWhere('s.project_id = :project_id:', array('project_id' => $project_id));
-                }
+
                 if (!empty($status)) {
                     if ($status === 'NULL') {
                         $samples_tmp = $samples_tmp->andWhere('ste.status IS NULL');
@@ -44,9 +51,11 @@ class SamplesController extends ControllerBase
                         $samples_tmp = $samples_tmp->andWhere('ste.status = :status:', array('status' => $status));
                     }
                 }
+
                 if (!empty($nucleotide_type)) {
                     $samples_tmp = $samples_tmp->andWhere('st.nucleotide_type = :nucleotide_type:', array('nucleotide_type' => $nucleotide_type));
                 }
+
                 if (!empty($query)) {
                     $samples_tmp = $samples_tmp->andWhere('s.name LIKE :query:', array('query' => '%' . $query . '%'));
                 }

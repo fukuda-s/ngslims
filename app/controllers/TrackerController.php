@@ -122,6 +122,9 @@ class TrackerController extends ControllerBase
         $this->view->cleanTemplateAfter()->setLayout('main');
         //$this->view->setLayout('main');
         Tag::appendTitle(' | Experiments ');
+        
+        $view_type = $this->request->get('view_type');
+        $this->view->setVar('view_type', $view_type);
 
         $step_id = $this->filter->sanitize($step_id, array("int"));
 
@@ -135,26 +138,75 @@ class TrackerController extends ControllerBase
 
         $step_phase_code = $step->step_phase_code;
         if ($step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
-            $pi_users = $this->modelsManager->createBuilder()
-                ->columns(array(
-                    'COUNT(DISTINCT sl.project_id) AS project_count_all',
-                    'COUNT(DISTINCT sl.id) AS seqlib_count_all',
-                    'COUNT(DISTINCT sta.seqlib_id) AS seqlib_count_used',
-                    'u.*'
-                ))
-                ->addFrom('Users', 'u')
-                ->join('Projects', 'p.pi_user_id = u.id', 'p')
-                ->join('Seqlibs', 'sl.project_id = p.id', 'sl')
-                ->join('Protocols', 'pt.id = sl.protocol_id', 'pt')
-                ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
-                ->where('p.active = "Y"')
-                ->andWhere('pt.next_step_phase_code = :next_step_phase_code:', array("next_step_phase_code" => $step_phase_code))
-                ->groupBy(array('u.id'))
-                ->orderBy(array('u.lastname ASC', 'u.firstname'))
-                ->getQuery()
-                ->execute();
+            if ( $view_type === 'PI' or empty($view_type)) {
+                $pi_users = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'COUNT(DISTINCT sl.project_id) AS project_count_all',
+                        'COUNT(DISTINCT sl.id) AS seqlib_count_all',
+                        'COUNT(DISTINCT sta.seqlib_id) AS seqlib_count_used',
+                        'u.*'
+                    ))
+                    ->addFrom('Users', 'u')
+                    ->join('Projects', 'p.pi_user_id = u.id', 'p')
+                    ->join('Seqlibs', 'sl.project_id = p.id', 'sl')
+                    ->join('Protocols', 'pt.id = sl.protocol_id', 'pt')
+                    ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
+                    ->where('p.active = "Y"')
+                    ->andWhere('pt.next_step_phase_code = :next_step_phase_code:', array("next_step_phase_code" => $step_phase_code))
+                    ->groupBy(array('u.id'))
+                    ->orderBy(array('u.lastname ASC', 'u.firstname'))
+                    ->getQuery()
+                    ->execute();
 
-            $this->view->setVar('pi_users', $pi_users);
+                $this->view->setVar('pi_users', $pi_users);
+            } elseif ( $view_type === 'PJ') {
+                $projects = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'COUNT(DISTINCT sl.id) AS seqlib_count_all',
+                        'COUNT(DISTINCT sta.seqlib_id) AS seqlib_count_used',
+                        'u.*',
+                        'p.*'
+                    ))
+                    ->addFrom('Projects', 'p')
+                    ->join('Users', 'u.id = p.pi_user_id', 'u')
+                    ->join('Seqlibs', 'sl.project_id = p.id', 'sl')
+                    ->join('Protocols', 'pt.id = sl.protocol_id', 'pt')
+                    ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
+                    ->where('p.active = "Y"')
+                    ->andWhere('pt.next_step_phase_code = :next_step_phase_code:', array("next_step_phase_code" => $step_phase_code))
+                    ->groupBy(array('p.id'))
+                    ->orderBy(array('p.name', 'u.lastname ASC', 'u.firstname'))
+                    ->getQuery()
+                    ->execute();
+
+                $this->view->setVar('projects', $projects);
+
+            } elseif ( $view_type === 'CP') {
+                $cherry_pickings = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'COUNT(DISTINCT sl.id) AS seqlib_count_all',
+                        'COUNT(DISTINCT sta.seqlib_id) AS seqlib_count_used',
+                        'u.*',
+                        'cp.*'
+                    ))
+                    ->addFrom('CherryPickings', 'cp')
+                    ->join('CherryPickingSchemes', 'cps.cherry_picking_id = cp.id', 'cps')
+                    ->join('Users', 'u.id = cp.user_id', 'u')
+                    ->join('Seqlibs', 'sl.id = cps.seqlib_id', 'sl')
+                    ->join('Protocols', 'pt.id = sl.protocol_id', 'pt')
+                    ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
+                    ->where('cp.active = "Y"')
+                    ->andWhere('pt.next_step_phase_code = :next_step_phase_code:', array("next_step_phase_code" => $step_phase_code))
+                    ->andWhere('cp.user_id = :user_id:', array("user_id" => $this->session->get('auth')['id']))
+                    ->groupBy(array('cp.id'))
+                    ->orderBy(array('cp.name'))
+                    ->getQuery()
+                    ->execute();
+
+                $this->view->setVar('cherry_pickings', $cherry_pickings);
+            } else {
+                $this->flashSession->error("Undefined view_type: " . $view_type);
+            }
         }
     }
 

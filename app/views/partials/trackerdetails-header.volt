@@ -9,6 +9,11 @@
     {% endif %}
     <li class="active">{{ project.name }}</li>
   </ol>
+{% elseif type == 'PICK' %}
+  <ol class="breadcrumb">
+    <li>{{ link_to("tracker", "Tracker") }}</li>
+    <li>{{ cherrypicking.name ~ ' (' ~ cherrypicking.cherryPickingSchemes|length ~ ') -- ' ~ cherrypicking.created_at }}</li>
+  </ol>
 {% else %}
   <ol class="breadcrumb">
     <li>{{ link_to("tracker", "Tracker") }}</li>

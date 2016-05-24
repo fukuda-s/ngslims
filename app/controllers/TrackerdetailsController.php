@@ -157,6 +157,9 @@ class TrackerdetailsController extends ControllerBase
         $this->view->setVar('status', $status);
         if ($type == 'SHOW' && $step_id == 0) {
             $this->view->setVar('step', (object)array('id' => 0, 'tabtype' => 'sample'));
+        } elseif ($type == 'PICK') {
+            $this->view->setVar('step', (object)array('id' => 0, 'tabtype' => 'sample'));
+            $this->view->setVar('cherrypicking', CherryPickings::findFirstById($project_id)); //$project_id has cherry_picking_id
         } else {
             $this->view->setVar('step', Steps::findFirstById($step_id));
         }
@@ -375,6 +378,9 @@ class TrackerdetailsController extends ControllerBase
         $this->view->setVar('status', $status);
         if ($type == 'SHOW') {
             $this->view->setVar('step', (object)array('id' => 0, 'tabtype' => 'seqlib'));
+        } elseif ($type == 'PICK') {
+            $this->view->setVar('step', (object)array('id' => 0, 'tabtype' => 'seqlib'));
+            $this->view->setVar('cherrypicking', CherryPickings::findFirstById($project_id)); //$project_id has cherry_picking_id
         } else {
             $this->view->setVar('step', Steps::findFirstById($step_id));
         }
@@ -603,8 +609,9 @@ class TrackerdetailsController extends ControllerBase
                 // echo "Request was made using POST and AJAX";
                 $step_id = $this->request->getPost("step_id", "int");
                 $project_id = $this->request->getPost("project_id", "int");
+                $cherry_picking_id = $this->request->getPost("cherry_picking_id", "int");
 
-                $seqlibs = $this->modelsManager->createBuilder()
+                $seqlibs_tmp = $this->modelsManager->createBuilder()
                     ->columns(array('sl.*', 'se.*', 'pt.*', 'r.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'COUNT(sta.id) AS sta_count'))
                     ->addFrom('Seqlibs', 'sl')
                     ->join('Samples', 's.id = sl.sample_id', 's')
@@ -617,8 +624,20 @@ class TrackerdetailsController extends ControllerBase
                     ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
                     ->leftJoin('Protocols', 'pt.id = sl.protocol_id', 'pt')
                     ->leftJoin('Steps', 'st.step_phase_code = pt.next_step_phase_code', 'st')
-                    ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
-                    ->where('sl.project_id = :project_id:', array("project_id" => $project_id))
+                    ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta');
+
+                if ($project_id) {
+                    $seqlibs_tmp = $seqlibs_tmp
+                        ->where('sl.project_id = :project_id:', array("project_id" => $project_id));
+                }
+
+                if ($cherry_picking_id) {
+                    $seqlibs_tmp = $seqlibs_tmp
+                        ->join('CherryPickingSchemes', 'cps.seqlib_id = sl.id', 'cps')
+                        ->where('cps.cherry_picking_id = :cherry_picking_id:', array("cherry_picking_id" => $cherry_picking_id));
+                }
+
+                $seqlibs = $seqlibs_tmp
                     ->andWhere('st.id = :step_id:', array("step_id" => $step_id))
                     ->groupBy('sl.id, se.id, it.id, srmt.id, srrt.id, srct.id')
                     ->orderBy('sl.name ASC')
@@ -703,7 +722,7 @@ class TrackerdetailsController extends ControllerBase
             ->getQuery()
             ->execute();
 
-        if (count($flowcells)<1) {
+        if (count($flowcells) < 1) {
             return $this->flash->error('Could not find flowcell name ' . $flowcell_name);
         }
 
