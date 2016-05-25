@@ -13,7 +13,24 @@ class CherrypickingController extends ControllerBase
 
     public function indexAction()
     {
-        // return $this->forward("trackerProjects/piList");
+        $cherry_pickings = $this->modelsManager->createBuilder()
+            ->columns(array(
+                'COUNT(DISTINCT cps.seqlib_id) AS sample_count',
+                'GROUP_CONCAT(sl.name) AS seqlib_names',
+                'cp.*',
+                'u.*'
+            ))
+            ->addFrom('CherryPickings', 'cp')
+            ->join('CherryPickingSchemes', 'cps.cherry_picking_id = cp.id', 'cps')
+            ->join('Seqlibs', 'sl.id = cps.seqlib_id', 'sl')
+            ->join('Users', 'u.id = cp.user_id', 'u')
+            ->where('cp.user_id = :user_id:', array("user_id" => $this->session->get('auth')['id']))
+            ->groupBy(array('cp.id'))
+            ->orderBy(array('cp.name DESC'))
+            ->getQuery()
+            ->execute();
+
+        $this->view->setVar('cherry_pickings', $cherry_pickings);
     }
 
     public function showTubeSamplesAction()
@@ -166,13 +183,13 @@ class CherrypickingController extends ControllerBase
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
-                $cherrypickings = new Cherrypickings();
+                $cherrypickings = new CherryPickings();
                 $cherrypickings->name = $request->getPost("cherrypicking_name", "striptags");
                 $cherrypickings->user_id = $this->session->get('auth')['id'];
                 $cherrypickings->active = 'Y';
                 //$cherrypickings->created_at = '2014-02-07';
 
-                $prev_cherrypickings = Cherrypickings::find(array(
+                $prev_cherrypickings = CherryPickings::find(array(
                     "name = :name: AND user_id = :user_id:",
                     'bind' => array(
                         'name' => $cherrypickings->name,
