@@ -25,36 +25,35 @@
       </div>
     {% endif %}
 
-    {% if cherry_picking.seqlib_count_all !== cherry_picking.seqlib_count_used %}
+    {% if user.status is empty or user.status is 'In Progress' %}
       {% set active_status = 'active' %}
-      {% set seqlib_count = cherry_picking.seqlib_count_all - cherry_picking.seqlib_count_used %}
     {% else %}
       {% set active_status = 'inactive' %}
-      {% set seqlib_count = cherry_picking.seqlib_count_all %}
     {% endif %}
 
     <div {% if active_status is 'active' %} class="panel panel-info" id="cherry_picking_id_{{ cherry_picking.cp.id }}"
     {% else %} class="panel panel-default collapse" id="inactives-{{ cherry_picking.cp.id }}" {% endif %}>
-      <div class="panel-heading" data-toggle="collapse"
-           data-target="#list_cherry_picking_id_{{ cherry_picking.cp.id }}" id="OwnerList" onclick="showTubeSeqlibs({{ step.id }}, 0, {{ cherry_picking.cp.id  }})">
+      <div class="panel-heading" id="OwnerList">
         <h4 class="panel-title">
           <div class="row">
             <div class="col-md-7">
-              <div class="">{{ cherry_picking.cp.name ~ ' -- ' ~ cherry_picking.cp.created_at }}</div>
+              {% if step.step_phase_code is 'QC' %}
+                <div class="">{{ link_to('trackerdetails/editSamples/PICK/0/' ~ cherry_picking.cp.id, cherry_picking.cp.name ~ ' -- ' ~ cherry_picking.cp.created_at) }}</div>
+              {% elseif step.step_phase_code is 'PREP' %}
+                <div class="">{{ link_to('trackerdetails/editSeqlibs/PICK/0/' ~ cherry_picking.cp.id, cherry_picking.cp.name ~ ' -- ' ~ cherry_picking.cp.created_at) }}</div>
+              {% endif %}
             </div>
             <div class="col-md-2">
               <div class="">{{ cherry_picking.u.getFullname() }}</div>
             </div>
             <div class="col-md-2">
-              <span class="badge">{{ seqlib_count }}</span>
+              <span class="badge">{{ cherry_picking.sample_count }}</span>
             </div>
             <div class="col-md-1">
               <!--<i class="indicator glyphicon glyphicon-chevron-right pull-right"></i>-->
             </div>
           </div>
         </h4>
-      </div>
-      <div id="seqlib-tube-list-target-id-0-{{ cherry_picking.cp.id }}">
       </div>
     </div>
     {% elsefor %} No cherry_pickings are recorded

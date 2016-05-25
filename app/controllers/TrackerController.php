@@ -58,6 +58,9 @@ class TrackerController extends ControllerBase
         //$this->view->setLayout('main');
         Tag::appendTitle(' | Experiments ');
 
+        $view_type = $this->request->get('view_type');
+        $this->view->setVar('view_type', $view_type);
+
         $step_id = $this->filter->sanitize($step_id, array("int"));
 
         $step = Steps::findFirst($step_id);
@@ -65,55 +68,171 @@ class TrackerController extends ControllerBase
 
         $step_phase_code = $step->step_phase_code;
         if ($step_phase_code === 'QC') {
-            $pi_users = $this->modelsManager->createBuilder()
-                ->columns(array(
-                    'COUNT(DISTINCT s.project_id) AS project_count',
-                    'COUNT(DISTINCT s.id) AS sample_count',
-                    'ste.status AS status',
-                    /* @TODO PHQL doesn't allows CASE query
-                     * "CASE
-                     * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
-                     * ELSE 'inactive END AS active_status",
-                     */
-                    'u.*'
-                ))
-                ->addFrom('Users', 'u')
-                ->join('Projects', 'p.pi_user_id = u.id', 'p')
-                ->join('Samples', 's.project_id = p.id', 's')
-                //->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
-                ->join('StepEntries', 'ste.sample_id = s.id', 'ste')
-                ->where('p.active = "Y"')
-                //->andWhere('st.nucleotide_type = :nucleotide_type:', array("nucleotide_type" => $step->nucleotide_type ))
-                ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
-                ->groupBy(array('u.id', 'status'))
-                ->orderBy(array('u.lastname ASC', 'u.firstname'))
-                ->getQuery()
-                ->execute();
-            $this->view->setVar('pi_users', $pi_users);
+            if ($view_type === 'PI' or empty($view_type)) {
+                $pi_users = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'COUNT(DISTINCT s.project_id) AS project_count',
+                        'COUNT(DISTINCT s.id) AS sample_count',
+                        'ste.status AS status',
+                        /* @TODO PHQL doesn't allows CASE query
+                         * "CASE
+                         * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                         * ELSE 'inactive END AS active_status",
+                         */
+                        'u.*'
+                    ))
+                    ->addFrom('Users', 'u')
+                    ->join('Projects', 'p.pi_user_id = u.id', 'p')
+                    ->join('Samples', 's.project_id = p.id', 's')
+                    //->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
+                    ->join('StepEntries', 'ste.sample_id = s.id', 'ste')
+                    ->where('p.active = "Y"')
+                    //->andWhere('st.nucleotide_type = :nucleotide_type:', array("nucleotide_type" => $step->nucleotide_type ))
+                    ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
+                    ->groupBy(array('u.id', 'status'))
+                    ->orderBy(array('u.lastname ASC', 'u.firstname'))
+                    ->getQuery()
+                    ->execute();
+                $this->view->setVar('pi_users', $pi_users);
+            } elseif ($view_type === 'PJ') {
+                $projects = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'COUNT(DISTINCT s.id) AS sample_count',
+                        'ste.status AS status',
+                        /* @TODO PHQL doesn't allows CASE query
+                         * "CASE
+                         * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                         * ELSE 'inactive END AS active_status",
+                         */
+                        'p.*',
+                        'u.*'
+                    ))
+                    ->addFrom('Projects', 'p')
+                    ->join('Users', 'u.id = p.pi_user_id', 'u')
+                    ->join('Samples', 's.project_id = p.id', 's')
+                    //->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
+                    ->join('StepEntries', 'ste.sample_id = s.id', 'ste')
+                    ->where('p.active = "Y"')
+                    //->andWhere('st.nucleotide_type = :nucleotide_type:', array("nucleotide_type" => $step->nucleotide_type ))
+                    ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
+                    ->groupBy(array('p.id', 'status'))
+                    ->orderBy(array('p.name, u.lastname ASC', 'u.firstname'))
+                    ->getQuery()
+                    ->execute();
+
+                $this->view->setVar('projects', $projects);
+            } elseif ($view_type === 'CP') {
+                $cherry_pickings = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'COUNT(DISTINCT cps.sample_id) AS sample_count',
+                        /* @TODO PHQL doesn't allows CASE query
+                         * "CASE
+                         * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                         * ELSE 'inactive END AS active_status",
+                         */
+                        'cp.*',
+                        'u.*'
+                    ))
+                    ->addFrom('CherryPickings', 'cp')
+                    ->join('CherryPickingSchemes', 'cps.cherry_picking_id = cp.id', 'cps')
+                    ->join('Users', 'u.id = cp.user_id', 'u')
+                    ->join('Samples', 's.id = cps.sample_id', 's')
+                    //->join('SampleTypes', 'st.id = s.sample_type_id', 'st')
+                    ->join('StepEntries', 'ste.sample_id = s.id', 'ste')
+                    ->where('cp.active = "Y"')
+                    //->andWhere('st.nucleotide_type = :nucleotide_type:', array("nucleotide_type" => $step->nucleotide_type ))
+                    ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
+                    ->groupBy(array('cp.id'))
+                    ->orderBy(array('cp.name DESC'))
+                    ->getQuery()
+                    ->execute();
+
+                $this->view->setVar('cherry_pickings', $cherry_pickings);
+            } else {
+                $this->flashSession->error("Undefined view_type: " . $view_type);
+            }
         } elseif ($step_phase_code === 'PREP') {
-            $pi_users = $this->modelsManager->createBuilder()
-                ->columns(array(
-                    'COUNT(DISTINCT sl.project_id) AS project_count',
-                    'COUNT(DISTINCT sl.id) AS sample_count',
-                    'ste.status AS status',
-                    /* @TODO PHQL doesn't allows CASE query
-                     * "CASE
-                     * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
-                     * ELSE 'inactive END AS active_status",
-                     */
-                    'u.*'
-                ))
-                ->addFrom('Users', 'u')
-                ->join('Projects', 'p.pi_user_id = u.id', 'p')
-                ->join('Seqlibs', 'sl.project_id = p.id', 'sl')
-                ->join('StepEntries', 'ste.seqlib_id = sl.id', 'ste')
-                ->where('p.active = "Y"')
-                ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
-                ->groupBy(array('u.id', 'status'))
-                ->orderBy(array('u.lastname ASC', 'u.firstname'))
-                ->getQuery()
-                ->execute();
-            $this->view->setVar('pi_users', $pi_users);
+            if ($view_type === 'PI' or empty($view_type)) {
+                $pi_users = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'COUNT(DISTINCT sl.project_id) AS project_count',
+                        'COUNT(DISTINCT sl.id) AS sample_count',
+                        'ste.status AS status',
+                        /* @TODO PHQL doesn't allows CASE query
+                         * "CASE
+                         * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                         * ELSE 'inactive END AS active_status",
+                         */
+                        'u.*'
+                    ))
+                    ->addFrom('Users', 'u')
+                    ->join('Projects', 'p.pi_user_id = u.id', 'p')
+                    ->join('Seqlibs', 'sl.project_id = p.id', 'sl')
+                    ->join('StepEntries', 'ste.seqlib_id = sl.id', 'ste')
+                    ->where('p.active = "Y"')
+                    ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
+                    ->groupBy(array('u.id', 'status'))
+                    ->orderBy(array('u.lastname ASC', 'u.firstname'))
+                    ->getQuery()
+                    ->execute();
+
+                $this->view->setVar('pi_users', $pi_users);
+            } elseif ($view_type === 'PJ') {
+                $projects = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'COUNT(DISTINCT sl.id) AS sample_count',
+                        'ste.status AS status',
+                        /* @TODO PHQL doesn't allows CASE query
+                         * "CASE
+                         * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                         * ELSE 'inactive END AS active_status",
+                         */
+                        'p.*',
+                        'u.*'
+                    ))
+                    ->addFrom('Projects', 'p')
+                    ->join('Users', 'u.id = p.pi_user_id', 'u')
+                    ->join('Seqlibs', 'sl.project_id = p.id', 'sl')
+                    ->join('StepEntries', 'ste.seqlib_id = sl.id', 'ste')
+                    ->where('p.active = "Y"')
+                    ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
+                    ->groupBy(array('p.id', 'status'))
+                    ->orderBy(array('p.name', 'u.lastname ASC', 'u.firstname'))
+                    ->getQuery()
+                    ->execute();
+
+                $this->view->setVar('projects', $projects);
+            } elseif ($view_type === 'CP') {
+                $cherry_pickings = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'COUNT(DISTINCT sl.project_id) AS project_count',
+                        'COUNT(DISTINCT sl.id) AS sample_count',
+                        'ste.status AS status',
+                        /* @TODO PHQL doesn't allows CASE query
+                         * "CASE
+                         * WHEN ste.status IN (NULL , 'In Progress') THEN 'active'
+                         * ELSE 'inactive END AS active_status",
+                         */
+                        'cp.*',
+                        'u.*'
+                    ))
+                    ->addFrom('CherryPickings', 'cp')
+                    ->join('CherryPickingSchemes', 'cps.cherry_picking_id = cp.id', 'cps')
+                    ->join('Users', 'u.id = cp.user_id', 'u')
+                    ->join('Projects', 'p.pi_user_id = u.id', 'p')
+                    ->join('Seqlibs', 'sl.project_id = p.id', 'sl')
+                    ->join('StepEntries', 'ste.seqlib_id = sl.id', 'ste')
+                    ->where('p.active = "Y"')
+                    ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
+                    ->groupBy(array('cp.id', 'status'))
+                    ->orderBy(array('cp.name DESC', 'u.lastname ASC', 'u.firstname'))
+                    ->getQuery()
+                    ->execute();
+
+                $this->view->setVar('cherry_pickings', $cherry_pickings);
+            } else {
+                $this->flashSession->error("Undefined view_type: " . $view_type);
+            }
         }
     }
 
@@ -122,7 +241,7 @@ class TrackerController extends ControllerBase
         $this->view->cleanTemplateAfter()->setLayout('main');
         //$this->view->setLayout('main');
         Tag::appendTitle(' | Experiments ');
-        
+
         $view_type = $this->request->get('view_type');
         $this->view->setVar('view_type', $view_type);
 
@@ -138,7 +257,7 @@ class TrackerController extends ControllerBase
 
         $step_phase_code = $step->step_phase_code;
         if ($step_phase_code === 'MULTIPLEX' || $step_phase_code === 'DUALMULTIPLEX') {
-            if ( $view_type === 'PI' or empty($view_type)) {
+            if ($view_type === 'PI' or empty($view_type)) {
                 $pi_users = $this->modelsManager->createBuilder()
                     ->columns(array(
                         'COUNT(DISTINCT sl.project_id) AS project_count_all',
@@ -159,7 +278,7 @@ class TrackerController extends ControllerBase
                     ->execute();
 
                 $this->view->setVar('pi_users', $pi_users);
-            } elseif ( $view_type === 'PJ') {
+            } elseif ($view_type === 'PJ') {
                 $projects = $this->modelsManager->createBuilder()
                     ->columns(array(
                         'COUNT(DISTINCT sl.id) AS seqlib_count_all',
@@ -181,7 +300,7 @@ class TrackerController extends ControllerBase
 
                 $this->view->setVar('projects', $projects);
 
-            } elseif ( $view_type === 'CP') {
+            } elseif ($view_type === 'CP') {
                 $cherry_pickings = $this->modelsManager->createBuilder()
                     ->columns(array(
                         'COUNT(DISTINCT sl.id) AS seqlib_count_all',
@@ -210,7 +329,8 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public function multiplexSetupAction($step_id)
+    public
+    function multiplexSetupAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main-wide');
         Tag::appendTitle(' | Multiplexing ');
@@ -390,7 +510,8 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public function multiplexSetSessionAction()
+    public
+    function multiplexSetSessionAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -418,7 +539,8 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public function multiplexSetupConfirmAction($step_id)
+    public
+    function multiplexSetupConfirmAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Multiplex Confirm ');
@@ -476,7 +598,8 @@ class TrackerController extends ControllerBase
         $this->view->setVar('step_id', $step_id);
     }
 
-    public function multiplexSaveAction($step_id)
+    public
+    function multiplexSaveAction($step_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -576,7 +699,8 @@ class TrackerController extends ControllerBase
         return $this->response->redirect("tracker/multiplexCandidates/$step_id");
     }
 
-    public function flowcellSetupCandidatesAction($step_id)
+    public
+    function flowcellSetupCandidatesAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Flowcell Setup ');
@@ -617,7 +741,8 @@ class TrackerController extends ControllerBase
         $this->view->setVar('controls', $controls);
     }
 
-    public function flowcellSetupSetSessionAction()
+    public
+    function flowcellSetupSetSessionAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -650,7 +775,8 @@ class TrackerController extends ControllerBase
 
     }
 
-    public function flowcellSetupAction($step_id)
+    public
+    function flowcellSetupAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Flowcell Setup Confirm');
@@ -711,7 +837,8 @@ class TrackerController extends ControllerBase
     }
 
 
-    public function flowcellSetupConfirmAction($step_id)
+    public
+    function flowcellSetupConfirmAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
 
@@ -741,7 +868,8 @@ class TrackerController extends ControllerBase
         $this->view->setVar('lane_index', $lane_index);
     }
 
-    public function flowcellSetupSaveAction($step_id)
+    public
+    function flowcellSetupSaveAction($step_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -836,7 +964,8 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public function sequenceAction()
+    public
+    function sequenceAction()
     {
         Tag::appendTitle(' | Sequencing Run Setup ');
         $this->view->setVar('instrument_types', InstrumentTypes::find(array(
@@ -845,7 +974,8 @@ class TrackerController extends ControllerBase
         )));
     }
 
-    public function sequenceSetupCandidatesAction($instrument_type_id)
+    public
+    function sequenceSetupCandidatesAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Sequencing Run Setup ');
@@ -935,7 +1065,8 @@ class TrackerController extends ControllerBase
          */
     }
 
-    public function sequenceSetupConfirmAction($instrument_type_id)
+    public
+    function sequenceSetupConfirmAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Sequencing Run Setup Confirm ');
@@ -1040,7 +1171,8 @@ class TrackerController extends ControllerBase
 
     }
 
-    public function sequenceSetupSaveAction()
+    public
+    function sequenceSetupSaveAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -1156,7 +1288,8 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public function protocolAction()
+    public
+    function protocolAction()
     {
         Tag::appendTitle(' | Protocols ');
     }
