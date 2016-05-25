@@ -1,6 +1,6 @@
 <ul class="nav nav-tabs">
-  <li>{{ link_to('tracker/multiplexCandidates/' ~ step.id ~ '?view_type=PI', 'PI') }}</li>
-  <li>{{ link_to('tracker/multiplexCandidates/' ~ step.id ~ '?view_type=PJ', 'Project') }}</li>
+  <li>{{ link_to('tracker/experimentDetails/' ~ step.id ~ '?view_type=PI', 'PI') }}</li>
+  <li>{{ link_to('tracker/experimentDetails/' ~ step.id ~ '?view_type=PJ', 'Project') }}</li>
   <li class="active"><a href="#">Cherry Picking</a></li>
 </ul>
 <div class="panel-group" id="projectOverview">
