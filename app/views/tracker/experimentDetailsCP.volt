@@ -25,7 +25,7 @@
       </div>
     {% endif %}
 
-    {% if user.status is empty or user.status is 'In Progress' %}
+    {% if cherry_picking.status is empty or cherry_picking.status is 'In Progress' %}
       {% set active_status = 'active' %}
     {% else %}
       {% set active_status = 'inactive' %}

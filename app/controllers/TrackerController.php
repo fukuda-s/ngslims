@@ -222,7 +222,7 @@ class TrackerController extends ControllerBase
                     ->join('Projects', 'p.pi_user_id = u.id', 'p')
                     ->join('Seqlibs', 'sl.project_id = p.id', 'sl')
                     ->join('StepEntries', 'ste.seqlib_id = sl.id', 'ste')
-                    ->where('p.active = "Y"')
+                    ->where('cp.active = "Y"')
                     ->andWhere('ste.step_id = :step_id:', array("step_id" => $step_id))
                     ->groupBy(array('cp.id', 'status'))
                     ->orderBy(array('cp.name DESC', 'u.lastname ASC', 'u.firstname'))
