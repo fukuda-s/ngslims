@@ -440,7 +440,7 @@ class Elements extends Phalcon\Mvc\User\Component
             } else {
                 echo '  <div class="panel panel-warning">';
             }
-            echo '      <div class="panel panel-heading" onclick="showTubeSeqlibs(' . $step_id . ', ' . $project->id . ')">';
+            echo '      <div class="panel panel-heading" onclick="showTubeSeqlibs(' . $step_id . ', ' . $project->id . ', 0)">';
             echo '      	<div class="row">';
             echo '	        	<div class="col-xs-8">';
             echo '                  <div>' . $project->name . '</div>';
