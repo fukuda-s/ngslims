@@ -40,7 +40,7 @@
 
 <hr>
 
-<div class="panel panel-default">
+<div class="panel panel-success">
   <div class="panel-heading">
     <div class="panel-title">
       <h5>My Cherry Picking Lists</h5>
