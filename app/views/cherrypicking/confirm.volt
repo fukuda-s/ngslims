@@ -66,6 +66,17 @@
     {% elsefor %} No seqlibs are recorded
   {% endfor %}
 </div>
+<div class="row">
+  <div class="col-md-2">
+    <button type="button" class="btn btn-info pull-left" onclick="location.href='{{ previous_page }}'">&laquo; Back
+    </button>
+  </div>
+  <div class="col-md-8">
+  </div>
+  <div class="col-md-2">
+    <button type="button" class="btn btn-primary pull-right" onclick="saveCherryPicking()">Save &raquo;</button>
+  </div>
+</div>
 
 <hr>
 
@@ -79,17 +90,7 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="col-md-2">
-    <button type="button" class="btn btn-info pull-left" onclick="location.href='{{ previous_page }}'">&laquo; Back
-    </button>
-  </div>
-  <div class="col-md-8">
-  </div>
-  <div class="col-md-2">
-    <button type="button" class="btn btn-primary pull-right" onclick="saveCherryPicking()">Save &raquo;</button>
-  </div>
-</div>
+
 
 <script>
   function saveCherryPicking() {
