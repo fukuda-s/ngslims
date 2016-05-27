@@ -17,9 +17,9 @@
               <small>#seqlib</small>
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-default btn-xs" id="show-inactive-panel" data-toggle="collapse"
-                      data-target="[id^=inactives]">
-                Show Completed/On Hold
+              <button type="button" class="btn btn-default btn-xs" id="show-inactive-panel">
+                <div>Show Completed/On Hold</div>
+                <div style="display: none">Hide Completed/On Hold</div>
               </button>
             </div>
           </div>

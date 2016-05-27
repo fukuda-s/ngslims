@@ -15,9 +15,9 @@
               <small>#seqlib</small>
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-default btn-xs" id="show-inactive-panel" data-toggle="collapse"
-                      data-target="[id^=inactives]">
-                Show Completed/On Hold
+              <button type="button" class="btn btn-default btn-xs" id="show-inactive-panel">
+                <div>Show Completed/On Hold</div>
+                <div style="display: none">Hide Completed/On Hold</div>
               </button>
             </div>
           </div>
@@ -36,7 +36,7 @@
     <div {% if active_status is 'active' %} class="panel panel-info" id="project_id_{{ project.p.id }}"
     {% else %} class="panel panel-default collapse" id="inactives-{{ project.p.id }}" {% endif %}>
       <div class="panel-heading" data-toggle="collapse"
-           data-target="#seqlib-tube-list-target-id-{{ project.p.id }}" id="OwnerList" onclick="showTubeSeqlibs({{ step.id }}, {{ project.p.id  }}, 0)">
+           data-target="#seqlib-tube-list-target-id-{{ project.p.id }}-0" id="OwnerList" onclick="showTubeSeqlibs({{ step.id }}, {{ project.p.id  }}, 0)">
         <h4 class="panel-title">
           <div class="row">
             <div class="col-md-6">

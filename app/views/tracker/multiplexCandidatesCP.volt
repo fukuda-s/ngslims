@@ -15,9 +15,9 @@
               <small>#seqlib</small>
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn btn-default btn-xs" id="show-inactive-panel" data-toggle="collapse"
-                      data-target="[id^=inactives]">
-                Show Completed/On Hold
+              <button type="button" class="btn btn-default btn-xs" id="show-inactive-panel">
+                <div>Show Completed/On Hold</div>
+                <div style="display: none">Hide Completed/On Hold</div>
               </button>
             </div>
           </div>
@@ -36,7 +36,7 @@
     <div {% if active_status is 'active' %} class="panel panel-info" id="cherry_picking_id_{{ cherry_picking.cp.id }}"
     {% else %} class="panel panel-default collapse" id="inactives-{{ cherry_picking.cp.id }}" {% endif %}>
       <div class="panel-heading" data-toggle="collapse"
-           data-target="#list_cherry_picking_id_{{ cherry_picking.cp.id }}" id="OwnerList" onclick="showTubeSeqlibs({{ step.id }}, 0, {{ cherry_picking.cp.id  }})">
+           data-target="#seqlib-tube-list-target-id-0-{{ cherry_picking.cp.id }}" id="OwnerList" onclick="showTubeSeqlibs({{ step.id }}, 0, {{ cherry_picking.cp.id  }})">
         <h4 class="panel-title">
           <div class="row">
             <div class="col-md-7">
@@ -49,14 +49,18 @@
               <span class="badge">{{ seqlib_count }}</span>
             </div>
             <div class="col-md-1">
-              <!--<i class="indicator glyphicon glyphicon-chevron-right pull-right"></i>-->
+              <i class="indicator glyphicon glyphicon-chevron-right pull-right"></i>
             </div>
           </div>
         </h4>
       </div>
-      <div id="seqlib-tube-list-target-id-0-{{ cherry_picking.cp.id }}">
+      <div class="collapse" id="seqlib-tube-list-target-id-0-{{ cherry_picking.cp.id }}">
       </div>
     </div>
     {% elsefor %} No cherry_pickings are recorded
   {% endfor %}
 </div>
+
+<script>
+
+</script>

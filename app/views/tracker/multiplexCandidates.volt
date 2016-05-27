@@ -138,7 +138,7 @@
 
         });
 
-        $(target_id).collapse('show');
+    $(target_id).collapse('show');
   }
 
   $(document).ready(function () {
@@ -179,22 +179,12 @@
           .addClass('in');
     }
 
-    /*
-     * @TODO Bug: if click panel own, then following event fired.
+    /**
+     * Show '.inactives-<project/cherry_picking_id>' panels and toggle Show/Hide strings on button.
      */
-    $('.panel[id^=inactives-]')
-        .last()
-        .on('hidden.bs.collapse', function (e) {
-          e.stopPropagation();
-          var buttonObj = $('button#show-inactive-panel');
-          var buttonStr = buttonObj.text().replace('Hide', 'Show');
-          buttonObj.text(buttonStr);
-        })
-        .on('shown.bs.collapse', function (e) {
-          e.stopPropagation();
-          var buttonObj = $('button#show-inactive-panel');
-          var buttonStr = buttonObj.text().replace('Show', 'Hide');
-          buttonObj.text(buttonStr);
-        });
+    $('button#show-inactive-panel').click(function () {
+      $(this).children('div').toggle();
+      $('.panel[id^=inactives-]').toggle('fast');
+    });
   });
 </script>
