@@ -329,8 +329,7 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public
-    function multiplexSetupAction($step_id)
+    public function multiplexSetupAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main-wide');
         Tag::appendTitle(' | Multiplexing ');
@@ -510,8 +509,7 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public
-    function multiplexSetSessionAction()
+    public function multiplexSetSessionAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -539,8 +537,7 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public
-    function multiplexSetupConfirmAction($step_id)
+    public function multiplexSetupConfirmAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Multiplex Confirm ');
@@ -598,8 +595,7 @@ class TrackerController extends ControllerBase
         $this->view->setVar('step_id', $step_id);
     }
 
-    public
-    function multiplexSaveAction($step_id)
+    public function multiplexSaveAction($step_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -699,8 +695,7 @@ class TrackerController extends ControllerBase
         return $this->response->redirect("tracker/multiplexCandidates/$step_id");
     }
 
-    public
-    function flowcellSetupCandidatesAction($step_id)
+    public function flowcellSetupCandidatesAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Flowcell Setup ');
@@ -741,8 +736,7 @@ class TrackerController extends ControllerBase
         $this->view->setVar('controls', $controls);
     }
 
-    public
-    function flowcellSetupSetSessionAction()
+    public function flowcellSetupSetSessionAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -775,8 +769,7 @@ class TrackerController extends ControllerBase
 
     }
 
-    public
-    function flowcellSetupAction($step_id)
+    public function flowcellSetupAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Flowcell Setup Confirm');
@@ -837,8 +830,7 @@ class TrackerController extends ControllerBase
     }
 
 
-    public
-    function flowcellSetupConfirmAction($step_id)
+    public function flowcellSetupConfirmAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
 
@@ -868,8 +860,7 @@ class TrackerController extends ControllerBase
         $this->view->setVar('lane_index', $lane_index);
     }
 
-    public
-    function flowcellSetupSaveAction($step_id)
+    public function flowcellSetupSaveAction($step_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -964,8 +955,7 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public
-    function sequenceAction()
+    public function sequenceAction()
     {
         Tag::appendTitle(' | Sequencing Run Setup ');
         $this->view->setVar('instrument_types', InstrumentTypes::find(array(
@@ -974,8 +964,7 @@ class TrackerController extends ControllerBase
         )));
     }
 
-    public
-    function sequenceSetupCandidatesAction($instrument_type_id)
+    public function sequenceSetupCandidatesAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Sequencing Run Setup ');
@@ -1065,8 +1054,7 @@ class TrackerController extends ControllerBase
          */
     }
 
-    public
-    function sequenceSetupConfirmAction($instrument_type_id)
+    public function sequenceSetupConfirmAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Sequencing Run Setup Confirm ');
@@ -1171,8 +1159,7 @@ class TrackerController extends ControllerBase
 
     }
 
-    public
-    function sequenceSetupSaveAction()
+    public function sequenceSetupSaveAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -1288,9 +1275,4 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public
-    function protocolAction()
-    {
-        Tag::appendTitle(' | Protocols ');
-    }
 }
