@@ -175,7 +175,7 @@ class OrderController extends ControllerBase
                         'p.id AS project_id',
                         'p.name AS project_name'
                     ))
-                    ->addFrom('project_lab_user_entries', 'plue')
+                    ->addFrom('projectLabUserEntries', 'plue')
                     ->join('projects', 'p.id = plue.project_id', 'p')
                     ->where('plue.user_id = :user_id:', array("user_id" => $pi_user_id))
                     ->orderBy('p.name ASC')
@@ -198,7 +198,7 @@ class OrderController extends ControllerBase
                     array(
                         'project_id',
                         $projects,
-                        'using' => ['id', 'name'],
+                        'using' => ['project_id', 'project_name'],
                         'useEmpty' => true,
                         'emptyText' => $emptyText,
                         'emptyValue' => '@',
