@@ -33,7 +33,6 @@ class Security extends Plugin
             }
 
 
-
             // Private area resources
             $privateResources = array(
                 'order' => array(
@@ -82,8 +81,7 @@ class Security extends Plugin
                     'sequence',
                     'sequenceSetupCandidates',
                     'sequenceSetupConfirm',
-                    'sequenceSetupSave',
-                    'protocol'
+                    'sequenceSetupSave'
                 ),
                 'trackerdetails' => array(
                     'index',
@@ -145,6 +143,20 @@ class Security extends Plugin
                 ),
                 'kanban' => array(
                     'index'
+                ),
+                'setting' => array(
+                    'index',
+                    'users',
+                    'createLabsCheckField',
+                    'labs',
+                    'projects',
+                    'protocols',
+                    'instruments',
+                    'oligobarcodes',
+                    'organisms',
+                    'sampleLocations',
+                    'samplePropertyTypes',
+                    'steps'
                 ),
                 'search' => array(
                     'index',

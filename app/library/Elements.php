@@ -45,6 +45,10 @@ class Elements extends Phalcon\Mvc\User\Component
                 'caption' => '',
                 'action' => 'result'
             ),
+            'setting' => array(
+                'caption' => 'Setting',
+                'action' => 'index'
+            ),
             'session' => array(
                 'caption' => 'Log In/Sign Up',
                 'action' => 'index'
@@ -142,12 +146,6 @@ class Elements extends Phalcon\Mvc\User\Component
             'controller' => 'tracker',
             'action' => 'sequence',
             'param' => ''
-        ),
-        'hr2' => array(),
-        'Protocol Setting' => array(
-            'controller' => 'tracker',
-            'action' => 'protocol',
-            'param' => ''
         )
     );
 
@@ -169,6 +167,7 @@ class Elements extends Phalcon\Mvc\User\Component
             unset($this->_headerMenu['pull-left']['tracker']);
             unset($this->_headerMenu['pull-left']['cherrypicking']);
             unset($this->_headerMenu['pull-left']['kanban']);
+            unset($this->_headerMenu['pull-right']['setting']);
             unset($this->_headerMenu['pull-right']['search']);
         }
 
@@ -477,5 +476,15 @@ class Elements extends Phalcon\Mvc\User\Component
             echo '<li class="list-group-item">' . Tag::linkTo(array("trackerdetails/editSeqlibs/PICK/0/" . $cherry_picking->cp_id, $cherry_picking->cp_name)) . '</li>';
         }
 
+    }
+
+    /**
+     * Create random phrase for password
+     * @param int $length
+     * @return string
+     */
+    public function random($length = 8)
+    {
+        return substr(str_shuffle('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, $length);
     }
 }

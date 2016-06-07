@@ -2,6 +2,8 @@
 use Phalcon\Mvc\Model\Validator\Email as EmailValidator;
 use Phalcon\Mvc\Model\Validator\Uniqueness as UniquenessValidator;
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
+use Phalcon\Mvc\Model\Behavior\Timestampable;
+use Phalcon\Db\RawValue;
 
 class Users extends \Phalcon\Mvc\Model
 {
@@ -74,7 +76,8 @@ class Users extends \Phalcon\Mvc\Model
     public function validation()
     {
         $this->validate(new EmailValidator(array(
-            'field' => 'email'
+            'field' => 'email',
+            'allowEmpty' => false
         )));
         $this->validate(new UniquenessValidator(array(
             'field' => 'email',
@@ -113,12 +116,16 @@ class Users extends \Phalcon\Mvc\Model
         ));
 
         $this->hasMany('id', 'Requests', 'user_id');
+        $this->hasMany('id', 'LabUsers', 'user_id');
 
         $this->hasManyToMany('id', 'Projects', 'user_id', 'id', 'Samples', 'project_id', array(
             'alias' => 'UserSamples'
         ));
         $this->hasManyToMany('id', 'Projects', 'pi_user_id', 'id', 'Samples', 'project_id', array(
             'alias' => 'PiSamples'
+        ));
+        $this->hasManyToMany('id', 'LabUsers', 'user_id', 'lab_id', 'Labs', 'id', array(
+            'alias' => 'UserLabs'
         ));
 
         $this->addBehavior(new SoftDelete(
@@ -127,5 +134,24 @@ class Users extends \Phalcon\Mvc\Model
                 'value' => Users::NOT_ACTIVE
             ]
         ));
+
+        $this->addBehavior(new Timestampable(
+            array(
+                'beforeValidationOnCreate' => array(
+                    'field' => 'created_at',
+                    'format' => 'Y-m-d H:i:s'
+                )
+            )
+        ));
+    }
+
+    public function beforeValidationOnCreate()
+    {
+        if (!$this->active) {
+            $this->active = new RawValue('default');
+        }
+        if (!$this->created_at) {
+            $this->created_at = new RawValue('default');
+        }
     }
 }

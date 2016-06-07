@@ -162,12 +162,25 @@ class OrderController extends ControllerBase
             if ($request->isAjax() == true) {
                 $pi_user_id = $this->filter->sanitize($pi_user_id, array("int"));
 
+                /*
                 $projects = Projects::find(array(
                     "pi_user_id = :pi_user_id: AND active = 'Y'",
                     'bind' => array(
                         'pi_user_id' => $pi_user_id
                     )
                 ));
+                */
+                $projects = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'p.id AS project_id',
+                        'p.name AS project_name'
+                    ))
+                    ->addFrom('project_lab_user_entries', 'plue')
+                    ->join('projects', 'p.id = plue.project_id', 'p')
+                    ->where('plue.user_id = :user_id:', array("user_id" => $pi_user_id))
+                    ->orderBy('p.name ASC')
+                    ->getQuery()
+                    ->execute();
 
                 //Set default value from session value
                 if ($this->session->has('project')) {
