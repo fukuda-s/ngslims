@@ -157,7 +157,6 @@ ul.tube-list > li.tube-sm {
 }
 
 .tube-inactive {
-  display: none;
   color: #7C7494;
   border-color: #B2A7D4;
   background-color: #D8D1EE;
@@ -293,6 +292,7 @@ button.tube-copy {
  */
 .tube-close {
   float: right;
+  line-height: 16px;
   font-size: 20px;
   font-weight: bold;
   color: #000;

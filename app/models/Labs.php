@@ -1,7 +1,7 @@
 <?php
 
 
-use Phalcon\Mvc\Model\Validator\Email as Email;
+use Phalcon\Mvc\Model\Validator\Email as EmailValidation;
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class Labs extends \Phalcon\Mvc\Model
@@ -73,9 +73,9 @@ class Labs extends \Phalcon\Mvc\Model
 
     public function validation()
     {
-        $this->validate(new Email(array(
+        $this->validate(new EmailValidation(array(
             "field" => "email",
-            "required" => true
+            'allowEmpty' => true
         )));
         if ($this->validationHasFailed() == true) {
             return false;
@@ -103,6 +103,11 @@ class Labs extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasMany('id', 'LabUsers', 'lab_id');
+        $this->hasManyToMany('id', 'LabUsers', 'lab_id', 'user_id', 'Users', 'id', array(
+            'alias' => 'LabUsersUsers'
+        ));
+
         $this->addBehavior(new SoftDelete(
             array(
                 'field' => 'active',
