@@ -45,14 +45,14 @@ class SettingController extends ControllerBase
                 $password_reset = ($this->request->getPost('password_reset', array('striptags'))) ? $this->request->getPost('password_reset', array('striptags')) : null;
 
                 if (empty($user_id)) {
-                    $this->flashSession->error('ERROR: Undefined user_id value ' . $user_id . '.');
+                    return $this->flashSession->error('ERROR: Undefined user_id value ' . $user_id . '.');
                 }
 
 
                 if ($user_id > 0) {
                     $user = Users::findFirst("id = $user_id");
                     if (!$user) {
-                        $this->flashSession->error('ERROR: Could not get user data values.');
+                        return $this->flashSession->error('ERROR: Could not get user data values.');
                     }
                     if (empty($username) and $active == 'N') { //Case empty($username) via userRemove JavaScript function.
                         $user->delete(); //Should be soft-delete (active=N);
@@ -172,7 +172,7 @@ class SettingController extends ControllerBase
                 $this->view->disable();
                 $user_id = $this->request->getPost('user_id', 'int');
                 if (empty($user_id)) {
-                    $this->flashSession->error('ERROR: Undefined user_id value ' . $user_id . '.');
+                    return $this->flashSession->error('ERROR: Undefined user_id value ' . $user_id . '.');
                 }
 
                 $labs = Labs::find("active = 'Y'");
@@ -224,14 +224,14 @@ class SettingController extends ControllerBase
                 $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
 
                 if (empty($lab_id)) {
-                    $this->flashSession->error('ERROR: Undefined lab_id value ' . $lab_id . '.');
+                    return $this->flashSession->error('ERROR: Undefined lab_id value ' . $lab_id . '.');
                 }
 
 
                 if ($lab_id > 0) {
                     $lab = Labs::findFirst("id = $lab_id");
                     if (!$lab) {
-                        $this->flashSession->error('ERROR: Could not get lab data values.');
+                        return $this->flashSession->error('ERROR: Could not get lab data values.');
                     }
                     if (empty($name) and $active == 'N') {
                         $lab->delete(); //Should be soft-delete (active=N);
@@ -370,7 +370,7 @@ class SettingController extends ControllerBase
                 $users_candidate_tmp = $users_candidate_tmp
                     ->notInWhere('u.id', $lab_user_id);
             }
-            
+
             $users_candidate = $users_candidate_tmp
                 ->andWhere('u.active = "Y"')
                 ->groupBy('u.id')
@@ -382,10 +382,145 @@ class SettingController extends ControllerBase
 
     }
 
-    public
-    function projectsAction()
+    public function projectsAction()
     {
-        Tag::appendTitle(' | Projects');
+        $request = $this->request;
+        $auth = $this->session->get('auth');
+        $my_user = Users::findFirst($auth['id']);
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                //Custom Filter for username value.
+                $filter = new \Phalcon\Filter();
+                $filter->add('projectname', function ($value) {
+                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+                    $value = preg_replace('/\.+/', '.', $value);
+                    $value = preg_replace('/\.+$/', '', $value);
+                    return $value;
+                });
+
+                $project_id = $this->request->getPost('project_id', 'int');
+                $lab_id = $this->request->getPost('lab_id', 'int');
+                $name = $this->request->getPost('name', array('striptags'));
+                $name = $filter->sanitize($name, 'projectname');
+                $pi_user_id = $this->request->getPost('pi_user_id', 'int');
+                $project_type_id = $this->request->getPost('project_type_id', 'int');
+                $description = ($this->request->getPost('description', array('striptags'))) ? $this->request->getPost('description', array('striptags')) : null;
+                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+
+                if (empty($project_id)) {
+                    return $this->flashSession->error('ERROR: Undefined project_id value ' . $project_id . '.');
+                }
+
+
+                if ($project_id > 0) {
+                    $project = Projects::findFirst("id = $project_id");
+                    if (!$project) {
+                        return $this->flashSession->error('ERROR: Could not get project data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $project->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $project->lab_id = $lab_id;
+                        $project->name = $name;
+                        $project->pi_user_id = $pi_user_id;
+                        $project->project_type_id = $project_type_id;
+                        $project->description = $description;
+                        $project->active = $active;
+                    }
+                } else {
+                    $project = new Projects();
+                    $project->lab_id = $lab_id;
+                    $project->name = $name;
+                    $project->user_id = $my_user->id;
+                    $project->pi_user_id = $pi_user_id;
+                    $project->project_type_id = $project_type_id;
+                    $project->description = $description;
+                    $project->active = $active;
+                }
+
+                /*
+                 * Save user data values.
+                 */
+                var_dump($project->toArray());
+                if ($project->save() == false) {
+                    foreach ($project->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($project_id == -1) {
+                        $this->flashSession->success('Lab.：' . $project->name . ' is created.');
+                    } elseif ($project->active == 'N') {
+                        $this->flashSession->success('Lab.：' . $project->name . ' is change to in-active account.');
+                    } else {
+                        $this->flashSession->success('Lab.：' . $project->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Projects');
+
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $projects = Projects::find();
+            $labs = Labs::find("active = 'Y'");
+            $project_types = ProjectTypes::find("active = 'Y'");
+
+            $this->view->setVar('projects', $projects);
+            $this->view->setVar('labs', $labs);
+            $this->view->setVar('project_types', $project_types);
+            
+            $this->view->setVar('my_user', $my_user);
+
+        }
+    }
+
+    public function createPiUsersSelectAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                $lab_id = $this->request->getPost('lab_id', 'int');
+                $pi_user_id = $this->request->getPost('pi_user_id', 'int');
+                if (empty($lab_id)) {
+                    $this->flashSession->error('ERROR: Undefined lab_id value ' . $lab_id . '.');
+                }
+
+                $lab_users = $this->modelsManager->createBuilder()
+                    ->addFrom('Users', 'u')
+                    ->join('LabUsers', 'lu.user_id = u.id', 'lu')
+                    ->where('lu.lab_id = :lab_id:', array("lab_id" => $lab_id))
+                    ->andWhere('u.active = "Y"')
+                    ->orderBy('u.lastname ASC, u.firstname ASC')
+                    ->getQuery()
+                    ->execute();
+
+                // @TODO could not use Phalcon/Tag function in this case with using u.getFullname()
+                echo '<select id="modal-pi_user_id" class="form-control">';
+                if ($pi_user_id == 0) {
+                    echo '<option value="0">Please select PI...</option>';
+                }
+                foreach ($lab_users as $lab_user) {
+                    if ($lab_user->id == $pi_user_id) {
+                        echo '<option value="' . $lab_user->id . '" selected>' . $lab_user->getFullname() . '</option>';
+                    } else {
+                        echo '<option value="' . $lab_user->id . '">' . $lab_user->getFullname() . '</option>';
+                    }
+                }
+                echo '</select>';
+            }
+        }
     }
 
     public

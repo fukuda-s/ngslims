@@ -151,6 +151,7 @@ class Security extends Plugin
                     'labs',
                     'labUsers',
                     'projects',
+                    'createPiUsersSelect',
                     'projectLabUserEntries',
                     'protocols',
                     'instruments',
