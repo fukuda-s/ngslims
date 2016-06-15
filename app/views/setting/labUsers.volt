@@ -64,14 +64,14 @@
               {% set user_lab_count = user.LabUsers|length %}
               <div class="tube" id="user_id-{{ user.id }}">{{ user.getFullname() }}
                 {% if user_lab_count > 1 %}
-                  <a href="javascript:void(0)" class="tube-close pull-right">
+                  <a href="javascript:void(0)" class="tube-close pull-right" onclick="tubeCloseToggle(this)">
                     <i class="fa fa-times" aria-hidden="true"></i>
                     <i class="fa fa-repeat" aria-hidden="true" style="display: none"></i>
                   </a>
                 {% else %}
                   {% set trash_message = "Could not delete this Member. This member belongs to only this laboratory." %}
                   <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{ trash_message }}"
-                     style="color: #b9c4c8; cursor: not-allowed;" class="tube-close pull-right" onclick="return false;">
+                     style="color: #b9c4c8; cursor: not-allowed;" class="tube-close pull-right disabled" onclick="return false;">
                     <i class="fa fa-times" aria-hidden="true"></i>
                   </a>
                 {% endif %}
@@ -114,11 +114,11 @@
   /**
    * Toggle button icon and tube class
    */
-  function tubeCloseToggle() {
-    $(this)
+  function tubeCloseToggle(target) {
+    $(target)
         .parent('.tube')
         .toggleClass('tube-inactive');
-    $(this)
+    $(target)
         .find('i')
         .toggle();
 
@@ -184,7 +184,6 @@
       tubeFilter(queryStr, '#lab_users_holder');
     });
 
-    $('a.tube-close').click(tubeCloseToggle);
 
     $('#lab_users_save').click(function () {
       var lab_users_holder = $('#lab_users_holder');
