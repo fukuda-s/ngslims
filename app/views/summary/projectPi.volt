@@ -89,9 +89,13 @@
      * If URL has #pi_user_id_ then open collapsed panel-body
      */
     if (location.hash) {
-      var list_user_id = location.hash.replace('pi_', 'list_');
+      var pi_user_id = location.hash;
+      $(pi_user_id)
+          .removeClass('panel-info')
+          .addClass('panel-success');
+      var list_user_id = pi_user_id.replace('pi_', 'list_');
       $(list_user_id).addClass('in');
-      //console.log(list_user_id);
+      console.log(list_user_id);
     }
   });
 </script>
