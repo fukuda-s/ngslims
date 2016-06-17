@@ -452,11 +452,11 @@ class SettingController extends ControllerBase
                     return false;
                 } else {
                     if ($project_id == -1) {
-                        $this->flashSession->success('Lab.：' . $project->name . ' is created.');
+                        $this->flashSession->success('Project：' . $project->name . ' is created.');
                     } elseif ($project->active == 'N') {
-                        $this->flashSession->success('Lab.：' . $project->name . ' is change to in-active account.');
+                        $this->flashSession->success('Project：' . $project->name . ' is change to in-active account.');
                     } else {
-                        $this->flashSession->success('Lab.：' . $project->name . ' record is changed.');
+                        $this->flashSession->success('Project：' . $project->name . ' record is changed.');
                     }
 
                 }
@@ -477,7 +477,7 @@ class SettingController extends ControllerBase
             $this->view->setVar('projects', $projects);
             $this->view->setVar('labs', $labs);
             $this->view->setVar('project_types', $project_types);
-            
+
             $this->view->setVar('my_user', $my_user);
 
         }
@@ -521,6 +521,103 @@ class SettingController extends ControllerBase
                 echo '</select>';
             }
         }
+    }
+
+    public function projectUsersAction($project_id)
+    {
+        $request = $this->request;
+        $project = Projects::findFirst($project_id);
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $new_users_id_array = $this->request->getPost('new_users_id_array', array('striptags'));
+                $del_users_id_array = $this->request->getPost('del_users_id_array', array('striptags'));
+
+                $projectUsers = array();
+                $i = 0;
+                $new_users_name = array();
+                $del_users_name = array();
+                if (count($new_users_id_array)) {
+                    foreach ($new_users_id_array as $user_id_str) {
+                        $user_id_array = explode('-', $user_id_str); // $user_id_str is <lab_id>-<user_id>
+                        $projectUsers[$i] = new ProjectUsers();
+                        $projectUsers[$i]->project_id = $project_id;
+                        $projectUsers[$i]->user_id = $user_id_array[0];
+                        $new_users_name[] = Users::findFirst($user_id_array[0])->getFullname();
+                        $i++;
+                    }
+                }
+                if (count($del_users_id_array)) {
+                    foreach ($del_users_id_array as $user_id_str) {
+                        $user_id_array = explode('-', $user_id_str); // $user_id_str is <lab_id>-<user_id>
+                        $projectUsers[$i] = ProjectUsers::find("project_id = $project_id AND user_id = $user_id_array[0]");
+                        $projectUsers[$i]->delete();
+                        $del_users_name[] = Users::findFirst($user_id_array[0])->getFullname();
+                        $i++;
+                    }
+                }
+
+                if ($i > 0) {
+                    /*
+                     * Save LabUser data values.
+                     */
+                    $project->ProjectUsers = $projectUsers;
+                    if ($project->save() == false) {
+                        foreach ($project->getMessages() as $message) {
+                            $this->flashSession->error((string)$message);
+                        }
+                        return false;
+                    } else {
+                        if (count($new_users_name)) {
+                            $new_users_name_str = implode(",", $new_users_name);
+                            $this->flashSession->success('Project Users：' . $new_users_name_str . ' is added.');
+                        }
+                        if (count($del_users_name)) {
+                            $del_users_name_str = implode(",", $del_users_name);
+                            $this->flashSession->success('Project Users：' . $del_users_name_str . ' is deleted.');
+                        }
+
+                    }
+                }
+            }
+        } else {
+            Tag::appendTitle(' | ' . $project->name . ' | Lab. Members');
+            $this->view->setVar('project', $project);
+
+            $project_users = $project->ProjectUsers;
+            $this->view->setVar('project_users', $project_users);
+
+            $project_user_id = array();
+            foreach ($project_users as $user) {
+                $lab_user_id[] = $user->user_id;
+            }
+            /*
+             * Create candidate user list whom not be joined Project (!=$project_id)
+             */
+            $users_candidate_tmp = $this->modelsManager->createBuilder()
+                ->columns(array(
+                    'u.*'
+                ))
+                ->addFrom('Users', 'u');
+
+            if (count($project_user_id)) {
+                $users_candidate_tmp = $users_candidate_tmp
+                    ->notInWhere('u.id', $project_user_id);
+            }
+
+            $users_candidate = $users_candidate_tmp
+                ->andWhere('u.active = "Y"')
+                ->groupBy('u.id')
+                ->orderBy('u.lastname ASC, u.firstname ASC')
+                ->getQuery()
+                ->execute();
+            $this->view->setVar('users_candidate', $users_candidate);
+
+        }
+
     }
 
     public

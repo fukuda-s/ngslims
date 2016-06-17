@@ -1,6 +1,6 @@
 <?php
 
-class ProjectLabUserEntries extends \Phalcon\Mvc\Model
+class ProjectUsers extends \Phalcon\Mvc\Model
 {
 
     /**
@@ -13,12 +13,6 @@ class ProjectLabUserEntries extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
-    public $lab_id;
-
-    /**
-     *
-     * @var integer
-     */
     public $user_id;
 
     /**
@@ -26,7 +20,6 @@ class ProjectLabUserEntries extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->belongsTo('lab_id', 'Labs', 'id', array('alias' => 'Labs'));
         $this->belongsTo('project_id', 'Projects', 'id', array('alias' => 'Projects'));
         $this->belongsTo('user_id', 'Users', 'id', array('alias' => 'Users'));
     }
@@ -38,14 +31,14 @@ class ProjectLabUserEntries extends \Phalcon\Mvc\Model
      */
     public function getSource()
     {
-        return 'project_lab_user_entries';
+        return 'project_users';
     }
 
     /**
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return ProjectLabUserEntries[]
+     * @return ProjectUsers[]
      */
     public static function find($parameters = null)
     {
@@ -56,7 +49,7 @@ class ProjectLabUserEntries extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return ProjectLabUserEntries
+     * @return ProjectUsers
      */
     public static function findFirst($parameters = null)
     {

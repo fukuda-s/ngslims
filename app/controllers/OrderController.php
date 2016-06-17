@@ -175,9 +175,9 @@ class OrderController extends ControllerBase
                         'p.id AS project_id',
                         'p.name AS project_name'
                     ))
-                    ->addFrom('ProjectLabUserEntries', 'plue')
-                    ->join('Projects', 'p.id = plue.project_id', 'p')
-                    ->where('plue.user_id = :user_id:', array("user_id" => $pi_user_id))
+                    ->addFrom('ProjectUsers', 'pu')
+                    ->join('Projects', 'p.id = pu.project_id', 'p')
+                    ->where('pu.user_id = :user_id:', array("user_id" => $pi_user_id))
                     ->orderBy('p.name ASC')
                     ->getQuery()
                     ->execute();
@@ -751,6 +751,13 @@ class OrderController extends ControllerBase
         $projects->pi_user_id = $this->session->get('pi_user')->id;
         $projects->active = 'Y';
         //$projects->created_at = '2014-02-07';
+
+        $project_users = array();
+        $project_users[0] = new ProjectUsers();
+        $project_users[0]->project_id = $projects->id;
+        $project_users[0]->user_id = $this->session->get('pi_user')->id;
+
+        $projects->ProjectUsers = $project_users;
 
         $prev_projects = Projects::find(array(
             "name = :name: AND pi_user_id = :pi_user_id:",

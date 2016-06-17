@@ -102,6 +102,7 @@ class Projects extends \Phalcon\Mvc\Model
 
         $this->hasMany('id', 'Samples', 'project_id');
         $this->hasMany('id', 'Seqlibs', 'project_id');
+        $this->hasMany('id', 'ProjectUsers', 'project_id');
 
 
         $this->addBehavior(new Timestampable(

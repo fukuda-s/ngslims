@@ -72,7 +72,7 @@
                onclick="projectEdit('{{ project.id }}', '{{ project.lab_id }}', '{{ project.name }}', '{{ project.Users.getFullname() }}', '{{ project.pi_user_id }}', '{{ project.project_type_id }}', '{{ project.description }}', '{{ project.active }}'); return false;">
               <span class="fa fa-pencil"></span>&ensp;
             </a>
-            {{ link_to('setting/projectLabUserEntries/' ~ project.id, "<i class='fa fa-user-plus'></i>&ensp;") }}
+            {{ link_to('setting/projectUsers/' ~ project.id, "<i class='fa fa-user-plus'></i>&ensp;") }}
             {% set project_sample_count = project.Samples|length %}
             {% if project_sample_count == 0 %}
               <a href="javascript:void(0)" style="font-size: 9pt"

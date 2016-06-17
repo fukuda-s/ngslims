@@ -117,6 +117,7 @@ class Users extends \Phalcon\Mvc\Model
 
         $this->hasMany('id', 'Requests', 'user_id');
         $this->hasMany('id', 'LabUsers', 'user_id');
+        $this->hasMany('id', 'ProjectUsers', 'user_id');
 
         $this->hasManyToMany('id', 'Projects', 'user_id', 'id', 'Samples', 'project_id', array(
             'alias' => 'UserSamples'

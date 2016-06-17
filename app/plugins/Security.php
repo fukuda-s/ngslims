@@ -152,7 +152,7 @@ class Security extends Plugin
                     'labUsers',
                     'projects',
                     'createPiUsersSelect',
-                    'projectLabUserEntries',
+                    'projectUsers',
                     'protocols',
                     'instruments',
                     'oligobarcodes',
