@@ -191,7 +191,7 @@
 
     $('#modal-step_phase_code').change(function () {
       var step_phase_code_changed = $(this).val();
-      console.log(step_phase_code_changed);
+      //console.log(step_phase_code_changed);
       if (step_phase_code_changed != "FLOWCELL") {
         $('#modal-seq_runmode_type_id').attr('disabled', 'disabled');
       } else {
@@ -205,12 +205,18 @@
     });
 
     // @TODO should be consider details condition of details
-    if (step_stepentry_count > 0 || step_protocol_count) {
+    if (step_stepentry_count > 0 || step_protocol_count > 0) {
       $('#modal-step_phase_code').attr('disabled', 'disabled');
       $('#modal-seq_runmode_type_id').attr('disabled', 'disabled');
       $('#modal-platform_code').attr('disabled', 'disabled');
       $('#modal-nucleotide_type').attr('disabled', 'disabled');
       $('#modal-active').attr('disabled', 'disabled');
+    } else {
+      $('#modal-step_phase_code').removeAttr('disabled');
+      $('#modal-seq_runmode_type_id').removeAttr('disabled');
+      $('#modal-platform_code').removeAttr('disabled');
+      $('#modal-nucleotide_type').removeAttr('disabled');
+      $('#modal-active').removeAttr('disabled');
     }
 
     $('#modal-step-save').addClass('disabled');

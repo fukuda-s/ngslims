@@ -10,7 +10,7 @@
     {{ flashSession.output() }}
 
     <button type="button" class="btn btn-xs btn-primary pull-left"
-            onclick="projectEdit(-1, '', '', '{{ my_user.getFullname() }}', '', '', '', 'Y')"
+            onclick="projectEdit(-1, '', '', '{{ my_user.getFullname() }}', '', '', '', 'Y', '0')"
             style="margin: 10px 0; width: 261px ">
       <i class="fa fa-plus" aria-hidden="true"></i>&ensp;
       Create New Project
@@ -67,13 +67,13 @@
           {% else %}
             <td class="text-danger">{{ active }}</td>
           {% endif %}
+          {% set project_sample_count = project.Samples|length %}
           <td class="text-center">
             <a href="javascript:void(0)" style="font-size: 9pt"
-               onclick="projectEdit('{{ project.id }}', '{{ project.lab_id }}', '{{ project.name }}', '{{ project.Users.getFullname() }}', '{{ project.pi_user_id }}', '{{ project.project_type_id }}', '{{ project.description }}', '{{ project.active }}'); return false;">
+               onclick="projectEdit('{{ project.id }}', '{{ project.lab_id }}', '{{ project.name }}', '{{ project.Users.getFullname() }}', '{{ project.pi_user_id }}', '{{ project.project_type_id }}', '{{ project.description }}', '{{ project.active }}', '{{ project_sample_count }}'); return false;">
               <span class="fa fa-pencil"></span>&ensp;
             </a>
             {{ link_to('setting/projectUsers/' ~ project.id, "<i class='fa fa-user-plus'></i>&ensp;") }}
-            {% set project_sample_count = project.Samples|length %}
             {% if project_sample_count == 0 %}
               <a href="javascript:void(0)" style="font-size: 9pt"
                  onclick="projectRemove({{ project.id }}); return false;"><span class="fa fa-trash"></span></a>
@@ -184,7 +184,8 @@
   /**
    * Open modal window with filling values.
    */
-  function projectEdit(project_id, lab_id, name, user_name, pi_user_id, project_type_id, description, active) {
+  function projectEdit(project_id, lab_id, name, user_name, pi_user_id, project_type_id, description, active, project_sample_count) {
+    console.log(project_sample_count);
 
     createPiUsersSelect(lab_id, pi_user_id);
 
@@ -201,6 +202,12 @@
     $('#modal-project_type_id').val(project_type_id);
     $('#modal-description').val(description);
     $('#modal-active').val(active);
+
+    if(project_sample_count > 0) {
+      $('#modal-active').attr('disabled', 'disabled');
+    } else {
+      $('#modal-active').removeAttr('disabled');
+    }
 
 
     $('#modal-project-save').addClass('disabled');

@@ -2,14 +2,14 @@
   <div class="col-md-12">
     <ol class="breadcrumb">
       <li>{{ link_to('setting', 'Setting') }}</li>
-      <li class="active">Users</li>
+      <li class="active">Labs</li>
     </ol>
 
     {{ content() }}
     {{ flashSession.output() }}
 
     <button type="button" class="btn btn-xs btn-primary pull-left"
-            onclick="userEdit(-1, '', '', '', '', 'Y')"
+            onclick="userEdit(-1, '', '', '', '', 'Y', '0')"
             style="margin: 10px 0; width: 261px ">
       <i class="fa fa-plus" aria-hidden="true"></i>&ensp;
       Create New User Account
@@ -57,7 +57,7 @@
           {% endif %}
           <td class="text-center">
             <a href="javascript:void(0)" style="font-size: 9pt"
-               onclick="userEdit('{{ user.u.id }}', '{{ user.u.username }}', '{{ user.u.firstname }}', '{{ user.u.lastname }}', '{{ user.u.email }}', '{{ user.u.active }}'); return false;">
+               onclick="userEdit('{{ user.u.id }}', '{{ user.u.username }}', '{{ user.u.firstname }}', '{{ user.u.lastname }}', '{{ user.u.email }}', '{{ user.u.active }}', '{{ user.project_count }}'); return false;">
               <span class="fa fa-pencil"></span>&ensp;
             </a>
             {% if user.project_count == 0 %}
@@ -177,7 +177,7 @@
    * @param email
    * @param active
    */
-  function userEdit(user_id, username, firstname, lastname, email, active) {
+  function userEdit(user_id, username, firstname, lastname, email, active, project_count) {
     $('#modal-user_id').val(user_id);
     $('#modal-username').val(username);
     $('#modal-firstname').val(firstname);
@@ -200,6 +200,12 @@
           .parents('label.checkbox')
           .removeClass('checked')
           .removeClass('disabled');
+    }
+
+    if (project_count > 0) {
+      $('#modal-active').attr('disabled', 'disabled');
+    } else {
+      $('#modal-active').removeAttr('disabled');
     }
 
     $('#modal-user-save').addClass('disabled');

@@ -9,7 +9,7 @@
     {{ flashSession.output() }}
 
     <button type="button" class="btn btn-xs btn-primary pull-left"
-            onclick="labEdit(-1, '', '', '', '', '', '', '', '', 'Y')"
+            onclick="labEdit(-1, '', '', '', '', '', '', '', '', 'Y', '0')"
             style="margin: 10px 0; width: 261px ">
       <i class="fa fa-plus" aria-hidden="true"></i>&ensp;
       Create New Laboratory
@@ -59,13 +59,13 @@
           {% else %}
             <td class="text-danger">{{ active }}</td>
           {% endif %}
+          {% set lab_user_count = lab.LabUsers|length %}
           <td class="text-center">
             <a href="javascript:void(0)" style="font-size: 9pt"
-               onclick="labEdit('{{ lab.id }}', '{{ lab.name }}', '{{ lab.department }}', '{{ lab.zipcode }}', '{{ lab.address1 }}', '{{ lab.address2 }}', '{{ lab.phone }}', '{{ lab.fax }}', '{{ lab.email }}', '{{ lab.active }}'); return false;">
+               onclick="labEdit('{{ lab.id }}', '{{ lab.name }}', '{{ lab.department }}', '{{ lab.zipcode }}', '{{ lab.address1 }}', '{{ lab.address2 }}', '{{ lab.phone }}', '{{ lab.fax }}', '{{ lab.email }}', '{{ lab.active }}', '{{ lab_user_count }}'); return false;">
               <span class="fa fa-pencil"></span>&ensp;
             </a>
             {{ link_to('setting/labUsers/' ~ lab.id, "<i class='fa fa-user-plus'></i>&ensp;") }}
-            {% set lab_user_count = lab.LabUsers|length %}
             {% if lab_user_count == 0 %}
               <a href="javascript:void(0)" style="font-size: 9pt"
                  onclick="labRemove({{ lab.id }}); return false;"><span class="fa fa-trash"></span></a>
@@ -184,7 +184,7 @@
   /**
    * Open modal window with filling values.
    */
-  function labEdit(lab_id, name, department, zipcode, address1, address2, phone, fax, email, active) {
+  function labEdit(lab_id, name, department, zipcode, address1, address2, phone, fax, email, active, lab_user_count) {
     $('#modal-lab_id').val(lab_id);
     $('#modal-name').val(name);
     $('#modal-department').val(department);
@@ -196,6 +196,11 @@
     $('#modal-email').val(email);
     $('#modal-active').val(active);
 
+    if(lab_user_count > 0) {
+      $('#modal-active').attr('disabled', 'disabled');
+    } else {
+      $('#modal-active').removeAttr('disabled');
+    }
 
     $('#modal-lab-save').addClass('disabled');
 
