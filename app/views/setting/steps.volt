@@ -145,6 +145,12 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
+          <label for="modal-active" class="col-sm-3 control-label" style="font-size: 9pt">Sort Order</label>
+          <div class="col-sm-2">
+            {{ numeric_field('modal-sort_order', 'class': 'form-control') }}
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
           <label for="modal-active" class="col-sm-3 control-label" style="font-size: 9pt">Active/In-active</label>
           <div class="col-sm-2">
             {{ select_static('modal-active', ['Y':'Y', 'N':'N'], 'class': 'form-control') }}
@@ -166,7 +172,7 @@
   /**
    * Open modal window with filling values.
    */
-  function stepEdit(step_id, name, short_name, step_phase_code, seq_runmode_type_id, platform_code, nucleotide_type, active, step_stepentry_count, step_protocol_count) {
+  function stepEdit(step_id, name, short_name, step_phase_code, seq_runmode_type_id, platform_code, nucleotide_type, sort_order, active, step_stepentry_count, step_protocol_count) {
 
     $('#modal-step_id').val(step_id);
     $('#modal-name').val(name);
@@ -175,6 +181,7 @@
     $('#modal-seq_runmode_type_id').val(seq_runmode_type_id);
     $('#modal-platform_code').val(platform_code);
     $('#modal-nucleotide_type').val(nucleotide_type);
+    $('#modal-sort_order').val(sort_order);
     $('#modal-active').val(active);
 
     if (step_phase_code != "FLOWCELL") {
@@ -231,34 +238,42 @@
    */
   function stepSave() {
     if (!$('#modal-name').val().length) {
-      alert('Please input Project name.');
+      alert('Please input Step name.');
+      return false;
+    }
+    if (!$('#modal-platform_code').val().length) {
+      alert('Please input Platform Code.');
       return false;
     }
 
-    $('#modal-lab-edit').modal('hide');
+    $('#modal-step-edit').modal('hide');
 
-    var project_id = $('#modal-project_id').val();
-    var lab_id = $('#modal-lab_id').val();
+    var step_id = $('#modal-step_id').val();
     var name = $('#modal-name').val();
-    var pi_user_id = $('#modal-pi_user_id').val();
-    var project_type_id = $('#modal-project_type_id').val();
-    var description = $('#modal-description').val();
+    var short_name = $('#modal-short_name').val();
+    var step_phase_code = $('#modal-step_phase_code').val();
+    var seq_runmode_type_id = $('#modal-seq_runmode_type_id').val();
+    var platform_code = $('#modal-platform_code').val();
+    var nucleotide_type = $('#modal-nucleotide_type').val();
+    var sort_order = $('#modal-sort_order').val();
     var active = $('#modal-active').val();
     $.ajax({
       type: 'POST',
       url: '/ngsLIMS/setting/steps',
       data: {
-        project_id: project_id,
-        lab_id: lab_id,
+        step_id: step_id,
         name: name,
-        pi_user_id: pi_user_id,
-        project_type_id: project_type_id,
-        description: description,
+        short_name: short_name,
+        step_phase_code: step_phase_code,
+        seq_runmode_type_id: seq_runmode_type_id,
+        platform_code: platform_code,
+        nucleotide_type: nucleotide_type,
+        sort_order: sort_order,
         active: active
       }
     })
         .done(function (data) {
-          //console.log(data);
+          console.log(data);
           window.location.reload();  // @TODO It should not be re-loaded.
         });
   }

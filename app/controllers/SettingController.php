@@ -444,7 +444,7 @@ class SettingController extends ControllerBase
                 /*
                  * Save user data values.
                  */
-                var_dump($project->toArray());
+                //var_dump($project->toArray());
                 if ($project->save() == false) {
                     foreach ($project->getMessages() as $message) {
                         $this->flashSession->error((string)$message);
@@ -631,69 +631,75 @@ class SettingController extends ControllerBase
                 $this->view->disable();
                 //Custom Filter for username value.
                 $filter = new \Phalcon\Filter();
-                $filter->add('projectname', function ($value) {
+                $filter->add('stepname', function ($value) {
                     $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
                     $value = preg_replace('/\.+/', '.', $value);
                     $value = preg_replace('/\.+$/', '', $value);
                     return $value;
                 });
 
-                $project_id = $this->request->getPost('project_id', 'int');
-                $lab_id = $this->request->getPost('lab_id', 'int');
+                $step_id = $this->request->getPost('step_id', 'int');
                 $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'projectname');
-                $pi_user_id = $this->request->getPost('pi_user_id', 'int');
-                $project_type_id = $this->request->getPost('project_type_id', 'int');
-                $description = ($this->request->getPost('description', array('striptags'))) ? $this->request->getPost('description', array('striptags')) : null;
+                $name = $filter->sanitize($name, 'stepname');
+                $short_name = $this->request->getPost('short_name', array('striptags'));
+                $short_name = $filter->sanitize($short_name, 'stepname');
+                $step_phase_code = $this->request->getPost('step_phase_code', array('striptags', 'alphanum', 'trim', 'upper'));
+                $seq_runmode_type_id = ($this->request->getPost('seq_runmode_type_id', 'int')) ? $this->request->getPost('seq_runmode_type_id', 'int') : null;
+                $platform_code = ($this->request->getPost('platform_code', array('striptags', 'alphanum', 'trim', 'upper'))) ? $this->request->getPost('platform_code', array('striptags', 'alphanum', 'trim', 'upper')) : null;
+                $nucleotide_type = $this->request->getPost('nucleotide_type', array('striptags', 'alphanum', 'trim', 'upper'));
+                $sort_order = $this->request->getPost('sort_order', 'int');
                 $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
 
-                if (empty($project_id)) {
-                    return $this->flashSession->error('ERROR: Undefined project_id value ' . $project_id . '.');
+                if (empty($step_id)) {
+                    return $this->flashSession->error('ERROR: Undefined step_id value ' . $step_id . '.');
                 }
 
 
-                if ($project_id > 0) {
-                    $project = Projects::findFirst("id = $project_id");
-                    if (!$project) {
-                        return $this->flashSession->error('ERROR: Could not get project data values.');
+                if ($step_id > 0) {
+                    $step = Steps::findFirst("id = $step_id");
+                    if (!$step) {
+                        return $this->flashSession->error('ERROR: Could not get step data values.');
                     }
                     if (empty($name) and $active == 'N') {
-                        $project->delete(); //Should be soft-delete (active=N);
+                        $step->delete(); //Should be soft-delete (active=N);
                     } else {
-                        $project->lab_id = $lab_id;
-                        $project->name = $name;
-                        $project->pi_user_id = $pi_user_id;
-                        $project->project_type_id = $project_type_id;
-                        $project->description = $description;
-                        $project->active = $active;
+                        $step->name = $name;
+                        $step->short_name = $short_name;
+                        $step->step_phase_code = $step_phase_code;
+                        $step->seq_runmode_type_id = $seq_runmode_type_id;
+                        $step->platform_code = $platform_code;
+                        $step->nucleotide_type = $nucleotide_type;
+                        $step->sort_order = $sort_order;
+                        $step->active = $active;
                     }
                 } else {
-                    $project = new Projects();
-                    $project->lab_id = $lab_id;
-                    $project->name = $name;
-                    $project->user_id = $my_user->id;
-                    $project->pi_user_id = $pi_user_id;
-                    $project->project_type_id = $project_type_id;
-                    $project->description = $description;
-                    $project->active = $active;
+                    $step = new Steps();
+                    $step->name = $name;
+                    $step->short_name = $short_name;
+                    $step->step_phase_code = $step_phase_code;
+                    $step->seq_runmode_type_id = $seq_runmode_type_id;
+                    $step->platform_code = $platform_code;
+                    $step->nucleotide_type = $nucleotide_type;
+                    $step->sort_order = $sort_order;
+                    $step->active = $active;
                 }
 
                 /*
                  * Save user data values.
                  */
-                var_dump($project->toArray());
-                if ($project->save() == false) {
-                    foreach ($project->getMessages() as $message) {
+                var_dump($step->toArray());
+                if ($step->save() == false) {
+                    foreach ($step->getMessages() as $message) {
                         $this->flashSession->error((string)$message);
                     }
                     return false;
                 } else {
-                    if ($project_id == -1) {
-                        $this->flashSession->success('Project：' . $project->name . ' is created.');
-                    } elseif ($project->active == 'N') {
-                        $this->flashSession->success('Project：' . $project->name . ' is change to in-active account.');
+                    if ($step_id == -1) {
+                        $this->flashSession->success('Project：' . $step->name . ' is created.');
+                    } elseif ($step->active == 'N') {
+                        $this->flashSession->success('Project：' . $step->name . ' is change to in-active account.');
                     } else {
-                        $this->flashSession->success('Project：' . $project->name . ' record is changed.');
+                        $this->flashSession->success('Project：' . $step->name . ' record is changed.');
                     }
 
                 }
@@ -768,7 +774,6 @@ class SettingController extends ControllerBase
     {
         Tag::appendTitle(' | Sample Property Types');
     }
-
 
 
 }

@@ -90,7 +90,7 @@ class Steps extends \Phalcon\Mvc\Model
         $this->hasMany('platform_code', 'InstrumentTypes', 'platform_code');
         $this->hasMany('platform_code', 'Controls', 'platform_code');
         $this->hasMany('id', 'Protocols', 'step_id');
-        $this->hasMany('step_phase_code', 'StepEntries', 'step_phase_code');
+        $this->hasMany('id', 'StepEntries', 'step_id');
 
         $this->addBehavior(new SoftDelete(
             array(
