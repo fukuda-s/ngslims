@@ -620,6 +620,119 @@ class SettingController extends ControllerBase
 
     }
 
+    public function stepsAction()
+    {
+        Tag::appendTitle(' | Steps');
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                //Custom Filter for username value.
+                $filter = new \Phalcon\Filter();
+                $filter->add('projectname', function ($value) {
+                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+                    $value = preg_replace('/\.+/', '.', $value);
+                    $value = preg_replace('/\.+$/', '', $value);
+                    return $value;
+                });
+
+                $project_id = $this->request->getPost('project_id', 'int');
+                $lab_id = $this->request->getPost('lab_id', 'int');
+                $name = $this->request->getPost('name', array('striptags'));
+                $name = $filter->sanitize($name, 'projectname');
+                $pi_user_id = $this->request->getPost('pi_user_id', 'int');
+                $project_type_id = $this->request->getPost('project_type_id', 'int');
+                $description = ($this->request->getPost('description', array('striptags'))) ? $this->request->getPost('description', array('striptags')) : null;
+                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+
+                if (empty($project_id)) {
+                    return $this->flashSession->error('ERROR: Undefined project_id value ' . $project_id . '.');
+                }
+
+
+                if ($project_id > 0) {
+                    $project = Projects::findFirst("id = $project_id");
+                    if (!$project) {
+                        return $this->flashSession->error('ERROR: Could not get project data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $project->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $project->lab_id = $lab_id;
+                        $project->name = $name;
+                        $project->pi_user_id = $pi_user_id;
+                        $project->project_type_id = $project_type_id;
+                        $project->description = $description;
+                        $project->active = $active;
+                    }
+                } else {
+                    $project = new Projects();
+                    $project->lab_id = $lab_id;
+                    $project->name = $name;
+                    $project->user_id = $my_user->id;
+                    $project->pi_user_id = $pi_user_id;
+                    $project->project_type_id = $project_type_id;
+                    $project->description = $description;
+                    $project->active = $active;
+                }
+
+                /*
+                 * Save user data values.
+                 */
+                var_dump($project->toArray());
+                if ($project->save() == false) {
+                    foreach ($project->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($project_id == -1) {
+                        $this->flashSession->success('Project：' . $project->name . ' is created.');
+                    } elseif ($project->active == 'N') {
+                        $this->flashSession->success('Project：' . $project->name . ' is change to in-active account.');
+                    } else {
+                        $this->flashSession->success('Project：' . $project->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Steps');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $steps = $this->modelsManager->createBuilder()
+                ->addFrom('Steps', 's')
+                ->join('StepPhases', 'sp.step_phase_code = s.step_phase_code', 'sp')
+                ->orderBy('sp.sort_order ASC, s.sort_order ASC')
+                ->getQuery()
+                ->execute();
+
+            $step_phases = StepPhases::find(array(
+                "active = 'Y'",
+                "orderBy" => "sort_order ASC"
+            ));
+
+            $seq_runmode_types = SeqRunmodeTypes::find(array(
+                "active = 'Y'",
+                "orderBy" => "sort_order ASC"
+            ));
+
+            $platforms = Platforms::find("active = 'Y'");
+
+            $this->view->setVar('steps', $steps);
+            $this->view->setVar('step_phases', $step_phases);
+            $this->view->setVar('seq_runmode_types', $seq_runmode_types);
+            $this->view->setVar('platforms', $platforms);
+
+        }
+    }
+
     public
     function protocolsAction()
     {
@@ -656,10 +769,6 @@ class SettingController extends ControllerBase
         Tag::appendTitle(' | Sample Property Types');
     }
 
-    public
-    function stepsAction()
-    {
-        Tag::appendTitle(' | Steps');
-    }
+
 
 }
