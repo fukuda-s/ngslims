@@ -86,6 +86,9 @@ class Protocols extends \Phalcon\Mvc\Model
     {
         $this->hasOne('step_id', 'Steps', 'id');
 
+        $this->hasMany('id', 'Seqlibs', 'protocol_id');
+        $this->hasMany('id', 'OligobarcodeSchemeAllows', 'protocol_id');
+
         $this->addBehavior(new Timestampable(
             array(
                 'beforeValidationOnCreate' => array(

@@ -39,4 +39,9 @@ class OligobarcodeSchemeAllows extends \Phalcon\Mvc\Model
             'has_oligobarcodeB' => 'has_oligobarcodeB'
         );
     }
+
+    public function initialize()
+    {
+        $this->hasOne('oligobarcode_scheme_id', 'OligobarcodeSchemes', 'id');
+    }
 }

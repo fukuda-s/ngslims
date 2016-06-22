@@ -119,7 +119,7 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-zipcode" class="col-sm-3 control-label" style="font-size: 9pt">Created User Name</label>
+          <label for="modal-user_name" class="col-sm-3 control-label" style="font-size: 9pt">Created User Name</label>
           <div class="col-sm-9">
             {{ text_field('modal-user_name', 'class': 'form-control', 'disabled': 'disabled') }}
           </div>
@@ -137,7 +137,7 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-phone" class="col-sm-3 control-label" style="font-size: 9pt">Description</label>
+          <label for="modal-description" class="col-sm-3 control-label" style="font-size: 9pt">Description</label>
           <div class="col-sm-9">
             {{ text_field('modal-description', 'class': 'form-control') }}
           </div>
@@ -185,7 +185,7 @@
    * Open modal window with filling values.
    */
   function projectEdit(project_id, lab_id, name, user_name, pi_user_id, project_type_id, description, active, project_sample_count) {
-    console.log(project_sample_count);
+    //console.log(project_sample_count);
 
     createPiUsersSelect(lab_id, pi_user_id);
 

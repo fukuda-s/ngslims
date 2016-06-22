@@ -687,7 +687,6 @@ class SettingController extends ControllerBase
                 /*
                  * Save user data values.
                  */
-                var_dump($step->toArray());
                 if ($step->save() == false) {
                     foreach ($step->getMessages() as $message) {
                         $this->flashSession->error((string)$message);
@@ -739,10 +738,199 @@ class SettingController extends ControllerBase
         }
     }
 
-    public
-    function protocolsAction()
+    public function protocolsAction()
     {
-        Tag::appendTitle(' | Protocols');
+        $request = $this->request;
+        $auth = $this->session->get('auth');
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                //Custom Filter for username value.
+                $filter = new \Phalcon\Filter();
+                $filter->add('protocolname', function ($value) {
+                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+                    $value = preg_replace('/\.+/', '.', $value);
+                    $value = preg_replace('/\.+$/', '', $value);
+                    return $value;
+                });
+
+                $protocol_id = $this->request->getPost('protocol_id', 'int');
+                $name = $this->request->getPost('name', array('striptags'));
+                $name = $filter->sanitize($name, 'protocolname');
+                $description = ($this->request->getPost('description', array('striptags'))) ? $this->request->getPost('description', array('striptags')) : null;
+                $step_id = $this->request->getPost('step_id', 'int');
+                $min_multiplex_number = $this->request->getPost('min_multiplex_number', 'int');
+                $max_multiplex_number = $this->request->getPost('max_multiplex_number', 'int');
+                $next_step_phase_code = $this->request->getPost('next_step_phase_code', array('striptags'));
+                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+
+                if (empty($protocol_id)) {
+                    return $this->flashSession->error('ERROR: Undefined protocol_id value ' . $protocol_id . '.');
+                }
+
+
+                if ($protocol_id > 0) {
+                    $protocol = Protocols::findFirst("id = $protocol_id");
+                    if (!$protocol) {
+                        return $this->flashSession->error('ERROR: Could not get protocol data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $protocol->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $protocol->name = $name;
+                        $protocol->description = $description;
+                        $protocol->step_id = $step_id;
+                        $protocol->min_multiplex_number = $min_multiplex_number;
+                        $protocol->max_multiplex_number = $max_multiplex_number;
+                        $protocol->next_step_phase_code = $next_step_phase_code;
+                        $protocol->active = $active;
+                    }
+                } else {
+                    $protocol = new Protocols();
+                    $protocol->name = $name;
+                    $protocol->description = $description;
+                    $protocol->step_id = $step_id;
+                    $protocol->min_multiplex_number = $min_multiplex_number;
+                    $protocol->max_multiplex_number = $max_multiplex_number;
+                    $protocol->next_step_phase_code = $next_step_phase_code;
+                    $protocol->active = $active;
+                }
+
+                /*
+                 * Save user data values.
+                 */
+                //var_dump($protocol->toArray());
+                if ($protocol->save() == false) {
+                    foreach ($protocol->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($protocol_id == -1) {
+                        $this->flashSession->success('Protocol：' . $protocol->name . ' is created.');
+                    } elseif ($protocol->active == 'N') {
+                        $this->flashSession->success('Protocol：' . $protocol->name . ' is change to in-active account.');
+                    } else {
+                        $this->flashSession->success('Protocol：' . $protocol->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Protocols');
+
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $protocols = Protocols::find();
+            $step_prep = Steps::find("step_phase_code = 'PREP'");
+
+            $this->view->setVar('protocols', $protocols);
+            $this->view->setVar('step_prep', $step_prep);
+
+        }
+    }
+
+    public function protocolOligobarcodeSchemeAllowsAction($protocol_id)
+    {
+        $request = $this->request;
+        $protocol = Protocols::findFirst($protocol_id);
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $new_oligobarcode_scheme_id_array = $this->request->getPost('new_oligobarcode_scheme_id_array', array('striptags'));
+                $del_oligobarcode_scheme_id_array = $this->request->getPost('del_oligobarcode_scheme_id_array', array('striptags'));
+
+                $oligobarcodeSchemeAllows = array();
+                $i = 0;
+                $new_oligobarcode_scheme_name = array();
+                $del_oligobarcode_scheme_name = array();
+                $has_oligobarcodeB = ($protocol->next_step_phase_code == 'DUALMULTIPLEX') ? 'Y' : 'N';
+                if (count($new_oligobarcode_scheme_id_array)) {
+                    foreach ($new_oligobarcode_scheme_id_array as $oligobarcode_scheme_id) {
+                        $oligobarcodeSchemeAllows[$i] = new OligobarcodeSchemeAllows();
+                        $oligobarcodeSchemeAllows[$i]->oligobarcode_scheme_id = $oligobarcode_scheme_id;
+                        $oligobarcodeSchemeAllows[$i]->protocol_id = $protocol_id;
+                        $oligobarcodeSchemeAllows[$i]->has_oligobarcodeB = $has_oligobarcodeB;
+                        $new_oligobarcode_scheme_name[] = OligobarcodeSchemes::findFirst($oligobarcode_scheme_id);
+                        $i++;
+                    }
+                }
+                if (count($del_oligobarcode_scheme_id_array)) {
+                    foreach ($del_oligobarcode_scheme_id_array as $oligobarcode_scheme_id) {
+                        $oligobarcodeSchemeAllows[$i] = OligobarcodeSchemeAllows::find("protocol_id = $protocol_id AND oligobarcode_scheme_id = $oligobarcode_scheme_id");
+                        $oligobarcodeSchemeAllows[$i]->delete();
+                        $del_oligobarcode_scheme_name[] = OligobarcodeSchemes::findFirst($oligobarcode_scheme_id);
+                        $i++;
+                    }
+                }
+
+                if ($i > 0) {
+                    /*
+                     * Save LabUser data values.
+                     */
+                    $protocol->OligobarcodeSchemeAllows = $oligobarcodeSchemeAllows;
+                    if ($protocol->save() == false) {
+                        foreach ($protocol->getMessages() as $message) {
+                            $this->flashSession->error((string)$message);
+                        }
+                        return false;
+                    } else {
+                        if (count($new_oligobarcode_scheme_name)) {
+                            $new_oligobarcode_scheme_name_str = implode(",", $new_oligobarcode_scheme_name);
+                            $this->flashSession->success('Oligobarcode Scheme：' . $new_oligobarcode_scheme_name_str . ' is added.');
+                        }
+                        if (count($del_oligobarcode_scheme_name)) {
+                            $del_oligobarcode_scheme_name_str = implode(",", $del_oligobarcode_scheme_name);
+                            $this->flashSession->success('Oligobarcode Scheme：' . $del_oligobarcode_scheme_name_str . ' is deleted.');
+                        }
+
+                    }
+                }
+            }
+        } else {
+            Tag::appendTitle(' | ' . $protocol->name . ' | Lab. Members');
+            $this->view->setVar('protocol', $protocol);
+
+            $protocol_oligobarcode_scheme_allows = $protocol->OligobarcodeSchemeAllows;
+            $this->view->setVar('protocol_oligobarcode_scheme_allows', $protocol_oligobarcode_scheme_allows);
+
+            $oligobarcode_scheme_id = array();
+            foreach ($protocol_oligobarcode_scheme_allows as $oligobarcode_scheme_allow) {
+                $oligobarcode_scheme_id[] = $oligobarcode_scheme_allow->oligobarcode_scheme_id;
+            }
+            /*
+             * Create candidate user list whom not be joined OligobarcodeSchemes (!=$oligobarcode_scheme_id)
+             */
+            $oligobarcode_scheme_candidate_tmp = $this->modelsManager->createBuilder()
+                ->addFrom('OligobarcodeSchemes', 'os');
+
+            if (count($oligobarcode_scheme_id)) {
+                $oligobarcode_scheme_candidate_tmp = $oligobarcode_scheme_candidate_tmp
+                    ->notInWhere('os.id', $oligobarcode_scheme_id);
+            }
+
+            if ($protocol->next_step_phase_code != 'DUALMULTIPLEX') {
+                $oligobarcode_scheme_candidate_tmp = $oligobarcode_scheme_candidate_tmp
+                    ->andWhere('os.is_oligobarcodeB = "N"');
+            }
+
+            $oligobarcode_scheme_candidate = $oligobarcode_scheme_candidate_tmp
+                ->andWhere('os.active = "Y"')
+                ->getQuery()
+                ->execute();
+            $this->view->setVar('oligobarcode_scheme_candidate', $oligobarcode_scheme_candidate);
+
+        }
+
     }
 
     public
