@@ -155,6 +155,8 @@ class Security extends Plugin
                     'projectUsers',
                     'protocols',
                     'protocolOligobarcodeSchemeAllows',
+                    'oligobarcodeSchemes',
+                    'oligobarcodeSchemeOligobarcodes',
                     'oligobarcodes',
                     'instruments',
                     'organisms',

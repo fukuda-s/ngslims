@@ -105,7 +105,7 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-phone" class="col-sm-3 control-label" style="font-size: 9pt">Description</label>
+          <label for="modal-description" class="col-sm-3 control-label" style="font-size: 9pt">Description</label>
           <div class="col-sm-9">
             {{ text_field('modal-description', 'class': 'form-control') }}
           </div>
@@ -161,11 +161,6 @@
    * Open modal window with filling values.
    */
   function protocolEdit(protocol_id, name, description, step_id, min_multiplex_number, max_multiplex_number, next_step_phase_code, active, protocol_seqlibs_count, protocol_oligobarcode_scheme_allows_count) {
-
-    $('#modal-lab_id').change(function () {
-      var changed_lab_id = $(this).val();
-      createPiUsersSelect(changed_lab_id, 0);
-    });
 
     $('#modal-protocol_id').val(protocol_id);
     $('#modal-name').val(name);

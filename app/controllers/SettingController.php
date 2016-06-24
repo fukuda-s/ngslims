@@ -442,7 +442,7 @@ class SettingController extends ControllerBase
                 }
 
                 /*
-                 * Save user data values.
+                 * Save project data values.
                  */
                 //var_dump($project->toArray());
                 if ($project->save() == false) {
@@ -562,7 +562,7 @@ class SettingController extends ControllerBase
 
                 if ($i > 0) {
                     /*
-                     * Save LabUser data values.
+                     * Save ProjectUsers data values.
                      */
                     $project->ProjectUsers = $projectUsers;
                     if ($project->save() == false) {
@@ -741,7 +741,6 @@ class SettingController extends ControllerBase
     public function protocolsAction()
     {
         $request = $this->request;
-        $auth = $this->session->get('auth');
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
@@ -799,7 +798,7 @@ class SettingController extends ControllerBase
                 }
 
                 /*
-                 * Save user data values.
+                 * Save protocol data values.
                  */
                 //var_dump($protocol->toArray());
                 if ($protocol->save() == false) {
@@ -875,7 +874,7 @@ class SettingController extends ControllerBase
 
                 if ($i > 0) {
                     /*
-                     * Save LabUser data values.
+                     * Save $oligobarcodeSchemeAllows data values.
                      */
                     $protocol->OligobarcodeSchemeAllows = $oligobarcodeSchemeAllows;
                     if ($protocol->save() == false) {
@@ -897,7 +896,7 @@ class SettingController extends ControllerBase
                 }
             }
         } else {
-            Tag::appendTitle(' | ' . $protocol->name . ' | Lab. Members');
+            Tag::appendTitle(' | ' . $protocol->name . ' | Oligobarcode Scheme Allows');
             $this->view->setVar('protocol', $protocol);
 
             $protocol_oligobarcode_scheme_allows = $protocol->OligobarcodeSchemeAllows;
@@ -908,7 +907,7 @@ class SettingController extends ControllerBase
                 $oligobarcode_scheme_id[] = $oligobarcode_scheme_allow->oligobarcode_scheme_id;
             }
             /*
-             * Create candidate user list whom not be joined OligobarcodeSchemes (!=$oligobarcode_scheme_id)
+             * Create candidate OligobarcodeSchemes list whom not be joined OligobarcodeSchemeAllows (!=$oligobarcode_scheme_id)
              */
             $oligobarcode_scheme_candidate_tmp = $this->modelsManager->createBuilder()
                 ->addFrom('OligobarcodeSchemes', 'os');
@@ -933,16 +932,187 @@ class SettingController extends ControllerBase
 
     }
 
-    public
-    function instrumentsAction()
+    public function oligobarcodeSchemesAction()
     {
-        Tag::appendTitle(' | Instruments');
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                //Custom Filter for username value.
+                $filter = new \Phalcon\Filter();
+                $filter->add('oligobarcode_scheme_name', function ($value) {
+                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+                    $value = preg_replace('/\.+/', '.', $value);
+                    $value = preg_replace('/\.+$/', '', $value);
+                    return $value;
+                });
+
+                $oligobarcode_scheme_id = $this->request->getPost('oligobarcode_scheme_id', 'int');
+                $name = $this->request->getPost('name', array('striptags'));
+                $name = $filter->sanitize($name, 'oligobarcode_scheme_name');
+                $description = ($this->request->getPost('description', array('striptags'))) ? $this->request->getPost('description', array('striptags')) : null;
+                $is_oligobarcodeB = $this->request->getPost('is_oligobarcodeB', array('striptags'));
+                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+
+                if (empty($oligobarcode_scheme_id)) {
+                    return $this->flashSession->error('ERROR: Undefined oligobarcode_scheme_id value ' . $oligobarcode_scheme_id . '.');
+                }
+
+
+                if ($oligobarcode_scheme_id > 0) {
+                    $oligobarcode_scheme = OligobarcodeSchemes::findFirst("id = $oligobarcode_scheme_id");
+                    if (!$oligobarcode_scheme) {
+                        return $this->flashSession->error('ERROR: Could not get oligobarcode_scheme data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $oligobarcode_scheme->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $oligobarcode_scheme->name = $name;
+                        $oligobarcode_scheme->description = $description;
+                        $oligobarcode_scheme->is_oligobarcodeB = $is_oligobarcodeB;
+                        $oligobarcode_scheme->active = $active;
+                    }
+                } else {
+                    $oligobarcode_scheme = new OligobarcodeSchemes();
+                    $oligobarcode_scheme->name = $name;
+                    $oligobarcode_scheme->description = $description;
+                    $oligobarcode_scheme->is_oligobarcodeB = $is_oligobarcodeB;
+                    $oligobarcode_scheme->active = $active;
+                }
+
+                /*
+                 * Save oligobarcode scheme data values.
+                 */
+                //var_dump($oligobarcode_scheme->toArray());
+                if ($oligobarcode_scheme->save() == false) {
+                    foreach ($oligobarcode_scheme->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($oligobarcode_scheme_id == -1) {
+                        $this->flashSession->success('OligobarcodeScheme：' . $oligobarcode_scheme->name . ' is created.');
+                    } elseif ($oligobarcode_scheme->active == 'N') {
+                        $this->flashSession->success('OligobarcodeScheme：' . $oligobarcode_scheme->name . ' is change to in-active account.');
+                    } else {
+                        $this->flashSession->success('OligobarcodeScheme：' . $oligobarcode_scheme->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | OligobarcodeSchemes');
+
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $oligobarcode_schemes = OligobarcodeSchemes::find();
+
+            $this->view->setVar('oligobarcode_schemes', $oligobarcode_schemes);
+
+        }
+    }
+
+    public function oligobarcodeSchemeOligobarcodesAction($oligobarcode_scheme_id)
+    {
+        $request = $this->request;
+        $oligobarcode_scheme = OligobarcodeSchemes::findFirst($oligobarcode_scheme_id);
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $new_oligobarcode_id_array = $this->request->getPost('new_oligobarcode_id_array', array('striptags'));
+                $del_oligobarcode_id_array = $this->request->getPost('del_oligobarcode_id_array', array('striptags'));
+
+                $oligobarcodeSchemeOligobarcodes = array();
+                $i = 0;
+                $new_oligobarcode_name = array();
+                $del_oligobarcode_name = array();
+                if (count($new_oligobarcode_id_array)) {
+                    foreach ($new_oligobarcode_id_array as $oligobarcode_id) {
+                        $oligobarcodeSchemeOligobarcodes[$i] = Oligobarcodes::findFirst($oligobarcode_id);
+                        $oligobarcodeSchemeOligobarcodes[$i]->oligobarcode_scheme_id = $oligobarcode_scheme_id;
+                        $new_oligobarcode_name[] = $oligobarcodeSchemeOligobarcodes[$i]->name;
+                        $i++;
+                    }
+                }
+                if (count($del_oligobarcode_id_array)) {
+                    foreach ($del_oligobarcode_id_array as $oligobarcode_id) {
+                        $oligobarcode = Oligobarcodes::findFirst($oligobarcode_id);
+                        $oligobarcode->oligobarcode_scheme_id = null;
+                        if ($oligobarcode->save() == false){
+                            foreach ($oligobarcode->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
+                            }
+                            return false;
+                        }
+                        $del_oligobarcode_name[] = $oligobarcodeSchemeOligobarcodes[$i]->name;
+                        $i++;
+                    }
+                }
+
+                if ($i > 0) {
+                    /*
+                     * Save $oligobarcodeSchemeOligobarcodes data values.
+                     */
+                    $oligobarcode_scheme->Oligobarcodes = $oligobarcodeSchemeOligobarcodes;
+                    if ($oligobarcode_scheme->save() == false) {
+                        foreach ($oligobarcode_scheme->getMessages() as $message) {
+                            $this->flashSession->error((string)$message);
+                        }
+                        return false;
+                    } else {
+                        if (count($new_oligobarcode_name)) {
+                            $new_oligobarcode_name_str = implode(",", $new_oligobarcode_name);
+                            $this->flashSession->success('Oligobarcode Scheme：' . $new_oligobarcode_name_str . ' is added.');
+                        }
+                        if (count($del_oligobarcode_name)) {
+                            $del_oligobarcode_name_str = implode(",", $del_oligobarcode_name);
+                            $this->flashSession->success('Oligobarcode Scheme：' . $del_oligobarcode_name_str . ' is deleted.');
+                        }
+
+                    }
+                }
+            }
+        } else {
+            Tag::appendTitle(' | ' . $oligobarcode_scheme->name . ' | Oligobarcodes');
+            $this->view->setVar('oligobarcode_scheme', $oligobarcode_scheme);
+
+            $oligobarcode_scheme_oligobarcodes = $oligobarcode_scheme->Oligobarcodes;
+            $this->view->setVar('oligobarcode_scheme_oligobarcodes', $oligobarcode_scheme_oligobarcodes);
+            
+            /*
+             * Create candidate oligobarcode list whom not has oligobarcode_scheme_id
+             */
+            $oligobarcodes_candidate = $this->modelsManager->createBuilder()
+                ->addFrom('Oligobarcodes', 'o')
+                ->where('o.oligobarcode_scheme_id IS NULL')
+                ->andWhere('o.active = "Y"')
+                ->getQuery()
+                ->execute();
+            $this->view->setVar('oligobarcodes_candidate', $oligobarcodes_candidate);
+
+        }
+
     }
 
     public
     function oligobarcodesAction()
     {
         Tag::appendTitle(' | Oligobarcodes');
+    }
+
+    public
+    function instrumentsAction()
+    {
+        Tag::appendTitle(' | Instruments');
     }
 
     public

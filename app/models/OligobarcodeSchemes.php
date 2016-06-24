@@ -55,6 +55,8 @@ class OligobarcodeSchemes extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasMany('id', 'Oligobarcodes', 'oligobarcode_scheme_id');
+        
         $this->addBehavior(new SoftDelete(
             array(
                 'field' => 'active',
