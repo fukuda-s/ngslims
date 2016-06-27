@@ -116,7 +116,7 @@
    * Toggle button icon and tube class
    */
   function tubeCloseToggle(target) {
-    console.log('clicked');
+    //console.log('clicked');
     $(target)
         .parent('.tube')
         .toggleClass('tube-inactive');
@@ -209,7 +209,7 @@
         }
       })
           .done(function (data) {
-            console.log(data);
+            //console.log(data);
             window.location.reload();  // @TODO It should not be re-loaded.
           });
 

@@ -95,7 +95,7 @@
           .addClass('panel-success');
       var list_user_id = pi_user_id.replace('pi_', 'list_');
       $(list_user_id).addClass('in');
-      console.log(list_user_id);
+      //console.log(list_user_id);
     }
   });
 </script>

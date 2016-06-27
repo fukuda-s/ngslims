@@ -373,7 +373,7 @@ $(document).ready(function () {
         saveConfirmModalBody.append('<li>' + value + '</li>');
       });
       saveConfirmModalBody.append('</ul>');
-      console.log(duplicatesInView);
+      //console.log(duplicatesInView);
       $('#saveConfirmModalSubmitButton').addClass('disabled')
     }
 
@@ -392,7 +392,7 @@ $(document).ready(function () {
     })
         .done(function (data) {
           if (data.length) {
-            console.log(data);
+            //console.log(data);
             saveConfirmModalBody
                 .append('<h5>Following seqtemplate(s) name were already used.<br>Please press \'Cancel\' and non-duplicate seqtemplate name.</h5>')
                 .append('<ul>');

@@ -257,7 +257,7 @@
     })
         .done(function (data) {
           $('#flash').html(data);
-          console.log(column + " : " + id + " : " + name);
+          //console.log(column + " : " + id + " : " + name);
         });
   }
 
@@ -690,7 +690,7 @@
         var step_selected = $('#step_id').find('option:selected');
         var step_name_selected = step_selected.text();
         $('#step_name_selected').hide().show('normal').text(step_name_selected);
-        console.log("onchange " + step_name_selected);
+        //console.log("onchange " + step_name_selected);
 
         var protocol_selected = $('#protocol_id').find('option:selected');
         var protocol_name_selected = protocol_selected.text();
@@ -1124,7 +1124,7 @@
         }
         //Set session value for sample_property_types checked of checked/unchecked.
         setOrderSessionVal('sample_property_types_checked', 0, $samplePropertyTypesChecked);
-        console.log($samplePropertyTypesChecked);
+        //console.log($samplePropertyTypesChecked);
 
         //Change column width (Show checked sample_property_types column) on handsontable.
         $handsontable.updateSettings({'colWidths': changedColWidths});

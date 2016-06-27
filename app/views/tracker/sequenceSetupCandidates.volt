@@ -136,7 +136,7 @@ function setOrderSessionVal(column, id, name) {
   })
       .done(function (data) {
         $('#flash').html(data);
-        console.log(column + " : " + id + " : " + name);
+        //console.log(column + " : " + id + " : " + name);
       });
 }
 

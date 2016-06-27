@@ -45,7 +45,7 @@
     })
         .done(function (data) {
           $(target_id).html(data);
-          console.log(target_id);
+          //console.log(target_id);
 
           /*
            * Add selectable function to seqlib tubes.
@@ -112,7 +112,7 @@
            */
           $('#tube-filter').on('keyup', function (event) {
             var queryStr = new RegExp(event.target.value);
-            console.log(queryStr);
+            //console.log(queryStr);
             $(event.target)
                 .parents('.tube-group')
                 .children('.tube-list')
@@ -144,7 +144,7 @@
   $(document).ready(function () {
     $("#mixup-seqlibs-button").click(function () {
       var selectedSeqlibs = [];
-      console.log("Clicked mixup-seqlibs-button");
+      //console.log("Clicked mixup-seqlibs-button");
       $(document).find(".ui-selected[id^=seqlib-id-]").each(function () {
         var seqlib_id = $(this).attr("id").replace("seqlib-id-", "");
         selectedSeqlibs.push(seqlib_id);
@@ -161,7 +161,7 @@
           }
         })
             .done(function () {
-              console.log(selectedSeqlibs);
+              //console.log(selectedSeqlibs);
               window.location = "{{ url("tracker/multiplexSetup/") ~ step.id }}"
             });
       }

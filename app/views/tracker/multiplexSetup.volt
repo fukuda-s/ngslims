@@ -403,7 +403,7 @@
               data: {indexedSeqlibs: seqlibs, seqtemplates: seqtemplates}
             })
             .done(function () {
-              console.log(seqlibs);
+              //console.log(seqlibs);
               window.location = "{{ url("tracker/multiplexSetupConfirm/") ~ step.id }}"
             });
       }

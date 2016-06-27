@@ -159,7 +159,7 @@
           isDirtyAr[seqlib_id][columnToChange] = valueChangeTo; //Over write isDirtyAr with current changes.
         }
       });
-      console.log(isDirtyAr);
+      //console.log(isDirtyAr);
     }
 
     // Construct handsontable
@@ -281,7 +281,7 @@
 
       },
       afterSelectionByProp: function (r, p, r2, c2) {
-        console.log(p);
+        //console.log(p);
         if (p === 'sl.oligobarcodeA_id' || p === 'sl.oligobarcodeB_id') {
           var protocol_id = $handsontable.getDataAtRowProp(r, 'sl.protocol_id').toString();
           $.ajax({
@@ -294,7 +294,7 @@
                 getOligobarcodeAr(data);
               });
 
-          console.log('protocol_id: ' + protocol_id);
+          //console.log('protocol_id: ' + protocol_id);
         }
       }
     });

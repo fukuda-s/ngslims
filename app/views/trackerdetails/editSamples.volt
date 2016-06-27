@@ -170,7 +170,7 @@
           isDirtyAr[sample_id][columnToChange] = valueChangeTo; //Over write isDirtyAr with current changes.
         }
       });
-      console.log(isDirtyAr);
+      //console.log(isDirtyAr);
     }
 
     // Construct handsontable

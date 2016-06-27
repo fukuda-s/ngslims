@@ -107,7 +107,7 @@
    * Toggle button icon and tube class
    */
   function tubeCloseToggle(target) {
-    console.log('clicked');
+    //console.log('clicked');
     $(target)
         .parent('.tube')
         .toggleClass('tube-inactive');
