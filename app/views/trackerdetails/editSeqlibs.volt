@@ -70,7 +70,7 @@
         var protocol_id = value["id"];
         var protocol_name = value["name"];
         protocolAr[protocol_id] = protocol_name;
-        protocolDrop.push(value["name"]);
+        protocolDrop.push(protocol_name);
       });
     }
 

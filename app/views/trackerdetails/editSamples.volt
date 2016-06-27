@@ -89,7 +89,7 @@
         var protocol_id = value["id"];
         var protocol_name = value["name"];
         protocolAr[protocol_id] = protocol_name;
-        protocolDrop.push(value["name"]);
+        protocolDrop.push(protocol_name);
       });
     }
 
@@ -110,7 +110,7 @@
         var sample_location_id = value["id"];
         var sample_location_name = value["name"];
         sampleLocationAr[sample_location_id] = sample_location_name;
-        sampleLocationDrop.push(value["name"]);
+        sampleLocationDrop.push(sample_location_name);
       });
     }
 
