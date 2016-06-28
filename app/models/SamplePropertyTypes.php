@@ -55,6 +55,8 @@ class SamplePropertyTypes extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasMany('id', 'SamplePropertyEntries', 'sample_property_type_id');
+        
         $this->addBehavior(new SoftDelete(
             array(
                 'field' => 'active',

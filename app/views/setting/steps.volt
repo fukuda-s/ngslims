@@ -77,7 +77,7 @@
               <a href="javascript:void(0)" style="font-size: 9pt"
                  onclick="stepRemove({{ step.id }}); return false;"><span class="fa fa-trash"></span></a>
             {% else %}
-              {% set trash_message = "Could not delete this Project. This Step is already used by " ~ step_stepentry_count ~ " sample/seqlibs or used by " ~ step_protocol_count ~ " protocols." %}
+              {% set trash_message = "Could not delete this Step. This Step is already used by " ~ step_stepentry_count ~ " sample/seqlibs or used by " ~ step_protocol_count ~ " protocols." %}
               <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{ trash_message }}"
                  style="font-size: 9pt; color: #b9c4c8; cursor: not-allowed;" onclick="return false;">
                 <span class="fa fa-trash"></span></a>
@@ -289,7 +289,7 @@
       return false;
     }
 
-    if (window.confirm("This Project will be in-active.\n\nAre You Sure?")) {
+    if (window.confirm("This Step will be in-active.\n\nAre You Sure?")) {
       $.ajax({
         type: 'POST',
         url: '/ngsLIMS/setting/steps',

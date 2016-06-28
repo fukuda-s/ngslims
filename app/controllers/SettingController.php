@@ -622,7 +622,6 @@ class SettingController extends ControllerBase
 
     public function stepsAction()
     {
-        Tag::appendTitle(' | Steps');
         $request = $this->request;
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
@@ -1159,6 +1158,90 @@ class SettingController extends ControllerBase
         }
     }
 
+    public function samplePropertyTypesAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                //Custom Filter for username value.
+                $filter = new \Phalcon\Filter();
+                $filter->add('motermname', function ($value) {
+                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+                    $value = preg_replace('/\.+/', '.', $value);
+                    $value = preg_replace('/\.+$/', '', $value);
+                    return $value;
+                });
+
+                $sample_property_type_id = $this->request->getPost('sample_property_type_id', 'int');
+                $name = $this->request->getPost('name', array('striptags', 'trim'));
+                $mo_term_name = $this->request->getPost('mo_term_name', array('striptags'));
+                $mo_term_name = $filter->sanitize($mo_term_name, 'motermname');
+                $mo_id = $this->request->getPost('mo_id', array('striptags', 'trim'));
+                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+
+                if (empty($sample_property_type_id)) {
+                    return $this->flashSession->error('ERROR: Undefined sample_property_type_id value ' . $sample_property_type_id . '.');
+                }
+
+
+                if ($sample_property_type_id > 0) {
+                    $sample_property_type = SamplePropertyTypes::findFirst("id = $sample_property_type_id");
+                    if (!$sample_property_type) {
+                        return $this->flashSession->error('ERROR: Could not get sample_property_type data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $sample_property_type->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $sample_property_type->name = $name;
+                        $sample_property_type->mo_term_name = $mo_term_name;
+                        $sample_property_type->mo_id = $mo_id;
+                        $sample_property_type->active = $active;
+                    }
+                } else {
+                    $sample_property_type = new SamplePropertyTypes();
+                    $sample_property_type->name = $name;
+                    $sample_property_type->mo_term_name = $mo_term_name;
+                    $sample_property_type->mo_id = $mo_id;
+                    $sample_property_type->active = $active;
+                }
+
+                /*
+                 * Save user data values.
+                 */
+                if ($sample_property_type->save() == false) {
+                    foreach ($sample_property_type->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($sample_property_type == -1) {
+                        $this->flashSession->success('Sample Property Type：' . $sample_property_type->name . ' is created.');
+                    } elseif ($sample_property_type->active == 'N') {
+                        $this->flashSession->success('Sample Property Type：' . $sample_property_type->name . ' is change to in-active account.');
+                    } else {
+                        $this->flashSession->success('Sample Property Type：' . $sample_property_type->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Sample Property Types');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $sample_property_types = SamplePropertyTypes::find();
+
+            $this->view->setVar('sample_property_types', $sample_property_types);
+
+        }
+    }
+
     public
     function instrumentsAction()
     {
@@ -1177,11 +1260,6 @@ class SettingController extends ControllerBase
         Tag::appendTitle(' | Sample Locations');
     }
 
-    public
-    function samplePropertyTypesAction()
-    {
-        Tag::appendTitle(' | Sample Property Types');
-    }
 
 
 }
