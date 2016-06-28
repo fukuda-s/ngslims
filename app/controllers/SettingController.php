@@ -1047,7 +1047,7 @@ class SettingController extends ControllerBase
                     foreach ($del_oligobarcode_id_array as $oligobarcode_id) {
                         $oligobarcode = Oligobarcodes::findFirst($oligobarcode_id);
                         $oligobarcode->oligobarcode_scheme_id = null;
-                        if ($oligobarcode->save() == false){
+                        if ($oligobarcode->save() == false) {
                             foreach ($oligobarcode->getMessages() as $message) {
                                 $this->flashSession->error((string)$message);
                             }
@@ -1087,7 +1087,7 @@ class SettingController extends ControllerBase
 
             $oligobarcode_scheme_oligobarcodes = $oligobarcode_scheme->Oligobarcodes;
             $this->view->setVar('oligobarcode_scheme_oligobarcodes', $oligobarcode_scheme_oligobarcodes);
-            
+
             /*
              * Create candidate oligobarcode list whom not has oligobarcode_scheme_id
              */
@@ -1103,10 +1103,60 @@ class SettingController extends ControllerBase
 
     }
 
-    public
-    function oligobarcodesAction()
+    public function oligobarcodesAction()
     {
-        Tag::appendTitle(' | Oligobarcodes');
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                // echo "Request was made using POST and AJAX";
+                if ($request->hasPost('changes')) {
+                    $this->view->disable();
+                    $changes = $request->getPost('changes');
+                    foreach ($changes as $oligobarcode_id => $rowValues) {
+                        foreach ($rowValues as $colNameToChange => $valueChangeTo) {
+
+                            if (empty($valueChangeTo)) {
+                                $valueChangeTo = null;
+                            }
+
+                            // @TODO this alert could not display..
+                            if ($colNameToChange == "barcode_seq") {
+                                if (preg_match('/[^AGCTN]/', $valueChangeTo)) {
+                                    $this->flashSession->error("Could not use except [AGCTN] string on barcode_seq.");
+                                    return;
+                                }
+                            }
+
+                            if ($colNameToChange == "oligobarcode_scheme_id") {
+                                $oligobarcode_scheme_id = OligobarcodeSchemes::findFirstByName($valueChangeTo)->id;
+                                $valueChangeTo = $oligobarcode_scheme_id;
+                            }
+
+                            $oligobarcode = OLigobarcodes::findFirst($oligobarcode_id);
+                            $oligobarcode->$colNameToChange = $valueChangeTo;
+
+                            if (!$oligobarcode->save()) {
+                                foreach ($oligobarcode->getMessages() as $message) {
+                                    $this->flashSession->error((string)$message);
+                                }
+                                return;
+                            }
+                        }
+                    }
+                    // Something return is necessary for frontend jQuery Ajax to find success or fail.
+                    echo json_encode($changes);
+                }
+            }
+        } else {
+            Tag::appendTitle(' | Oligobarcodes');
+            $this->assets
+                ->addJs('js/handsontable/dist/handsontable.full.js')
+                ->addJs('js/numeral.min.js')
+                ->addCss('js/handsontable/dist/handsontable.css')
+                ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
+        }
     }
 
     public

@@ -53,10 +53,9 @@ class OligobarcodesController extends ControllerBase
                     return;
                 } else {
                     $oligobarcodes = $this->modelsManager->createBuilder()
-                        ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'os.is_oligobarcodeB'))
+                        ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'o.sort_order', 'o.oligobarcode_scheme_id', 'o.active', 'os.is_oligobarcodeB'))
                         ->addFrom('Oligobarcodes', 'o')
                         ->join('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id', 'os')
-                        ->join('OligobarcodeSchemeAllows', 'osa.oligobarcode_scheme_id = os.id', 'osa')
                         ->groupBy('o.id')
                         ->orderBy('os.id ASC, o.sort_order ASC')
                         ->getQuery()

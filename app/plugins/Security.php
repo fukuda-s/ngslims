@@ -117,6 +117,9 @@ class Security extends Plugin
                 'oligobarcodes' => array(
                     'loadjson'
                 ),
+                'oligobarcodeschemes' => array(
+                    'loadjson'
+                ),
                 'protocols' => array(
                     'loadjson'
                 ),

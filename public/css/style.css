@@ -352,3 +352,14 @@ div.dataTables_wrapper { clear: both; }
 .dataTables_length > label > select {
   line-height: 1 !important;
 }
+
+/*
+ * Custom style for barcode_seq
+ */
+.barcode-seq {
+  font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
+}
+
+tbody > tr.bg-inactive {
+  background-color: #f2dede !important;
+}
