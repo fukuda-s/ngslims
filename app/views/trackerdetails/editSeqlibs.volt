@@ -15,9 +15,6 @@
         <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre_action=' ~ previousAction, "Samples") }}</li>
       {% endif %}
       <li class="active"><a href="#">SeqLibs</a></li>
-      <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
-        <span class="fa fa-expand"></span>
-      </button>
     </ul>
     <div id="handsontable-editSeqlibs-body" style="overflow: scroll"></div>
   </div>

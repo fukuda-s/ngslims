@@ -382,7 +382,7 @@ class TrackerdetailsController extends ControllerBase
             $this->view->setVar('step', (object)array('id' => 0, 'tabtype' => 'seqlib'));
             $this->view->setVar('cherrypicking', CherryPickings::findFirstById($project_id)); //$project_id has cherry_picking_id
         } else {
-            $this->view->setVar('step', Steps::findFirstById($step_id));
+            $this->view->setVar('step', Steps::findFirst($step_id));
         }
     }
 

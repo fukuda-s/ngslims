@@ -7,21 +7,18 @@
       <hr>
     {% endif %}
     {{ flashSession.output() }}
-    {# {{ dump(sample_property_types) }} #}
     {% include 'partials/handsontable-toolbar.volt' %}
+    {# {{ dump(sample_property_types) }} #}
     <ul class="nav nav-tabs">
       <!--
       <li class="active">{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre_action=' ~ previousAction, "Samples") }}</li>
       -->
       <li class="active"><a href="#">Samples</a></li>
-      {% if type === 'PREP' %}
+      {% if type === 'QC' or type === 'PREP' %}
         <li>{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '/' ~ previousStatus, "SeqLibs") }}</li>
       {% else %}
         <li>{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/0/' ~ project.id ~ '/?pre_action=' ~ previousAction, "SeqLibs") }}</li>
       {% endif %}
-      <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
-        <span class="fa fa-expand"></span>
-      </button>
     </ul>
     <div id="handsontable-editSamples-body" style="overflow: scroll"></div>
   </div>

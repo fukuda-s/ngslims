@@ -7,25 +7,28 @@
           class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
     </button>
   </div>
+
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="handsontable-toolbar">
     <ul class="nav navbar-nav">
       <li class="disabled" id="save"><a href="#"><i class="fa fa-save"></i> Save</a></li>
-      <li class="disabled" id="undo"><a href="#"><i class="fa fa-undo"></i> Unde</a></li>
+      <li class="disabled" id="undo"><a href="#"><i class="fa fa-undo"></i> Undo</a></li>
       <li class="disabled" id="redo"><a href="#">Redo <i class="fa fa-repeat"></i></a></li>
     </ul>
     <form class="navbar-form navbar-right" role="search">
       <div class="form-group">
         {% if step.tabtype is defined and step.tabtype == 'sample' %}
-        <select id="sample_property_types" multiple="multiple">
-        {% for sample_property_type in sample_property_types %}
-          {% if sample_property_type.sample_count > 0 %}
-            <option value="sample_property_type_id_{{ sample_property_type.id }}" disabled="disabled" selected>{{ sample_property_type.name }}</option>
-          {% else %}
-            <option value="sample_property_type_id_{{ sample_property_type.id }}">{{ sample_property_type.name }}</option>
-          {% endif %}
-        {% endfor %}
-        </select>
+          <select id="sample_property_types" multiple="multiple">
+            {% for sample_property_type in sample_property_types %}
+              {% if sample_property_type.sample_count > 0 %}
+                <option value="sample_property_type_id_{{ sample_property_type.id }}" disabled="disabled"
+                        selected>{{ sample_property_type.name }}</option>
+              {% else %}
+                <option
+                    value="sample_property_type_id_{{ sample_property_type.id }}">{{ sample_property_type.name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
         {% endif %}
         <input id="search_field" type="search" class="form-control" placeholder="Search">
       </div>
@@ -34,9 +37,17 @@
       <li class="disabled" id="clear"><a href="#">Clear edit <i class="fa fa-refresh"></i></a></li>
     </ul>
   </div>
-  <!-- /.navbar-collapse -->
 </nav>
-<div class="checkbox" id="handsontable-autosave">
-  <label> <input class="checkbox" type="checkbox" autocomplete="off"> Autosave
-  </label>
-</div>
+  <!-- /.navbar-collapse -->
+<form class="form-inline">
+  <div class="form-group" id="handsontable-autosave">
+    <label for="handsontable-autosave">
+      <input class="checkbox" type="checkbox" autocomplete="off"> Autosave
+    </label>
+  </div>
+  <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
+    <span class="fa fa-expand"></span>
+  </button>
+</form>
+
+<div class="clearfix"></div>

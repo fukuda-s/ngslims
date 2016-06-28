@@ -9,9 +9,6 @@
       <li>{{ link_to("trackerdetails/editSamples/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre_action=' ~ previousAction, "Samples") }}</li>
       <li>{{ link_to("trackerdetails/editSeqlibs/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre_action=' ~ previousAction, "SeqLibs") }}</li>
       <li class="active">{{ link_to("trackerdetails/editSeqlanes/" ~ type ~ '/' ~ step.id ~ '/' ~ project.id ~ '?pre_action=' ~ previousAction, "SeqLanes") }}</li>
-      <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
-        <span class="fa fa-expand"></span>
-      </button>
     </ul>
     <div id="handsontable-editSeqlanes-body" style="height: 400px; overflow: auto"></div>
   </div>
@@ -21,8 +18,8 @@
  * Construct Handsontable
  */
 // Make handsontable renderer and dropdown lists
-var sampleTypeAr = new Array();
-var organismAr = new Array();
+var sampleTypeAr = [];
+var organismAr = [];
 
 $(document).ready(function () {
 
@@ -86,8 +83,8 @@ $(document).ready(function () {
   var $container = $("#handsontable-editSeqlanes-body");
   var $console = $("#handsontable-console");
   var $toolbar = $("#handsontable-toolbar");
-  var autosaveNotification = new String();
-  var isDirtyAr = new Array();
+  var autosaveNotification = String();
+  var isDirtyAr = [];
   $container.handsontable({
     stretchH: 'all',
     rowHeaders: true,

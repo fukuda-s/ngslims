@@ -7,9 +7,7 @@
     {{ flashSession.output() }}
 
     {% include 'partials/handsontable-toolbar.volt' %}
-    <button id="handsontable-size-ctl" type="button" class="btn btn-default pull-right">
-      <span class="fa fa-expand"></span>
-    </button>
+
     <div id="handsontable-editOligobarcodes-body" style="overflow: scroll"></div>
   </div>
 </div>
