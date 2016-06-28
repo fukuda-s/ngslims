@@ -13,12 +13,12 @@
             onclick="samplePropertyTypeEdit(-1, '', '', '', 'Y', 0)"
             style="margin: 10px 0; width: 261px ">
       <i class="fa fa-plus" aria-hidden="true"></i>&ensp;
-      Create New Step
+      Create New Sample Property Type
     </button>
     <button type="button" class="btn btn-xs pull-right" style="margin: 0 0 10px 0; width: 261px "
             onclick="showInactive(this)">
-      <div><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Show In-active Projects</div>
-      <div style="display: none"><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Hide In-active Projects</div>
+      <div><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Show In-active Sample Property Type</div>
+      <div style="display: none"><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Hide In-active Sample Property Type</div>
     </button>
     <div class="clearfix"></div>
 
@@ -195,7 +195,7 @@
       return false;
     }
 
-    if (window.confirm("This Project will be in-active.\n\nAre You Sure?")) {
+    if (window.confirm("This Sample Property Type will be in-active.\n\nAre You Sure?")) {
       $.ajax({
         type: 'POST',
         url: '/ngsLIMS/setting/samplePropertyTypes',

@@ -17,8 +17,8 @@
     </button>
     <button type="button" class="btn btn-xs pull-right" style="margin: 0 0 10px 0; width: 261px "
             onclick="showInactive(this)">
-      <div><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Show In-active Projects</div>
-      <div style="display: none"><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Hide In-active Projects</div>
+      <div><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Show In-active Steps</div>
+      <div style="display: none"><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Hide In-active Steps</div>
     </button>
     <div class="clearfix"></div>
 
