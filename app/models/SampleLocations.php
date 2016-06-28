@@ -41,6 +41,8 @@ class SampleLocations extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasMany('id', 'Samples', 'sample_location_id');
+        
         $this->addBehavior(new SoftDelete(
             array(
                 'field' => 'active',

@@ -185,7 +185,7 @@
   }
 
   /**
-   * Delete project record. (It will be soft-deleted (active=N).)
+   * Delete sample_property record. (It will be soft-deleted (active=N).)
    * @param sample_property_type_id
    * @returns {boolean}
    */

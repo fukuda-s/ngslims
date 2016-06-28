@@ -109,7 +109,7 @@ class SettingController extends ControllerBase
                 }
 
                 if ($lab_users_update) {
-                    $this->flashSession->success('User：' . $user->getFullname() . ' laboratory record is changed.');
+                    $this->flashSession->success('User: ' . $user->getFullname() . ' laboratory record is changed.');
                 }
 
                 /*
@@ -123,11 +123,11 @@ class SettingController extends ControllerBase
                     return false;
                 } else {
                     if ($user_id == -1) {
-                        $this->flashSession->success('User：' . $user->getFullname() . ' is created.');
+                        $this->flashSession->success('User: ' . $user->getFullname() . ' is created.');
                     } elseif ($user->active == 'N') {
-                        $this->flashSession->success('User：' . $user->getFullname() . ' is change to in-active account.');
+                        $this->flashSession->success('User: ' . $user->getFullname() . ' is change to in-active account.');
                     } else {
-                        $this->flashSession->success('User：' . $user->getFullname() . ' record is changed.');
+                        $this->flashSession->success('User: ' . $user->getFullname() . ' record is changed.');
                     }
 
                 }
@@ -269,11 +269,11 @@ class SettingController extends ControllerBase
                     return false;
                 } else {
                     if ($lab_id == -1) {
-                        $this->flashSession->success('Lab.：' . $lab->name . ' is created.');
+                        $this->flashSession->success('Lab.: ' . $lab->name . ' is created.');
                     } elseif ($lab->active == 'N') {
-                        $this->flashSession->success('Lab.：' . $lab->name . ' is change to in-active account.');
+                        $this->flashSession->success('Lab.: ' . $lab->name . ' is change to in-active.');
                     } else {
-                        $this->flashSession->success('Lab.：' . $lab->name . ' record is changed.');
+                        $this->flashSession->success('Lab.: ' . $lab->name . ' record is changed.');
                     }
 
                 }
@@ -338,11 +338,11 @@ class SettingController extends ControllerBase
                     } else {
                         if (count($new_users_name)) {
                             $new_users_name_str = implode(",", $new_users_name);
-                            $this->flashSession->success('Lab. Users：' . $new_users_name_str . ' is added.');
+                            $this->flashSession->success('Lab. Users: ' . $new_users_name_str . ' is added.');
                         }
                         if (count($del_users_name)) {
                             $del_users_name_str = implode(",", $del_users_name);
-                            $this->flashSession->success('Lab. Users：' . $del_users_name_str . ' is deleted.');
+                            $this->flashSession->success('Lab. Users: ' . $del_users_name_str . ' is deleted.');
                         }
 
                     }
@@ -452,11 +452,11 @@ class SettingController extends ControllerBase
                     return false;
                 } else {
                     if ($project_id == -1) {
-                        $this->flashSession->success('Project：' . $project->name . ' is created.');
+                        $this->flashSession->success('Project: ' . $project->name . ' is created.');
                     } elseif ($project->active == 'N') {
-                        $this->flashSession->success('Project：' . $project->name . ' is change to in-active account.');
+                        $this->flashSession->success('Project: ' . $project->name . ' is change to in-active.');
                     } else {
-                        $this->flashSession->success('Project：' . $project->name . ' record is changed.');
+                        $this->flashSession->success('Project: ' . $project->name . ' record is changed.');
                     }
 
                 }
@@ -573,11 +573,11 @@ class SettingController extends ControllerBase
                     } else {
                         if (count($new_users_name)) {
                             $new_users_name_str = implode(",", $new_users_name);
-                            $this->flashSession->success('Project Users：' . $new_users_name_str . ' is added.');
+                            $this->flashSession->success('Project Users: ' . $new_users_name_str . ' is added.');
                         }
                         if (count($del_users_name)) {
                             $del_users_name_str = implode(",", $del_users_name);
-                            $this->flashSession->success('Project Users：' . $del_users_name_str . ' is deleted.');
+                            $this->flashSession->success('Project Users: ' . $del_users_name_str . ' is deleted.');
                         }
 
                     }
@@ -693,11 +693,11 @@ class SettingController extends ControllerBase
                     return false;
                 } else {
                     if ($step_id == -1) {
-                        $this->flashSession->success('Project：' . $step->name . ' is created.');
+                        $this->flashSession->success('Project: ' . $step->name . ' is created.');
                     } elseif ($step->active == 'N') {
-                        $this->flashSession->success('Project：' . $step->name . ' is change to in-active account.');
+                        $this->flashSession->success('Project: ' . $step->name . ' is change to in-active.');
                     } else {
-                        $this->flashSession->success('Project：' . $step->name . ' record is changed.');
+                        $this->flashSession->success('Project: ' . $step->name . ' record is changed.');
                     }
 
                 }
@@ -807,11 +807,11 @@ class SettingController extends ControllerBase
                     return false;
                 } else {
                     if ($protocol_id == -1) {
-                        $this->flashSession->success('Protocol：' . $protocol->name . ' is created.');
+                        $this->flashSession->success('Protocol: ' . $protocol->name . ' is created.');
                     } elseif ($protocol->active == 'N') {
-                        $this->flashSession->success('Protocol：' . $protocol->name . ' is change to in-active account.');
+                        $this->flashSession->success('Protocol: ' . $protocol->name . ' is change to in-active.');
                     } else {
-                        $this->flashSession->success('Protocol：' . $protocol->name . ' record is changed.');
+                        $this->flashSession->success('Protocol: ' . $protocol->name . ' record is changed.');
                     }
 
                 }
@@ -884,11 +884,11 @@ class SettingController extends ControllerBase
                     } else {
                         if (count($new_oligobarcode_scheme_name)) {
                             $new_oligobarcode_scheme_name_str = implode(",", $new_oligobarcode_scheme_name);
-                            $this->flashSession->success('Oligobarcode Scheme：' . $new_oligobarcode_scheme_name_str . ' is added.');
+                            $this->flashSession->success('Oligobarcode Scheme: ' . $new_oligobarcode_scheme_name_str . ' is added.');
                         }
                         if (count($del_oligobarcode_scheme_name)) {
                             $del_oligobarcode_scheme_name_str = implode(",", $del_oligobarcode_scheme_name);
-                            $this->flashSession->success('Oligobarcode Scheme：' . $del_oligobarcode_scheme_name_str . ' is deleted.');
+                            $this->flashSession->success('Oligobarcode Scheme: ' . $del_oligobarcode_scheme_name_str . ' is deleted.');
                         }
 
                     }
@@ -992,11 +992,11 @@ class SettingController extends ControllerBase
                     return false;
                 } else {
                     if ($oligobarcode_scheme_id == -1) {
-                        $this->flashSession->success('OligobarcodeScheme：' . $oligobarcode_scheme->name . ' is created.');
+                        $this->flashSession->success('OligobarcodeScheme: ' . $oligobarcode_scheme->name . ' is created.');
                     } elseif ($oligobarcode_scheme->active == 'N') {
-                        $this->flashSession->success('OligobarcodeScheme：' . $oligobarcode_scheme->name . ' is change to in-active account.');
+                        $this->flashSession->success('OligobarcodeScheme: ' . $oligobarcode_scheme->name . ' is change to in-active.');
                     } else {
-                        $this->flashSession->success('OligobarcodeScheme：' . $oligobarcode_scheme->name . ' record is changed.');
+                        $this->flashSession->success('OligobarcodeScheme: ' . $oligobarcode_scheme->name . ' record is changed.');
                     }
 
                 }
@@ -1070,11 +1070,11 @@ class SettingController extends ControllerBase
                     } else {
                         if (count($new_oligobarcode_name)) {
                             $new_oligobarcode_name_str = implode(",", $new_oligobarcode_name);
-                            $this->flashSession->success('Oligobarcode Scheme：' . $new_oligobarcode_name_str . ' is added.');
+                            $this->flashSession->success('Oligobarcode Scheme: ' . $new_oligobarcode_name_str . ' is added.');
                         }
                         if (count($del_oligobarcode_name)) {
                             $del_oligobarcode_name_str = implode(",", $del_oligobarcode_name);
-                            $this->flashSession->success('Oligobarcode Scheme：' . $del_oligobarcode_name_str . ' is deleted.');
+                            $this->flashSession->success('Oligobarcode Scheme: ' . $del_oligobarcode_name_str . ' is deleted.');
                         }
 
                     }
@@ -1218,11 +1218,11 @@ class SettingController extends ControllerBase
                     return false;
                 } else {
                     if ($sample_property_type == -1) {
-                        $this->flashSession->success('Sample Property Type：' . $sample_property_type->name . ' is created.');
+                        $this->flashSession->success('Sample Property Type: ' . $sample_property_type->name . ' is created.');
                     } elseif ($sample_property_type->active == 'N') {
-                        $this->flashSession->success('Sample Property Type：' . $sample_property_type->name . ' is change to in-active account.');
+                        $this->flashSession->success('Sample Property Type: ' . $sample_property_type->name . ' is change to in-active.');
                     } else {
-                        $this->flashSession->success('Sample Property Type：' . $sample_property_type->name . ' record is changed.');
+                        $this->flashSession->success('Sample Property Type: ' . $sample_property_type->name . ' record is changed.');
                     }
 
                 }
@@ -1242,11 +1242,84 @@ class SettingController extends ControllerBase
         }
     }
 
-    public
-    function instrumentsAction()
+    public function sampleLocationsAction()
     {
-        Tag::appendTitle(' | Instruments');
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                //Custom Filter for username value.
+                $filter = new \Phalcon\Filter();
+                $filter->add('samplelocationname', function ($value) {
+                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+                    $value = preg_replace('/\.+/', '.', $value);
+                    $value = preg_replace('/\.+$/', '', $value);
+                    return $value;
+                });
+
+                $sample_location_id = $this->request->getPost('sample_location_id', 'int');
+                $name = $this->request->getPost('name', array('striptags'));
+                $name = $filter->sanitize($name, 'samplelocationname');
+                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+
+                if (empty($sample_location_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $sample_location_id value ' . $sample_location_id . '.');
+                }
+
+
+                if ($sample_location_id > 0) {
+                    $sample_location = SampleLocations::findFirst("id = $sample_location_id");
+                    if (!$sample_location) {
+                        return $this->flashSession->error('ERROR: Could not get $sample_location data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $sample_location->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $sample_location->name = $name;
+                        $sample_location->active = $active;
+                    }
+                } else {
+                    $sample_location = new SampleLocations();
+                    $sample_location->name = $name;
+                    $sample_location->active = $active;
+                }
+
+                /*
+                 * Save user data values.
+                 */
+                if ($sample_location->save() == false) {
+                    foreach ($sample_location->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($sample_location == -1) {
+                        $this->flashSession->success('Sample Location: ' . $sample_location->name . ' is created.');
+                    } elseif ($sample_location->active == 'N') {
+                        $this->flashSession->success('Sample Location: ' . $sample_location->name . ' is change to in-active.');
+                    } else {
+                        $this->flashSession->success('Sample Location: ' . $sample_location->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Sample Locations');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $sample_locations = SampleLocations::find();
+
+            $this->view->setVar('sample_locations', $sample_locations);
+
+        }
     }
+
 
     public
     function organismsAction()
@@ -1254,10 +1327,9 @@ class SettingController extends ControllerBase
         Tag::appendTitle(' | Organisms');
     }
 
-    public
-    function sampleLocationsAction()
+    public function instrumentsAction()
     {
-        Tag::appendTitle(' | Sample Locations');
+        Tag::appendTitle(' | Instruments');
     }
 
 

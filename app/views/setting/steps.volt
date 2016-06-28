@@ -279,7 +279,7 @@
   }
 
   /**
-   * Delete project record. (It will be soft-deleted (active=N).)
+   * Delete step record. (It will be soft-deleted (active=N).)
    * @param step_id
    * @returns {boolean}
    */
