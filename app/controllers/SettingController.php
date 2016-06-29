@@ -1321,17 +1321,104 @@ class SettingController extends ControllerBase
     }
 
 
-    public
-    function organismsAction()
+    public function organismsAction()
     {
-        Tag::appendTitle(' | Organisms');
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                //Custom Filter for username value.
+                $filter = new \Phalcon\Filter();
+                $filter->add('organismsname', function ($value) {
+                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+                    $value = preg_replace('/\.+/', '.', $value);
+                    $value = preg_replace('/\.+$/', '', $value);
+                    return $value;
+                });
+
+                $organism_id = $this->request->getPost('organism_id', 'int');
+                $name = $this->request->getPost('name', array('striptags'));
+                $name = $filter->sanitize($name, 'organismsname');
+                $taxonomy_id = $this->request->getPost('taxonomy_id', 'int');
+                $taxonomy = $this->request->getPost('taxonomy', array('striptags', 'trim'));
+                $sort_order = ($this->request->getPost('sort_order', 'int')) ? $this->request->getPost('sort_order', 'int') : null;
+                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+
+                if (empty($organism_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $organism_id value ' . $organism_id . '.');
+                }
+
+                if (!empty($name) and count(Organisms::find("taxonomy_id = $taxonomy_id AND id != $organism_id"))) {
+                    return $this->flashSession->error('ERROR: taxonomy_id ' . $taxonomy_id . ' is already used at organism_id ' . $organism_id . '.');
+                }
+
+                if ($organism_id > 0) {
+                    $organisms = Organisms::findFirst("id = $organism_id");
+                    if (!$organisms) {
+                        return $this->flashSession->error('ERROR: Could not get $organisms data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $organisms->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $organisms->id = $organism_id;
+                        $organisms->name = $name;
+                        $organisms->taxonomy_id = $taxonomy_id;
+                        $organisms->taxonomy = $taxonomy;
+                        $organisms->sort_order = $sort_order;
+                        $organisms->active = $active;
+                    }
+                } else {
+                    $organisms = new Organisms();
+                    $organisms->id = $organism_id;
+                    $organisms->name = $name;
+                    $organisms->taxonomy_id = $taxonomy_id;
+                    $organisms->taxonomy = $taxonomy;
+                    $organisms->sort_order = $sort_order;
+                    $organisms->active = $active;
+                }
+
+                /*
+                 * Save user data values.
+                 */
+                if ($organisms->save() == false) {
+                    foreach ($organisms->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($organisms == -1) {
+                        $this->flashSession->success('Sample Location: ' . $organisms->name . ' is created.');
+                    } elseif ($organisms->active == 'N') {
+                        $this->flashSession->success('Sample Location: ' . $organisms->name . ' is change to in-active.');
+                    } else {
+                        $this->flashSession->success('Sample Location: ' . $organisms->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Organisms');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $organisms = Organisms::find(array(
+                "order" => "sort_order IS NULL ASC, sort_order ASC"
+            ));
+
+            $this->view->setVar('organisms', $organisms);
+
+        }
     }
 
     public function instrumentsAction()
     {
         Tag::appendTitle(' | Instruments');
     }
-
 
 
 }
