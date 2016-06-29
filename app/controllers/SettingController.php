@@ -1133,7 +1133,7 @@ class SettingController extends ControllerBase
                                 $valueChangeTo = $oligobarcode_scheme_id;
                             }
 
-                            $oligobarcode = OLigobarcodes::findFirst($oligobarcode_id);
+                            $oligobarcode = Oligobarcodes::findFirst($oligobarcode_id);
                             $oligobarcode->$colNameToChange = $valueChangeTo;
 
                             if (!$oligobarcode->save()) {
@@ -1355,45 +1355,44 @@ class SettingController extends ControllerBase
                 }
 
                 if ($organism_id > 0) {
-                    $organisms = Organisms::findFirst("id = $organism_id");
-                    if (!$organisms) {
+                    $organism = Organisms::findFirst("id = $organism_id");
+                    if (!$organism) {
                         return $this->flashSession->error('ERROR: Could not get $organisms data values.');
                     }
                     if (empty($name) and $active == 'N') {
-                        $organisms->delete(); //Should be soft-delete (active=N);
+                        $organism->delete(); //Should be soft-delete (active=N);
                     } else {
-                        $organisms->id = $organism_id;
-                        $organisms->name = $name;
-                        $organisms->taxonomy_id = $taxonomy_id;
-                        $organisms->taxonomy = $taxonomy;
-                        $organisms->sort_order = $sort_order;
-                        $organisms->active = $active;
+                        $organism->id = $organism_id;
+                        $organism->name = $name;
+                        $organism->taxonomy_id = $taxonomy_id;
+                        $organism->taxonomy = $taxonomy;
+                        $organism->sort_order = $sort_order;
+                        $organism->active = $active;
                     }
                 } else {
-                    $organisms = new Organisms();
-                    $organisms->id = $organism_id;
-                    $organisms->name = $name;
-                    $organisms->taxonomy_id = $taxonomy_id;
-                    $organisms->taxonomy = $taxonomy;
-                    $organisms->sort_order = $sort_order;
-                    $organisms->active = $active;
+                    $organism = new Organisms();
+                    $organism->name = $name;
+                    $organism->taxonomy_id = $taxonomy_id;
+                    $organism->taxonomy = $taxonomy;
+                    $organism->sort_order = $sort_order;
+                    $organism->active = $active;
                 }
 
                 /*
                  * Save user data values.
                  */
-                if ($organisms->save() == false) {
-                    foreach ($organisms->getMessages() as $message) {
+                if ($organism->save() == false) {
+                    foreach ($organism->getMessages() as $message) {
                         $this->flashSession->error((string)$message);
                     }
                     return false;
                 } else {
-                    if ($organisms == -1) {
-                        $this->flashSession->success('Sample Location: ' . $organisms->name . ' is created.');
-                    } elseif ($organisms->active == 'N') {
-                        $this->flashSession->success('Sample Location: ' . $organisms->name . ' is change to in-active.');
+                    if ($organism_id == -1) {
+                        $this->flashSession->success('Organism: ' . $organism->name . ' is created.');
+                    } elseif ($organism->active == 'N') {
+                        $this->flashSession->success('Organism: ' . $organism->name . ' is change to in-active.');
                     } else {
-                        $this->flashSession->success('Sample Location: ' . $organisms->name . ' record is changed.');
+                        $this->flashSession->success('Organism: ' . $organism->name . ' record is changed.');
                     }
 
                 }
@@ -1417,7 +1416,98 @@ class SettingController extends ControllerBase
 
     public function instrumentsAction()
     {
-        Tag::appendTitle(' | Instruments');
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                //Custom Filter for username value.
+                $filter = new \Phalcon\Filter();
+                $filter->add('instrumentsname', function ($value) {
+                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+                    $value = preg_replace('/\.+/', '.', $value);
+                    $value = preg_replace('/\.+$/', '', $value);
+                    return $value;
+                });
+
+                $instrument_id = $this->request->getPost('instrument_id', 'int');
+                $name = $this->request->getPost('name', array('striptags'));
+                $name = $filter->sanitize($name, 'instrumentsname');
+                $instrument_number = $this->request->getPost('instrument_number', array('striptags', 'trim'));
+                $nickname = $this->request->getPost('nickname', array('striptags', 'trim'));
+                $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
+                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+
+                if (empty($instrument_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $instrument_id value ' . $instrument_id . '.');
+                }
+
+                if (!empty($name) and count(Instruments::find("instrument_number = '$instrument_number' AND id != $instrument_id"))) {
+                    return $this->flashSession->error('ERROR: instrument_number ' . $instrument_number . ' is already used by instrument_id ' . $instrument_id . '.');
+                }
+
+                echo $instrument_id . ':' . $name . ':' . $active;
+                if ($instrument_id > 0) {
+                    $instrument = Instruments::findFirst("id = $instrument_id");
+                    if (!$instrument) {
+                        return $this->flashSession->error('ERROR: Could not get $instruments data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $instrument->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $instrument->id = $instrument_id;
+                        $instrument->name = $name;
+                        $instrument->instrument_number = $instrument_number;
+                        $instrument->nickname = $nickname;
+                        $instrument->instrument_type_id = $instrument_type_id;
+                        $instrument->active = $active;
+                    }
+                } else {
+                    $instrument = new Instruments();
+                    $instrument->name = $name;
+                    $instrument->instrument_number = $instrument_number;
+                    $instrument->nickname = $nickname;
+                    $instrument->instrument_type_id = $instrument_type_id;
+                    $instrument->active = $active;
+                }
+
+                /*
+                 * Save user data values.
+                 */
+                if ($instrument->save() == false) {
+                    foreach ($instrument->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($instrument_id == -1) {
+                        $this->flashSession->success('Instrument: ' . $instrument->name . ' is created.');
+                    } elseif ($instrument->active == 'N') {
+                        $this->flashSession->success('Instrument: ' . $instrument->name . ' is change to in-active.');
+                    } else {
+                        $this->flashSession->success('Instrument: ' . $instrument->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Instruments');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $instruments = Instruments::find(array(
+                "order" => "nickname ASC"
+            ));
+            $instrument_types = InstrumentTypes::find("active = 'Y'");
+
+            $this->view->setVar('instruments', $instruments);
+            $this->view->setVar('instrument_types', $instrument_types);
+
+        }
     }
 
 

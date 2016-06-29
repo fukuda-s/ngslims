@@ -62,6 +62,10 @@ class Instruments extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasOne('instrument_type_id', 'InstrumentTypes', 'id');
+
+        $this->hasMany('id', 'Flowcells', 'instrument_id');
+        
         $this->addBehavior(new SoftDelete(
             array(
                 'field' => 'active',
