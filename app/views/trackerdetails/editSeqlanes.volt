@@ -49,9 +49,9 @@ $(document).ready(function () {
     //alert(parseAr);
     $.each(parseAr, function (key, value) {
       //alert(value["id"]+" : "+value["name"]);
-      var organism_id = value["id"];
+      var taxonomy_id = value["taxonomy_id"];
       var organism_name = value["name"];
-      organismAr[organism_id] = organism_name;
+      organismAr[taxonomy_id] = organism_name;
     });
   }
 
@@ -91,7 +91,7 @@ $(document).ready(function () {
     columns: [
       { data: "name", title: "Sample Name", editor: false },
       { data: "sample_type_id", title: "Sample Type", editor: false, renderer: sampleTypeRenderer },
-      { data: "organism_id", title: "Organism", editor: false, renderer: organismRenderer, source: organismRenderer },
+      { data: "taxonomy_id", title: "Organism", editor: false, renderer: organismRenderer, source: organismRenderer },
       { data: "qual_concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000' },
       { data: "qual_od260280", title: "A260/A280", type: 'numeric', format: '0.00' },
       { data: "qual_od260230", title: "A260/A230", type: 'numeric', format: '0.00' },

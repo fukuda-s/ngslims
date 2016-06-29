@@ -52,7 +52,7 @@ class OrderController extends ControllerBase
 
         //Set default value from session value
         if ($this->session->has('organism')) {
-            Tag::setDefault('organism_id', $this->session->get('organism')->id);
+            Tag::setDefault('taxonomy_id', $this->session->get('organism')->id);
         }
         $this->view->setVar('organisms', Organisms::find(array(
             "active = 'Y'",
@@ -868,7 +868,7 @@ class OrderController extends ControllerBase
             //$samples[$i]->request_id = $requests->id; //It's not necessary because of hasMany relation.
             $samples[$i]->project_id = $requests->project_id;
             $samples[$i]->sample_type_id = $this->session->get('sample_type')->id;
-            $samples[$i]->organism_id = $this->session->get('organism')->id;
+            $samples[$i]->taxonomy_id = $this->session->get('organism')->id;
             $samples[$i]->qual_concentration = (empty($sample_data->qual_concentration) ? null : $sample_data->qual_concentration);
             $samples[$i]->qual_od260280 = (empty($sample_data->qual_od260280)) ? null : $sample_data->qual_od260280;
             $samples[$i]->qual_od260230 = (empty($sample_data->qual_od260230)) ? null : $sample_data->qual_od260230;

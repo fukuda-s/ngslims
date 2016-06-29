@@ -27,6 +27,12 @@ class Organisms extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
+    public $taxonomy_id;
+
+    /**
+     *
+     * @var integer
+     */
     public $sort_order;
 
     /**
@@ -48,6 +54,7 @@ class Organisms extends \Phalcon\Mvc\Model
             'id' => 'id',
             'name' => 'name',
             'taxonomy' => 'taxonomy',
+            'taxonomy_id' => 'taxonomy_id',
             'sort_order' => 'sort_order',
             'active' => 'active'
         );
@@ -55,6 +62,8 @@ class Organisms extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasMany('taxonomy_id', 'Samples', 'taxonomy_id');
+        
         $this->addBehavior(new SoftDelete(
             array(
                 'field' => 'active',

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.23, for osx10.10 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.13, for osx10.11 (x86_64)
 --
 -- Host: localhost    Database: ngslims
 -- ------------------------------------------------------
--- Server version	5.6.23-log
+-- Server version	5.7.13-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,45 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `cherry_picking_schemes`
+--
+
+DROP TABLE IF EXISTS `cherry_picking_schemes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cherry_picking_schemes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cherry_picking_id` int(11) NOT NULL,
+  `sample_id` int(11) NOT NULL,
+  `seqlib_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `cherry_picking_id_seqlib_id_unique` (`cherry_picking_id`,`seqlib_id`),
+  KEY `fk_cherry_picking_samples_idx` (`sample_id`),
+  KEY `fk_cherry_pickings_seqlibs_idx` (`seqlib_id`),
+  CONSTRAINT `fk_cherry_pickings_samples` FOREIGN KEY (`sample_id`) REFERENCES `samples` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cherry_pickings_schemes_cherry_pickings` FOREIGN KEY (`cherry_picking_id`) REFERENCES `cherry_pickings` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cherry_pickings_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `cherry_pickings`
+--
+
+DROP TABLE IF EXISTS `cherry_pickings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cherry_pickings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `active` char(1) DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `controls`
@@ -201,7 +240,7 @@ CREATE TABLE `oligobarcodes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `barcode_seq` varchar(45) NOT NULL,
-  `oligobarcode_scheme_id` int(11) NOT NULL,
+  `oligobarcode_scheme_id` int(11) DEFAULT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
@@ -224,12 +263,14 @@ DROP TABLE IF EXISTS `organisms`;
 CREATE TABLE `organisms` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
+  `taxonomy_id` int(11) NOT NULL,
   `taxonomy` varchar(200) DEFAULT NULL,
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   KEY `organisms_sort_order_idx` (`sort_order`),
-  KEY `organisms_active_idx` (`active`)
+  KEY `organisms_active_idx` (`active`),
+  KEY `organisms_taxonmy_id_idx` (`taxonomy_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -281,7 +322,7 @@ DROP TABLE IF EXISTS `pipeline_references`;
 CREATE TABLE `pipeline_references` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `organism_id` int(11) DEFAULT NULL,
+  `taxonomy_id` int(11) DEFAULT NULL,
   `released_at` datetime DEFAULT NULL,
   `data_path` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
@@ -360,6 +401,27 @@ CREATE TABLE `platforms` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `project_lab_user_entries`
+--
+
+DROP TABLE IF EXISTS `project_lab_user_entries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `project_lab_user_entries` (
+  `project_id` int(11) NOT NULL,
+  `lab_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  PRIMARY KEY (`project_id`,`lab_id`,`user_id`),
+  KEY `fk_project_lab_user_projects_idx` (`project_id`),
+  KEY `fk_project_lab_user_labs_idx` (`lab_id`),
+  KEY `fk_project_lab_user_users_idx` (`user_id`),
+  CONSTRAINT `fk_project_lab_user_labs` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_project_lab_user_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_project_lab_user_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `project_types`
 --
 
@@ -375,6 +437,24 @@ CREATE TABLE `project_types` (
   PRIMARY KEY (`id`),
   KEY `project_types_active` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `project_users`
+--
+
+DROP TABLE IF EXISTS `project_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `project_users` (
+  `project_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  PRIMARY KEY (`project_id`,`user_id`),
+  KEY `fk_project_users_projects_idx` (`project_id`),
+  KEY `fk_project_users_users_idx` (`user_id`),
+  CONSTRAINT `fk_project_users_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_project_users_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -416,7 +496,7 @@ DROP TABLE IF EXISTS `protocols`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `protocols` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) NOT NULL,
+  `name` varchar(200) NOT NULL,
   `description` varchar(200) DEFAULT NULL,
   `step_id` int(11) NOT NULL,
   `min_multiplex_number` int(11) NOT NULL,
@@ -585,11 +665,11 @@ DROP TABLE IF EXISTS `samples`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `samples` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) NOT NULL,
+  `name` varchar(255) NOT NULL,
   `request_id` int(11) NOT NULL,
   `project_id` int(11) NOT NULL,
   `sample_type_id` int(11) NOT NULL,
-  `organism_id` int(11) DEFAULT NULL,
+  `taxonomy_id` int(11) DEFAULT NULL,
   `qual_concentration` decimal(8,4) unsigned DEFAULT NULL,
   `qual_volume` decimal(8,3) unsigned DEFAULT NULL,
   `qual_amount` decimal(8,3) unsigned DEFAULT NULL,
@@ -609,9 +689,9 @@ CREATE TABLE `samples` (
   KEY `fk_samples_requests_idx` (`request_id`),
   KEY `fk_samples_projects_idx` (`project_id`),
   KEY `fk_samples_sample_types_idx` (`sample_type_id`),
-  KEY `fk_samples_organisms_idx` (`organism_id`),
+  KEY `fk_samples_organisms_idx` (`taxonomy_id`),
   KEY `fk_samples_sample_locations_idx` (`sample_location_id`),
-  CONSTRAINT `fk_samples_organisms` FOREIGN KEY (`organism_id`) REFERENCES `organisms` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_organisms_organisms` FOREIGN KEY (`taxonomy_id`) REFERENCES `organisms` (`taxonomy_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_projects` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_requests` FOREIGN KEY (`request_id`) REFERENCES `requests` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_samples_sample_locations` FOREIGN KEY (`sample_location_id`) REFERENCES `sample_locations` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -752,6 +832,8 @@ CREATE TABLE `seqlanes` (
   `reads_total` bigint(20) DEFAULT NULL,
   `reads_passed_filter` bigint(20) DEFAULT NULL,
   `q30_percent` decimal(4,3) DEFAULT NULL,
+  `intensity` int(11) DEFAULT NULL,
+  `intensity_sd` int(11) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_seqlanes_flowcells_idx` (`flowcell_id`),
@@ -772,7 +854,7 @@ DROP TABLE IF EXISTS `seqlibs`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `seqlibs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
+  `name` varchar(255) NOT NULL,
   `sample_id` int(11) NOT NULL,
   `project_id` int(11) NOT NULL,
   `protocol_id` int(11) DEFAULT NULL,
@@ -980,4 +1062,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-03-18 12:03:24
+-- Dump completed on 2016-06-29 11:47:22

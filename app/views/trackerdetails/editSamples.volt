@@ -63,9 +63,9 @@
       //alert(parseAr);
       $.each(parseAr, function (key, value) {
         //alert(value["id"]+" : "+value["name"]);
-        var organism_id = value["id"];
+        var taxonomy_id = value["taxonomy_id"];
         var organism_name = value["name"];
-        organismAr[organism_id] = organism_name;
+        organismAr[taxonomy_id] = organism_name;
       });
     }
 
@@ -221,7 +221,7 @@
         {data: "s.name", title: "Sample Name", editor: false},
         {data: "s.sample_type_id", title: "Sample Type", editor: false, renderer: sampleTypeRenderer},
         {
-          data: "s.organism_id",
+          data: "s.taxonomy_id",
           title: "Organism",
           editor: false,
           renderer: organismRenderer,

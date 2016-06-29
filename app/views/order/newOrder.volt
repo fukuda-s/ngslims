@@ -34,9 +34,9 @@
         {{ select('sample_type_id', sampletypes, 'using': ['id', 'name'], 'useEmpty': true, 'emptyText': 'Please, choose Sample Type...', 'emptyValue': '@', 'class': 'form-control input-sm') }}
       </div>
       <div id="organism_select" class="form-group">
-        <label for="organism_id" class="control-label">Organism
+        <label for="taxonomy_id" class="control-label">Organism
         </label>
-        {{ select('organism_id', organisms, 'using': ['id', 'name'], 'useEmpty': true, 'emptyText': 'Please, choose Organism...', 'emptyValue': '@', 'class': 'form-control input-sm') }}
+        {{ select('taxonomy_id', organisms, 'using': ['id', 'name'], 'useEmpty': true, 'emptyText': 'Please, choose Organism...', 'emptyValue': '@', 'class': 'form-control input-sm') }}
       </div>
       <div id="qc_inside_select" class="form-group">
         <label for="qc_inside">QC Inside?</label><br>
@@ -328,7 +328,7 @@
    *    lab_id -> pi_user_id (lab_id) -> project_id (pi_user_id)
    *  + Sample
    *    + sample_type_id
-   *    + organism_id
+   *    + taxonomy_id
    *  + Sequence Library & Multiplex
    *    + step_id (sample_type_id)
    *    + protocol_id
@@ -575,13 +575,13 @@
     });
 
     //Change organism_selected value on right side summary with selected values
-    $('#organism_id').on('change', function () {
-      var organism_id_selected = $(this).val();
+    $('#taxonomy_id').on('change', function () {
+      var taxonomy_id_selected = $(this).val();
       var organism_name_selected = $('option:selected', this).text();
       $('#organism_name_selected').hide().show('normal').text(organism_name_selected);
 
       //Set selected sample_type to session values.
-      setOrderSessionVal('organism', organism_id_selected, organism_name_selected);
+      setOrderSessionVal('organism', taxonomy_id_selected, organism_name_selected);
     });
 
     //Change qc_inside_select value on right side summary with selected values
@@ -778,10 +778,10 @@
       $('#sample_type_name_selected').hide().show('normal').text(sample_type_name_selected);
     }
 
-    var organism_selected = $('#organism_id').find('option:selected');
-    var organism_id_selected = organism_selected.val();
+    var organism_selected = $('#taxonomy_id').find('option:selected');
+    var taxonomy_id_selected = organism_selected.val();
     var organism_name_selected = organism_selected.text();
-    if (organism_id_selected !== '@') {
+    if (taxonomy_id_selected !== '@') {
       //Change organism_name_selected value on right side summary with selected values
       $('#organism_name_selected').hide().show('normal').text(organism_name_selected);
     }

@@ -39,7 +39,7 @@ class Samples extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
-    public $organism_id;
+    public $taxonomy_id;
 
     /**
      *
@@ -138,7 +138,7 @@ class Samples extends \Phalcon\Mvc\Model
             'request_id' => 'request_id',
             'project_id' => 'project_id',
             'sample_type_id' => 'sample_type_id',
-            'organism_id' => 'organism_id',
+            'taxonomy_id' => 'taxonomy_id',
             'qual_concentration' => 'qual_concentration',
             'qual_volume' => 'qual_volume',
             'qual_amount' => 'qual_amount',
@@ -158,7 +158,7 @@ class Samples extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
-        $this->hasOne('organism_id', 'Organisms', 'id');
+        $this->hasOne('taxonomy_id', 'Organisms', 'taxonomy_id');
         $this->hasOne('project_id', 'Projects', 'id');
         $this->hasOne('request_id', 'Requests', 'id');
         $this->hasOne('sample_type_id', 'SampleTypes', 'id');

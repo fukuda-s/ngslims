@@ -22,7 +22,7 @@ class PipelineReferences extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
-    public $organism_id;
+    public $taxonomy_id;
 
     /**
      *
@@ -62,7 +62,7 @@ class PipelineReferences extends \Phalcon\Mvc\Model
         return array(
             'id' => 'id',
             'name' => 'name',
-            'organism_id' => 'organism_id',
+            'taxonomy_id' => 'taxonomy_id',
             'released_at' => 'released_at',
             'data_path' => 'data_path',
             'description' => 'description',
