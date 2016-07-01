@@ -1362,7 +1362,6 @@ class SettingController extends ControllerBase
                     if (empty($name) and $active == 'N') {
                         $organism->delete(); //Should be soft-delete (active=N);
                     } else {
-                        $organism->id = $organism_id;
                         $organism->name = $name;
                         $organism->taxonomy_id = $taxonomy_id;
                         $organism->taxonomy = $taxonomy;
@@ -1410,6 +1409,115 @@ class SettingController extends ControllerBase
             ));
 
             $this->view->setVar('organisms', $organisms);
+
+        }
+    }
+
+    public function instrumentTypesAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                //Custom Filter for username value.
+                $filter = new \Phalcon\Filter();
+                $filter->add('instrumenttypesname', function ($value) {
+                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+                    $value = preg_replace('/\.+/', '.', $value);
+                    $value = preg_replace('/\.+$/', '', $value);
+                    return $value;
+                });
+
+                $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
+                $name = $this->request->getPost('name', array('striptags'));
+                $name = $filter->sanitize($name, 'instrumenttypesname');
+                $platform_code = $this->request->getPost('platform_code', array('striptags', 'trim'));
+                $sort_order = $this->request->getPost('sort_order', 'int');
+                $slots_per_run = $this->request->getPost('slots_per_run', 'int');
+                $slots_array_json = $this->request->getPost('slots_array_json', array('striptags', 'trim'));
+                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+
+                if (empty($instrument_type_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $instrument_type_id value ' . $instrument_type_id . '.');
+                }
+
+                $slots_array_json_decode = (array) json_decode($slots_array_json);
+                if (!$slots_array_json_decode and !empty($name)) {
+                    return $this->flashSession->error('ERROR: $slots_array_json' . $slots_array_json . ' has problem.' . json_last_error_msg());
+                }
+
+                if (count($slots_array_json_decode) != $slots_per_run and !empty($name)) {
+                    return $this->flashSession->error('ERROR: $slots_array_json' . $slots_array_json . ' have ' . count($slots_array_json_decode) . ' of slot(s). however slots_per_run is ' . $slots_per_run . '. These should be equal.' );
+                }
+
+                if ($instrument_type_id > 0) {
+                    $instrument_type = InstrumentTypes::findFirst("id = $instrument_type_id");
+                    if (!$instrument_type) {
+                        return $this->flashSession->error('ERROR: Could not get $instrument_types data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $instrument_type->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $instrument_type->name = $name;
+                        $instrument_type->platform_code = $platform_code;
+                        $instrument_type->sort_order = $sort_order;
+                        $instrument_type->slots_per_run = $slots_per_run;
+                        $instrument_type->slots_array_json = $slots_array_json;
+                        $instrument_type->active = $active;
+                    }
+                } else {
+                    $instrument_type = new InstrumentTypes();
+                    $instrument_type->name = $name;
+                    $instrument_type->platform_code = $platform_code;
+                    $instrument_type->sort_order = $sort_order;
+                    $instrument_type->slots_per_run = $slots_per_run;
+                    $instrument_type->slots_array_json = $slots_array_json;
+                    $instrument_type->active = $active;
+                }
+
+                /*
+                 * Save user data values.
+                 */
+                if ($instrument_type->save() == false) {
+                    foreach ($instrument_type->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($instrument_type_id == -1) {
+                        $this->flashSession->success('Instrument Type: ' . $instrument_type->name . ' is created.');
+                    } elseif ($instrument_type->active == 'N') {
+                        $this->flashSession->success('Instrument Type: ' . $instrument_type->name . ' is change to in-active.');
+                    } else {
+                        $this->flashSession->success('Instrument Type: ' . $instrument_type->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Instrument Types');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $instrument_types = InstrumentTypes::find(array(
+                "order" => "sort_order ASC"
+            ));
+
+            $platforms = $this->modelsManager->createBuilder()
+                ->addFrom('Platforms', 'p')
+                ->join('Steps', 's.platform_code = p.platform_code', 's')
+                ->where('s.step_phase_code = "FLOWCELL"')
+                ->groupBy('p.platform_code')
+                ->getQuery()
+                ->execute();
+
+            $this->view->setVar('instrument_types', $instrument_types);
+            $this->view->setVar('platforms', $platforms);
 
         }
     }

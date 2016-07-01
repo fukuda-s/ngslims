@@ -161,6 +161,7 @@ class Security extends Plugin
                     'oligobarcodeSchemes',
                     'oligobarcodeSchemeOligobarcodes',
                     'oligobarcodes',
+                    'instrumentTypes',
                     'instruments',
                     'organisms',
                     'sampleLocations',

@@ -20,7 +20,10 @@
       <li>{{ link_to('setting/samplePropertyTypes', 'Sample Property Types') }}</li>
       <li>{{ link_to('setting/sampleLocations', 'Sample Locations') }}</li>
       <li>{{ link_to('setting/organisms', 'Organisms') }}</li>
-      <li>{{ link_to('setting/instruments', 'Instruments') }}</li>
+      <li>{{ link_to('setting/instrumentTypes', 'Instrument Types') }}</li>
+      <ul>
+        <li>{{ link_to('setting/instruments', 'Instruments') }}</li>
+      </ul>
     </ul>
   </div>
 </div>
