@@ -496,6 +496,7 @@ class OrderController extends ControllerBase
                     ->where('srts.instrument_type_id = :instrument_type_id:', array("instrument_type_id" => $instrument_type_id))
                     ->andWhere('srts.seq_runmode_type_id = :seq_runmode_type_id:', array("seq_runmode_type_id" => $seq_runmode_type_id))
                     ->andWhere('srts.seq_runread_type_id = :seq_runread_type_id:', array("seq_runread_type_id" => $seq_runread_type_id))
+                    ->andWhere('srts.active = "Y"')
                     ->groupBy('srct.id')
                     ->orderBy('srct.sort_order IS NULL ASC, srct.sort_order ASC')
                     ->getQuery()
