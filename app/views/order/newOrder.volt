@@ -36,7 +36,7 @@
       <div id="organism_select" class="form-group">
         <label for="taxonomy_id" class="control-label">Organism
         </label>
-        {{ select('taxonomy_id', organisms, 'using': ['id', 'name'], 'useEmpty': true, 'emptyText': 'Please, choose Organism...', 'emptyValue': '@', 'class': 'form-control input-sm') }}
+        {{ select('taxonomy_id', organisms, 'using': ['taxonomy_id', 'name'], 'useEmpty': true, 'emptyText': 'Please, choose Organism...', 'emptyValue': '@', 'class': 'form-control input-sm') }}
       </div>
       <div id="qc_inside_select" class="form-group">
         <label for="qc_inside">QC Inside?</label><br>
