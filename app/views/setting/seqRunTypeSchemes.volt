@@ -110,8 +110,8 @@
         </div>
       </div>
     {% endfor %}
-    <button type="button" class="btn btn-lg btn-primary pull-right"
-            onclick="seqRunTypeSchemesSave({{ instrument_type.id }})">Save</span>
+    <button type="button" id="button_save" class="btn btn-lg btn-primary pull-right disabled"
+            onclick="seqRunTypeSchemesSave({{ instrument_type.id }})" disabled>Save</span>
     </button>
   </div>
 </div>
@@ -154,6 +154,12 @@
   }
 
   $(document).ready(function () {
+    $('input[type="checkbox"]').change(function(){
+      $('#button_save')
+          .prop('disabled', false)
+          .removeClass('disabled');
+    });
+
     $('input[id^=seq_runmode_type-]')
         .change(function () {
           var seq_runmode_type_id = $(this).attr('id').replace('seq_runmode_type-', '');
