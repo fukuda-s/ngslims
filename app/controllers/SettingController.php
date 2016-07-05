@@ -1634,7 +1634,10 @@ class SettingController extends ControllerBase
                     //echo "$seq_runmode_type_id $seq_runread_type_id $seq_runcycle_type_id $active\n";
 
                     $seq_run_type_scheme = SeqRunTypeSchemes::findFirst(
-                        "seq_runmode_type_id = $seq_runmode_type_id AND seq_runread_type_id = $seq_runread_type_id AND seq_runcycle_type_id = $seq_runcycle_type_id"
+                        "instrument_type_id = $instrument_type_id
+                          AND seq_runmode_type_id = $seq_runmode_type_id
+                          AND seq_runread_type_id = $seq_runread_type_id
+                          AND seq_runcycle_type_id = $seq_runcycle_type_id"
                     );
 
                     $count = 0;
