@@ -33,6 +33,7 @@
         <th>Slots Names (JSON array)</th>
         <th>Active</th>
         <th>Edit</th>
+        <th>Link to Run Type Setting</th>
       </tr>
       </thead>
       <tbody>
@@ -69,6 +70,9 @@
                  style="font-size: 9pt; color: #b9c4c8; cursor: not-allowed;" onclick="return false;">
                 <span class="fa fa-trash"></span></a>
             {% endif %}
+          </td>
+          <td class="text-center">
+            {{ link_to('setting/seqRunTypeSchemes/' ~ instrument_type.id, "Seq. Run Type Scheme Setting") }}
           </td>
         </tr>
       {% endfor %}

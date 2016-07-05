@@ -1443,13 +1443,13 @@ class SettingController extends ControllerBase
                     return $this->flashSession->error('ERROR: Undefined $instrument_type_id value ' . $instrument_type_id . '.');
                 }
 
-                $slots_array_json_decode = (array) json_decode($slots_array_json);
+                $slots_array_json_decode = (array)json_decode($slots_array_json);
                 if (!$slots_array_json_decode and !empty($name)) {
                     return $this->flashSession->error('ERROR: $slots_array_json' . $slots_array_json . ' has problem.' . json_last_error_msg());
                 }
 
                 if (count($slots_array_json_decode) != $slots_per_run and !empty($name)) {
-                    return $this->flashSession->error('ERROR: $slots_array_json' . $slots_array_json . ' have ' . count($slots_array_json_decode) . ' of slot(s). however slots_per_run is ' . $slots_per_run . '. These should be equal.' );
+                    return $this->flashSession->error('ERROR: $slots_array_json' . $slots_array_json . ' have ' . count($slots_array_json_decode) . ' of slot(s). however slots_per_run is ' . $slots_per_run . '. These should be equal.');
                 }
 
                 if ($instrument_type_id > 0) {
@@ -1581,7 +1581,7 @@ class SettingController extends ControllerBase
                 }
 
                 /*
-                 * Save user data values.
+                 * Save Instrument data values.
                  */
                 if ($instrument->save() == false) {
                     foreach ($instrument->getMessages() as $message) {
@@ -1596,7 +1596,6 @@ class SettingController extends ControllerBase
                     } else {
                         $this->flashSession->success('Instrument: ' . $instrument->name . ' record is changed.');
                     }
-
                 }
 
             }
@@ -1618,5 +1617,112 @@ class SettingController extends ControllerBase
         }
     }
 
+    public function seqRunTypeSchemesAction($instrument_type_id)
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                $seq_run_type_scheme_arrays = $this->request->getPost('seq_run_type_scheme_arrays');
+                foreach ($seq_run_type_scheme_arrays as $seq_run_type_scheme_arr) {
+                    $seq_runmode_type_id = $seq_run_type_scheme_arr[0];
+                    $seq_runread_type_id = $seq_run_type_scheme_arr[1];
+                    $seq_runcycle_type_id = $seq_run_type_scheme_arr[2];
+                    $active = $seq_run_type_scheme_arr[3];
+                    //echo "$seq_runmode_type_id $seq_runread_type_id $seq_runcycle_type_id $active\n";
 
+                    $seq_run_type_scheme = SeqRunTypeSchemes::findFirst(
+                        "seq_runmode_type_id = $seq_runmode_type_id AND seq_runread_type_id = $seq_runread_type_id AND seq_runcycle_type_id = $seq_runcycle_type_id"
+                    );
+
+                    $count = 0;
+                    if ($active == 'Y') {
+                        if (!$seq_run_type_scheme) {
+                            $seq_run_type_scheme = new SeqRunTypeSchemes();
+                            $seq_run_type_scheme->instrument_type_id = $instrument_type_id;
+                            $seq_run_type_scheme->seq_runmode_type_id = $seq_runmode_type_id;
+                            $seq_run_type_scheme->seq_runread_type_id = $seq_runread_type_id;
+                            $seq_run_type_scheme->seq_runcycle_type_id = $seq_runcycle_type_id;
+                            $seq_run_type_scheme->active = 'Y';
+                        } else {
+                            $seq_run_type_scheme->active = 'Y';
+                        }
+                        $count++;
+                    } elseif ($seq_run_type_scheme) {
+                        $seq_run_type_scheme->delete(); //Should be soft deleted (active = 'N');
+                        $count++;
+                    }
+
+                    /*
+                     * Save SeqRunTypeScheme data values.
+                     */
+                    if ($count) {
+                        if ($seq_run_type_scheme->save() == false) {
+                            foreach ($seq_run_type_scheme->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
+                            }
+                            return false;
+                        }
+                    }
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Seq. Run Type Schemes');
+
+
+            $instrument_type = InstrumentTypes::findFirst("id = $instrument_type_id");
+            $this->view->setVar('instrument_type', $instrument_type);
+
+            $seq_runmode_types = SeqRunmodeTypes::find(array(
+                "order" => "sort_order ASC"
+            ));
+            $seq_runread_types = SeqRunreadTypes::find(array(
+                "order" => "sort_order ASC"
+            ));
+            $seq_runcycle_types = SeqRuncycleTypes::find(array(
+                "order" => "sort_order ASC"
+            ));
+            $this->view->setVars(array(
+                'seq_runmode_types' => $seq_runmode_types,
+                'seq_runread_types' => $seq_runread_types,
+                'seq_runcycle_types' => $seq_runcycle_types
+            ));
+
+            /*
+             * Set checkbox checked values
+             */
+            $checkbox_seq_runmode_type_id_checked = array();
+            $checkbox_seq_runread_type_id_checked = array();
+            $checkbox_seq_runcycle_type_id_checked = array();
+            $seq_run_type_schemes = SeqRunTypeSchemes::find("instrument_type_id = $instrument_type_id");
+            foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
+                $checkbox_seq_runmode_type_id = 'seq_runmode_type-' . $seq_run_type_scheme->seq_runmode_type_id;
+                $checkbox_seq_runread_type_id = 'seq_runread_type-' . $seq_run_type_scheme->seq_runmode_type_id . '-' . $seq_run_type_scheme->seq_runread_type_id;
+                $checkbox_seq_runcycle_type_id = 'seq_runcycle_type-' . $seq_run_type_scheme->seq_runmode_type_id . '-' . $seq_run_type_scheme->seq_runread_type_id . '-' . $seq_run_type_scheme->seq_runcycle_type_id;
+
+                if ($seq_run_type_scheme->active == 'Y') {
+                    if (empty($checkbox_seq_runmode_type_id_checked[$checkbox_seq_runmode_type_id])) { //Check for duplicates
+                        $this->tag->setDefault($checkbox_seq_runmode_type_id, true);
+                        $checkbox_seq_runmode_type_id_checked[$checkbox_seq_runmode_type_id] = 1;
+                    }
+                    if (empty($checkbox_seq_runread_type_id_checked[$checkbox_seq_runread_type_id])) { //Check for duplicates
+                        $this->tag->setDefault($checkbox_seq_runread_type_id, true);
+                        $checkbox_seq_runread_type_id_checked[$checkbox_seq_runread_type_id] = 1;
+                    }
+                    if (empty($checkbox_seq_runcycle_type_id_checked[$checkbox_seq_runcycle_type_id])) { //Check for duplicates
+                        $this->tag->setDefault($checkbox_seq_runcycle_type_id, true);
+                        $checkbox_seq_runcycle_type_id_checked[$checkbox_seq_runcycle_type_id] = 1;
+                    }
+                }
+            }
+            $this->view->setVars(array(
+                'checkbox_seq_runmode_type_id_checked' => $checkbox_seq_runmode_type_id_checked,
+                'checkbox_seq_runread_type_id_checked' => $checkbox_seq_runread_type_id_checked,
+                'checkbox_seq_runcycle_type_id_checked' => $checkbox_seq_runcycle_type_id_checked
+            ));
+        }
+    }
 }

@@ -163,6 +163,7 @@ class Security extends Plugin
                     'oligobarcodes',
                     'instrumentTypes',
                     'instruments',
+                    'seqRunTypeSchemes',
                     'organisms',
                     'sampleLocations',
                     'samplePropertyTypes',
