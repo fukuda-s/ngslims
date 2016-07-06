@@ -185,48 +185,50 @@
     $('#modal-active').val(active);
 
     if (step_phase_code != "FLOWCELL") {
-      $('#modal-seq_runmode_type_id').attr('disabled', 'disabled');
+      $('#modal-seq_runmode_type_id').prop('disabled', true);
     } else {
-      $('#modal-seq_runmode_type_id').removeAttr('disabled');
+      $('#modal-seq_runmode_type_id').prop('disabled', false);
     }
 
     if (step_phase_code != "QC" && step_phase_code != "PREP") {
-      $('#modal-nucleotide_type').attr('disabled', 'disabled');
+      $('#modal-nucleotide_type').prop('disabled', true);
     } else {
-      $('#modal-nucleotide_type').removeAttr('disabled');
+      $('#modal-nucleotide_type').prop('disabled', false);
     }
 
     $('#modal-step_phase_code').change(function () {
       var step_phase_code_changed = $(this).val();
       //console.log(step_phase_code_changed);
       if (step_phase_code_changed != "FLOWCELL") {
-        $('#modal-seq_runmode_type_id').attr('disabled', 'disabled');
+        $('#modal-seq_runmode_type_id').prop('disabled', true);
       } else {
-        $('#modal-seq_runmode_type_id').removeAttr('disabled');
+        $('#modal-seq_runmode_type_id').prop('disabled', false);
       }
       if (step_phase_code_changed != "QC" && step_phase_code_changed != "PREP") {
-        $('#modal-nucleotide_type').attr('disabled', 'disabled');
+        $('#modal-nucleotide_type').prop('disabled', true);
       } else {
-        $('#modal-nucleotide_type').removeAttr('disabled');
+        $('#modal-nucleotide_type').prop('disabled', false);
       }
     });
 
     // @TODO should be consider details condition of details
     if (step_stepentry_count > 0 || step_protocol_count > 0) {
-      $('#modal-step_phase_code').attr('disabled', 'disabled');
-      $('#modal-seq_runmode_type_id').attr('disabled', 'disabled');
-      $('#modal-platform_code').attr('disabled', 'disabled');
-      $('#modal-nucleotide_type').attr('disabled', 'disabled');
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-step_phase_code').prop('disabled', true);
+      $('#modal-seq_runmode_type_id').prop('disabled', true);
+      $('#modal-platform_code').prop('disabled', true);
+      $('#modal-nucleotide_type').prop('disabled', true);
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-step_phase_code').removeAttr('disabled');
-      $('#modal-seq_runmode_type_id').removeAttr('disabled');
-      $('#modal-platform_code').removeAttr('disabled');
-      $('#modal-nucleotide_type').removeAttr('disabled');
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-step_phase_code').prop('disabled', false);
+      $('#modal-seq_runmode_type_id').prop('disabled', false);
+      $('#modal-platform_code').prop('disabled', false);
+      $('#modal-nucleotide_type').prop('disabled', false);
+      $('#modal-active').prop('disabled', false);
     }
 
-    $('#modal-step-save').addClass('disabled');
+    $('#modal-step-save')
+        .prop('disabled', true)
+        .addClass('disabled');
 
     $('#modal-step-edit').modal('show');
 
@@ -326,7 +328,9 @@
     $('#modal-step-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-step-save').removeClass('disabled');
+          $('#modal-step-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });

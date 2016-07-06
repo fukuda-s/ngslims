@@ -120,12 +120,14 @@
 
     // @TODO should be consider details condition of details
     if (sample_location_sample_count > 0 ) {
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-active').prop('disabled', false);
     }
 
-    $('#modal-sample_location-save').addClass('disabled');
+    $('#modal-sample_location-save')
+        .prop('disabled', true)
+        .addClass('disabled');
 
     $('#modal-sample_location-edit').modal('show');
 
@@ -209,7 +211,9 @@
     $('#modal-sample_location-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-sample_location-save').removeClass('disabled');
+          $('#modal-sample_location-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });

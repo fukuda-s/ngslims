@@ -148,14 +148,16 @@
 
     // @TODO should be consider details condition of details
     if (organism_sample_count > 0) {
-      $('#modal-taxonomy_id').attr('disabled', 'disabled');
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-taxonomy_id').prop('disabled', true);
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-taxonomy_id').removeAttr('disabled');
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-taxonomy_id').prop('disabled', false);
+      $('#modal-active').prop('disabled', false);
     }
 
-    $('#modal-organism-save').addClass('disabled');
+    $('#modal-organism-save')
+        .prop('disabled', true)
+        .addClass('disabled');
 
     $('#modal-organism-edit').modal('show');
 
@@ -246,7 +248,9 @@
     $('#modal-organism-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-organism-save').removeClass('disabled');
+          $('#modal-organism-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });

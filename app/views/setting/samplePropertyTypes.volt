@@ -139,12 +139,14 @@
 
     // @TODO should be consider details condition of details
     if (sample_property_type_sample_property_entry_count > 0 ) {
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-active').prop('disabled', false);
     }
 
-    $('#modal-sample_property_type-save').addClass('disabled');
+    $('#modal-sample_property_type-save')
+        .prop('disabled', true)
+        .addClass('disabled');
 
     $('#modal-sample_property_type-edit').modal('show');
 
@@ -232,7 +234,9 @@
     $('#modal-sample_property_type-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-sample_property_type-save').removeClass('disabled');
+          $('#modal-sample_property_type-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });

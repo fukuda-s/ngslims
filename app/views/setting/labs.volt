@@ -176,7 +176,9 @@
     $('#modal-lab-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-lab-save').removeClass('disabled');
+          $('#modal-lab-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });
@@ -197,12 +199,14 @@
     $('#modal-active').val(active);
 
     if(lab_user_count > 0) {
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-active').prop('disabled', false);
     }
 
-    $('#modal-lab-save').addClass('disabled');
+    $('#modal-lab-save')
+        .prop('disabled', false)
+        .addClass('disabled');
 
     $('#modal-lab-edit').modal('show');
 

@@ -161,18 +161,20 @@
 
     // @TODO should be consider details condition of details
     if (instrument_type_instrument_count > 0) {
-      $('#modal-platform_code').attr('disabled', 'disabled');
-      $('#modal-slots_per_run').attr('disabled', 'disabled');
-      $('#modal-slots_array_json').attr('disabled', 'disabled');
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-platform_code').prop('disabled', true);
+      $('#modal-slots_per_run').prop('disabled', true);
+      $('#modal-slots_array_json').prop('disabled', true);
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-platform_code').removeAttr('disabled');
-      $('#modal-slots_per_run').removeAttr('disabled');
-      $('#modal-slots_array_json').removeAttr('disabled');
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-platform_code').prop('disabled', false);
+      $('#modal-slots_per_run').prop('disabled', false);
+      $('#modal-slots_array_json').prop('disabled', false);
+      $('#modal-active').prop('disabled', false);
     }
 
-    $('#modal-instrument_type-save').addClass('disabled');
+    $('#modal-instrument_type-save')
+        .prop('disabled', true)
+        .addClass('disabled');
 
     $('#modal-instrument_type-edit').modal('show');
 
@@ -265,7 +267,9 @@
     $('#modal-instrument-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-instrument-save').removeClass('disabled');
+          $('#modal-instrument-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });

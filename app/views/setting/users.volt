@@ -163,7 +163,9 @@
     $('#modal-user-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-user-save').removeClass('disabled');
+          $('#modal-user-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });
@@ -189,26 +191,28 @@
     if (user_id == -1) {
       $('#modal-password_reset')
           .attr('checked', 'checked')
-          .attr('disabled', 'disabled')
+          .prop('disabled', true)
           .parents('label.checkbox')
           .addClass('checked')
           .addClass('disabled');
     } else {
       $('#modal-password_reset')
           .removeAttr('checked')
-          .removeAttr('disabled')
+          .prop('disabled', false)
           .parents('label.checkbox')
           .removeClass('checked')
           .removeClass('disabled');
     }
 
     if (project_count > 0) {
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-active').prop('disabled', false);
     }
 
-    $('#modal-user-save').addClass('disabled');
+    $('#modal-user-save')
+        .prop('disabled', true)
+        .addClass('disabled');
 
     $.ajax({
       type: 'POST',
@@ -273,7 +277,7 @@
       }
     })
         .done(function (data) {
-          console.log(data);
+          //console.log(data);
           window.location.reload();  // @TODO It should not be re-loaded.
         });
   }

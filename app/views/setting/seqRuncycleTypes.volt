@@ -107,7 +107,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="button" id="modal-seq_runcycle_type-save" class="btn btn-primary pull-right disabled"
-                  onclick="seqRuncycleTypesSave()">
+                  onclick="seqRuncycleTypesSave()" disabled>
             Save
           </button>
         </div>
@@ -130,11 +130,11 @@
 
     // @TODO should be consider details condition of details
     if (seq_runcycle_type_seq_run_type_scheme_count > 0) {
-      //$('#modal-name').attr('disabled', 'disabled');
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-name').prop('disabled', true);
+      $('#modal-active').prop('disabled', true);
     } else {
-      //$('#modal-name').removeAttr('disabled');
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-name').prop('disabled', false);
+      $('#modal-active').prop('disabled', false);
     }
 
     $('#modal-seq_runcycle_type-save').addClass('disabled');
@@ -224,7 +224,9 @@
     $('#modal-seq_runcycle_type-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-seq_runcycle_type-save').removeClass('disabled');
+          $('#modal-seq_runcycle_type-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });

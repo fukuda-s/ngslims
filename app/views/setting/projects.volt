@@ -204,13 +204,15 @@
     $('#modal-active').val(active);
 
     if(project_sample_count > 0) {
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-active').prop('disabled', false);
     }
 
 
-    $('#modal-project-save').addClass('disabled');
+    $('#modal-project-save')
+        .prop('disabled', true)
+        .addClass('disabled');
 
     $('#modal-project-edit').modal('show');
 
@@ -302,7 +304,9 @@
     $('#modal-project-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-project-save').removeClass('disabled');
+          $('#modal-project-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });

@@ -128,9 +128,9 @@
     var project_users_save = $('#project_users_save');
     if (project_users_holder.find('div.tube-active:not(.tube-inactive)').length //For dragged users
         || project_users_holder.find('div.tube-inactive:not(.tube-active)').length) { //For original users
-      project_users_save.removeAttr('disabled');
+      project_users_save.prop('disabled', false);
     } else {
-      project_users_save.attr('disabled', 'disabled');
+      project_users_save.prop('disabled', true);
     }
   }
 
@@ -171,7 +171,7 @@
           item.append(itm);
         });
 
-        $('#project_users_save').removeAttr('disabled');
+        $('#project_users_save').prop('disabled', false);
       }
     });
 

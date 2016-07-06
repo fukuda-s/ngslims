@@ -119,9 +119,9 @@
     var protocol_oligobarcode_scheme_allows_save = $('#protocol_oligobarcode_scheme_allows_save');
     if (protocol_oligobarcode_schemes_holder.find('div.tube-active:not(.tube-inactive)').length //For dragged oligobarcode_schemes
         || protocol_oligobarcode_schemes_holder.find('div.tube-inactive:not(.tube-active)').length) { //For original oligobarcode_schemes
-      protocol_oligobarcode_scheme_allows_save.removeAttr('disabled');
+      protocol_oligobarcode_scheme_allows_save.prop('disabled', false);
     } else {
-      protocol_oligobarcode_scheme_allows_save.attr('disabled', 'disabled');
+      protocol_oligobarcode_scheme_allows_save.prop('disabled', true);
     }
   }
 
@@ -162,7 +162,7 @@
           item.append(itm);
         });
 
-        $('#protocol_oligobarcode_scheme_allows_save').removeAttr('disabled');
+        $('#protocol_oligobarcode_scheme_allows_save').prop('disabled', false);
       }
     });
 

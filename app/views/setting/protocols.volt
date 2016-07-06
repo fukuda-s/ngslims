@@ -172,13 +172,15 @@
     $('#modal-active').val(active);
 
     if (protocol_seqlibs_count > 0 || protocol_oligobarcode_scheme_allows_count > 0) {
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-active').prop('disabled', false);
     }
 
 
-    $('#modal-protocol-save').addClass('disabled');
+    $('#modal-protocol-save')
+        .prop('disabled', true)
+        .addClass('disabled');
 
     $('#modal-protocol-edit').modal('show');
 
@@ -272,7 +274,9 @@
     $('#modal-protocol-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-protocol-save').removeClass('disabled');
+          $('#modal-protocol-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });

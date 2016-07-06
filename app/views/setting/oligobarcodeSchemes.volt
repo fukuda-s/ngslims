@@ -143,9 +143,9 @@
     $('#modal-active').val(active);
 
     if (oligobarcode_scheme_oligobarcodes_count > 0) {
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-active').prop('disabled', false);
     }
 
 
@@ -237,7 +237,9 @@
     $('#modal-oligobarcode_scheme-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-oligobarcode_scheme-save').removeClass('disabled');
+          $('#modal-oligobarcode_scheme-save')
+              .prop('disabled', true)
+              .removeClass('disabled');
         });
 
   });

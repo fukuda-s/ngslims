@@ -148,11 +148,11 @@
 
     // @TODO should be consider details condition of details
     if (instrument_flowcell_count > 0) {
-      $('#modal-name').attr('disabled', 'disabled');
-      $('#modal-active').attr('disabled', 'disabled');
+      $('#modal-name').prop('disabled', true);
+      $('#modal-active').prop('disabled', true);
     } else {
-      $('#modal-name').removeAttr('disabled');
-      $('#modal-active').removeAttr('disabled');
+      $('#modal-name').prop('disabled', false);
+      $('#modal-active').prop('disabled', false);
     }
 
     $('#modal-instrument-save').addClass('disabled');

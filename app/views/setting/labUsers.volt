@@ -126,9 +126,9 @@
     var lab_users_save = $('#lab_users_save');
     if (lab_users_holder.find('div.tube-active:not(.tube-inactive)').length //For dragged users
         || lab_users_holder.find('div.tube-inactive:not(.tube-active)').length) { //For original users
-      lab_users_save.removeAttr('disabled');
+      lab_users_save.prop('disabled', false);
     } else {
-      lab_users_save.attr('disabled', 'disabled');
+      lab_users_save.prop('disabled', true);
     }
   }
 
@@ -169,7 +169,7 @@
           item.append(itm);
         });
 
-        $('#lab_users_save').removeAttr('disabled');
+        $('#lab_users_save').prop('disabled', false);
       }
     });
 
