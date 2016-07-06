@@ -23,6 +23,9 @@
       <li>{{ link_to('setting/instrumentTypes', 'Instrument Types') }}</li>
       <ul>
         <li>{{ link_to('setting/instruments', 'Instruments') }}</li>
+        <li>{{ link_to('setting/seqRunmodeTypes', 'Sequence Run Mode Types') }}</li>
+        <li>{{ link_to('setting/seqRunreadTypes', 'Sequence Run Read Types') }}</li>
+        <li>{{ link_to('setting/seqRuncycleTypes', 'Sequence Run Cycle Types') }}</li>
       </ul>
     </ul>
   </div>

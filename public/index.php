@@ -164,6 +164,20 @@ try {
 		return new Elements();
 	});
 
+	/**
+	 * Register custom user filter for sanitizing
+	 */
+	$di->set('filter', function(){
+		$filter = new Phalcon\Filter();
+		$filter->add('name_filter', function ($value) {
+			$value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+			$value = preg_replace('/\.+/', '.', $value);
+			$value = preg_replace('/\.+$/', '', $value);
+			return $value;
+		});
+		return $filter;
+	});
+
 	$application = new \Phalcon\Mvc\Application();
 	$application->setDI($di);
 	echo $application->handle()->getContent();

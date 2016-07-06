@@ -3,66 +3,64 @@
   <div class="col-md-12">
     <ol class="breadcrumb">
       <li>{{ link_to('setting', 'Setting') }}</li>
-      <li class="active">Organisms</li>
+      <li class="active">SeqRunmodeTypes</li>
     </ol>
 
     {{ content() }}
     {{ flashSession.output() }}
 
     <button type="button" class="btn btn-xs btn-primary pull-left"
-            onclick="organismsEdit(-1, '', '', '', '', 'Y', 0)"
+            onclick="seqRunmodeTypesEdit(-1, '', '', '', 'Y', 0)"
             style="margin: 10px 0; width: 261px ">
       <i class="fa fa-plus" aria-hidden="true"></i>&ensp;
-      Create New Organism
+      Create New Seq Runmode Type
     </button>
     <button type="button" class="btn btn-xs pull-right" style="margin: 0 0 10px 0; width: 261px "
             onclick="showInactive(this)">
-      <div><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Show In-active Organism</div>
-      <div style="display: none"><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Hide In-active Organism</div>
+      <div><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Show In-active Seq Runmode Type</div>
+      <div style="display: none"><i class="fa fa-ban" aria-hidden="true"></i>&ensp;Hide In-active Seq Runmode Type</div>
     </button>
     <div class="clearfix"></div>
 
-    <table class="table table-condensed table-hover table-striped" id="organism-table" style="font-size: 70%">
+    <table class="table table-condensed table-hover table-striped" id="seq_runmode_type-table" style="font-size: 70%">
       <thead>
       <tr>
         <th>ID</th>
-        <th>Organism Name</th>
-        <th>Taxonomy ID</th>
-        <th>Taxonomy</th>
+        <th>Seq Runmode Type Name</th>
+        <th>Num. Of Lane Per Flowcell</th>
         <th>Sort Order</th>
         <th>Active</th>
         <th>Edit</th>
       </tr>
       </thead>
       <tbody>
-      {% for organism in organisms %}
-        {% set active = organism.active %}
+      {% for seq_runmode_type in seq_runmode_types %}
+        {% set active = seq_runmode_type.active %}
         <tr
             {% if active is 'N' %}
               class="danger inactive" style="display: none"
             {% endif %}
         >
-          <td>{{ organism.id }}</td>
-          <td>{{ organism.name }}</td>
-          <td>{{ organism.taxonomy_id }}</td>
-          <td>{{ organism.taxonomy }}</td>
-          <td>{{ organism.sort_order }}</td>
+          <td>{{ seq_runmode_type.id }}</td>
+          <td>{{ seq_runmode_type.name }}</td>
+          <td>{{ seq_runmode_type.lane_per_flowcell}}</td>
+          <td>{{ seq_runmode_type.sort_order }}</td>
           {% if active is 'Y' %}
             <td>{{ active }}</td>
           {% else %}
             <td class="text-danger">{{ active }}</td>
           {% endif %}
-          {% set organism_sample_count = organism.Samples|length %}
+          {% set seq_runmode_type_seq_run_type_scheme_count = seq_runmode_type.SeqRunTypeSchemes|length %}
           <td class="text-center">
             <a href="javascript:void(0)" style="font-size: 9pt"
-               onclick="organismsEdit('{{ organism.id }}', '{{ organism.name }}', '{{ organism.taxonomy_id }}', '{{ organism.taxonomy }}', '{{ organism.sort_order }}', '{{ organism.active }}', '{{ organism_sample_count }}'); return false;">
+               onclick="seqRunmodeTypesEdit('{{ seq_runmode_type.id }}', '{{ seq_runmode_type.name }}', '{{ seq_runmode_type.lane_per_flowcell }}', '{{ seq_runmode_type.sort_order }}', '{{ seq_runmode_type.active }}', '{{ seq_runmode_type_seq_run_type_scheme_count }}'); return false;">
               <span class="fa fa-pencil"></span>&ensp;
             </a>
-            {% if organism_sample_count == 0 %}
+            {% if seq_runmode_type_seq_run_type_scheme_count == 0 %}
               <a href="javascript:void(0)" style="font-size: 9pt"
-                 onclick="organismsRemove({{ organism.id }}); return false;"><span class="fa fa-trash"></span></a>
+                 onclick="seqRunmodeTypesRemove({{ seq_runmode_type.id }}); return false;"><span class="fa fa-trash"></span></a>
             {% else %}
-              {% set trash_message = "Could not delete this Organism. This Organism is already used by " ~ organism_sample_count ~ " samples." %}
+              {% set trash_message = "Could not delete this Seq Runmode Type. This Seq Runmode Type is already used by " ~ seq_runmode_type_seq_run_type_scheme_count ~ " Seq Runtype Schemes." %}
               <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{ trash_message }}"
                  style="font-size: 9pt; color: #b9c4c8; cursor: not-allowed;" onclick="return false;">
                 <span class="fa fa-trash"></span></a>
@@ -76,36 +74,30 @@
 </div>
 
 <!-- Modal Confirm Copy-->
-<div class="modal fade form-horizontal" id="modal-organism-edit" tabindex="-1" role="dialog"
-     aria-labelledby="modal-organism-edit-title"
+<div class="modal fade form-horizontal" id="modal-seq_runmode_type-edit" tabindex="-1" role="dialog"
+     aria-labelledby="modal-seq_runmode_type-edit-title"
      aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="modal-organism-edit-title">Edit</h4>
+        <h4 class="modal-title" id="modal-seq_runmode_type-edit-title">Edit</h4>
       </div>
       <div class="modal-body">
         <h5>Please press 'Save' button when finished edit.</h5>
         <h5 class="text-danger">CATION! Could not rollback after 'Save'.</h5>
         <br>
-        {{ hidden_field('modal-organism_id', 'class': 'form-control') }}
+        {{ hidden_field('modal-seq_runmode_type_id', 'class': 'form-control') }}
         <div class="form-group form-group-sm">
-          <label for="modal-taxonomy_id" class="col-sm-3 control-label" style="font-size: 9pt">Taxonomy ID</label>
-          <div class="col-sm-9">
-            {{ numeric_field('modal-taxonomy_id', 'class': 'form-control') }}
-          </div>
-        </div>
-        <div class="form-group form-group-sm">
-          <label for="modal-taxonomy" class="col-sm-3 control-label" style="font-size: 9pt">Taxonomy</label>
-          <div class="col-sm-9">
-            {{ text_field('modal-taxonomy', 'class': 'form-control') }}
-          </div>
-        </div>
-        <div class="form-group form-group-sm">
-          <label for="modal-name" class="col-sm-3 control-label" style="font-size: 9pt">Organism Name</label>
+          <label for="modal-name" class="col-sm-3 control-label" style="font-size: 9pt">Seq Runmode Type Name</label>
           <div class="col-sm-9">
             {{ text_field('modal-name', 'class': 'form-control') }}
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
+          <label for="modal-lane_per_flowcell" class="col-sm-3 control-label" style="font-size: 9pt">Num. Of Lane Per Flowcell</label>
+          <div class="col-sm-9">
+            {{ numeric_field('modal-lane_per_flowcell', 'class': 'form-control') }}
           </div>
         </div>
         <div class="form-group form-group-sm">
@@ -122,8 +114,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" id="modal-organism-save" class="btn btn-primary pull-right disabled"
-                  onclick="organismsSave()">
+          <button type="button" id="modal-seq_runmode_type-save" class="btn btn-primary pull-right disabled"
+                  onclick="seqRunmodeTypesSave()">
             Save
           </button>
         </div>
@@ -136,28 +128,27 @@
   /**
    * Open modal window with filling values.
    */
-  function organismsEdit(organism_id, name, taxonomy_id, taxonomy, sort_order, active, organism_sample_count) {
+  function seqRunmodeTypesEdit(seq_runmode_type_id, name, lane_per_flowcell, sort_order, active, seq_runmode_type_seq_run_type_scheme_count) {
 
-    $('#modal-organism_id').val(organism_id);
+    $('#modal-seq_runmode_type_id').val(seq_runmode_type_id);
     $('#modal-name').val(name);
-    $('#modal-taxonomy_id').val(taxonomy_id);
-    $('#modal-taxonomy').val(taxonomy);
+    $('#modal-lane_per_flowcell').val(lane_per_flowcell);
     $('#modal-sort_order').val(sort_order);
     $('#modal-active').val(active);
 
 
     // @TODO should be consider details condition of details
-    if (organism_sample_count > 0) {
-      $('#modal-taxonomy_id').attr('disabled', 'disabled');
+    if (seq_runmode_type_seq_run_type_scheme_count > 0) {
+      //$('#modal-name').attr('disabled', 'disabled');
       $('#modal-active').attr('disabled', 'disabled');
     } else {
-      $('#modal-taxonomy_id').removeAttr('disabled');
+      //$('#modal-name').removeAttr('disabled');
       $('#modal-active').removeAttr('disabled');
     }
 
-    $('#modal-organism-save').addClass('disabled');
+    $('#modal-seq_runmode_type-save').addClass('disabled');
 
-    $('#modal-organism-edit').modal('show');
+    $('#modal-seq_runmode_type-edit').modal('show');
 
   }
 
@@ -165,60 +156,58 @@
    * Save edit results on modal window.
    * @returns {boolean}
    */
-  function organismsSave() {
+  function seqRunmodeTypesSave() {
     if (!$('#modal-name').val().length) {
-      alert('Please input Organism name.');
+      alert('Please input SeqRunmodeType name.');
       return false;
     }
 
-    $('#modal-organism-edit').modal('hide');
+    $('#modal-seq_runmode_type-edit').modal('hide');
 
-    var organism_id = $('#modal-organism_id').val();
+    var seq_runmode_type_id = $('#modal-seq_runmode_type_id').val();
     var name = $('#modal-name').val();
-    var taxonomy_id = $('#modal-taxonomy_id').val();
-    var taxonomy = $('#modal-taxonomy').val();
+    var lane_per_flowcell = $('#modal-lane_per_flowcell').val();
     var sort_order = $('#modal-sort_order').val();
     var active = $('#modal-active').val();
     $.ajax({
       type: 'POST',
-      url: '/ngsLIMS/setting/organisms',
+      url: '/ngsLIMS/setting/seqRunmodeTypes',
       data: {
-        organism_id: organism_id,
+        seq_runmode_type_id: seq_runmode_type_id,
         name: name,
-        taxonomy_id: taxonomy_id,
-        taxonomy: taxonomy,
+        lane_per_flowcell: lane_per_flowcell,
         sort_order: sort_order,
         active: active
       }
     })
         .done(function (data) {
-          //console.log(data);
+          console.log(data);
           window.location.reload();  // @TODO It should not be re-loaded.
         });
   }
 
   /**
-   * Delete organism record. (It will be soft-deleted (active=N).)
-   * @param organism_id
+   * Delete seq_runmode_type record. (It will be soft-deleted (active=N).)
+   * @param seq_runmode_type_id
    * @returns {boolean}
    */
-  function organismsRemove(organism_id) {
-    if (!organism_id) {
-      alert('Error: Could not found organism_id value.');
+  function seqRunmodeTypesRemove(seq_runmode_type_id) {
+    if (!seq_runmode_type_id) {
+      alert('Error: Could not found seq_runmode_type_id value.');
       return false;
     }
 
-    if (window.confirm("This Organism will be in-active.\n\nAre You Sure?")) {
+    if (window.confirm("This SeqRunmodeType will be in-active.\n\nAre You Sure?")) {
       $.ajax({
         type: 'POST',
-        url: '/ngsLIMS/setting/organisms',
+        url: '/ngsLIMS/setting/seqRunmodeTypes',
         data: {
-          organism_id: organism_id,
+          seq_runmode_type_id: seq_runmode_type_id,
           active: 'N'
         }
       })
           .done(function (data) {
-            //console.log(data);
+            console.log(data);
             window.location.reload(); // @TODO It should not be re-loaded.
           });
     }
@@ -238,15 +227,15 @@
    * DataTables
    */
   $(document).ready(function () {
-    $('#organism-table').DataTable({
+    $('#seq_runmode_type-table').DataTable({
       paging: false,
       order: []
     });
 
-    $('#modal-organism-edit')
+    $('#modal-seq_runmode_type-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-organism-save').removeClass('disabled');
+          $('#modal-seq_runmode_type-save').removeClass('disabled');
         });
 
   });

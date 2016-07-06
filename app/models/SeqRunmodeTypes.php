@@ -55,6 +55,8 @@ class SeqRunmodeTypes extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasMany('id', 'SeqRunTypeSchemes', 'seq_runmode_type_id');
+        
         $this->addBehavior(new SoftDelete(
             array(
                 'field' => 'active',

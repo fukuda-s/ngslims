@@ -99,7 +99,7 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-username" class="col-sm-3 control-label" style="font-size: 9pt">Account</label>
+          <label for="modal-username" class="col-sm-3 control-label" style="font-size: 9pt">Username</label>
           <div class="col-sm-9">
             {{ text_field('modal-username', 'class': 'form-control') }}
           </div>
@@ -273,7 +273,7 @@
       }
     })
         .done(function (data) {
-          //console.log(data);
+          console.log(data);
           window.location.reload();  // @TODO It should not be re-loaded.
         });
   }

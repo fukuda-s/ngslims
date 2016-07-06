@@ -1,5 +1,14 @@
 <?php
-use Phalcon\Tag, Phalcon\Acl;
+use Phalcon\Tag, Phalcon\Acl, Phalcon\Filter;
+
+//Custom Filter for name value.
+$filter = new Filter();
+$filter->add('name_filter', function ($value) {
+    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
+    $value = preg_replace('/\.+/', '.', $value);
+    $value = preg_replace('/\.+$/', '', $value);
+    return $value;
+});
 
 class SettingController extends ControllerBase
 {
@@ -9,6 +18,7 @@ class SettingController extends ControllerBase
         $this->view->setTemplateAfter('main');
         Tag::setTitle('Setting');
         parent::initialize();
+
     }
 
     public function indexAction()
@@ -24,30 +34,21 @@ class SettingController extends ControllerBase
             if ($request->isAjax() == true) {
                 $this->view->disable();
 
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('username', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
+                $user_id = $request->getPost('user_id', 'int');
+                $lab_id_array = $request->getPost('lab_id_array', array('striptags'));
+                $username = $request->getPost('username', array('striptags', 'name_filter'));
+                $firstname = $request->getPost('firstname', array('striptags', 'trim'));
+                $lastname = $request->getPost('lastname', array('striptags', 'trim'));
+                $email = $request->getPost('email', array('email', 'trim'));
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
-                $user_id = $this->request->getPost('user_id', 'int');
-                $lab_id_array = $this->request->getPost('lab_id_array', array('striptags'));
-                $username = $this->request->getPost('username', array('striptags'));
-                $username = $filter->sanitize($username, 'username');
-                $firstname = $this->request->getPost('firstname', array('striptags', 'trim'));
-                $lastname = $this->request->getPost('lastname', array('striptags', 'trim'));
-                $email = $this->request->getPost('email', array('email', 'trim'));
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
-
-                $password_reset = ($this->request->getPost('password_reset', array('striptags'))) ? $this->request->getPost('password_reset', array('striptags')) : null;
+                $password_reset = ($request->getPost('password_reset', array('striptags'))) ? $request->getPost('password_reset', array('striptags')) : null;
 
                 if (empty($user_id)) {
                     return $this->flashSession->error('ERROR: Undefined user_id value ' . $user_id . '.');
                 }
 
+                echo "username: $username\n";
 
                 if ($user_id > 0) {
                     $user = Users::findFirst("id = $user_id");
@@ -170,7 +171,7 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                $user_id = $this->request->getPost('user_id', 'int');
+                $user_id = $request->getPost('user_id', 'int');
                 if (empty($user_id)) {
                     return $this->flashSession->error('ERROR: Undefined user_id value ' . $user_id . '.');
                 }
@@ -202,26 +203,16 @@ class SettingController extends ControllerBase
             if ($request->isAjax() == true) {
                 $this->view->disable();
 
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('labname', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
-
-                $lab_id = $this->request->getPost('lab_id', 'int');
-                $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'labname');
-                $department = ($this->request->getPost('department', array('striptags'))) ? $this->request->getPost('department', array('striptags')) : null;
-                $zipcode = ($this->request->getPost('zipcode', array('striptags'))) ? $this->request->getPost('zipcode', array('striptags')) : null;
-                $address1 = ($this->request->getPost('address1', array('striptags'))) ? $this->request->getPost('address1', array('striptags')) : null;
-                $address2 = ($this->request->getPost('address2', array('striptags'))) ? $this->request->getPost('address2', array('striptags')) : null;
-                $phone = ($this->request->getPost('phone', array('striptags'))) ? $this->request->getPost('phone', array('striptags')) : null;
-                $fax = ($this->request->getPost('fax', array('striptags'))) ? $this->request->getPost('fax', array('striptags')) : null;
-                $email = ($this->request->getPost('email', array('email', 'trim'))) ? $this->request->getPost('email', array('email', 'trim')) : null;
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $lab_id = $request->getPost('lab_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim'));
+                $department = ($request->getPost('department', array('striptags'))) ? $request->getPost('department', array('striptags')) : null;
+                $zipcode = ($request->getPost('zipcode', array('striptags'))) ? $request->getPost('zipcode', array('striptags')) : null;
+                $address1 = ($request->getPost('address1', array('striptags'))) ? $request->getPost('address1', array('striptags')) : null;
+                $address2 = ($request->getPost('address2', array('striptags'))) ? $request->getPost('address2', array('striptags')) : null;
+                $phone = ($request->getPost('phone', array('striptags'))) ? $request->getPost('phone', array('striptags')) : null;
+                $fax = ($request->getPost('fax', array('striptags'))) ? $request->getPost('fax', array('striptags')) : null;
+                $email = ($request->getPost('email', array('email', 'trim'))) ? $request->getPost('email', array('email', 'trim')) : null;
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($lab_id)) {
                     return $this->flashSession->error('ERROR: Undefined lab_id value ' . $lab_id . '.');
@@ -300,8 +291,8 @@ class SettingController extends ControllerBase
             if ($request->isAjax() == true) {
                 $this->view->disable();
 
-                $new_users_id_array = $this->request->getPost('new_users_id_array', array('striptags'));
-                $del_users_id_array = $this->request->getPost('del_users_id_array', array('striptags'));
+                $new_users_id_array = $request->getPost('new_users_id_array', array('striptags'));
+                $del_users_id_array = $request->getPost('del_users_id_array', array('striptags'));
 
                 $labUsers = array();
                 $i = 0;
@@ -392,23 +383,14 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('projectname', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
 
-                $project_id = $this->request->getPost('project_id', 'int');
-                $lab_id = $this->request->getPost('lab_id', 'int');
-                $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'projectname');
-                $pi_user_id = $this->request->getPost('pi_user_id', 'int');
-                $project_type_id = $this->request->getPost('project_type_id', 'int');
-                $description = ($this->request->getPost('description', array('striptags'))) ? $this->request->getPost('description', array('striptags')) : null;
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $project_id = $request->getPost('project_id', 'int');
+                $lab_id = $request->getPost('lab_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim', 'name_filter'));
+                $pi_user_id = $request->getPost('pi_user_id', 'int');
+                $project_type_id = $request->getPost('project_type_id', 'int');
+                $description = ($request->getPost('description', array('striptags'))) ? $request->getPost('description', array('striptags')) : null;
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($project_id)) {
                     return $this->flashSession->error('ERROR: Undefined project_id value ' . $project_id . '.');
@@ -491,8 +473,8 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                $lab_id = $this->request->getPost('lab_id', 'int');
-                $pi_user_id = $this->request->getPost('pi_user_id', 'int');
+                $lab_id = $request->getPost('lab_id', 'int');
+                $pi_user_id = $request->getPost('pi_user_id', 'int');
                 if (empty($lab_id)) {
                     $this->flashSession->error('ERROR: Undefined lab_id value ' . $lab_id . '.');
                 }
@@ -533,8 +515,8 @@ class SettingController extends ControllerBase
             if ($request->isAjax() == true) {
                 $this->view->disable();
 
-                $new_users_id_array = $this->request->getPost('new_users_id_array', array('striptags'));
-                $del_users_id_array = $this->request->getPost('del_users_id_array', array('striptags'));
+                $new_users_id_array = $request->getPost('new_users_id_array', array('striptags'));
+                $del_users_id_array = $request->getPost('del_users_id_array', array('striptags'));
 
                 $projectUsers = array();
                 $i = 0;
@@ -628,26 +610,16 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('stepname', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
 
-                $step_id = $this->request->getPost('step_id', 'int');
-                $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'stepname');
-                $short_name = $this->request->getPost('short_name', array('striptags'));
-                $short_name = $filter->sanitize($short_name, 'stepname');
-                $step_phase_code = $this->request->getPost('step_phase_code', array('striptags', 'alphanum', 'trim', 'upper'));
-                $seq_runmode_type_id = ($this->request->getPost('seq_runmode_type_id', 'int')) ? $this->request->getPost('seq_runmode_type_id', 'int') : null;
-                $platform_code = ($this->request->getPost('platform_code', array('striptags', 'alphanum', 'trim', 'upper'))) ? $this->request->getPost('platform_code', array('striptags', 'alphanum', 'trim', 'upper')) : null;
-                $nucleotide_type = $this->request->getPost('nucleotide_type', array('striptags', 'alphanum', 'trim', 'upper'));
-                $sort_order = $this->request->getPost('sort_order', 'int');
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $step_id = $request->getPost('step_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim'));
+                $short_name = $request->getPost('short_name', array('striptags', 'name_filter'));
+                $step_phase_code = $request->getPost('step_phase_code', array('striptags', 'alphanum', 'trim', 'upper'));
+                $seq_runmode_type_id = ($request->getPost('seq_runmode_type_id', 'int')) ? $request->getPost('seq_runmode_type_id', 'int') : null;
+                $platform_code = ($request->getPost('platform_code', array('striptags', 'alphanum', 'trim', 'upper'))) ? $request->getPost('platform_code', array('striptags', 'alphanum', 'trim', 'upper')) : null;
+                $nucleotide_type = $request->getPost('nucleotide_type', array('striptags', 'alphanum', 'trim', 'upper'));
+                $sort_order = $request->getPost('sort_order', 'int');
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($step_id)) {
                     return $this->flashSession->error('ERROR: Undefined step_id value ' . $step_id . '.');
@@ -745,24 +717,15 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('protocolname', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
 
-                $protocol_id = $this->request->getPost('protocol_id', 'int');
-                $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'protocolname');
-                $description = ($this->request->getPost('description', array('striptags'))) ? $this->request->getPost('description', array('striptags')) : null;
-                $step_id = $this->request->getPost('step_id', 'int');
-                $min_multiplex_number = $this->request->getPost('min_multiplex_number', 'int');
-                $max_multiplex_number = $this->request->getPost('max_multiplex_number', 'int');
-                $next_step_phase_code = $this->request->getPost('next_step_phase_code', array('striptags'));
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $protocol_id = $request->getPost('protocol_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'name_filter'));
+                $description = ($request->getPost('description', array('striptags'))) ? $request->getPost('description', array('striptags')) : null;
+                $step_id = $request->getPost('step_id', 'int');
+                $min_multiplex_number = $request->getPost('min_multiplex_number', 'int');
+                $max_multiplex_number = $request->getPost('max_multiplex_number', 'int');
+                $next_step_phase_code = $request->getPost('next_step_phase_code', array('striptags'));
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($protocol_id)) {
                     return $this->flashSession->error('ERROR: Undefined protocol_id value ' . $protocol_id . '.');
@@ -844,8 +807,8 @@ class SettingController extends ControllerBase
             if ($request->isAjax() == true) {
                 $this->view->disable();
 
-                $new_oligobarcode_scheme_id_array = $this->request->getPost('new_oligobarcode_scheme_id_array', array('striptags'));
-                $del_oligobarcode_scheme_id_array = $this->request->getPost('del_oligobarcode_scheme_id_array', array('striptags'));
+                $new_oligobarcode_scheme_id_array = $request->getPost('new_oligobarcode_scheme_id_array', array('striptags'));
+                $del_oligobarcode_scheme_id_array = $request->getPost('del_oligobarcode_scheme_id_array', array('striptags'));
 
                 $oligobarcodeSchemeAllows = array();
                 $i = 0;
@@ -939,21 +902,12 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('oligobarcode_scheme_name', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
 
-                $oligobarcode_scheme_id = $this->request->getPost('oligobarcode_scheme_id', 'int');
-                $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'oligobarcode_scheme_name');
-                $description = ($this->request->getPost('description', array('striptags'))) ? $this->request->getPost('description', array('striptags')) : null;
-                $is_oligobarcodeB = $this->request->getPost('is_oligobarcodeB', array('striptags'));
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $oligobarcode_scheme_id = $request->getPost('oligobarcode_scheme_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim'));
+                $description = ($request->getPost('description', array('striptags'))) ? $request->getPost('description', array('striptags')) : null;
+                $is_oligobarcodeB = $request->getPost('is_oligobarcodeB', array('striptags'));
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($oligobarcode_scheme_id)) {
                     return $this->flashSession->error('ERROR: Undefined oligobarcode_scheme_id value ' . $oligobarcode_scheme_id . '.');
@@ -1027,8 +981,8 @@ class SettingController extends ControllerBase
             if ($request->isAjax() == true) {
                 $this->view->disable();
 
-                $new_oligobarcode_id_array = $this->request->getPost('new_oligobarcode_id_array', array('striptags'));
-                $del_oligobarcode_id_array = $this->request->getPost('del_oligobarcode_id_array', array('striptags'));
+                $new_oligobarcode_id_array = $request->getPost('new_oligobarcode_id_array', array('striptags'));
+                $del_oligobarcode_id_array = $request->getPost('del_oligobarcode_id_array', array('striptags'));
 
                 $oligobarcodeSchemeOligobarcodes = array();
                 $i = 0;
@@ -1166,21 +1120,12 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('motermname', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
 
-                $sample_property_type_id = $this->request->getPost('sample_property_type_id', 'int');
-                $name = $this->request->getPost('name', array('striptags', 'trim'));
-                $mo_term_name = $this->request->getPost('mo_term_name', array('striptags'));
-                $mo_term_name = $filter->sanitize($mo_term_name, 'motermname');
-                $mo_id = $this->request->getPost('mo_id', array('striptags', 'trim'));
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $sample_property_type_id = $request->getPost('sample_property_type_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim'));
+                $mo_term_name = $request->getPost('mo_term_name', array('striptags', 'name_filter'));
+                $mo_id = $request->getPost('mo_id', array('striptags', 'trim'));
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($sample_property_type_id)) {
                     return $this->flashSession->error('ERROR: Undefined sample_property_type_id value ' . $sample_property_type_id . '.');
@@ -1250,19 +1195,10 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('samplelocationname', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
 
-                $sample_location_id = $this->request->getPost('sample_location_id', 'int');
-                $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'samplelocationname');
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $sample_location_id = $request->getPost('sample_location_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'name_filter'));
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($sample_location_id)) {
                     return $this->flashSession->error('ERROR: Undefined $sample_location_id value ' . $sample_location_id . '.');
@@ -1329,22 +1265,13 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('organismsname', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
 
-                $organism_id = $this->request->getPost('organism_id', 'int');
-                $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'organismsname');
-                $taxonomy_id = $this->request->getPost('taxonomy_id', 'int');
-                $taxonomy = $this->request->getPost('taxonomy', array('striptags', 'trim'));
-                $sort_order = ($this->request->getPost('sort_order', 'int')) ? $this->request->getPost('sort_order', 'int') : null;
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $organism_id = $request->getPost('organism_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim'));
+                $taxonomy_id = $request->getPost('taxonomy_id', 'int');
+                $taxonomy = $request->getPost('taxonomy', array('striptags', 'trim'));
+                $sort_order = ($request->getPost('sort_order', 'int')) ? $request->getPost('sort_order', 'int') : null;
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($organism_id)) {
                     return $this->flashSession->error('ERROR: Undefined $organism_id value ' . $organism_id . '.');
@@ -1421,23 +1348,14 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('instrumenttypesname', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
 
-                $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
-                $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'instrumenttypesname');
-                $platform_code = $this->request->getPost('platform_code', array('striptags', 'trim'));
-                $sort_order = $this->request->getPost('sort_order', 'int');
-                $slots_per_run = $this->request->getPost('slots_per_run', 'int');
-                $slots_array_json = $this->request->getPost('slots_array_json', array('striptags', 'trim'));
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $instrument_type_id = $request->getPost('instrument_type_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'name_filter'));
+                $platform_code = $request->getPost('platform_code', array('striptags', 'trim'));
+                $sort_order = $request->getPost('sort_order', 'int');
+                $slots_per_run = $request->getPost('slots_per_run', 'int');
+                $slots_array_json = $request->getPost('slots_array_json', array('striptags', 'trim'));
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($instrument_type_id)) {
                     return $this->flashSession->error('ERROR: Undefined $instrument_type_id value ' . $instrument_type_id . '.');
@@ -1530,22 +1448,13 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                //Custom Filter for username value.
-                $filter = new \Phalcon\Filter();
-                $filter->add('instrumentsname', function ($value) {
-                    $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
-                    $value = preg_replace('/\.+/', '.', $value);
-                    $value = preg_replace('/\.+$/', '', $value);
-                    return $value;
-                });
 
-                $instrument_id = $this->request->getPost('instrument_id', 'int');
-                $name = $this->request->getPost('name', array('striptags'));
-                $name = $filter->sanitize($name, 'instrumentsname');
-                $instrument_number = $this->request->getPost('instrument_number', array('striptags', 'trim'));
-                $nickname = $this->request->getPost('nickname', array('striptags', 'trim'));
-                $instrument_type_id = $this->request->getPost('instrument_type_id', 'int');
-                $active = ($this->request->getPost('active', array('striptags'))) ? $this->request->getPost('active', array('striptags')) : null;
+                $instrument_id = $request->getPost('instrument_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'name_filter', 'upper'));
+                $instrument_number = $request->getPost('instrument_number', array('striptags', 'trim'));
+                $nickname = $request->getPost('nickname', array('striptags', 'trim'));
+                $instrument_type_id = $request->getPost('instrument_type_id', 'int');
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
                 if (empty($instrument_id)) {
                     return $this->flashSession->error('ERROR: Undefined $instrument_id value ' . $instrument_id . '.');
@@ -1555,7 +1464,6 @@ class SettingController extends ControllerBase
                     return $this->flashSession->error('ERROR: instrument_number ' . $instrument_number . ' is already used by instrument_id ' . $instrument_id . '.');
                 }
 
-                echo $instrument_id . ':' . $name . ':' . $active;
                 if ($instrument_id > 0) {
                     $instrument = Instruments::findFirst("id = $instrument_id");
                     if (!$instrument) {
@@ -1564,7 +1472,6 @@ class SettingController extends ControllerBase
                     if (empty($name) and $active == 'N') {
                         $instrument->delete(); //Should be soft-delete (active=N);
                     } else {
-                        $instrument->id = $instrument_id;
                         $instrument->name = $name;
                         $instrument->instrument_number = $instrument_number;
                         $instrument->nickname = $nickname;
@@ -1625,7 +1532,7 @@ class SettingController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $this->view->disable();
-                $seq_run_type_scheme_arrays = $this->request->getPost('seq_run_type_scheme_arrays');
+                $seq_run_type_scheme_arrays = $request->getPost('seq_run_type_scheme_arrays');
                 foreach ($seq_run_type_scheme_arrays as $seq_run_type_scheme_arr) {
                     $seq_runmode_type_id = $seq_run_type_scheme_arr[0];
                     $seq_runread_type_id = $seq_run_type_scheme_arr[1];
@@ -1728,4 +1635,227 @@ class SettingController extends ControllerBase
             ));
         }
     }
+
+    public function seqRunmodeTypesAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $seq_runmode_type_id = $request->getPost('seq_runmode_type_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim'));
+                $lane_per_flowcell = $request->getPost('lane_per_flowcell', 'int');
+                $sort_order = $request->getPost('sort_order', 'int');
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
+
+                if (empty($seq_runmode_type_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $seq_runmode_type_id value ' . $seq_runmode_type_id . '.');
+                }
+
+                if ($seq_runmode_type_id > 0) {
+                    $seq_runmode_type = SeqRunmodeTypes::findFirst("id = $seq_runmode_type_id");
+                    if (!$seq_runmode_type) {
+                        return $this->flashSession->error('ERROR: Could not get $seq_runmode_types data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $seq_runmode_type->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $seq_runmode_type->name = $name;
+                        $seq_runmode_type->lane_per_flowcell = $lane_per_flowcell;
+                        $seq_runmode_type->sort_order = $sort_order;
+                        $seq_runmode_type->active = $active;
+                    }
+                } else {
+                    $seq_runmode_type = new SeqRunmodeTypes();
+                    $seq_runmode_type->name = $name;
+                    $seq_runmode_type->lane_per_flowcell = $lane_per_flowcell;
+                    $seq_runmode_type->sort_order = $sort_order;
+                    $seq_runmode_type->active = $active;
+                }
+
+                /*
+                 * Save SeqRunmodeType data values.
+                 */
+                if ($seq_runmode_type->save() == false) {
+                    foreach ($seq_runmode_type->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($seq_runmode_type_id == -1) {
+                        $this->flashSession->success('SeqRunmodeType: ' . $seq_runmode_type->name . ' is created.');
+                    } elseif ($seq_runmode_type->active == 'N') {
+                        $this->flashSession->success('SeqRunmodeType: ' . $seq_runmode_type->name . ' is change to in-active.');
+                    } else {
+                        $this->flashSession->success('SeqRunmodeType: ' . $seq_runmode_type->name . ' record is changed.');
+                    }
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Seq Run Mode Types');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $seq_runmode_types = SeqRunmodeTypes::find(array(
+                "order" => "sort_order ASC"
+            ));
+
+            $this->view->setVar('seq_runmode_types', $seq_runmode_types);
+
+        }
+    }
+
+    public function seqRunreadTypesAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+
+                $this->view->disable();
+                $seq_runread_type_id = $request->getPost('seq_runread_type_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim', 'name_filter'));
+                $sort_order = $request->getPost('sort_order', 'int');
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
+
+                if (empty($seq_runread_type_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $seq_runread_type_id value ' . $seq_runread_type_id . '.');
+                }
+
+                if ($seq_runread_type_id > 0) {
+                    $seq_runread_type = SeqRunreadTypes::findFirst("id = $seq_runread_type_id");
+                    if (!$seq_runread_type) {
+                        return $this->flashSession->error('ERROR: Could not get $seq_runread_types data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $seq_runread_type->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $seq_runread_type->name = $name;
+                        $seq_runread_type->sort_order = $sort_order;
+                        $seq_runread_type->active = $active;
+                    }
+                } else {
+                    $seq_runread_type = new SeqRunreadTypes();
+                    $seq_runread_type->name = $name;
+                    $seq_runread_type->sort_order = $sort_order;
+                    $seq_runread_type->active = $active;
+                }
+
+                /*
+                 * Save SeqRunreadType data values.
+                 */
+                if ($seq_runread_type->save() == false) {
+                    foreach ($seq_runread_type->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($seq_runread_type_id == -1) {
+                        $this->flashSession->success('SeqRunreadType: ' . $seq_runread_type->name . ' is created.');
+                    } elseif ($seq_runread_type->active == 'N') {
+                        $this->flashSession->success('SeqRunreadType: ' . $seq_runread_type->name . ' is change to in-active.');
+                    } else {
+                        $this->flashSession->success('SeqRunreadType: ' . $seq_runread_type->name . ' record is changed.');
+                    }
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Seq Run Mode Types');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $seq_runread_types = SeqRunreadTypes::find(array(
+                "order" => "sort_order ASC"
+            ));
+
+            $this->view->setVar('seq_runread_types', $seq_runread_types);
+
+        }
+    }
+
+    public function seqRuncycleTypesAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $seq_runcycle_type_id = $request->getPost('seq_runcycle_type_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim'));
+                $lane_per_flowcell = $request->getPost('lane_per_flowcell', 'int');
+                $sort_order = $request->getPost('sort_order', 'int');
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
+
+                if (empty($seq_runcycle_type_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $seq_runcycle_type_id value ' . $seq_runcycle_type_id . '.');
+                }
+
+                if ($seq_runcycle_type_id > 0) {
+                    $seq_runcycle_type = SeqRuncycleTypes::findFirst("id = $seq_runcycle_type_id");
+                    if (!$seq_runcycle_type) {
+                        return $this->flashSession->error('ERROR: Could not get $seq_runcycle_types data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $seq_runcycle_type->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $seq_runcycle_type->name = $name;
+                        $seq_runcycle_type->lane_per_flowcell = $lane_per_flowcell;
+                        $seq_runcycle_type->sort_order = $sort_order;
+                        $seq_runcycle_type->active = $active;
+                    }
+                } else {
+                    $seq_runcycle_type = new SeqRuncycleTypes();
+                    $seq_runcycle_type->name = $name;
+                    $seq_runcycle_type->lane_per_flowcell = $lane_per_flowcell;
+                    $seq_runcycle_type->sort_order = $sort_order;
+                    $seq_runcycle_type->active = $active;
+                }
+
+                /*
+                 * Save SeqRuncycleType data values.
+                 */
+                if ($seq_runcycle_type->save() == false) {
+                    foreach ($seq_runcycle_type->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($seq_runcycle_type_id == -1) {
+                        $this->flashSession->success('SeqRuncycleType: ' . $seq_runcycle_type->name . ' is created.');
+                    } elseif ($seq_runcycle_type->active == 'N') {
+                        $this->flashSession->success('SeqRuncycleType: ' . $seq_runcycle_type->name . ' is change to in-active.');
+                    } else {
+                        $this->flashSession->success('SeqRuncycleType: ' . $seq_runcycle_type->name . ' record is changed.');
+                    }
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Seq Run Mode Types');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $seq_runcycle_types = SeqRuncycleTypes::find(array(
+                "order" => "sort_order ASC"
+            ));
+
+            $this->view->setVar('seq_runcycle_types', $seq_runcycle_types);
+
+        }
+    }
+
 }
