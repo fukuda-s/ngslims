@@ -72,7 +72,7 @@
             {% else %}
               {% set trash_message = "Could not delete this Laboratory. This Lab. has " ~ lab_user_count ~ " members." %}
               <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{ trash_message }}"
-                 style="font-size: 9pt; color: #b9c4c8; cursor: not-allowed;" onclick="return false;">
+                 style="font-size: 9pt; color: #b9c4c8; cursor: not-allowed;" onclick="labRemove({{ lab.id }}); return false;">
                 <span class="fa fa-trash"></span></a>
             {% endif %}
           </td>
