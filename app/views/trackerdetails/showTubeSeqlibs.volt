@@ -21,6 +21,7 @@
     {% endif %}
     <div
         class="tube {% if seqlib.se.status === 'Completed' and seqlib.sta_count == 0 %}tube-active{% else %}tube-inactive{% endif %}"
+        {% if seqlib.se.status === 'Completed' and seqlib.sta_count == 0 %} {% else %}style="display: none;"{% endif %}
         id="seqlib-id-{{ seqlib.sl.id }}">
       <div class="row">
         <div class="col-md-3 col-sm-10">
