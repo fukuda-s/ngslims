@@ -697,43 +697,75 @@ class TrackerController extends ControllerBase
 
     public function flowcellSetupCandidatesAction($step_id)
     {
-        $this->view->cleanTemplateAfter()->setLayout('main');
-        Tag::appendTitle(' | Flowcell Setup ');
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                $query = $request->getPost('query', 'striptags');
+                $seqtemplates = $this->modelsManager->createBuilder()
+                    ->columns(array('st.*', 'se.*'))
+                    ->addFrom('Seqtemplates', 'st')
+                    ->join('StepEntries', 'se.seqtemplate_id = st.id', 'se')
+                    //->orderBy(array('DATE(st.created_at) DESC', 'st.name ASC'))
+                    ->where('se.status IS NOT NULL')
+                    ->andWhere('st.name LIKE :query:', array("query" => '%' . $query . '%'))
+                    ->orderBy(array('st.name ASC'))
+                    ->getQuery()
+                    ->execute();
+                foreach ($seqtemplates as $seqtemplate) {
+                    $seqtemplate_id = (string) $seqtemplate->st->id;
+                    $seqtemplate_name = (string) $seqtemplate->st->name;
+                    echo '<div class="panel panel-default search-filtered" id="seqtemplate-panel-' . $seqtemplate_id . '" data-toggle="collapse"';
+                    echo 'data-target="#seqtemplate-table-' . $seqtemplate_id . '" seqtemplate_id="' . $seqtemplate_id . '"';
+                    echo 'seqtemplate_name="' . $seqtemplate_name . '" onclick="showTableSeqlibs(this, ' . $seqtemplate_id . ')">';
+                    echo '  <div class="panel-heading" id="seqtemplate-header-' . $seqtemplate_id . '">';
+                    echo        $seqtemplate_name;
+                    echo '  </div>';
+                    echo '</div>';
+                }
+            }
+        } else {
+            $this->view->cleanTemplateAfter()->setLayout('main');
+            Tag::appendTitle(' | Flowcell Setup ');
 
-        $step_id = $this->filter->sanitize($step_id, array("int"));
-        $step = Steps::findFirst(array(
-            "id = :step_id: AND step_phase_code = 'FLOWCELL'",
-            'bind' => array(
-                'step_id' => $step_id
-            )
-        ));
-        $this->view->setVar('step', $step);
+            $step_id = $this->filter->sanitize($step_id, array("int"));
+            $step = Steps::findFirst(array(
+                "id = :step_id: AND step_phase_code = 'FLOWCELL'",
+                'bind' => array(
+                    'step_id' => $step_id
+                )
+            ));
+            $this->view->setVar('step', $step);
 
-        $lane_per_flowcell = $step->getSeqRunmodeTypes()->lane_per_flowcell;
-        $lane_index = range(1, $lane_per_flowcell);
-        $this->view->setVar('lane_index', $lane_index);
+            $lane_per_flowcell = $step->getSeqRunmodeTypes()->lane_per_flowcell;
+            $lane_index = range(1, $lane_per_flowcell);
+            $this->view->setVar('lane_index', $lane_index);
 
-        $seqtemplates = $this->modelsManager->createBuilder()
-            ->columns(array('st.*', 'se.*'))
-            ->addFrom('Seqtemplates', 'st')
-            ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se')
-            //->orderBy(array('DATE(st.created_at) DESC', 'st.name ASC'))
-            ->orderBy(array('st.name ASC'))
-            ->getQuery()
-            ->execute();
+            $seqtemplates = $this->modelsManager->createBuilder()
+                ->columns(array('st.*', 'se.*'))
+                ->addFrom('Seqtemplates', 'st')
+                ->join('StepEntries', 'se.seqtemplate_id = st.id', 'se')
+                //->orderBy(array('DATE(st.created_at) DESC', 'st.name ASC'))
+                ->where('se.status IS NULL')
+                ->orderBy(array('st.name ASC'))
+                ->getQuery()
+                ->execute();
 
-        $this->view->setVar('seqtemplates', $seqtemplates);
+            $this->view->setVar('seqtemplates', $seqtemplates);
 
-        if ($seqlanes = $this->session->get('seqlanes')) {
-            $this->view->setVar('seqlanes', $seqlanes);
+            if ($seqlanes = $this->session->get('seqlanes')) {
+                $this->view->setVar('seqlanes', $seqlanes);
+            }
+
+            if ($flowcell_name = $this->session->get('flowcell_name')) {
+                $this->view->setVar('flowcell_name', $flowcell_name);
+            }
+
+            $controls = $step->getControls("active = 'Y'");
+            $this->view->setVar('controls', $controls);
         }
-
-        if ($flowcell_name = $this->session->get('flowcell_name')) {
-            $this->view->setVar('flowcell_name', $flowcell_name);
-        }
-
-        $controls = $step->getControls("active = 'Y'");
-        $this->view->setVar('controls', $controls);
     }
 
     public function flowcellSetupSetSessionAction()
