@@ -278,12 +278,28 @@ class OrderController extends ControllerBase
 
                 $step_id = $this->filter->sanitize($step_id, array("int"));
 
+                /*
                 $protocols = Protocols::find(array(
                     "step_id = :step_id: AND active = 'Y'",
                     'bind' => array(
                         'step_id' => $step_id
                     )
                 ));
+                */
+                $protocols = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'p.id AS protocol_id',
+                        'p.name AS protocol_name',
+                        'COUNT(DISTINCT sl.id) AS seqlib_count'
+                    ))
+                    ->addFrom('Protocols', 'p')
+                    ->join('Seqlibs', 'sl.protocol_id = p.id', 'sl')
+                    ->where('step_id = :step_id:', array('step_id' => $step_id))
+                    ->andWhere('p.active = "Y"')
+                    ->groupBy('p.id')
+                    ->orderBy('seqlib_count DESC')
+                    ->getQuery()
+                    ->execute();
 
                 //Set default value from session value
                 if ($this->session->has('protocol')) {
@@ -296,7 +312,7 @@ class OrderController extends ControllerBase
                     array(
                         'protocol_id',
                         $protocols,
-                        'using' => ['id', 'name'],
+                        'using' => ['protocol_id', 'protocol_name'],
                         'useEmpty' => true,
                         'emptyText' => $emptyText,
                         'emptyValue' => '@',
