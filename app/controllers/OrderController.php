@@ -26,12 +26,13 @@ class OrderController extends ControllerBase
     public function newOrderAction()
     {
         $this->assets
-            ->addJs('js/handsontable/dist/handsontable.full.js')
+            ->addJs('js/handsontable/dist/handsontable.full.min.js')
             ->addJs('js/handsontable/demo/js/moment/moment.js')
             ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
             ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
+            ->addCss('js/handsontable/dist/pikaday/pikaday.css')
             ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
-            ->addCss('js/handsontable/dist/handsontable.css')
+            ->addCss('js/handsontable/dist/handsontable.full.min.css')
             ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
 
         // @TODO Should be filter labs which should have lab_users

@@ -239,18 +239,18 @@
 </div>
 <div class="clearfix"></div>
 <script>
-  /*
+  /**
    * Fix cart on top
    */
   //$('#new_order_summary').stick_in_parent();
 
-  /*
+  /**
    * Function to set selected values to session.
    * @TODO Should I use "ajaxSuccess" function?
    */
   function setOrderSessionVal(column, id, name) {
     $.ajax({
-      url: '{{ url('order/orderSetSession/')}}',
+      url: '{{ url('order/orderSetSession/') }}',
       dataType: 'html',
       type: 'POST',
       data: {column: column, id: id, name: name}
@@ -261,7 +261,7 @@
         });
   }
 
-  /*
+  /**
    * Get select list via ajax from OrderController.php
    * To use this function, all "id" values should be named with rule as follows.
    * - (class) : (id)
@@ -271,8 +271,7 @@
    */
   function getSelectList(column, key) {
     //Make upper camel name for controller
-    var columnUpperCamel = column.
-        replace(
+    var columnUpperCamel = column.replace(
         /_./g,
         function (matched) {
           return matched.charAt(1).toUpperCase();
@@ -303,6 +302,9 @@
         });
   }
 
+  /**
+   *
+   */
   function setSelectChangedVals(selector, followSelects) {
     $('#' + selector + '_id').on('change', function () {
       var id_selected = $(this).val();
@@ -319,7 +321,7 @@
     });
   }
 
-  /*
+  /**
    * Build function to get seq run type radio buttons from selected instrument_type_id.
    * These select lists are cascaded as follows.
    * (Cascaded column should be changed when parent column has been changed.)
@@ -339,12 +341,12 @@
    *    + seq_runcycle_type_id (instrument_id)
    *
    */
-  /*
+  /**
    * Build function to get instrument type list from selected step_id.
    */
   function getInstrumentTypeList(step_id) {
     $.ajax({
-      url: '{{ url('order/instrumentTypeSelectList/')}}' + step_id + '/',
+      url: '{{ url('order/instrumentTypeSelectList/') }}' + step_id + '/',
       dataType: 'html',
       type: 'POST'
     })
@@ -371,9 +373,12 @@
         });
   }
 
+  /**
+   *
+   */
   function getSeqRunmodeTypesList(instrument_type_id) {
     $.ajax({
-      url: '{{ url('order/seqRunmodeTypesSelectList/')}}',
+      url: '{{ url('order/seqRunmodeTypesSelectList/') }}',
       dataType: 'html',
       type: 'POST',
       data: {instrument_type_id: instrument_type_id}
@@ -401,9 +406,12 @@
         });
   }
 
+  /**
+   *
+   */
   function getSeqRunreadTypesList(instrument_type_id, seq_runmode_type_id) {
     $.ajax({
-      url: '{{ url('order/seqRunreadTypesSelectList/')}}',
+      url: '{{ url('order/seqRunreadTypesSelectList/') }}',
       dataType: 'html',
       type: 'POST',
       data: {instrument_type_id: instrument_type_id, seq_runmode_type_id: seq_runmode_type_id}
@@ -432,7 +440,7 @@
 
   function getSeqRuncycleTypesList(instrument_type_id, seq_runmode_type_id, seq_runread_type_id) {
     $.ajax({
-      url: '{{ url('order/seqRuncycleTypesSelectList/')}}',
+      url: '{{ url('order/seqRuncycleTypesSelectList/') }}',
       dataType: 'html',
       type: 'POST',
       data: {
@@ -456,12 +464,12 @@
   }
 
 
-  /*
+  /**
    * Build function to get pi_user list from selected step_id.
    */
   function getStepSelectList(sample_type_id) {
     $.ajax({
-      url: '{{ url('order/stepSelectList/')}}' + sample_type_id + '/',
+      url: '{{ url('order/stepSelectList/') }}' + sample_type_id + '/',
       dataType: 'html',
       type: 'POST'
     })
@@ -494,12 +502,12 @@
         });
   }
 
-  /*
+  /**
    * Build function to get pi_user list from selected step_id.
    */
   function getUserSelectList(lab_id) {
     $.ajax({
-      url: '{{ url('order/userSelectList/')}}' + lab_id + '/',
+      url: '{{ url('order/userSelectList/') }}' + lab_id + '/',
       dataType: 'html',
       type: 'POST'
     })
@@ -536,7 +544,7 @@
   }
 
 
-  $(function () {
+  $(document).ready(function () {
     /*
      * Change child select list and right-side summary when parent select list is changed
      */
@@ -729,7 +737,7 @@
     });
 
     // @TODO pipeline select control
-    /*
+    /**
      var pipeline_selected_content;
      pipeline_selected = $('#pipeline_selected');
      $('#pipeline-undecided').change(function () {
@@ -744,7 +752,7 @@
      });
      */
 
-    /*
+    /**
      * Control modal-project
      */
     $('#modal-project').on('shown.bs.modal', function (event) {
@@ -752,7 +760,7 @@
       event.target.find('#lab_id_selected').text('Find it!');
     });
 
-    /*
+    /**
      * Check and load session values.
      * Some select list should be rewrite when cascaded (parent) value has session value
      */
@@ -894,7 +902,7 @@
       $('#lanes_per_seqtemplate_inputted').hide().show('normal').find('span').text(lanes_per_seqtemplate_inputted);
     }
 
-    /*
+    /**
      *
      * Build Handsontable
      *
@@ -921,7 +929,7 @@
     $samplePropertyTypesDataSchema["{{ sample_property_type.id }}"] = null;
     {% endfor %}
 
-    /*
+    /**
      * Set up column width; if '' is shown but '0.1' is hidden.
      */
     //var $defaultColWidths = [100, 80, 80, 80, 40, 80, 80, 80, 80, 80,
@@ -930,7 +938,7 @@
     {% for sample_property_type in sample_property_types %}
     {% set sample_property_type_id_str = "sample_property_type_id_" ~ sample_property_type.id %}
     {% if sample_property_types_checked.name[sample_property_type_id_str] is defined
-      and sample_property_types_checked.name[sample_property_type_id_str] == "true" %}
+    and sample_property_types_checked.name[sample_property_type_id_str] == "true" %}
     $defaultColWidths.push('');
     $samplePropertyTypesChecked["{{ sample_property_type_id_str }}"] = 'true';
     {% else %}
@@ -1014,7 +1022,7 @@
     var $handsontable = hot.getInstance();
 
 
-    function loadData() {
+    function hotLoadData() {
       $.ajax({
         url: '{{ url("order/loadSessionSampleData") }}',
         dataType: 'json',
@@ -1028,9 +1036,9 @@
           });
     }
 
-    //loadData(); // loading data at first.
+    hotLoadData(); // loading data at first.
 
-    /*
+    /**
      * Set column width of SamplePropertyTypes to 0.1 (not shown) or '' (auto column width) if sample has SampleProperty.
      */
     var changedColWidths = $defaultColWidths;
@@ -1050,7 +1058,7 @@
     $handsontable.updateSettings({'colWidths': changedColWidths});
     //console.log(changedColWidths);
 
-    /*
+    /**
      * Build 'Undo' function on toolbar
      */
     $toolbar.find('#undo').click(function () {
@@ -1071,7 +1079,7 @@
       }
     });
 
-    /*
+    /**
      * Build 'Redo' function on toolbar
      */
     $toolbar.find('#redo').click(function () {
@@ -1098,11 +1106,11 @@
       $handsontable.loadData(null);
     });
 
-    /*
+    /**
      * Build sample_property_types multiselect on handsontable tool-bar
      */
     $('#sample_property_types').multiselect({
-      /*
+      /**
        * Show/Hide sample_property_types columns when checkbox is checked/unchecked.
        */
       onChange: function (element, checked) {
@@ -1133,7 +1141,7 @@
     });
 
 
-    /*
+    /**
      * Set up search function.
      */
     $('#search_field').on('keyup', function (event) {
@@ -1145,7 +1153,7 @@
       hot.render();
     });
 
-    /*
+    /**
      * Clear session saved values on all forms.
      */
     $('#removeOrderSession').click(function () {
