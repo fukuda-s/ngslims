@@ -49,11 +49,9 @@
         </div>
       </div>
       <div class="panel-body">
-        <form id="pick_form" method="post">
-          <div class="form-group">
-            {{ text_field('seqtemplate_assoc_seqlibs_filter', 'class': "form-control", 'placeholder': 'Search Seqlibs') }}
-          </div>
-        </form>
+        <div class="form-group">
+          {{ text_field('seqtemplate_assoc_seqlibs_filter', 'class': "form-control", 'placeholder': 'Search Seqlibs') }}
+        </div>
         <div class="tube-group">
           <div class="tube-list" id="seqtemplate_assoc_seqlibs_holder"
                style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">

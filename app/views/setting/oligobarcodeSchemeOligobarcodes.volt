@@ -21,16 +21,15 @@
         <h3 class="panel-title">Candidate Oligobarcode List</h3>
       </div>
       <div class="panel-body">
-        <form id="pick_form" method="post">
-          <div class="form-group">
-            {{ text_field('oligobarcode_candidate_filter', 'class': "form-control", 'placeholder': 'Search Oligobarcode') }}
-          </div>
-        </form>
+        <div class="form-group">
+          {{ text_field('oligobarcode_candidate_filter', 'class': "form-control", 'placeholder': 'Search Oligobarcode') }}
+        </div>
         <div class="tube-group">
-          <div class="tube-list" id="oligobarcode_candidate_holder" style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">
+          <div class="tube-list" id="oligobarcode_candidate_holder"
+               style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">
             {% for oligobarcode in oligobarcodes_candidate %}
               <div class="tube tube-active" id="oligobarcode_id-{{ oligobarcode.id }}">
-                {{ oligobarcode.name ~ ' (' ~ oligobarcode.barcode_seq ~ ')'}}
+                {{ oligobarcode.name ~ ' (' ~ oligobarcode.barcode_seq ~ ')' }}
               </div>
               {% elsefor %} No Oligobarcodes are recorded.
             {% endfor %}
@@ -54,13 +53,12 @@
         </div>
       </div>
       <div class="panel-body">
-        <form id="pick_form" method="post">
-          <div class="form-group">
-            {{ text_field('oligobarcode_scheme_oligobarcodes_filter', 'class': "form-control", 'placeholder': 'Search Oligobarcodes') }}
-          </div>
-        </form>
+        <div class="form-group">
+          {{ text_field('oligobarcode_scheme_oligobarcodes_filter', 'class': "form-control", 'placeholder': 'Search Oligobarcodes') }}
+        </div>
         <div class="tube-group">
-          <div class="tube-list" id="oligobarcode_scheme_oligobarcodes_holder" style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">
+          <div class="tube-list" id="oligobarcode_scheme_oligobarcodes_holder"
+               style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">
             {% for oligobarcode_scheme_oligobarcode in oligobarcode_scheme_oligobarcodes %}
               <div class="tube" id="oligobarcode_id-{{ oligobarcode_scheme_oligobarcode.id }}">
                 {{ oligobarcode_scheme_oligobarcode.name ~ ' (' ~ oligobarcode_scheme_oligobarcode.barcode_seq ~ ')' }}
