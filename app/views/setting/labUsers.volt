@@ -21,11 +21,9 @@
         <h3 class="panel-title">All User List</h3>
       </div>
       <div class="panel-body">
-        <form id="pick_form" method="post">
-          <div class="form-group">
-            {{ text_field('user_candidate_filter', 'class': "form-control", 'placeholder': 'Search Users') }}
-          </div>
-        </form>
+        <div class="form-group">
+          {{ text_field('user_candidate_filter', 'class': "form-control", 'placeholder': 'Search Users') }}
+        </div>
         <div class="tube-group">
           <div class="tube-list" id="user_candidate_holder">
             {% for user in users_candidate %}
@@ -53,11 +51,9 @@
         </div>
       </div>
       <div class="panel-body">
-        <form id="pick_form" method="post">
-          <div class="form-group">
-            {{ text_field('lab_users_filter', 'class': "form-control", 'placeholder': 'Search Users') }}
-          </div>
-        </form>
+        <div class="form-group">
+          {{ text_field('lab_users_filter', 'class': "form-control", 'placeholder': 'Search Users') }}
+        </div>
         <div class="tube-group">
           <div class="tube-list" id="lab_users_holder">
             {% for user in lab.getLabUsersUsers(["active = 'Y'", 'order': 'lastname ASC, firstname ASC']) %}
@@ -71,7 +67,8 @@
                 {% else %}
                   {% set trash_message = "Could not delete this Member. This member belongs to only this laboratory." %}
                   <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="{{ trash_message }}"
-                     style="color: #b9c4c8; cursor: not-allowed;" class="tube-close pull-right disabled" onclick="return false;">
+                     style="color: #b9c4c8; cursor: not-allowed;" class="tube-close pull-right disabled"
+                     onclick="return false;">
                     <i class="fa fa-times" aria-hidden="true"></i>
                   </a>
                 {% endif %}

@@ -21,11 +21,9 @@
         <h3 class="panel-title">All Oligobarcode Schemes List</h3>
       </div>
       <div class="panel-body">
-        <form id="pick_form" method="post">
-          <div class="form-group">
-            {{ text_field('oligobarcode_scheme_candidate_filter', 'class': "form-control", 'placeholder': 'Search Oligobarcode Schemes') }}
-          </div>
-        </form>
+        <div class="form-group">
+          {{ text_field('oligobarcode_scheme_candidate_filter', 'class': "form-control", 'placeholder': 'Search Oligobarcode Schemes') }}
+        </div>
         <div class="tube-group">
           <div class="tube-list" id="oligobarcode_scheme_candidate_holder">
             {% for oligobarcode_scheme in oligobarcode_scheme_candidate %}
@@ -54,15 +52,14 @@
         </div>
       </div>
       <div class="panel-body">
-        <form id="pick_form" method="post">
-          <div class="form-group">
-            {{ text_field('protocol_oligobarcode_scheme_filter', 'class': "form-control", 'placeholder': 'Search Oligobarcode Schemes') }}
-          </div>
-        </form>
+        <div class="form-group">
+          {{ text_field('protocol_oligobarcode_scheme_filter', 'class': "form-control", 'placeholder': 'Search Oligobarcode Schemes') }}
+        </div>
         <div class="tube-group">
           <div class="tube-list" id="protocol_oligobarcode_schemes_holder">
             {% for oligobarcode_scheme_allow in protocol.OligobarcodeSchemeAllows %}
-              <div class="tube" id="oligobarcode_scheme_id-{{ oligobarcode_scheme_allow.OligobarcodeSchemes.id }}">{{ oligobarcode_scheme_allow.OligobarcodeSchemes.name }}
+              <div class="tube"
+                   id="oligobarcode_scheme_id-{{ oligobarcode_scheme_allow.OligobarcodeSchemes.id }}">{{ oligobarcode_scheme_allow.OligobarcodeSchemes.name }}
                 <a href="javascript:void(0)" class="tube-close pull-right" onclick="tubeCloseToggle(this)">
                   <i class="fa fa-times" aria-hidden="true"></i>
                   <i class="fa fa-repeat" aria-hidden="true" style="display: none"></i>

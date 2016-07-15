@@ -21,11 +21,9 @@
         <h3 class="panel-title">All User List</h3>
       </div>
       <div class="panel-body">
-        <form id="pick_form" method="post">
-          <div class="form-group">
-            {{ text_field('user_candidate_filter', 'class': "form-control", 'placeholder': 'Search Users') }}
-          </div>
-        </form>
+        <div class="form-group">
+          {{ text_field('user_candidate_filter', 'class': "form-control", 'placeholder': 'Search Users') }}
+        </div>
         <div class="tube-group">
           <div class="tube-list" id="user_candidate_holder">
             {% for user in users_candidate %}
@@ -53,11 +51,9 @@
         </div>
       </div>
       <div class="panel-body">
-        <form id="pick_form" method="post">
-          <div class="form-group">
-            {{ text_field('project_users_filter', 'class': "form-control", 'placeholder': 'Search Users') }}
-          </div>
-        </form>
+        <div class="form-group">
+          {{ text_field('project_users_filter', 'class': "form-control", 'placeholder': 'Search Users') }}
+        </div>
         <div class="tube-group">
           <div class="tube-list" id="project_users_holder">
             {% for user in project_users %}
