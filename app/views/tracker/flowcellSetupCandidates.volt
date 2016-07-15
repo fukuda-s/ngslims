@@ -63,40 +63,38 @@
 {% endfor %}
 <div class="row">
   <div class="col-md-12">
-    {% for seqtemplate in seqtemplates %}
-      {% if loop.first %}
-        <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="row">
-            <div class="col-md-2" style="padding: 6px 12px;"><b>Sequence Template ID</b></div>
-            <div class="col-md-5">
-              <button type="button" class="btn btn-default pull-left" id="fill-seqtemplate">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-2" style="padding: 6px 12px;"><b>Sequence Template ID</b></div>
+          <div class="col-md-5">
+            <button type="button" class="btn btn-default pull-left" id="fill-seqtemplate">
                 <span>
                   <i class="fa fa-arrow-up" aria-hidden="true"></i>
                   Fill Seq-template to Flowcell
                 </span>
-              </button>
-            </div>
-            <div class="col-md-5" style="padding: 6px 12px;">
-              <input id="panel-filter" type="search" class="form-control"
-                     placeholder="Search & Filtering for SeqTemplates (>= 4 char. required)">
-            </div>
+            </button>
+          </div>
+          <div class="col-md-5" style="padding: 6px 12px;">
+            <input id="panel-filter" type="search" class="form-control"
+                   placeholder="Search & Filtering for SeqTemplates (>= 4 char. required)">
           </div>
         </div>
-        <div id="panel-group-seqtemplates" class="panel-group"  style="overflow: auto; height: 400px;">
-      {% endif %}
-      <div class="panel panel-info" id="seqtemplate-panel-{{ seqtemplate.st.id }}" data-toggle="collapse"
-           data-target="#seqtemplate-table-{{ seqtemplate.st.id }}" seqtemplate_id="{{ seqtemplate.st.id }}"
-           seqtemplate_name="{{ seqtemplate.st.name }}" onclick="showTableSeqlibs(this, {{ seqtemplate.st.id }})">
-        <div class="panel-heading" id="seqtemplate-header-{{ seqtemplate.st.id }}">
-          {{ seqtemplate.st.name }}
-        </div>
       </div>
-      {% if loop.last %}
-        </div><!--end of panel-group-seqtemplates-->
-        </div><!--end of panel-->
-      {% endif %}
-      {% elsefor %} No Seqtemplates recorded
+      <div id="panel-group-seqtemplates" class="panel-group" style="overflow: auto; height: 400px;">
+        {% for seqtemplate in seqtemplates %}
+        <div class="panel panel-info" id="seqtemplate-panel-{{ seqtemplate.st.id }}" data-toggle="collapse"
+             data-target="#seqtemplate-table-{{ seqtemplate.st.id }}" seqtemplate_id="{{ seqtemplate.st.id }}"
+             seqtemplate_name="{{ seqtemplate.st.name }}" onclick="showTableSeqlibs(this, {{ seqtemplate.st.id }})">
+          <div class="panel-heading" id="seqtemplate-header-{{ seqtemplate.st.id }}">
+            {{ seqtemplate.st.name }}
+          </div>
+        </div>
+        {% if loop.last %}
+      </div><!--end of panel-group-seqtemplates-->
+    </div><!--end of panel-->
+    {% endif %}
+    {% elsefor %} No Seqtemplates recorded
     {% endfor %}
   </div>
 </div>
@@ -271,9 +269,20 @@
           }
         })
             .done(function (data) {
-              $('.panel[id^=seqtemplate-panel-]')
-                  .filter(':last')
-                  .after(data);
+              var candidate_panels = $('#panel-group-seqtemplates > .panel[id^=seqtemplate-panel-]');
+              if (candidate_panels.length) {
+                candidate_panels
+                    .filter(':last')
+                    .after(data);
+              } else {
+                $('#panel-group-seqtemplates').html(data);
+              }
+
+              $(".panel.search-filtered").draggable({
+                addClasses: false,
+                cursor: 'move',
+                helper: "clone"
+              });
             });
 
       }

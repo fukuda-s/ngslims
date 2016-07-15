@@ -170,7 +170,7 @@
       }
     })
         .done(function (data) {
-          console.log(data);
+          //console.log(data);
           window.location.reload();  // @TODO It should not be re-loaded.
         });
   }
@@ -196,7 +196,7 @@
         }
       })
           .done(function (data) {
-            console.log(data);
+            //console.log(data);
             window.location.reload(); // @TODO It should not be re-loaded.
           });
     }

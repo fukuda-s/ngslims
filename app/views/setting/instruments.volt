@@ -192,7 +192,7 @@
       }
     })
         .done(function (data) {
-          console.log(data);
+          //console.log(data);
           window.location.reload();  // @TODO It should not be re-loaded.
         });
   }
@@ -218,7 +218,7 @@
         }
       })
           .done(function (data) {
-            console.log(data);
+            //console.log(data);
             window.location.reload(); // @TODO It should not be re-loaded.
           });
     }
@@ -246,7 +246,9 @@
     $('#modal-instrument-edit')
         .find('input, select')
         .change(function () {
-          $('#modal-instrument-save').removeClass('disabled');
+          $('#modal-instrument-save')
+              .prop('disabled', false)
+              .removeClass('disabled');
         });
 
   });

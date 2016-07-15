@@ -11,14 +11,19 @@
         <li>{{ link_to('setting/users', 'Users') }}</li>
         <li>{{ link_to('setting/projects', 'Projects') }}</li>
       </ul>
+      <li>{{ link_to('setting/seqtemplates', 'Sequence Templates') }}</li>
       <li>{{ link_to('setting/steps', 'Steps') }}</li>
       <ul>
         <li>{{ link_to('setting/protocols', 'Protocols') }}</li>
         <li>{{ link_to('setting/oligobarcodeSchemes', 'Oligobarcode Schemes') }}</li>
         <li>{{ link_to('setting/oligobarcodes', 'Oligobarcodes') }}</li>
       </ul>
-      <li>{{ link_to('setting/samplePropertyTypes', 'Sample Property Types') }}</li>
-      <li>{{ link_to('setting/sampleLocations', 'Sample Locations') }}</li>
+      <li>Samples</li>
+      <ul>
+        <li>{{ link_to('setting/sampleTypes', 'Sample Types') }}</li>
+        <li>{{ link_to('setting/samplePropertyTypes', 'Sample Property Types') }}</li>
+        <li>{{ link_to('setting/sampleLocations', 'Sample Locations') }}</li>
+      </ul>
       <li>{{ link_to('setting/organisms', 'Organisms') }}</li>
       <li>{{ link_to('setting/instrumentTypes', 'Instrument Types') }}</li>
       <ul>

@@ -95,6 +95,9 @@
 </div>
 
 <script>
+  /**
+   * Search and display seqlibs which searched from #pick_query
+   */
   function showTubeSeqlibsWithSearch(event) {
     // Cancel HTML submit
     event.preventDefault();

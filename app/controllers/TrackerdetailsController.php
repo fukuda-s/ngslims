@@ -139,12 +139,12 @@ class TrackerdetailsController extends ControllerBase
     public function editSamplesAction($type, $step_id, $project_id, $status = null)
     {
         $this->assets
-            ->addJs('js/handsontable/dist/handsontable.full.js')
+            ->addJs('js/handsontable/dist/handsontable.full.min.js')
             ->addJs('js/handsontable/demo/js/moment/moment.js')
             ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
             ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
             ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
-            ->addCss('js/handsontable/dist/handsontable.css')
+            ->addCss('js/handsontable/dist/handsontable.full.min.css')
             ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));
@@ -360,12 +360,12 @@ class TrackerdetailsController extends ControllerBase
     public function editSeqlibsAction($type, $step_id, $project_id, $status = null)
     {
         $this->assets
-            ->addJs('js/handsontable/dist/handsontable.full.js')
+            ->addJs('js/handsontable/dist/handsontable.full.min.js')
             ->addJs('js/handsontable/demo/js/moment/moment.js')
             ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
             ->addJs('js/numeral.min.js')
             ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
-            ->addCss('js/handsontable/dist/handsontable.css')
+            ->addCss('js/handsontable/dist/handsontable.full.min.css')
             ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));

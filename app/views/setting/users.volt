@@ -105,6 +105,12 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
+          <label for="modal-username" class="col-sm-3 control-label" style="font-size: 9pt">Password</label>
+          <div class="col-sm-9">
+            {{ text_field('modal-password', 'class': 'form-control') }}
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
           <label for="modal-lastname" class="col-sm-3 control-label" style="font-size: 9pt">Lastname</label>
           <div class="col-sm-9">
             {{ text_field('modal-lastname', 'class': 'form-control') }}
@@ -257,6 +263,7 @@
       return false;
     }
     var username = $('#modal-username').val();
+    var password = $('#modal-password').val();
     var firstname = $('#modal-firstname').val();
     var lastname = $('#modal-lastname').val();
     var email = $('#modal-email').val();
@@ -269,6 +276,7 @@
         user_id: user_id,
         lab_id_array: lab_id_array,
         username: username,
+        password: password,
         firstname: firstname,
         lastname: lastname,
         email: email,

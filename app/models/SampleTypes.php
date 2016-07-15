@@ -59,6 +59,7 @@ class SampleTypes extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasMany('id', 'Samples', 'sample_type_id');
         $this->hasMany('nucleotide_type', 'Steps', 'nucleotide_type');
 
         $this->addBehavior(new SoftDelete(

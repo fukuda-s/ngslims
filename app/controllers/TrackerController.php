@@ -714,14 +714,15 @@ class TrackerController extends ControllerBase
                     ->orderBy(array('st.name ASC'))
                     ->getQuery()
                     ->execute();
+
                 foreach ($seqtemplates as $seqtemplate) {
-                    $seqtemplate_id = (string) $seqtemplate->st->id;
-                    $seqtemplate_name = (string) $seqtemplate->st->name;
+                    $seqtemplate_id = (string)$seqtemplate->st->id;
+                    $seqtemplate_name = (string)$seqtemplate->st->name;
                     echo '<div class="panel panel-default search-filtered" id="seqtemplate-panel-' . $seqtemplate_id . '" data-toggle="collapse"';
                     echo 'data-target="#seqtemplate-table-' . $seqtemplate_id . '" seqtemplate_id="' . $seqtemplate_id . '"';
                     echo 'seqtemplate_name="' . $seqtemplate_name . '" onclick="showTableSeqlibs(this, ' . $seqtemplate_id . ')">';
                     echo '  <div class="panel-heading" id="seqtemplate-header-' . $seqtemplate_id . '">';
-                    echo        $seqtemplate_name;
+                    echo $seqtemplate_name;
                     echo '  </div>';
                     echo '</div>';
                 }

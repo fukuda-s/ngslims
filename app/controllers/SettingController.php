@@ -37,6 +37,7 @@ class SettingController extends ControllerBase
                 $user_id = $request->getPost('user_id', 'int');
                 $lab_id_array = $request->getPost('lab_id_array', array('striptags'));
                 $username = $request->getPost('username', array('striptags', 'name_filter'));
+                $password = $request->getPost('password', array('striptags'));
                 $firstname = $request->getPost('firstname', array('striptags', 'trim'));
                 $lastname = $request->getPost('lastname', array('striptags', 'trim'));
                 $email = $request->getPost('email', array('email', 'trim'));
@@ -74,7 +75,9 @@ class SettingController extends ControllerBase
                 }
 
                 //Reset password.
-                if ($password_reset == 'on') {
+                if ($password) {
+                    $user->password = $this->security->hash($password);
+                } elseif ($password_reset == 'on') {
                     $temp_password = $this->elements->random();
                     $user->password = $this->security->hash($temp_password);
                 }
@@ -110,7 +113,7 @@ class SettingController extends ControllerBase
                 }
 
                 if ($lab_users_update) {
-                    $this->flashSession->success('User: ' . $user->getFullname() . ' laboratory record is changed.');
+                    $this->flashSession->success('User: ' . $user->getFullname() . ' record is changed.');
                 }
 
                 /*
@@ -1105,10 +1108,90 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Oligobarcodes');
             $this->assets
-                ->addJs('js/handsontable/dist/handsontable.full.js')
+                ->addJs('js/handsontable/dist/handsontable.full.min.js')
                 ->addJs('js/numeral.min.js')
-                ->addCss('js/handsontable/dist/handsontable.css')
+                ->addCss('js/handsontable/dist/handsontable.full.min.css')
                 ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
+        }
+    }
+
+    public function sampleTypesAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $sample_type_id = $request->getPost('sample_type_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim'));
+                $nucleotide_type = $request->getPost('nucleotide_type', array('striptags', 'name_filter', 'upper'));
+                $sample_type_code = $request->getPost('sample_type_code', array('striptags', 'name_filter', 'upper'));
+                $sort_order = $request->getPost('sort_order', 'int');
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
+
+                if (empty($sample_type_id)) {
+                    return $this->flashSession->error('ERROR: Undefined sample_type_id value ' . $sample_type_id . '.');
+                }
+
+
+                if ($sample_type_id > 0) {
+                    $sample_type = SampleTypes::findFirst("id = $sample_type_id");
+                    if (!$sample_type) {
+                        return $this->flashSession->error('ERROR: Could not get sample_type data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $sample_type->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $sample_type->name = $name;
+                        $sample_type->nucleotide_type = $nucleotide_type;
+                        $sample_type->sample_type_code = $sample_type_code;
+                        $sample_type->sort_order = $sort_order;
+                        $sample_type->active = $active;
+                    }
+                } else {
+                    $sample_type = new SampleTypes();
+                    $sample_type->name = $name;
+                    $sample_type->nucleotide_type = $nucleotide_type;
+                    $sample_type->sample_type_code = $sample_type_code;
+                    $sample_type->sort_order = $sort_order;
+                    $sample_type->active = $active;
+                }
+
+                /*
+                 * Save user data values.
+                 */
+                if ($sample_type->save() == false) {
+                    foreach ($sample_type->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($sample_type == -1) {
+                        $this->flashSession->success('Sample Type: ' . $sample_type->name . ' is created.');
+                    } elseif ($sample_type->active == 'N') {
+                        $this->flashSession->success('Sample Type: ' . $sample_type->name . ' is change to in-active.');
+                    } else {
+                        $this->flashSession->success('Sample Type: ' . $sample_type->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Sample Types');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $sample_types = SampleTypes::find(array(
+                "order" => "nucleotide_type ASC, sort_order ASC"
+            ));
+
+            $this->view->setVar('sample_types', $sample_types);
+
         }
     }
 
@@ -1855,6 +1938,235 @@ class SettingController extends ControllerBase
 
             $this->view->setVar('seq_runcycle_types', $seq_runcycle_types);
 
+        }
+    }
+
+    public function seqtemplatesAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $seqtemplate_id = $request->getPost('seqtemplate_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'name_filter'));
+                $target_conc = $request->getPost('target_conc', 'float');
+                $target_vol = $request->getPost('target_vol', 'float');
+                $target_dw_vol = $request->getPost('target_dw_vol', 'float');
+                $initial_conc = $request->getPost('initial_conc', 'float');
+                $initial_vol = $request->getPost('initial_vol', 'float');
+                $final_conc = $request->getPost('final_conc', 'float');
+                $final_vol = $request->getPost('final_vol', 'float');
+                $final_dw_vol = $request->getPost('final_dw_vol', 'float');
+                $started_at = ($request->getPost('started_at', 'striptags')) ? $request->getPost('started_at', 'striptags') : null;
+                $finished_at = ($request->getPost('finished_at', 'striptags')) ? $request->getPost('finished_at', 'striptags') : null;
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
+
+                if (empty($seqtemplate_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $seqtemplate_id value ' . $seqtemplate_id . '.');
+                }
+
+                if ($seqtemplate_id > 0) {
+                    $seqtemplate = Seqtemplates::findFirst("id = $seqtemplate_id");
+                    if (!$seqtemplate) {
+                        return $this->flashSession->error('ERROR: Could not get $seqtemplates data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $seqtemplate->delete(); //Not soft-delete.
+                    } else {
+                        $seqtemplate->name = $name;
+                        $seqtemplate->target_conc = $target_conc;
+                        $seqtemplate->target_vol = $target_vol;
+                        $seqtemplate->target_dw_vol = $target_dw_vol;
+                        $seqtemplate->initial_conc = $initial_conc;
+                        $seqtemplate->initial_vol = $initial_vol;
+                        $seqtemplate->final_conc = $final_conc;
+                        $seqtemplate->final_vol = $final_vol;
+                        $seqtemplate->final_dw_vol = $final_dw_vol;
+                        $seqtemplate->started_at = $started_at;
+                        $seqtemplate->finished_at = $finished_at;
+                    }
+                } else {
+                    $seqtemplate = new Seqtemplates();
+                    $seqtemplate->name = $name;
+                    $seqtemplate->target_conc = $target_conc;
+                    $seqtemplate->target_vol = $target_vol;
+                    $seqtemplate->target_dw_vol = $target_dw_vol;
+                    $seqtemplate->initial_conc = $initial_conc;
+                    $seqtemplate->initial_vol = $initial_vol;
+                    $seqtemplate->final_conc = $final_conc;
+                    $seqtemplate->final_vol = $final_vol;
+                    $seqtemplate->final_dw_vol = $final_dw_vol;
+                    $seqtemplate->started_at = $started_at;
+                    $seqtemplate->finished_at = $finished_at;
+                }
+
+                /*
+                 * Save SeqRuncycleType data values.
+                 */
+                if ($seqtemplate->save() == false) {
+                    foreach ($seqtemplate->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($seqtemplate_id == -1) {
+                        $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' is created.');
+                    } elseif ($active == 'N') {
+                        $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' is deleted.');
+                    } else {
+                        $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' record is changed.');
+                    }
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Seq Run Mode Types');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $seqtemplates = Seqtemplates::find(array(
+                "order" => "created_at DESC"
+            ));
+
+            $this->view->setVar('seqtemplates', $seqtemplates);
+
+        }
+    }
+
+    public function seqtemplateAssocsAction($seqtemplate_id)
+    {
+        $request = $this->request;
+        $seqtemplate_assocs = SeqtemplateAssocs::find(array(
+            "seqtemplate_id = :seqtemplate_id:",
+            "bind" => array(
+                "seqtemplate_id" => $seqtemplate_id
+            )
+        ));
+        $seqtemplate = Seqtemplates::findFirst($seqtemplate_id);
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $new_seqlib_id_array = $request->getPost('new_seqlib_id_array', array('striptags'));
+                $new_seqlib_id_array = array_unique($new_seqlib_id_array); //to unique seqlib_id on array
+                $new_seqlib_id_array = array_values($new_seqlib_id_array); //re-indexed array
+
+                $del_seqlib_id_array = $request->getPost('del_seqlib_id_array', array('striptags'));
+                $del_seqlib_id_array = array_unique($del_seqlib_id_array); //to unique seqlib_id on array
+                $del_seqlib_id_array = array_values($del_seqlib_id_array); //re-indexed array
+
+                $seqtemplateAssocSeqlibs = array();
+                $i = 0;
+                $new_seqlib_name = array();
+                $del_seqlib_name = array();
+                if (count($new_seqlib_id_array)) {
+                    foreach ($new_seqlib_id_array as $seqlib_id) {
+                        $seqtemplateAssocSeqlibs[$i] = new SeqtemplateAssocs();
+                        $seqtemplateAssocSeqlibs[$i]->seqtemplate_id = $seqtemplate_id;
+                        $seqtemplateAssocSeqlibs[$i]->seqlib_id = $seqlib_id;
+                        $new_seqlib_name[] = Seqlibs::findFirst($seqlib_id)->name;
+                        $i++;
+                    }
+                }
+                if (count($del_seqlib_id_array)) {
+                    foreach ($del_seqlib_id_array as $seqlib_id) {
+                        $seqtemplateAssocSeqlib = SeqtemplateAssocs::findFirst(array(
+                            "seqtemplate_id = :seqtemplate_id: AND seqlib_id = :seqlib_id:",
+                            "bind" => array(
+                                "seqtemplate_id" => $seqtemplate_id,
+                                "seqlib_id" => $seqlib_id
+                            )
+                        ));
+                        if (count($seqtemplateAssocSeqlib)) {
+                            if( $seqtemplateAssocSeqlib->delete() == false ){
+                                foreach ($seqtemplateAssocSeqlib->getMessages() as $message) {
+                                    $this->flashSession->error((string)$message);
+                                }
+                                return false;
+                            }
+                            $del_seqlib_name[] = Seqlibs::findFirst($seqlib_id)->name;
+                            $i++;
+                        }
+                    }
+                }
+
+                if ($i > 0) {
+                    /*
+                     * Save $oligobarcodeSchemeOligobarcodes data values.
+                     */
+                    $seqtemplate->SeqtemplateAssocs = $seqtemplateAssocSeqlibs;
+                    if ($seqtemplate->save() == false) {
+                        foreach ($seqtemplate->getMessages() as $message) {
+                            $this->flashSession->error((string)$message);
+                        }
+                        return false;
+                    } else {
+                        if (count($new_seqlib_name)) {
+                            $new_seqlib_name_str = implode(",", $new_seqlib_name);
+                            $this->flashSession->success('Seqtemplate Assoc.: ' . $new_seqlib_name_str . ' is added.');
+                        }
+                        if (count($del_seqlib_name)) {
+                            $del_seqlib_name_str = implode(",", $del_seqlib_name);
+                            $this->flashSession->success('Seqtemplate Assoc.: ' . $del_seqlib_name_str . ' is deleted.');
+                        }
+
+                    }
+                }
+            }
+        } else {
+            Tag::appendTitle(' | ' . $seqtemplate->name . ' | Seqtemplate Seqlibs.');
+            $this->view->setVar('seqtemplate', $seqtemplate);
+            $this->view->setVar('seqtemplate_assocs', $seqtemplate_assocs);
+        }
+
+    }
+
+
+    public function showTubeSeqlibsAction()
+    {
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                // echo "Request was made using POST and AJAX";
+                $query = $this->request->getPost("pick_query", "striptags");
+                $cherry_picking_id = $this->request->getPost("cherry_picking_id", "int");
+
+                $seqlibs_tmp = $this->modelsManager->createBuilder()
+                    ->columns(array('sl.*', 'se.*', 'pt.*', 'COUNT(sta.id) AS sta_count'))
+                    ->addFrom('Seqlibs', 'sl')
+                    ->join('Samples', 's.id = sl.sample_id', 's')
+                    ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
+                    ->leftJoin('Protocols', 'pt.id = sl.protocol_id', 'pt')
+                    ->leftJoin('Steps', 'st.step_phase_code = pt.next_step_phase_code', 'st')
+                    ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta');
+
+                if ($query) {
+                    $seqlibs_tmp = $seqlibs_tmp->where('s.name LIKE :query:', array("query" => '%' . $query . '%'));
+                } elseif ($cherry_picking_id) {
+                    $seqlibs_tmp = $seqlibs_tmp
+                        ->leftJoin('CherryPickingSchemes', 'cps.seqlib_id = sl.id', 'cps')
+                        ->where('cps.cherry_picking_id = :cherry_picking_id:', array("cherry_picking_id" => $cherry_picking_id));
+                } else {
+                    return false;
+                }
+                $seqlibs = $seqlibs_tmp->groupBy('sl.id, se.id, pt.id, sta.id')
+                    ->orderBy('sl.name ASC')
+                    ->getQuery()
+                    ->execute();
+
+                $this->view->setVar('seqlibs', $seqlibs);
+            }
         }
     }
 

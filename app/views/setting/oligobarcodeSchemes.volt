@@ -238,7 +238,7 @@
         .find('input, select')
         .change(function () {
           $('#modal-oligobarcode_scheme-save')
-              .prop('disabled', true)
+              .prop('disabled', false)
               .removeClass('disabled');
         });
 

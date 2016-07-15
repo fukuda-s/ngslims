@@ -168,9 +168,13 @@ class Security extends Plugin
                     'seqRunreadTypes',
                     'seqRuncycleTypes',
                     'organisms',
-                    'sampleLocations',
+                    'sampleTypes',
                     'samplePropertyTypes',
-                    'steps'
+                    'sampleLocations',
+                    'steps',
+                    'seqtemplates',
+                    'seqtemplateAssocs',
+                    'showTubeSeqlibs'
                 ),
                 'search' => array(
                     'index',
@@ -191,7 +195,7 @@ class Security extends Plugin
                 "active = 'Y'",
                 "columns" => array("platform_code")
             ));
-            foreach($platforms as $platform){
+            foreach ($platforms as $platform) {
                 $acl->addResource(new Phalcon\Acl\Resource('samplesheet'), $platform->platform_code);
                 $acl->allow('Users', 'samplesheet', $platform->platform_code);
             }
