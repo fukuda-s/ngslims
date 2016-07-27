@@ -1730,6 +1730,7 @@ class SettingController extends ControllerBase
 
                 $seq_runmode_type_id = $request->getPost('seq_runmode_type_id', 'int');
                 $name = $request->getPost('name', array('striptags', 'trim'));
+                $platform_code = $request->getPost('platform_code', array('striptags', 'trim'));
                 $lane_per_flowcell = $request->getPost('lane_per_flowcell', 'int');
                 $sort_order = $request->getPost('sort_order', 'int');
                 $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
@@ -1747,6 +1748,7 @@ class SettingController extends ControllerBase
                         $seq_runmode_type->delete(); //Should be soft-delete (active=N);
                     } else {
                         $seq_runmode_type->name = $name;
+                        $seq_runmode_type->platform_code = $platform_code;
                         $seq_runmode_type->lane_per_flowcell = $lane_per_flowcell;
                         $seq_runmode_type->sort_order = $sort_order;
                         $seq_runmode_type->active = $active;
@@ -1754,6 +1756,7 @@ class SettingController extends ControllerBase
                 } else {
                     $seq_runmode_type = new SeqRunmodeTypes();
                     $seq_runmode_type->name = $name;
+                    $seq_runmode_type->platform_code = $platform_code;
                     $seq_runmode_type->lane_per_flowcell = $lane_per_flowcell;
                     $seq_runmode_type->sort_order = $sort_order;
                     $seq_runmode_type->active = $active;
@@ -1788,8 +1791,12 @@ class SettingController extends ControllerBase
             $seq_runmode_types = SeqRunmodeTypes::find(array(
                 "order" => "sort_order ASC"
             ));
-
             $this->view->setVar('seq_runmode_types', $seq_runmode_types);
+
+            $platforms = Platforms::find(array(
+                "active = 'Y'"
+            ));
+            $this->view->setVar('platforms', $platforms);
 
         }
     }
@@ -2023,7 +2030,7 @@ class SettingController extends ControllerBase
 
             }
         } else {
-            Tag::appendTitle(' | Seq Run Mode Types');
+            Tag::appendTitle(' | Seqtemplates');
             $this->assets
                 ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
                 ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
@@ -2085,7 +2092,7 @@ class SettingController extends ControllerBase
                             )
                         ));
                         if (count($seqtemplateAssocSeqlib)) {
-                            if( $seqtemplateAssocSeqlib->delete() == false ){
+                            if ($seqtemplateAssocSeqlib->delete() == false) {
                                 foreach ($seqtemplateAssocSeqlib->getMessages() as $message) {
                                     $this->flashSession->error((string)$message);
                                 }
@@ -2166,6 +2173,399 @@ class SettingController extends ControllerBase
                     ->execute();
 
                 $this->view->setVar('seqlibs', $seqlibs);
+            }
+        }
+    }
+
+    public function flowcellsAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $flowcell_id = $request->getPost('flowcell_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'name_filter'));
+                $target_conc = $request->getPost('target_conc', 'float');
+                $target_vol = $request->getPost('target_vol', 'float');
+                $target_dw_vol = $request->getPost('target_dw_vol', 'float');
+                $initial_conc = $request->getPost('initial_conc', 'float');
+                $initial_vol = $request->getPost('initial_vol', 'float');
+                $final_conc = $request->getPost('final_conc', 'float');
+                $final_vol = $request->getPost('final_vol', 'float');
+                $final_dw_vol = $request->getPost('final_dw_vol', 'float');
+                $started_at = ($request->getPost('started_at', 'striptags')) ? $request->getPost('started_at', 'striptags') : null;
+                $finished_at = ($request->getPost('finished_at', 'striptags')) ? $request->getPost('finished_at', 'striptags') : null;
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
+
+                if (empty($flowcell_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $flowcell_id value ' . $flowcell_id . '.');
+                }
+
+                if ($flowcell_id > 0) {
+                    $flowcell = Flowcells::findFirst("id = $flowcell_id");
+                    if (!$flowcell) {
+                        return $this->flashSession->error('ERROR: Could not get $flowcells data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $flowcell->delete(); //Not soft-delete.
+                    } else {
+                        $flowcell->name = $name;
+                        $flowcell->target_conc = $target_conc;
+                        $flowcell->target_vol = $target_vol;
+                        $flowcell->target_dw_vol = $target_dw_vol;
+                        $flowcell->initial_conc = $initial_conc;
+                        $flowcell->initial_vol = $initial_vol;
+                        $flowcell->final_conc = $final_conc;
+                        $flowcell->final_vol = $final_vol;
+                        $flowcell->final_dw_vol = $final_dw_vol;
+                        $flowcell->started_at = $started_at;
+                        $flowcell->finished_at = $finished_at;
+                    }
+                } else {
+                    $flowcell = new Flowcells();
+                    $flowcell->name = $name;
+                    $flowcell->target_conc = $target_conc;
+                    $flowcell->target_vol = $target_vol;
+                    $flowcell->target_dw_vol = $target_dw_vol;
+                    $flowcell->initial_conc = $initial_conc;
+                    $flowcell->initial_vol = $initial_vol;
+                    $flowcell->final_conc = $final_conc;
+                    $flowcell->final_vol = $final_vol;
+                    $flowcell->final_dw_vol = $final_dw_vol;
+                    $flowcell->started_at = $started_at;
+                    $flowcell->finished_at = $finished_at;
+                }
+
+                /*
+                 * Save SeqRuncycleType data values.
+                 */
+                if ($flowcell->save() == false) {
+                    foreach ($flowcell->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($flowcell_id == -1) {
+                        $this->flashSession->success('Flowcell: ' . $flowcell->name . ' is created.');
+                    } elseif ($active == 'N') {
+                        $this->flashSession->success('Flowcell: ' . $flowcell->name . ' is deleted.');
+                    } else {
+                        $this->flashSession->success('Flowcell: ' . $flowcell->name . ' record is changed.');
+                    }
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Flowcells');
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $flowcells = Flowcells::find(array(
+                "order" => "created_at DESC"
+            ));
+            $this->view->setVar('flowcells', $flowcells);
+
+            $instruments = $this->modelsManager->createBuilder()
+                ->columns(array(
+                    'i.id AS id',
+                    'CONCAT(i.name, " (", it.name, ")") AS instrument_name'
+                ))
+                ->addFrom('Instruments', 'i')
+                ->join('InstrumentTypes', 'it.id = i.instrument_type_id', 'it')
+                ->where('i.active = "Y"')
+                ->andWhere('it.active = "Y"')
+                ->orderBy('it.sort_order ASC, i.instrument_number ASC')
+                ->getQuery()
+                ->execute();
+            $this->view->setVar('instruments', $instruments);
+
+
+        }
+    }
+
+    public function createSeqRunTypeSchemesSelectAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                $seq_run_type_scheme_id = $request->getPost('seq_run_type_scheme_id', 'int');
+                $instrument_id = $request->getPost('instrument_id', 'int');
+                if (empty($instrument_id)) {
+                    $this->flashSession->error('ERROR: Undefined instrument_id value ' . $instrument_id . '.');
+                }
+
+                $instrument_type_id = Instruments::findFirst($instrument_id)->instrument_type_id;
+                $seq_run_type_schemes = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'srts.id AS id',
+                        'CONCAT(srmt.name, " ", srrt.name, " ", srct.name) AS name'
+                    ))
+                    ->addFrom('SeqRunTypeSchemes', 'srts')
+                    ->join('SeqRunmodeTypes', 'srmt.id = srts.seq_runmode_type_id', 'srmt')
+                    ->join('SeqRunreadTypes', 'srrt.id = srts.seq_runread_type_id', 'srrt')
+                    ->join('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
+                    ->where('srts.active = "Y"')
+                    ->andWhere('instrument_type_id = :instrument_type_id:', array(
+                        'instrument_type_id' => $instrument_type_id
+                    ))
+                    ->orderBy('srmt.sort_order ASC, srrt.sort_order ASC, srct.sort_order ASC')
+                    ->getQuery()
+                    ->execute();
+
+                echo '<select id="modal-seq_run_type_scheme_id" class="form-control">';
+                if ($instrument_id == 0 or $seq_run_type_scheme_id == 0) {
+                    echo '<option value="0">Please select Seq. Run Type Scheme...</option>';
+                }
+                foreach ($seq_run_type_schemes as $seq_run_type_scheme) {
+                    if ($seq_run_type_scheme->id == $seq_run_type_scheme_id) {
+                        echo '<option value="' . $seq_run_type_scheme->id . '" selected>' . $seq_run_type_scheme->name . '</option>';
+                    } else {
+                        echo '<option value="' . $seq_run_type_scheme->id . '">' . $seq_run_type_scheme->name . '</option>';
+                    }
+                }
+                echo '</select>';
+            }
+        }
+    }
+
+    public function createFlowcellSideSelectAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+                $side = $request->getPost('side', 'striptags');
+                $instrument_id = $request->getPost('instrument_id', 'int');
+                if (empty($instrument_id)) {
+                    $this->flashSession->error('ERROR: Undefined instrument_id value ' . $instrument_id . '.');
+                }
+
+                $instrument_type_id = Instruments::findFirst($instrument_id)->instrument_type_id;
+                $instrument_type = InstrumentTypes::findFirst($instrument_type_id);
+                $slots_array = json_decode($instrument_type->slots_array_json);
+
+                echo '<select id="modal-side" class="form-control">';
+                if ($instrument_id == 0 or $side == 0) {
+                    echo '<option value="0">Please select Flowcell Side...</option>';
+                }
+                foreach ($slots_array as $key => $slot) {
+                    if ($slot == $side) {
+                        echo '<option value="' . $key . '" selected>' . $slot . '</option>';
+                    } else {
+                        echo '<option value="' . $key . '">' . $slot . '</option>';
+                    }
+                }
+                echo '</select>';
+            }
+        }
+    }
+
+    public function flowcellSeqlanesAction($flowcell_id)
+    {
+        $request = $this->request;
+        $flowcell_seqlanes = Seqlanes::find(array(
+            "flowcell_id = :flowcell_id:",
+            "bind" => array(
+                "flowcell_id" => $flowcell_id
+            ),
+            "order" => "number ASC"
+        ));
+        $flowcell = Flowcells::findFirst($flowcell_id);
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $seqlane_array_json = $request->getPost('seqlane_array_json', array('striptags'));
+                $seqlane_array = json_decode($seqlane_array_json);
+
+                $flowcellSeqlanes = array();
+                $i = 0;
+                $new_seqtemplate_name = array();
+                $del_seqlane_name = array();
+                if (count($seqlane_array)) {
+                    foreach ($seqlane_array as $seqlane_index => $seqlane_obj) {
+                        $id_str = $seqlane_obj->id_str;
+                        $seqlane_id = $seqlane_obj->seqlane_id;
+                        $is_active = $seqlane_obj->is_active;
+                        if ($is_active == 'Y') {
+                            if (preg_match("/seqtemplate_id-/", $id_str)) {
+                                $seqtemplate_id = str_replace("seqtemplate_id-", "", $id_str);
+                                $number = $seqlane_index + 1;
+                                $seqlane = Seqlanes::findFirst(array(
+                                    "number = :number: AND flowcell_id = :flowcell_id:",
+                                    "bind" => array(
+                                        "number" => $number,
+                                        "flowcell_id" => $flowcell_id
+                                    )
+                                ));
+                                if ($seqlane) {
+                                    if ($seqlane->seqtemplate_id == $seqtemplate_id) {
+                                        continue;
+                                    }
+                                    $flowcellSeqlanes[$i] = $seqlane;
+                                    $flowcellSeqlanes[$i]->seqtemplate_id = $seqtemplate_id;
+                                    $flowcellSeqlanes[$i]->is_control = 'N';
+                                    $flowcellSeqlanes[$i]->control_id = null;
+                                } else {
+                                    $flowcellSeqlanes[$i] = new Seqlanes();
+                                    $flowcellSeqlanes[$i]->number = $number;
+                                    $flowcellSeqlanes[$i]->flowcell_id = $flowcell_id;
+                                    $flowcellSeqlanes[$i]->seqtemplate_id = $seqtemplate_id;
+                                    $flowcellSeqlanes[$i]->is_control = 'N';
+                                }
+                                $new_seqtemplate_name[] = Seqtemplates::findFirst($seqtemplate_id)->name;
+                                $i++;
+                            } else if (preg_match("/control_id-/", $id_str)) {
+                                $control_id = str_replace("control_id-", "", $id_str);
+                                $number = $seqlane_index + 1;
+                                $seqlane = Seqlanes::findFirst(array(
+                                    "number = :number: AND flowcell_id = :flowcell_id:",
+                                    "bind" => array(
+                                        "number" => $number,
+                                        "flowcell_id" => $flowcell_id
+                                    )
+                                ));
+                                if ($seqlane) {
+                                    if ($seqlane->control_id == $control_id) {
+                                        continue;
+                                    }
+                                    $flowcellSeqlanes[$i] = $seqlane;
+                                    $flowcellSeqlanes[$i]->seqtemplate_id = null;
+                                    $flowcellSeqlanes[$i]->is_control = 'Y';
+                                    $flowcellSeqlanes[$i]->control_id = $control_id;
+                                } else {
+                                    $flowcellSeqlanes[$i] = new Seqlanes();
+                                    $flowcellSeqlanes[$i]->number = $number;
+                                    $flowcellSeqlanes[$i]->flowcell_id = $flowcell_id;
+                                    $flowcellSeqlanes[$i]->is_control = 'Y';
+                                    $flowcellSeqlanes[$i]->control_id = $control_id;
+                                }
+                                $new_seqtemplate_name[] = Controls::findFirst($control_id)->name;
+                                $i++;
+                            }
+                        } else if ($is_active == 'N') {
+                            $seq_demultiplex_results = SeqDemultiplexResults::findBySeqlaneId($seqlane_id);
+                            if ($seq_demultiplex_results) {
+                                if ($seq_demultiplex_results->delete() == false) {
+                                    foreach ($seq_demultiplex_results->getMessages() as $message) {
+                                        $this->flashSession->error((string)$message);
+                                    }
+                                    return false;
+                                }
+                            }
+
+                            $seqlanes = Seqlanes::findFirst($seqlane_id);
+                            if ($seqlanes) {
+                                if ($seqlanes->delete() == false) {
+                                    foreach ($seqlanes->getMessages() as $message) {
+                                        $this->flashSession->error((string)$message);
+                                    }
+                                    return false;
+                                }
+                                $del_seqlane_name[] = $seqlanes->number;
+                                $i++;
+                            }
+                        } else {
+                            return false;
+                        }
+                    }
+
+                    if ($i > 0) {
+                        /*
+                         * Save $oligobarcodeSchemeOligobarcodes data values.
+                         */
+                        $flowcell->Seqlanes = $flowcellSeqlanes;
+                        if ($flowcell->save() == false) {
+                            foreach ($flowcell->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
+                            }
+                            return false;
+                        } else {
+                            if (count($new_seqtemplate_name)) {
+                                $new_seqtemplate_name_str = implode(",", $new_seqtemplate_name);
+                                $this->flashSession->success('Flowcell Seqlanes: ' . $new_seqtemplate_name_str . ' is added.');
+                            }
+                            if (count($del_seqlane_name)) {
+                                $del_seqlane_name_str = implode(",", $del_seqlane_name);
+                                $this->flashSession->success('Flowcell Seqlanes, lane_number: ' . $del_seqlane_name_str . ' is deleted.');
+                            }
+
+                        }
+                    }
+                }
+            }
+        } else {
+            Tag::appendTitle(' | ' . $flowcell->name . ' | Flowcell Seqtemplates.');
+            $this->view->setVar('flowcell', $flowcell);
+            $this->view->setVar('flowcell_seqlanes', $flowcell_seqlanes);
+        }
+    }
+
+
+    public
+    function showTubeSeqtemplatesAction()
+    {
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
+        $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                // echo "Request was made using POST and AJAX";
+                $query = $request->getPost("pick_query", "striptags");
+                $flowcell_id = $request->getPost("flowcell_id", "int");
+
+                $seqtemplates_tmp = $this->modelsManager->createBuilder()
+                    ->columns(array(
+                        'st.*',
+                        'se.*',
+                        'sp.*',
+                        'COUNT(DISTINCT sl.id) AS sl_count'
+                    ))
+                    ->addFrom('Seqtemplates', 'st')
+                    ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se')
+                    ->leftJoin('Steps', 'sp.id = se.step_id', 'sp')
+                    ->leftJoin('Seqlanes', 'sl.seqtemplate_id = st.id', 'sl');
+
+                $flowcell = Flowcells::findFirst($flowcell_id);
+                if ($flowcell) {
+                    $flowcell_seq_runmode_type_id = $flowcell->seq_runmode_type_id;
+                    $flowcell_platform_code = SeqRunmodeTypes::findFirst($flowcell_seq_runmode_type_id)->platform_code;
+                    $seqtemplates_tmp = $seqtemplates_tmp
+                        ->where("sp.platform_code = :platform_code:", array(
+                            "platform_code" => $flowcell_platform_code
+                        ));
+                } else {
+                    return false;
+                }
+
+                if ($query) {
+                    $seqtemplates_tmp = $seqtemplates_tmp
+                        ->andWhere('st.name LIKE :query:', array("query" => '%' . $query . '%'));
+                } else {
+                    return false;
+                }
+
+                $seqtemplates = $seqtemplates_tmp
+                    ->groupBy('st.id, se.id')
+                    ->orderBy('st.name ASC')
+                    ->getQuery()
+                    ->execute();
+
+                $this->view->setVar('seqtemplates', $seqtemplates);
             }
         }
     }

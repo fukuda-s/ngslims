@@ -10,7 +10,7 @@
     {{ flashSession.output() }}
 
     <button type="button" class="btn btn-xs btn-primary pull-left"
-            onclick="seqRunmodeTypesEdit(-1, '', '', '', 'Y', 0)"
+            onclick="seqRunmodeTypesEdit(-1, '', '', '', '', 'Y', 0)"
             style="margin: 10px 0; width: 261px ">
       <i class="fa fa-plus" aria-hidden="true"></i>&ensp;
       Create New Seq Runmode Type
@@ -27,6 +27,7 @@
       <tr>
         <th>ID</th>
         <th>Seq Runmode Type Name</th>
+        <th>Platform Name</th>
         <th>Num. Of Lane Per Flowcell</th>
         <th>Sort Order</th>
         <th>Active</th>
@@ -43,6 +44,7 @@
         >
           <td>{{ seq_runmode_type.id }}</td>
           <td>{{ seq_runmode_type.name }}</td>
+          <td>{{ seq_runmode_type.Platforms.description }}</td>
           <td>{{ seq_runmode_type.lane_per_flowcell}}</td>
           <td>{{ seq_runmode_type.sort_order }}</td>
           {% if active is 'Y' %}
@@ -53,7 +55,7 @@
           {% set seq_runmode_type_seq_run_type_scheme_count = seq_runmode_type.SeqRunTypeSchemes|length %}
           <td class="text-center">
             <a href="javascript:void(0)" style="font-size: 9pt"
-               onclick="seqRunmodeTypesEdit('{{ seq_runmode_type.id }}', '{{ seq_runmode_type.name }}', '{{ seq_runmode_type.lane_per_flowcell }}', '{{ seq_runmode_type.sort_order }}', '{{ seq_runmode_type.active }}', '{{ seq_runmode_type_seq_run_type_scheme_count }}'); return false;">
+               onclick="seqRunmodeTypesEdit('{{ seq_runmode_type.id }}', '{{ seq_runmode_type.name }}', '{{ seq_runmode_type.platform_code }}', '{{ seq_runmode_type.lane_per_flowcell }}', '{{ seq_runmode_type.sort_order }}', '{{ seq_runmode_type.active }}', '{{ seq_runmode_type_seq_run_type_scheme_count }}'); return false;">
               <span class="fa fa-pencil"></span>&ensp;
             </a>
             {% if seq_runmode_type_seq_run_type_scheme_count == 0 %}
@@ -95,6 +97,12 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
+          <label for="modal-platform_code" class="col-sm-3 control-label" style="font-size: 9pt">Platform Code</label>
+          <div class="col-sm-9">
+            {{ select('modal-platform_code', platforms, 'using': ['platform_code', 'description'], 'class': 'form-control') }}
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
           <label for="modal-lane_per_flowcell" class="col-sm-3 control-label" style="font-size: 9pt">Num. Of Lane Per Flowcell</label>
           <div class="col-sm-9">
             {{ numeric_field('modal-lane_per_flowcell', 'class': 'form-control') }}
@@ -128,10 +136,11 @@
   /**
    * Open modal window with filling values.
    */
-  function seqRunmodeTypesEdit(seq_runmode_type_id, name, lane_per_flowcell, sort_order, active, seq_runmode_type_seq_run_type_scheme_count) {
+  function seqRunmodeTypesEdit(seq_runmode_type_id, name, platform_code, lane_per_flowcell, sort_order, active, seq_runmode_type_seq_run_type_scheme_count) {
 
     $('#modal-seq_runmode_type_id').val(seq_runmode_type_id);
     $('#modal-name').val(name);
+    $('#modal-platform_code').val(platform_code);
     $('#modal-lane_per_flowcell').val(lane_per_flowcell);
     $('#modal-sort_order').val(sort_order);
     $('#modal-active').val(active);
@@ -140,9 +149,11 @@
     // @TODO should be consider details condition of details
     if (seq_runmode_type_seq_run_type_scheme_count > 0) {
       $('#modal-name').prop('disabled', true);
+      $('#modal-platform_code').prop('disabled', true);
       $('#modal-active').prop('disabled', true);
     } else {
       $('#modal-name').prop('disabled', false);
+      $('#modal-platform_code').prop('disabled', false);
       $('#modal-active').prop('disabled', false);
     }
 
@@ -166,6 +177,7 @@
 
     var seq_runmode_type_id = $('#modal-seq_runmode_type_id').val();
     var name = $('#modal-name').val();
+    var platform_code = $('#modal-platform_code').val();
     var lane_per_flowcell = $('#modal-lane_per_flowcell').val();
     var sort_order = $('#modal-sort_order').val();
     var active = $('#modal-active').val();
@@ -175,6 +187,7 @@
       data: {
         seq_runmode_type_id: seq_runmode_type_id,
         name: name,
+        platform_code: platform_code,
         lane_per_flowcell: lane_per_flowcell,
         sort_order: sort_order,
         active: active

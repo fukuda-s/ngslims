@@ -174,7 +174,12 @@ class Security extends Plugin
                     'steps',
                     'seqtemplates',
                     'seqtemplateAssocs',
-                    'showTubeSeqlibs'
+                    'showTubeSeqlibs',
+                    'flowcells',
+                    'createSeqRunTypeSchemesSelect',
+                    'createFlowcellSideSelect',
+                    'flowcellSeqlanes',
+                    'showTubeSeqtemplates'
                 ),
                 'search' => array(
                     'index',

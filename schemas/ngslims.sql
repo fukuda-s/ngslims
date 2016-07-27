@@ -268,6 +268,7 @@ CREATE TABLE `organisms` (
   `sort_order` int(11) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `taxonomy_id_UNIQUE` (`taxonomy_id`),
   KEY `organisms_sort_order_idx` (`sort_order`),
   KEY `organisms_active_idx` (`active`),
   KEY `organisms_taxonmy_id_idx` (`taxonomy_id`)
@@ -717,12 +718,12 @@ CREATE TABLE `seq_demultiplex_results` (
   `software_version` varchar(45) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_ seq_demultiplex_results_seqlibs_idx` (`seqlib_id`),
-  KEY `fk_ seq_demultiplex_results_seqlanes_idx` (`seqlane_id`),
-  KEY `fk_ seq_demultiplex_results_flowcells_idx` (`flowcell_id`),
-  CONSTRAINT `fk_ seq_demultiplex_results_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_ seq_demultiplex_results_seqlanes` FOREIGN KEY (`seqlane_id`) REFERENCES `seqlanes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_ seq_demultiplex_results_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_seq_demultiplex_results_seqlibs_idx` (`seqlib_id`),
+  KEY `fk_seq_demultiplex_results_seqlanes_idx` (`seqlane_id`),
+  KEY `fk_seq_demultiplex_results_flowcells_idx` (`flowcell_id`),
+  CONSTRAINT `fk_seq_demultiplex_results_flowcells` FOREIGN KEY (`flowcell_id`) REFERENCES `flowcells` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seq_demultiplex_results_seqlanes` FOREIGN KEY (`seqlane_id`) REFERENCES `seqlanes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_seq_demultiplex_results_seqlibs` FOREIGN KEY (`seqlib_id`) REFERENCES `seqlibs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -781,12 +782,15 @@ DROP TABLE IF EXISTS `seq_runmode_types`;
 CREATE TABLE `seq_runmode_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
+  `platform_code` varchar(100) NOT NULL,
   `lane_per_flowcell` int(11) NOT NULL,
   `sort_order` varchar(45) DEFAULT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   KEY `seq_runmode_types_sort_order_idx` (`sort_order`),
-  KEY `seq_runmode_types_active_idx` (`active`)
+  KEY `seq_runmode_types_active_idx` (`active`),
+  KEY `seq_runmode_types_platform_code_idx` (`platform_code`),
+  CONSTRAINT `fk_seq_runmode_types_platforms` FOREIGN KEY (`platform_code`) REFERENCES `platforms` (`platform_code`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1062,4 +1066,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-06-29 11:47:22
+-- Dump completed on 2016-07-27 15:15:47

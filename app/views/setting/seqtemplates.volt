@@ -62,7 +62,7 @@
           {% else %}
             <td>{{ date('Y-m-d', strtotime(seqtemplate.started_at)) }}</td>
           {% endif %}
-          {% if seqtemplate.started_at is empty %}
+          {% if seqtemplate.finished_at is empty %}
             <td></td>
           {% else %}
             <td>{{ date('Y-m-d', strtotime(seqtemplate.finished_at)) }}</td>

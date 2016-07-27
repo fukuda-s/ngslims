@@ -19,6 +19,12 @@ class SeqRunmodeTypes extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var string
+     */
+    public $platform_code;
+
+    /**
+     *
      * @var integer
      */
     public $lane_per_flowcell;
@@ -47,6 +53,7 @@ class SeqRunmodeTypes extends \Phalcon\Mvc\Model
         return array(
             'id' => 'id',
             'name' => 'name',
+            'platform_code' => 'platform_code',
             'lane_per_flowcell' => 'lane_per_flowcell',
             'sort_order' => 'sort_order',
             'active' => 'active'
@@ -56,6 +63,8 @@ class SeqRunmodeTypes extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->hasMany('id', 'SeqRunTypeSchemes', 'seq_runmode_type_id');
+
+        $this->belongsTo('platform_code', 'Platforms', 'platform_code');
         
         $this->addBehavior(new SoftDelete(
             array(

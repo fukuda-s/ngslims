@@ -174,14 +174,7 @@
 
           var seqlib_candidate_holder = $('#seqlib_candidate_holder');
           //$('#pick_search_result_samples').html(data);
-          seqlib_candidate_holder.html(data);
-
-          /*
-           * Add selectable function to seqlib tubes.
-           */
-          seqlib_candidate_holder
-              .find("#sample-holder")
-              .selectable();
+          seqlib_candidate_holder.replaceWith(data);
 
 
           $('#seqlib_candidate_holder').sortable({

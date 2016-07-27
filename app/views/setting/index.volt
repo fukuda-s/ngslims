@@ -12,6 +12,7 @@
         <li>{{ link_to('setting/projects', 'Projects') }}</li>
       </ul>
       <li>{{ link_to('setting/seqtemplates', 'Sequence Templates') }}</li>
+      <li>{{ link_to('setting/flowcells', 'Flowcells') }}</li>
       <li>{{ link_to('setting/steps', 'Steps') }}</li>
       <ul>
         <li>{{ link_to('setting/protocols', 'Protocols') }}</li>
