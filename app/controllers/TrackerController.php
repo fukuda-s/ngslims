@@ -708,9 +708,11 @@ class TrackerController extends ControllerBase
                     ->columns(array('st.*', 'se.*'))
                     ->addFrom('Seqtemplates', 'st')
                     ->join('StepEntries', 'se.seqtemplate_id = st.id', 'se')
+                    ->join('Steps', 'sp.id = se.step_id', 'sp')
                     //->orderBy(array('DATE(st.created_at) DESC', 'st.name ASC'))
                     ->where('se.status IS NOT NULL')
                     ->andWhere('st.name LIKE :query:', array("query" => '%' . $query . '%'))
+                    ->andWhere('sp.platform_code = :platform_code:', array("platform_code" => Steps::findFirst($step_id)->platform_code))
                     ->orderBy(array('st.name ASC'))
                     ->getQuery()
                     ->execute();
