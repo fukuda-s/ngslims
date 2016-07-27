@@ -101,7 +101,7 @@ class Flowcells extends \Phalcon\Mvc\Model
     {
         $this->belongsTo('instrument_id', 'Instruments', 'id');
         $this->belongsTo('seq_runmode_type_id', 'SeqRunmodeTypes', 'id');
-        $this->belongsTo('seq_run_type_scheme_id', 'SeqRuntypeSchemes', 'id');
+        $this->belongsTo('seq_run_type_scheme_id', 'SeqRunTypeSchemes', 'id');
 
         $this->hasMany('id', 'Seqlanes', 'flowcell_id');
         $this->hasMany('id', 'StepEntries', 'flowcell_id');

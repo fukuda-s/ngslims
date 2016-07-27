@@ -50,12 +50,12 @@
           <td>{{ flowcell.id }}</td>
           <td>{{ flowcell.name }}</td>
           <td>{{ flowcell.SeqRunmodeTypes.name }}</td>
-          {% if flowcell.SeqRuntypeSchemes is empty %}
+          {% if flowcell.SeqRunTypeSchemes is empty %}
             <td></td>
             <td></td>
           {% else %}
-            <td>{{ flowcell.SeqRuntypeSchemes.SeqRunreadTypes.name }}</td>
-            <td>{{ flowcell.SeqRuntypeSchemes.SeqRuncycleTypes.name }}</td>
+            <td>{{ flowcell.SeqRunTypeSchemes.SeqRunreadTypes.name }}</td>
+            <td>{{ flowcell.SeqRunTypeSchemes.SeqRuncycleTypes.name }}</td>
           {% endif %}
           <td>{{ flowcell.run_number }}</td>
           {% if flowcell.Instruments is empty %}
