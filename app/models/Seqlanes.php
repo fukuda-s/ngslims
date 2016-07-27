@@ -150,7 +150,7 @@ class Seqlanes extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->belongsTo('flowcell_id', 'Flowcells', 'id');
-        $this->belongsTo('seqtemplate_id', 'SeqTemplates', 'id');
+        $this->belongsTo('seqtemplate_id', 'Seqtemplates', 'id');
         $this->belongsTo('control_id', 'Controls', 'id');
 
         $this->hasMany('id', 'SeqDemultiplexResults', 'seqlane_id');
