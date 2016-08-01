@@ -48,6 +48,13 @@
       <div class="panel-body">
         <ol class="tube-group" id="flowcell_seqlanes_holder"
             style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">
+          <div class="tube tube-header" style="margin: 2px 0 2px 0 !important;">
+            <div class="col-md-1">#</div>
+            <div class="col-md-8">Seqtemplate Name</div>
+            <div class="col-md-2">Conc. (pM)</div>
+            <div class="col-md-1"></div>
+            <div class="clearfix"></div>
+          </div>
           {% set lane_per_flowcell = flowcell.SeqRunmodeTypes.lane_per_flowcell %}
           {% set lane_index_arr = 1..lane_per_flowcell %}
           {% set seqlane_index = 0 %}
@@ -76,7 +83,10 @@
                       {{ flowcell_seqlane.Controls.name ~ ' (Control Lane)' }}
                     {% endif %}
                   </div>
-                  <div class="col-md-3">
+                  <div class="col-md-2">
+                    {{ text_field('apply_conc-' ~ flowcell_seqlane.id, 'class': 'form-control input-xs', 'value': flowcell_seqlane.apply_conc ) }}
+                  </div>
+                  <div class="col-md-1">
                     <a href="javascript:void(0)" class="tube-close pull-right" onclick="tubeCloseToggle(this)">
                       <i class="fa fa-times" aria-hidden="true"></i>
                       <i class="fa fa-repeat" aria-hidden="true" style="display: none"></i>
@@ -170,13 +180,17 @@
            * Set draggable for seqtemplate panels
            */
           $('#seqtemplate_candidate_holder')
-              .find('.tube[id^=seqtemplate_id-]')
+              .find('.tube[id^=seqtemplate_id-],.tube[id^=control_id-]')
               .draggable({
                 zIndex: 10000,
                 addClasses: false,
                 cursor: 'move',
                 helper: "clone"
               });
+
+          $('[id^=apply_conc_]').change(function () {
+            $('#flowcell_seqlanes_save').prop('disabled', false);
+          });
 
         })
         /*
@@ -187,8 +201,6 @@
   }
 
   $(document).ready(function () {
-
-    $('[data-toggle="tooltip"]').tooltip();
 
     $('#flowcell_seqlanes_holder li').each(function () {
       $(this).droppable({
@@ -203,12 +215,16 @@
             $(this)
                 .addClass("tube tube-active")
                 .attr("id", id_attr)
-                .html(name_attr);
+                .html(name_attr)
+                .find('[id^=apply_conc_seqtemplate_id-]')
+                .show();
           } else if (id_attr.match(/^control_id/)) {
             $(this)
                 .addClass("tube tube-warning")
                 .attr("id", id_attr)
-                .html(name_attr);
+                .html(name_attr)
+                .find('[id^=apply_conc_control_id-]')
+                .show();
           }
           $('#flowcell_seqlanes_save').prop('disabled', false);
         },
@@ -219,6 +235,7 @@
     });
 
     $('#flowcell_seqlanes_holder').sortable({
+      items: '> li',
       update: function (event, ui) {
         /*
          var item = ui.item.parent();
@@ -237,6 +254,10 @@
       }
     });
 
+    $('[id^=apply_conc]').change(function () {
+      $('#flowcell_seqlanes_save').prop('disabled', false);
+    });
+
     $('#flowcell_seqlanes_save').click(function () {
       var seqlane_array = [];
       $('#flowcell_seqlanes_holder')
@@ -244,10 +265,21 @@
           .each(function (index) {
             var id_str = $(this).attr('id');
             var seqlane_id = $(this).attr('seqlane_id');
+            var apply_conc = $(this).find('[id^=apply_conc]').val();
             if ($(this).filter(".tube-active").length) {
-              seqlane_array[index] = {'id_str': id_str, 'seqlane_id': seqlane_id, 'is_active': 'Y'};
+              seqlane_array[index] = {
+                'id_str': id_str,
+                'seqlane_id': seqlane_id,
+                'apply_conc': apply_conc,
+                'is_active': 'Y'
+              };
             } else if ($(this).filter(".tube-inactive").length) {
-              seqlane_array[index] = {'id_str': id_str, 'seqlane_id': seqlane_id, 'is_active': 'N'};
+              seqlane_array[index] = {
+                'id_str': id_str,
+                'seqlane_id': seqlane_id,
+                'apply_conc': apply_conc,
+                'is_active': 'N'
+              };
             }
           });
 
@@ -261,7 +293,7 @@
         }
       })
           .done(function (data) {
-            //console.log(data);
+            console.log(data);
             window.location.reload();  // @TODO It should not be re-loaded.
           });
 

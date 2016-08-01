@@ -2373,13 +2373,7 @@ class SettingController extends ControllerBase
     public function flowcellSeqlanesAction($flowcell_id)
     {
         $request = $this->request;
-        $flowcell_seqlanes = Seqlanes::find(array(
-            "flowcell_id = :flowcell_id:",
-            "bind" => array(
-                "flowcell_id" => $flowcell_id
-            ),
-            "order" => "number ASC"
-        ));
+
         $flowcell = Flowcells::findFirst($flowcell_id);
         // Check whether the request was made with method POST
         if ($request->isPost() == true) {
@@ -2396,9 +2390,10 @@ class SettingController extends ControllerBase
                 $del_seqlane_name = array();
                 if (count($seqlane_array)) {
                     foreach ($seqlane_array as $seqlane_index => $seqlane_obj) {
-                        $id_str = $seqlane_obj->id_str;
-                        $seqlane_id = $seqlane_obj->seqlane_id;
-                        $is_active = $seqlane_obj->is_active;
+                        $id_str = $this->filter->sanitize($seqlane_obj->id_str, 'striptags');
+                        $seqlane_id = $this->filter->sanitize($seqlane_obj->seqlane_id, 'int');
+                        $apply_conc = ($this->filter->sanitize($seqlane_obj->apply_conc, 'float')) ? $this->filter->sanitize($seqlane_obj->apply_conc, 'float') : null;
+                        $is_active = $this->filter->sanitize($seqlane_obj->is_active, 'striptags');
                         if ($is_active == 'Y') {
                             if (preg_match("/seqtemplate_id-/", $id_str)) {
                                 $seqtemplate_id = str_replace("seqtemplate_id-", "", $id_str);
@@ -2410,19 +2405,34 @@ class SettingController extends ControllerBase
                                         "flowcell_id" => $flowcell_id
                                     )
                                 ));
+                                $seq_demultiplex_results = SeqDemultiplexResults::findBySeqlaneId($seqlane_id);
                                 if ($seqlane) {
+                                    /*
                                     if ($seqlane->seqtemplate_id == $seqtemplate_id) {
                                         continue;
                                     }
+                                    */
                                     $flowcellSeqlanes[$i] = $seqlane;
                                     $flowcellSeqlanes[$i]->seqtemplate_id = $seqtemplate_id;
+                                    $flowcellSeqlanes[$i]->apply_conc = $apply_conc;
                                     $flowcellSeqlanes[$i]->is_control = 'N';
                                     $flowcellSeqlanes[$i]->control_id = null;
+                                    if (count($seq_demultiplex_results)) {
+                                        if ($seq_demultiplex_results->delete() == false) {
+                                            foreach ($seq_demultiplex_results->getMessages() as $message) {
+                                                $this->flashSession->error((string)$message);
+                                            }
+                                            return false;
+                                        } else {
+                                            $this->flashSession->error('Demultiplex Results has been deleted on Lane #' . $number . '.');
+                                        }
+                                    }
                                 } else {
                                     $flowcellSeqlanes[$i] = new Seqlanes();
                                     $flowcellSeqlanes[$i]->number = $number;
                                     $flowcellSeqlanes[$i]->flowcell_id = $flowcell_id;
                                     $flowcellSeqlanes[$i]->seqtemplate_id = $seqtemplate_id;
+                                    $flowcellSeqlanes[$i]->apply_conc = $apply_conc;
                                     $flowcellSeqlanes[$i]->is_control = 'N';
                                 }
                                 $new_seqtemplate_name[] = Seqtemplates::findFirst($seqtemplate_id)->name;
@@ -2443,12 +2453,14 @@ class SettingController extends ControllerBase
                                     }
                                     $flowcellSeqlanes[$i] = $seqlane;
                                     $flowcellSeqlanes[$i]->seqtemplate_id = null;
+                                    $flowcellSeqlanes[$i]->apply_conc = $apply_conc;
                                     $flowcellSeqlanes[$i]->is_control = 'Y';
                                     $flowcellSeqlanes[$i]->control_id = $control_id;
                                 } else {
                                     $flowcellSeqlanes[$i] = new Seqlanes();
                                     $flowcellSeqlanes[$i]->number = $number;
                                     $flowcellSeqlanes[$i]->flowcell_id = $flowcell_id;
+                                    $flowcellSeqlanes[$i]->apply_conc = $apply_conc;
                                     $flowcellSeqlanes[$i]->is_control = 'Y';
                                     $flowcellSeqlanes[$i]->control_id = $control_id;
                                 }
@@ -2457,7 +2469,7 @@ class SettingController extends ControllerBase
                             }
                         } else if ($is_active == 'N') {
                             $seq_demultiplex_results = SeqDemultiplexResults::findBySeqlaneId($seqlane_id);
-                            if ($seq_demultiplex_results) {
+                            if (count($seq_demultiplex_results)) {
                                 if ($seq_demultiplex_results->delete() == false) {
                                     foreach ($seq_demultiplex_results->getMessages() as $message) {
                                         $this->flashSession->error((string)$message);
@@ -2466,15 +2478,15 @@ class SettingController extends ControllerBase
                                 }
                             }
 
-                            $seqlanes = Seqlanes::findFirst($seqlane_id);
-                            if ($seqlanes) {
-                                if ($seqlanes->delete() == false) {
-                                    foreach ($seqlanes->getMessages() as $message) {
+                            $seqlane = Seqlanes::findFirst($seqlane_id);
+                            if ($seqlane) {
+                                if ($seqlane->delete() == false) {
+                                    foreach ($seqlane->getMessages() as $message) {
                                         $this->flashSession->error((string)$message);
                                     }
                                     return false;
                                 }
-                                $del_seqlane_name[] = $seqlanes->number;
+                                $del_seqlane_name[] = $seqlane->number;
                                 $i++;
                             }
                         } else {
@@ -2495,11 +2507,11 @@ class SettingController extends ControllerBase
                         } else {
                             if (count($new_seqtemplate_name)) {
                                 $new_seqtemplate_name_str = implode(",", $new_seqtemplate_name);
-                                $this->flashSession->success('Flowcell Seqlanes: ' . $new_seqtemplate_name_str . ' is added.');
+                                $this->flashSession->success('Flowcell Seqlanes: ' . $new_seqtemplate_name_str . ' are edited.');
                             }
                             if (count($del_seqlane_name)) {
                                 $del_seqlane_name_str = implode(",", $del_seqlane_name);
-                                $this->flashSession->success('Flowcell Seqlanes, lane_number: ' . $del_seqlane_name_str . ' is deleted.');
+                                $this->flashSession->success('Flowcell Seqlanes, lane_number: ' . $del_seqlane_name_str . ' are deleted.');
                             }
 
                         }
@@ -2509,13 +2521,20 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | ' . $flowcell->name . ' | Flowcell Seqtemplates.');
             $this->view->setVar('flowcell', $flowcell);
+
+            $flowcell_seqlanes = Seqlanes::find(array(
+                "flowcell_id = :flowcell_id:",
+                "bind" => array(
+                    "flowcell_id" => $flowcell_id
+                ),
+                "order" => "number ASC"
+            ));
             $this->view->setVar('flowcell_seqlanes', $flowcell_seqlanes);
         }
     }
 
 
-    public
-    function showTubeSeqtemplatesAction()
+    public function showTubeSeqtemplatesAction()
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
@@ -2528,44 +2547,45 @@ class SettingController extends ControllerBase
                 $query = $request->getPost("pick_query", "striptags");
                 $flowcell_id = $request->getPost("flowcell_id", "int");
 
-                $seqtemplates_tmp = $this->modelsManager->createBuilder()
-                    ->columns(array(
-                        'st.*',
-                        'se.*',
-                        'sp.*',
-                        'COUNT(DISTINCT sl.id) AS sl_count'
-                    ))
-                    ->addFrom('Seqtemplates', 'st')
-                    ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se')
-                    ->leftJoin('Steps', 'sp.id = se.step_id', 'sp')
-                    ->leftJoin('Seqlanes', 'sl.seqtemplate_id = st.id', 'sl');
-
                 $flowcell = Flowcells::findFirst($flowcell_id);
-                if ($flowcell) {
+                if ($flowcell and $query) {
                     $flowcell_seq_runmode_type_id = $flowcell->seq_runmode_type_id;
                     $flowcell_platform_code = SeqRunmodeTypes::findFirst($flowcell_seq_runmode_type_id)->platform_code;
-                    $seqtemplates_tmp = $seqtemplates_tmp
+                    $seqtemplates = $this->modelsManager->createBuilder()
+                        ->columns(array(
+                            'st.*',
+                            'se.*',
+                            'sp.*',
+                            'COUNT(DISTINCT sl.id) AS sl_count'
+                        ))
+                        ->addFrom('Seqtemplates', 'st')
+                        ->leftJoin('StepEntries', 'se.seqtemplate_id = st.id', 'se')
+                        ->leftJoin('Steps', 'sp.id = se.step_id', 'sp')
+                        ->leftJoin('Seqlanes', 'sl.seqtemplate_id = st.id', 'sl')
                         ->where("sp.platform_code = :platform_code:", array(
                             "platform_code" => $flowcell_platform_code
-                        ));
+                        ))
+                        ->andWhere('st.name LIKE :query:', array("query" => '%' . $query . '%'))
+                        ->groupBy('st.id, se.id')
+                        ->orderBy('st.name ASC')
+                        ->getQuery()
+                        ->execute();
+
+                    $this->view->setVar('seqtemplates', $seqtemplates);
+
+                    $controls = Controls::find(array(
+                        "name LIKE :query: AND platform_code = :platform_code: AND active = 'Y'",
+                        "bind" => array(
+                            "query" => '%' . $query . '%',
+                            "platform_code" => $flowcell_platform_code
+                        )
+                    ));
+
+                    $this->view->setVar('controls', $controls);
                 } else {
                     return false;
                 }
 
-                if ($query) {
-                    $seqtemplates_tmp = $seqtemplates_tmp
-                        ->andWhere('st.name LIKE :query:', array("query" => '%' . $query . '%'));
-                } else {
-                    return false;
-                }
-
-                $seqtemplates = $seqtemplates_tmp
-                    ->groupBy('st.id, se.id')
-                    ->orderBy('st.name ASC')
-                    ->getQuery()
-                    ->execute();
-
-                $this->view->setVar('seqtemplates', $seqtemplates);
             }
         }
     }
