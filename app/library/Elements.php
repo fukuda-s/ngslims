@@ -185,8 +185,7 @@ class Elements extends Phalcon\Mvc\User\Component
                     echo "</form>";
                     echo "</li>";
                 } elseif (isset($option['dropdown']) && !empty($option['dropdown'])) {
-                    $dropdown = $this->$option['dropdown'];
-                    //$dropdown = $this->_userDropdownMenu;
+                    $dropdown = $this->{$option['dropdown']};
                     echo '<li class="dropdown">';
                     echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' . $option['caption'] . '<span class="caret"></span></a>';
                     echo '<ul class="dropdown-menu" role="menu">';
