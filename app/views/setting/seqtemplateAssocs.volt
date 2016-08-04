@@ -59,7 +59,7 @@
               {% set seqtemplate_assoc_seqlib = seqtemplate_assoc.Seqlibs %}
               <div class="tube row" id="seqlib_id-{{ seqtemplate_assoc_seqlib.id }}" data-toggle="tooltip"
                    data-placement="right" title="{{ seqtemplate_assoc_seqlib.Protocols.name }}"
-                   style="margin: 2px 0px 2px 0px !important;">
+                   style="margin: 2px 0 2px 0 !important;">
                 <div class="col-md-6">
                   {{ seqtemplate_assoc_seqlib.name }}
                 </div>

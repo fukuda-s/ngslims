@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-sm-12">
     <ol class="breadcrumb">
       <li>{{ link_to('setting', 'Setting') }}</li>
       <li>{{ link_to('setting/flowcells', 'Flowcells') }}</li>
@@ -14,7 +14,7 @@
 
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-sm-6">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Candidate Seqtemplates List</h3>
@@ -31,7 +31,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6">
+  <div class="col-sm-6">
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="row">
@@ -49,10 +49,10 @@
         <ol class="tube-group" id="flowcell_seqlanes_holder"
             style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">
           <div class="tube tube-header" style="margin: 2px 0 2px 0 !important;">
-            <div class="col-md-1">#</div>
-            <div class="col-md-8">Seqtemplate Name</div>
-            <div class="col-md-2">Conc. (pM)</div>
-            <div class="col-md-1"></div>
+            <div class="col-sm-1">#</div>
+            <div class="col-sm-8">Seqtemplate Name</div>
+            <div class="col-sm-2">Conc. (pM)</div>
+            <div class="col-sm-1"></div>
             <div class="clearfix"></div>
           </div>
           {% set lane_per_flowcell = flowcell.SeqRunmodeTypes.lane_per_flowcell %}
@@ -61,7 +61,7 @@
           {% for lane_index in lane_index_arr %}
             {% if flowcell_seqlanes[seqlane_index] is not defined %}
               <li class="tube tube-placeholder"
-                  style="margin: 2px 0px 2px 0px !important;"></li>
+                  style="margin: 2px 0 2px 0 !important;"></li>
             {% else %}
               {% set flowcell_seqlane = flowcell_seqlanes[seqlane_index] %}
               {% if lane_index == flowcell_seqlane.number %}
@@ -72,21 +72,21 @@
                       id="control_id-{{ flowcell_seqlane.Controls.id }}"
                     {% endif %}
                     seqlane_id="{{ flowcell_seqlane.id }}"
-                    style="margin: 2px 0px 2px 0px !important;">
-                  <div class="col-md-1 badge">
+                    style="margin: 2px 0 2px 0 !important;">
+                  <div class="col-sm-1 badge">
                     {{ flowcell_seqlane.number }}
                   </div>
-                  <div class="col-md-8">
+                  <div class="col-sm-8">
                     {% if flowcell_seqlane.Seqtemplates is not empty %}
                       {{ flowcell_seqlane.Seqtemplates.name }}
                     {% elseif flowcell_seqlane.Controls is not empty %}
                       {{ flowcell_seqlane.Controls.name ~ ' (Control Lane)' }}
                     {% endif %}
                   </div>
-                  <div class="col-md-2">
+                  <div class="col-sm-2">
                     {{ text_field('apply_conc-' ~ flowcell_seqlane.id, 'class': 'form-control input-xs', 'value': flowcell_seqlane.apply_conc ) }}
                   </div>
-                  <div class="col-md-1">
+                  <div class="col-sm-1">
                     <a href="javascript:void(0)" class="tube-close pull-right" onclick="tubeCloseToggle(this)">
                       <i class="fa fa-times" aria-hidden="true"></i>
                       <i class="fa fa-repeat" aria-hidden="true" style="display: none"></i>
@@ -96,7 +96,7 @@
                 {% set seqlane_index = seqlane_index + 1 %}
               {% else %}
                 <li class="tube tube-placeholder"
-                    style="margin: 2px 0px 2px 0px !important;"></li>
+                    style="margin: 2px 0 2px 0 !important;"></li>
               {% endif %}
             {% endif %}
             {% elsefor %} No Seqlanes are recorded
