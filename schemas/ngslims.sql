@@ -433,7 +433,7 @@ CREATE TABLE `project_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `create_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
   `active` char(1) NOT NULL DEFAULT 'Y',
   PRIMARY KEY (`id`),
   KEY `project_types_active` (`active`)

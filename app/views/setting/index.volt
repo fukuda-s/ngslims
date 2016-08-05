@@ -9,7 +9,7 @@
       <li>{{ link_to('setting/labs', 'Labs') }}</li>
       <ul>
         <li>{{ link_to('setting/users', 'Users') }}</li>
-        <li>{{ link_to('setting/projects', 'Projects') }}</li>
+        <li>{{ link_to('setting/projects', 'Projects') }} -- {{ link_to('setting/projectTypes', 'Project Types') }}</li>
       </ul>
       <li>{{ link_to('setting/seqtemplates', 'Sequence Templates') }}</li>
       <li>{{ link_to('setting/flowcells', 'Flowcells') }}</li>

@@ -111,15 +111,15 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-lastname" class="col-sm-3 control-label" style="font-size: 9pt">Lastname</label>
-          <div class="col-sm-9">
-            {{ text_field('modal-lastname', 'class': 'form-control') }}
-          </div>
-        </div>
-        <div class="form-group form-group-sm">
           <label for="modal-firstname" class="col-sm-3 control-label" style="font-size: 9pt">Firstname</label>
           <div class="col-sm-9">
             {{ text_field('modal-firstname', 'class': 'form-control') }}
+          </div>
+        </div>
+        <div class="form-group form-group-sm">
+          <label for="modal-lastname" class="col-sm-3 control-label" style="font-size: 9pt">Lastname</label>
+          <div class="col-sm-9">
+            {{ text_field('modal-lastname', 'class': 'form-control') }}
           </div>
         </div>
         <div class="form-group form-group-sm">

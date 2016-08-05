@@ -28,7 +28,7 @@ class ProjectTypes extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $create_at;
+    public $created_at;
 
     /**
      *
@@ -44,7 +44,7 @@ class ProjectTypes extends \Phalcon\Mvc\Model
         return array(
             'id' => 'id',
             'name' => 'name',
-            'create_at' => 'create_at',
+            'created_at' => 'created_at',
             'active' => 'active',
             'description' => 'description'
         );
@@ -52,6 +52,8 @@ class ProjectTypes extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->hasMany('id', 'Projects', 'project_type_id');
+
         $this->addBehavior(new Timestampable(
             array(
                 'beforeValidationOnCreate' => array(

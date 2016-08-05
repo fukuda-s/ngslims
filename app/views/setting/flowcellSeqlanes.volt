@@ -49,16 +49,17 @@
         <ol class="tube-group" id="flowcell_seqlanes_holder"
             style="font-family: Consolas, 'Courier New', Courier, Monaco, monospace;">
           <div class="tube tube-header" style="margin: 2px 0 2px 0 !important;">
-            <div class="col-sm-1">#</div>
-            <div class="col-sm-8">Seqtemplate Name</div>
-            <div class="col-sm-2">Conc. (pM)</div>
-            <div class="col-sm-1"></div>
+            <div class="col-md-1">#</div>
+            <div class="col-md-8">Seqtemplate Name</div>
+            <div class="col-md-2">Conc. (pM)</div>
+            <div class="col-md-1"></div>
             <div class="clearfix"></div>
           </div>
           {% set lane_per_flowcell = flowcell.SeqRunmodeTypes.lane_per_flowcell %}
           {% set lane_index_arr = 1..lane_per_flowcell %}
           {% set seqlane_index = 0 %}
           {% for lane_index in lane_index_arr %}
+            <div class="clearfix"></div>
             {% if flowcell_seqlanes[seqlane_index] is not defined %}
               <li class="tube tube-placeholder"
                   style="margin: 2px 0 2px 0 !important;"></li>
@@ -73,20 +74,20 @@
                     {% endif %}
                     seqlane_id="{{ flowcell_seqlane.id }}"
                     style="margin: 2px 0 2px 0 !important;">
-                  <div class="col-sm-1 badge">
+                  <div class="col-md-1 badge">
                     {{ flowcell_seqlane.number }}
                   </div>
-                  <div class="col-sm-8">
+                  <div class="col-md-8">
                     {% if flowcell_seqlane.Seqtemplates is not empty %}
                       {{ flowcell_seqlane.Seqtemplates.name }}
                     {% elseif flowcell_seqlane.Controls is not empty %}
                       {{ flowcell_seqlane.Controls.name ~ ' (Control Lane)' }}
                     {% endif %}
                   </div>
-                  <div class="col-sm-2">
+                  <div class="col-md-2">
                     {{ text_field('apply_conc-' ~ flowcell_seqlane.id, 'class': 'form-control input-xs', 'value': flowcell_seqlane.apply_conc ) }}
                   </div>
-                  <div class="col-sm-1">
+                  <div class="col-md-1">
                     <a href="javascript:void(0)" class="tube-close pull-right" onclick="tubeCloseToggle(this)">
                       <i class="fa fa-times" aria-hidden="true"></i>
                       <i class="fa fa-repeat" aria-hidden="true" style="display: none"></i>

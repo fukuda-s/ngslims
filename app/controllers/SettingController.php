@@ -468,6 +468,80 @@ class SettingController extends ControllerBase
         }
     }
 
+    public function projectTypesAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $project_type_id = $request->getPost('project_type_id', 'int');
+                $name = $request->getPost('name', array('striptags', 'trim', 'name_filter'));
+                $description = ($request->getPost('description', array('striptags'))) ? $request->getPost('description', array('striptags')) : null;
+                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
+
+                if (empty($project_type_id)) {
+                    return $this->flashSession->error('ERROR: Undefined project_type_id value ' . $project_type_id . '.');
+                }
+
+
+                if ($project_type_id >= -1) { //Project Type ID has -1 as "Undefined" project types.
+                    $project_type = ProjectTypes::findFirst("id = $project_type_id");
+                    if (!$project_type) {
+                        return $this->flashSession->error('ERROR: Could not get project_type data values.');
+                    }
+                    if (empty($name) and $active == 'N') {
+                        $project_type->delete(); //Should be soft-delete (active=N);
+                    } else {
+                        $project_type->name = $name;
+                        $project_type->description = $description;
+                        $project_type->active = $active;
+                    }
+                } else {
+                    $project_type = new Projects();
+                    $project_type->name = $name;
+                    $project_type->description = $description;
+                    $project_type->active = $active;
+                }
+
+                /*
+                 * Save project_type data values.
+                 */
+                //var_dump($project_type->toArray());
+                if ($project_type->save() == false) {
+                    foreach ($project_type->getMessages() as $message) {
+                        $this->flashSession->error((string)$message);
+                    }
+                    return false;
+                } else {
+                    if ($project_type_id == -100) {
+                        $this->flashSession->success('ProjectType: ' . $project_type->name . ' is created.');
+                    } elseif ($project_type->active == 'N') {
+                        $this->flashSession->success('ProjectType: ' . $project_type->name . ' is change to in-active.');
+                    } else {
+                        $this->flashSession->success('ProjectType: ' . $project_type->name . ' record is changed.');
+                    }
+
+                }
+
+            }
+        } else {
+            Tag::appendTitle(' | Project Types');
+
+            $this->assets
+                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
+                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
+                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+
+            $project_types = ProjectTypes::find();
+
+            $this->view->setVar('project_types', $project_types);
+
+        }
+    }
+
     public function createPiUsersSelectAction()
     {
         $request = $this->request;

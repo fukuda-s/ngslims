@@ -73,7 +73,7 @@ class SeqDemultiplexResults extends \Phalcon\Mvc\Model
             'reads_total' => 'reads_total',
             'reads_passedfilter' => 'reads_passedfilter',
             'software_version' => 'software_version',
-            'created_at' => 'create_at'
+            'created_at' => 'created_at'
         );
     }
 
