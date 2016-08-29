@@ -179,6 +179,7 @@ class OrderController extends ControllerBase
                     ->addFrom('ProjectUsers', 'pu')
                     ->join('Projects', 'p.id = pu.project_id', 'p')
                     ->where('pu.user_id = :user_id:', array("user_id" => $pi_user_id))
+                    ->andWhere('p.active = "Y"')
                     ->orderBy('p.name ASC')
                     ->getQuery()
                     ->execute();

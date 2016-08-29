@@ -19,7 +19,7 @@ class ProjectsController extends ControllerBase
             if ($request->isAjax() == true) {
                 // echo "Request was made using POST and AJAX";
 
-                $projects = Projects::find(array());
+                $projects = Projects::find();
                 //echo json_encode($projects->toArray());
                 $i = 0;
                 foreach ($projects as $project) {
