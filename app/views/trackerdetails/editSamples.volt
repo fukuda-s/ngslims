@@ -78,7 +78,7 @@
     );
 
     function getProtocolAr(data) {
-      //console.log("stringified:"+JSON.stringify(data));
+      console.log("stringified:"+JSON.stringify(data));
       var parseAr = JSON.parse(JSON.stringify(data));
       //alert(parseAr);
       $.each(parseAr, function (key, value) {
@@ -90,13 +90,20 @@
       });
     }
 
-    $.getJSON(
-        '{{ url("protocols/loadjson/") ~ step.id }}',
-        {},
-        function (data, status, xhr) {
+    $.ajax({
+      url: '{{ url("protocols/loadjson") }}',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        type: '{{ type }}',
+        step_id: '{{ step.id }}'
+      }
+    })
+        .done(function (data) {
+          //alert(data);
+          //alert(location.href);
           getProtocolAr(data);
-        }
-    );
+        });
 
     function getSampleLocationAr(data) {
       //console.log("stringified:"+JSON.stringify(data));

@@ -95,13 +95,20 @@ $(document).ready(function () {
     });
   }
 
-  $.getJSON(
-      '{{ url("protocols/loadjson/0/")  }}',
-      {},
-      function (data, status, xhr) {
+  $.ajax({
+    url: '{{ url("protocols/loadjson") }}',
+    dataType: 'json',
+    type: 'POST',
+    data: {
+      type: '{{ type }}',
+      step_id: '{{ step.id }}'
+    }
+  })
+      .done(function (data) {
+        //alert(data);
+        //alert(location.href);
         getProtocolAr(data);
-      }
-  );
+      });
 
   function getOligobarcodeAr(data) {
     //console.log("stringified:"+JSON.stringify(data));

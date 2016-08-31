@@ -47,11 +47,14 @@
     }
 
     $.ajax({
-          url: '{{ url("samples/loadjson") }}',
-          dataType: 'json',
-          type: 'POST',
-          data: {type: '{{ type }}', project_id: {{ project.id }}}
-        })
+      url: '{{ url("samples/loadjson") }}',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        type: '{{ type }}',
+        project_id: '{{ project.id }}'
+      }
+    })
         .done(function (data) {
           //alert(data);
           //alert(location.href);
@@ -63,7 +66,7 @@
       var parseAr = JSON.parse(JSON.stringify(data));
       //alert(parseAr);
       $.each(parseAr, function (key, value) {
-        //alert(value["id"]+" : "+value["name"]);
+        //alert(value["id"] + " : " + value["name"]);
         var protocol_id = value["id"];
         var protocol_name = value["name"];
         protocolAr[protocol_id] = protocol_name;
@@ -71,13 +74,20 @@
       });
     }
 
-    $.getJSON(
-        '{{ url("protocols/loadjson/") ~ step.id }}',
-        {},
-        function (data, status, xhr) {
+    $.ajax({
+      url: '{{ url("protocols/loadjson") }}',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        type: '{{ type }}',
+        step_id: '{{ step.id }}'
+      }
+    })
+        .done(function (data) {
+          //alert(data);
+          //alert(location.href);
           getProtocolAr(data);
-        }
-    );
+        });
 
     function getOligobarcodeAr(data) {
       //console.log("stringified:"+JSON.stringify(data));
@@ -107,11 +117,11 @@
     }
 
     $.ajax({
-          url: '{{ url("oligobarcodes/loadjson/") ~ step.id }}',
-          dataType: "json",
-          type: "POST",
-          data: {}
-        })
+      url: '{{ url("oligobarcodes/loadjson/") ~ step.id }}',
+      dataType: "json",
+      type: "POST",
+      data: {}
+    })
         .done(function (data, status, xhr) {
           getOligobarcodeAr(data);
         });
@@ -258,11 +268,11 @@
         if ($('#handsontable-autosave').find('input').is(':checked')) {
           clearTimeout(autosaveNotification);
           $.ajax({
-                url: '{{ url("trackerdetails/saveSeqlibs") }}',
-                dataType: "json",
-                type: "POST",
-                data: {changes: isDirtyAr} // returns "data" as all data and "changes" as changed data
-              })
+            url: '{{ url("trackerdetails/saveSeqlibs") }}',
+            dataType: "json",
+            type: "POST",
+            data: {changes: isDirtyAr} // returns "data" as all data and "changes" as changed data
+          })
               .done(function () {
                 $console.text('Autosaved (' + changes.length + ' cell' + (changes.length > 1 ? 's' : '') + ')')
                     .removeClass().addClass("alert alert-success");
@@ -282,11 +292,11 @@
         if (p === 'sl.oligobarcodeA_id' || p === 'sl.oligobarcodeB_id') {
           var protocol_id = $handsontable.getDataAtRowProp(r, 'sl.protocol_id').toString();
           $.ajax({
-                url: '{{ url("oligobarcodes/loadjson/") }}',
-                dataType: "json",
-                type: "POST",
-                data: {protocol_id: protocol_id}
-              })
+            url: '{{ url("oligobarcodes/loadjson/") }}',
+            dataType: "json",
+            type: "POST",
+            data: {protocol_id: protocol_id}
+          })
               .done(function (data, status, xhr) {
                 getOligobarcodeAr(data);
               });
@@ -300,22 +310,22 @@
 
     function loadData() {
       $.ajax({
-            url: '{{ url("seqlibs/loadjson") }}',
-            dataType: 'json',
-            type: 'POST',
-            data: {
-              {% if not (type is empty) %}
-              type: '{{ type }}',
-              {% endif %}
-              {% if not (status is empty) %}
-              status: '{{ status }}',
-              {% endif %}
-              {% if type is 'PREP' %}
-              step_id: {{ step.id }},
-              {% endif %}
-              project_id: {{ project.id }}
-            }
-          })
+        url: '{{ url("seqlibs/loadjson") }}',
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          {% if not (type is empty) %}
+          type: '{{ type }}',
+          {% endif %}
+          {% if not (status is empty) %}
+          status: '{{ status }}',
+          {% endif %}
+          {% if type is 'PREP' %}
+          step_id: {{ step.id }},
+          {% endif %}
+          project_id: {{ project.id }}
+        }
+      })
           .done(function (data) {
             //alert(data);
             //alert(location.href);
@@ -330,11 +340,11 @@
     $toolbar.find('#save').click(function () {
       //alert("save! "+handsontable.getData());
       $.ajax({
-            url: '{{ url("trackerdetails/saveSeqlibs") }}',
-            data: {changes: isDirtyAr}, // returns all cells
-            dataType: 'text',
-            type: 'POST'
-          })
+        url: '{{ url("trackerdetails/saveSeqlibs") }}',
+        data: {changes: isDirtyAr}, // returns all cells
+        dataType: 'text',
+        type: 'POST'
+      })
           .done(function () {
             //alert(status.toString());
             $console.text('Save success').removeClass().addClass("alert alert-success");
@@ -418,5 +428,6 @@
     });
 
 
-  });
+  })
+  ;
 </script>
