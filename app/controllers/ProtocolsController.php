@@ -21,7 +21,7 @@ class ProtocolsController extends ControllerBase
                 $type = $request->getPost('type', 'striptags');
                 $step_id = $request->getPost('step_id', 'int');
 
-                if (($type == 'SHOW' and $step_id == 0) or $type == 'QC') {
+                if (($type == 'SHOW' and $step_id == 0) or $type != 'PREP') {
                     $protocols = Protocols::find(array(
                         "active = 'Y'",
                     ));
