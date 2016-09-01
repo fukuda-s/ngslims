@@ -9,7 +9,7 @@ class OligobarcodesController extends ControllerBase
         echo "This is index of OligobarcodesController";
     }
 
-    public function loadjsonAction($step_id = 0)
+    public function loadjsonAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -17,10 +17,11 @@ class OligobarcodesController extends ControllerBase
         if ($request->isPost() == true) {
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
-                // echo "Request was made using POST and AJAX";
-                $protocol_id = $request->getPost('protocol_id', array('int', 'string'));
+                $type = $request->getPost('type', 'striptags');
+                $step_id = $request->getPost('step_id', 'int');
+                $protocol_id = $request->getPost('protocol_id', 'striptags');
 
-                if ($step_id !== 0) { //Case that requested from editSeqlibs first (before edit protocol on handsontable) Action
+                if ($type == 'PREP' and $step_id != 0) { //Case that requested from editSeqlibs first (before edit protocol on handsontable) Action
                     $oligobarcodes = $this->modelsManager->createBuilder()
                         ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'os.is_oligobarcodeB'))
                         ->addFrom('Oligobarcodes', 'o')
@@ -34,9 +35,14 @@ class OligobarcodesController extends ControllerBase
                         ->orderBy('os.id ASC, o.sort_order ASC')
                         ->getQuery()
                         ->execute();
+                    //echo "[{1:$protocol_id}]";
                     echo json_encode($oligobarcodes->toArray());
                     return;
-                } else if (is_numeric($protocol_id)) {
+                } else if ($protocol_id) {
+                    if (!is_numeric($protocol_id)) {
+                        $protocol = Protocols::findFirst("name = '$protocol_id'");
+                        $protocol_id = $protocol->id;
+                    }
                     $oligobarcodes = $this->modelsManager->createBuilder()
                         ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'os.is_oligobarcodeB'))
                         ->addFrom('Oligobarcodes', 'o')
@@ -49,6 +55,7 @@ class OligobarcodesController extends ControllerBase
                         ->orderBy('os.id ASC, o.sort_order ASC')
                         ->getQuery()
                         ->execute();
+                    //echo "[{2:$protocol_id}]";
                     echo json_encode($oligobarcodes->toArray());
                     return;
                 } else {
@@ -60,6 +67,7 @@ class OligobarcodesController extends ControllerBase
                         ->orderBy('os.id ASC, o.sort_order ASC')
                         ->getQuery()
                         ->execute();
+                    //echo "[{3:$protocol_id}]";
                     echo json_encode($oligobarcodes->toArray());
                     return;
                 }

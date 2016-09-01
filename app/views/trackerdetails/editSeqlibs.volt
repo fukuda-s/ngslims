@@ -117,10 +117,14 @@
     }
 
     $.ajax({
-      url: '{{ url("oligobarcodes/loadjson/") ~ step.id }}',
+      url: '{{ url("oligobarcodes/loadjson/") }}',
       dataType: "json",
       type: "POST",
-      data: {}
+      data: {
+        type: '{{ type }}',
+        step_id: '{{ step.id }}',
+        protocol_id: ''
+      }
     })
         .done(function (data, status, xhr) {
           getOligobarcodeAr(data);

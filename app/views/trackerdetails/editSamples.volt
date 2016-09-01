@@ -78,7 +78,7 @@
     );
 
     function getProtocolAr(data) {
-      console.log("stringified:"+JSON.stringify(data));
+      //console.log("stringified:"+JSON.stringify(data));
       var parseAr = JSON.parse(JSON.stringify(data));
       //alert(parseAr);
       $.each(parseAr, function (key, value) {
