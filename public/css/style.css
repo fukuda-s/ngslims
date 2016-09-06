@@ -68,6 +68,10 @@ table td.dup_b {
   display: block;
 }
 
+.tube-collapse {
+  display: none !important;
+}
+
 .tube-sm-header {
   font-family: Consolas, 'Courier New', Courier, Monaco, monospace;
   border-radius: 0;
@@ -81,6 +85,7 @@ table td.dup_b {
   padding-left: 0;
   list-style: none;
 }
+
 
 .tube-header-list {
   padding-left: 0;
