@@ -329,6 +329,9 @@ class TrackerController extends ControllerBase
         }
     }
 
+    /**
+     * @param $step_id
+     */
     public function multiplexSetupAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main-wide');
@@ -361,8 +364,8 @@ class TrackerController extends ControllerBase
         //$this->view->setVar('seqlibs_all', $seqlibs_all);
 
         if ($step_phase_code === 'MULTIPLEX') {
-            // @TODO Is seqlib_nobarcode able to generate from $seqlib_all?
-            $seqlibs_nobarcode = $this->modelsManager->createBuilder()
+            // @TODO Is seqlibs_no_barcode be able to generate from $seqlib_all?
+            $seqlibs_no_barcode = $this->modelsManager->createBuilder()
                 ->columns(array('sl.*', 'se.*', 'COUNT(sta.id) AS sta_count'))
                 ->addFrom('Seqlibs', 'sl')
                 ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
@@ -375,7 +378,7 @@ class TrackerController extends ControllerBase
                 ->execute();
 
             //$this->flash->success(var_dump($seqlibs));
-            $this->view->setVar('seqlibs_nobarcode', $seqlibs_nobarcode);
+            $this->view->setVar('seqlibs_no_barcode', $seqlibs_no_barcode);
 
             $oligobarcodeAs = $this->modelsManager->createBuilder()
                 ->columns(array('o.*', 'os.*'))
@@ -385,6 +388,7 @@ class TrackerController extends ControllerBase
                 ->leftJoin('Seqlibs', 'sl.protocol_id = osa.protocol_id', 'sl')
                 ->inWhere('sl.id', $seqlib_ids)
                 ->andWhere('o.active = "Y"')
+                ->andWhere('sl.oligobarcodeA_id IS NOT NULL')
                 ->orderBy('os.id ASC, o.sort_order ASC')
                 ->groupBy('o.id')
                 ->getQuery()
@@ -393,48 +397,48 @@ class TrackerController extends ControllerBase
             $this->view->setVar('oligobarcodeAs', $oligobarcodeAs);
 
             /*
-             * Create 2D array $seqlibs_inbarcode which has oligobarcodeA_id
+             * Create 2D array $seqlibs_in_barcode which has oligobarcodeA_id
              *  Row: oligobarcodeA
              *  Col: seqtemplates
              */
-            $seqlibs_per_seqtemplate = $this->session->get('seqlibs_per_seqtemplate', 'int');
-            $seqlibs_in_seqtemplate = array();
-            $seqlibs_inbarcode = array();
-            $seqtemplates = array();
-            //foreach ($oligobarcodeAs as $oligobarcodeA) {
-            //   $oligobarcodeA_id = $oligobarcodeA->o->id;
+            $seqlibs_per_seqtemplate = $this->session->get('seqlibs_per_seqtemplate', 'int'); //How many seqlibs can be included in one seqtemplate.
+            $seqlibs_in_barcode = array(); //Array which has $seqlibs by each barcode.
+            $seqlib_count_in_seqtemplate = array(); //How many seqlibs is exist in seqtemplate (Col).
+            $seqtemplate_count = 0;
+            $seqtemplate_index = 0;
+
             if ($seqlibs_all) {
-                $seqtemplate_index = 1;
-                $seqtemplates[$seqtemplate_index] = 1;
-                foreach ($seqlibs_all as $seqlib) {
-                    if ($seqlib->sl->oligobarcodeA_id
-                        && $seqlibs_per_seqtemplate
-                        && $seqlibs_in_seqtemplate[$seqtemplate_index] == $seqlibs_per_seqtemplate
-                    ) {
-                        $seqtemplate_index++;
-                        $seqtemplates[$seqtemplate_index] = 1;
-                    }
-                    if ($seqlib->sl->oligobarcodeA_id
-                        //     && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id
-                    ) {
-                        //if (!empty($seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id])) {
-                        if (!empty($seqlibs_inbarcode[$seqtemplate_index][$seqlib->sl->oligobarcodeA_id])) {
-                            $seqtemplate_index++;
-                            $seqtemplates[$seqtemplate_index] = 1;
+                foreach ($seqlibs_all as $idx => $seqlib) {
+                    if ($seqlib->sl->oligobarcodeA_id) {
+                        $oligobarcodeA_id = $seqlib->sl->oligobarcodeA_id;
+
+                        if ($seqlibs_per_seqtemplate) { //Case $seqlibs_per_seqtemplate is indicated.
+                            if ($seqlib_count_in_seqtemplate[$seqtemplate_index] == $seqlibs_per_seqtemplate
+                                or isset($seqlibs_in_barcode[$oligobarcodeA_id][$seqtemplate_index])) {
+                                $seqtemplate_index++;
+                            }
+                            $seqlibs_in_barcode[$oligobarcodeA_id][$seqtemplate_index] = $seqlib;
+                            $seqlib_count_in_seqtemplate[$seqtemplate_index]++;
+                            $seqtemplate_count = $seqtemplate_index + 1;
+                        } else {
+                            $seqlibs_in_barcode[$oligobarcodeA_id][] = $seqlib;
+                            if ( $seqtemplate_count < count($seqlibs_in_barcode[$oligobarcodeA_id]) ) {
+                                $seqtemplate_count = count($seqlibs_in_barcode[$oligobarcodeA_id]);
+                            }
                         }
-                        //$seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeA_id] = $seqlib;
-                        $seqlibs_inbarcode[$seqtemplate_index][$seqlib->sl->oligobarcodeA_id] = $seqlib;
-                        $seqlibs_in_seqtemplate[$seqtemplate_index]++;
+
                     }
                 }
             }
-            //}
-            //var_dump($seqlibs_inbarcode);
-            $this->view->setVar('seqlibs_inbarcode', $seqlibs_inbarcode);
-            $this->view->setVar('seqtemplates', $seqtemplates);
+
+            $this->view->setVar('seqlibs_per_seqtemplate', $seqlibs_per_seqtemplate);
+            $this->view->setVar('seqlibs_in_barcode', $seqlibs_in_barcode);
+            $this->view->setVar('seqtemplate_count', $seqtemplate_count);
+
+
         } elseif ($step_phase_code === 'DUALMULTIPLEX') {
             // @TODO Is seqlib_nobarcode able to generate from $seqlib_all?
-            $seqlibs_nobarcode = $this->modelsManager->createBuilder()
+            $seqlibs_no_barcode = $this->modelsManager->createBuilder()
                 ->columns(array('sl.*', 'se.*', 'COUNT(sta.id) AS sta_count'))
                 ->addFrom('Seqlibs', 'sl')
                 ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
@@ -445,7 +449,7 @@ class TrackerController extends ControllerBase
                 ->getQuery()
                 ->execute();
 
-            $this->view->setVar('seqlibs_nobarcode', $seqlibs_nobarcode);
+            $this->view->setVar('seqlibs_no_barcode', $seqlibs_no_barcode);
 
             $oligobarcodeAs = $this->modelsManager->createBuilder()
                 ->columns(array('o.*', 'os.*'))
@@ -479,12 +483,12 @@ class TrackerController extends ControllerBase
             $this->view->setVar('oligobarcodeBs', $oligobarcodeBs);
 
             /*
-             * Create 3D array $seqlibs_inbarcode which has oligobarcodeA_id and oligobarcodeB_id
+             * Create 3D array $seqlibs_in_barcode which has oligobarcodeA_id and oligobarcodeB_id
              * (Table: seqtemplates)
              *  Row: oligobarcodeB
              *  Col: oligobarcodeA
              */
-            $seqlibs_inbarcode = array();
+            $seqlibs_in_barcode = array();
             $seqtemplates = array();
             foreach ($oligobarcodeBs as $oligobarcodeB) {
                 $oligobarcodeB_id = $oligobarcodeB->o->id;
@@ -494,22 +498,24 @@ class TrackerController extends ControllerBase
                     $seqtemplates[$seqtemplate_index] = 1;
                     foreach ($seqlibs_all as $seqlib) {
                         if ($seqlib->sl->oligobarcodeB_id && $seqlib->sl->oligobarcodeB_id == $oligobarcodeB_id && $seqlib->sl->oligobarcodeA_id && $seqlib->sl->oligobarcodeA_id == $oligobarcodeA_id) {
-                            if (!empty($seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeB_id][$oligobarcodeA_id])) {
+                            if (!empty($seqlibs_in_barcode[$seqtemplate_index][$oligobarcodeB_id][$oligobarcodeA_id])) {
                                 $seqtemplate_index++;
                                 $seqtemplates[$seqtemplate_index] = 1;
                             }
-                            $seqlibs_inbarcode[$seqtemplate_index][$oligobarcodeB_id][$oligobarcodeA_id] = $seqlib;
+
+                            $seqlibs_in_barcode[$seqtemplate_index][$oligobarcodeB_id][$oligobarcodeA_id] = $seqlib;
                         }
                     }
                 }
             }
-            //var_dump($seqlibs_inbarcode);
-            $this->view->setVar('seqlibs_inbarcode', $seqlibs_inbarcode);
+            $this->view->setVar('seqlibs_in_barcode', $seqlibs_in_barcode);
+            $this->view->setVar('seqtemplate_count', $seqtemplate_count);
             $this->view->setVar('seqtemplates', $seqtemplates);
         }
     }
 
-    public function multiplexSetSessionAction()
+    public
+    function multiplexSetSessionAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -537,7 +543,8 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public function multiplexSetupConfirmAction($step_id)
+    public
+    function multiplexSetupConfirmAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Multiplex Confirm ');
@@ -595,7 +602,8 @@ class TrackerController extends ControllerBase
         $this->view->setVar('step_id', $step_id);
     }
 
-    public function multiplexSaveAction($step_id)
+    public
+    function multiplexSaveAction($step_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -695,7 +703,8 @@ class TrackerController extends ControllerBase
         return $this->response->redirect("tracker/multiplexCandidates/$step_id");
     }
 
-    public function flowcellSetupCandidatesAction($step_id)
+    public
+    function flowcellSetupCandidatesAction($step_id)
     {
         $request = $this->request;
         // Check whether the request was made with method POST
@@ -771,7 +780,8 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public function flowcellSetupSetSessionAction()
+    public
+    function flowcellSetupSetSessionAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -804,7 +814,8 @@ class TrackerController extends ControllerBase
 
     }
 
-    public function flowcellSetupAction($step_id)
+    public
+    function flowcellSetupAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Flowcell Setup Confirm');
@@ -865,7 +876,8 @@ class TrackerController extends ControllerBase
     }
 
 
-    public function flowcellSetupConfirmAction($step_id)
+    public
+    function flowcellSetupConfirmAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
 
@@ -895,7 +907,8 @@ class TrackerController extends ControllerBase
         $this->view->setVar('lane_index', $lane_index);
     }
 
-    public function flowcellSetupSaveAction($step_id)
+    public
+    function flowcellSetupSaveAction($step_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -990,7 +1003,8 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public function sequenceAction()
+    public
+    function sequenceAction()
     {
         Tag::appendTitle(' | Sequencing Run Setup ');
         $this->view->setVar('instrument_types', InstrumentTypes::find(array(
@@ -999,7 +1013,8 @@ class TrackerController extends ControllerBase
         )));
     }
 
-    public function sequenceSetupCandidatesAction($instrument_type_id)
+    public
+    function sequenceSetupCandidatesAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Sequencing Run Setup ');
@@ -1089,7 +1104,8 @@ class TrackerController extends ControllerBase
          */
     }
 
-    public function sequenceSetupConfirmAction($instrument_type_id)
+    public
+    function sequenceSetupConfirmAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Sequencing Run Setup Confirm ');
@@ -1194,7 +1210,8 @@ class TrackerController extends ControllerBase
 
     }
 
-    public function sequenceSetupSaveAction()
+    public
+    function sequenceSetupSaveAction()
     {
         $this->view->disable();
         $request = $this->request;

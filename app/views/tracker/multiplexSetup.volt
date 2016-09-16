@@ -1,39 +1,41 @@
 {# Begin #seqlibs-nobarcode-holder part. #}
-{% for seqlib in seqlibs_nobarcode %}
-  {% if loop.first %}
-    <div class="row">
-    <div class="col-md-12">
-
+<div class="row">
+  <div class="col-md-12">
     <ul class="tube-list" id="seqlibs-nobarcode-holder">
-  {% endif %}
-  {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
-    <li class="tube tube-sm tube-active" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}</li>
-  {% else %}
-    <li class="tube tube-sm tube-inactive" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}</li>
-  {% endif %}
-  {% if loop.last %}
+      {% for seqlib in seqlibs_no_barcode %}
+        {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
+          {% set tube_class = "tube-active" %}
+        {% else %}
+          {% set tube_class = "tube-inactive" %}
+        {% endif %}
+        <li class="tube tube-sm {{ tube_class }}" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}</li>
+        {% elsefor %} No records on seqlibs_no_barcode
+      {% endfor %}
     </ul>
-    </div>
-    </div>
-  {% endif %}
-  {% elsefor %} No records on seqlibs_nobarcode
-{% endfor %}
+  </div>
+</div>
 {# End #seqlibs-nobarcode-holder part. #}
 <hr>
 <button type="button" id="confirm-seqtemplate-button" class="btn btn-primary pull-right">Confirm &raquo;</button>
 <br>
 <br>
-
+{# dump(seqlibs_per_seqtemplate) #}
+{# dump(seqlibs_in_barcode|sort) #}
 {# Begin seqtemplate-matrix part. #}
   {% if step.step_phase_code == 'MULTIPLEX' %}
     <div class="tube-responsive">
       {% for index, oligobarcodeA in oligobarcodeAs %}
         {% if index == 0 %} {# @TODO loop.first couldn't use here, it is bug of phalcon. #}
           <ul class="tube-header-list" id="seqtemplate-matrix-header">
-            <li class="tube tube-sm-header tube-sm-row-header">OligoBarcode</li>
-            {% for seqtemplate_index, seqtempalte in seqtemplates %}
+            <li class="tube tube-sm-header tube-sm-row-header">
+              <button type="button" id="toggole-barcode-button" class="btn btn-info btn-xs pull-left">
+                <i class="fa fa-arrow-down" aria-hidden="true"></i>
+              </button>
+              OligoBarcode
+            </li>
+            {% for seqtemplate_index in 0..(seqtemplate_count - 1) %}
               <li id="seqtemplate_index_{{ seqtemplate_index }}"
-                  class="tube tube-sm-header">{{ seqtemplate_index }}</li>
+                  class="tube tube-sm-header">{{ seqtemplate_index + 1 }}</li>
               {% elsefor %} No records on seqtemplates
             {% endfor %}
             <li class="" style="display: inline-block;">
@@ -44,35 +46,46 @@
           <div id="seqtemplate-matrix-body">
           <ul class="tube-list" id="oligobarcodeA_id_null">
             <li class="tube tube-sm tube-sm-header sort-disabled tube-sm-row-header">No Barcode</li>
-            {% for index in 1..seqtemplates|length %}
+            {% for seqtemplate_index in 0..(seqtemplate_count - 1) %}
               <li class="tube tube-sm tube-empty"></li>
             {% endfor %}
           </ul>
-
         {% endif %}
+
+        {% set oligobarcode_set = 0 %}
         <ul class="tube-list" id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}">
-          <li class="tube tube-sm tube-sm-header sort-disabled tube-sm-row-header">{{ oligobarcodeA.o.name }}
-            : {{ oligobarcodeA.o.barcode_seq }}</li>
-          {% for seqtemplate_index, seqtemplate in seqtemplates %}
-            {% if seqlibs_inbarcode[seqtemplate_index][oligobarcodeA.o.id] is defined %}
-              {% set seqlib = seqlibs_inbarcode[seqtemplate_index][oligobarcodeA.o.id] %}
-              {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
-                <li class="tube tube-sm tube-active" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
-                  <button type="button" class="tube-close pull-right">&times;</button>
-                  <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
-                  </button>
-                </li>
-              {% else %}
-                <li class="tube tube-sm tube-inactive" id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
-                  <button type="button" class="tube-close pull-right">&times;</button>
-                  <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
-                  </button>
-                </li>
-              {% endif %}
+          {% if oligobarcode_set is 0 %}
+            {% if seqlibs_in_barcode[oligobarcodeA.o.id] is defined %}
+              <li class="tube tube-sm tube-sm-header sort-disabled tube-sm-row-header">
             {% else %}
+              <li class="tube tube-sm tube-sm-header sort-disabled tube-sm-row-header tube-collapse">
+            {% endif %}
+            {{ oligobarcodeA.o.name }} : {{ oligobarcodeA.o.barcode_seq }}
+            </li>
+          {% endif %}
+          {% for seqtemplate_index in 0..(seqtemplate_count - 1) %}
+            {% if seqlibs_in_barcode[oligobarcodeA.o.id][seqtemplate_index] is defined %}
+              {% set seqlib = seqlibs_in_barcode[oligobarcodeA.o.id][seqtemplate_index] %}
+              {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
+                {% set tube_class = "tube-active" %}
+              {% else %}
+                {% set tube_class = "tube-inactive" %}
+              {% endif %}
+              <li class="tube tube-sm {{ tube_class }}"
+                  id="seqlib_id_{{ seqlib.sl.id }}">
+                {{ seqlib.sl.name }}
+                <button type="button" class="tube-close pull-right">&times;</button>
+                <button type="button" class="tube-copy btn btn-default btn-xs pull-right"><i class="fa fa-copy"></i>
+                </button>
+              </li>
+            {% elseif seqlibs_in_barcode[oligobarcodeA.o.id] is defined %}
               <li class="tube tube-sm tube-empty"></li>
+            {% else %}
+              <li class="tube tube-sm tube-empty tube-collapse"></li>
             {% endif %}
           {% endfor %}
+
+
         </ul>
         {% if loop.last %}
           </div>
@@ -104,8 +117,8 @@
             {% for indexA, oligobarcodeA in oligobarcodeAs %}
               <ul class="tube-list-col"
                   id="{{ "oligobarcode_index_" ~ indexA ~ "_" ~ indexB ~ "_" ~ seqtemplate_index }}">
-                {% if seqlibs_inbarcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] is defined %}
-                  {% set seqlib = seqlibs_inbarcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] %}
+                {% if seqlibs_in_barcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] is defined %}
+                  {% set seqlib = seqlibs_in_barcode[seqtemplate_index][oligobarcodeB.o.id][oligobarcodeA.o.id] %}
                   {% if seqlib.se.status == 'Completed' and seqlib.sta_count === 0 %}
                     <li class="tube tube-sm tube-active sort-disabled"
                         id="seqlib_id_{{ seqlib.sl.id }}">{{ seqlib.sl.name }}
@@ -370,6 +383,7 @@
         })
       });
 
+
       //For DUALMULTIPLEX
       $('div[id^=seqtemplate_index_]').each(function () {
         var seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_', '');
@@ -379,7 +393,7 @@
         $(this).find('ul[id^=oligobarcodeB_id_]').each(function () {
           var oligobarcodeB_id = $(this).attr('id').replace('oligobarcodeB_id_', '');
           $(this).find('ul[id^=oligobarcode_index_]').each(function (index) {
-            $(this).find('li[id^=seqlib_id_]').each(function() {
+            $(this).find('li[id^=seqlib_id_]').each(function () {
               var seqlib_id = $(this).attr('id').replace('seqlib_id_', '');
               seqlibs[seqtemplate_index][seqlib_id] = {
                 seqlib_id: seqlib_id,
@@ -397,11 +411,11 @@
        */
       if (Object.keys(seqlibs).length) {
         $.ajax({
-              url: '{{ url("tracker/multiplexSetSession") }}',
-              dataType: 'json',
-              type: 'POST',
-              data: {indexedSeqlibs: seqlibs, seqtemplates: seqtemplates}
-            })
+          url: '{{ url("tracker/multiplexSetSession") }}',
+          dataType: 'json',
+          type: 'POST',
+          data: {indexedSeqlibs: seqlibs, seqtemplates: seqtemplates}
+        })
             .done(function () {
               //console.log(seqlibs);
               window.location = "{{ url("tracker/multiplexSetupConfirm/") ~ step.id }}"
@@ -409,7 +423,15 @@
       }
     });
 
+    /*
+     * Toggle unused barcode row
+     */
+    $('#toggole-barcode-button').click(function(){
+      $('.tube-collapse').toggleClass('tube-in');
+      $(this)
+          .children('i')
+          .toggleClass('fa-arrow-down fa-arrow-up')
+    });
 
-  })
-  ;
+  });
 </script>
