@@ -101,17 +101,32 @@
         {% for indexB, oligobarcodeB in oligobarcodeBs %}
           {% if indexB == 0 %} {# @TODO loop.first couldn't use here, it is bug of phalcon? #}
             <ul class="tube-header-list">
-              <li class="tube tube-sm tube-sm-header tube-sm-row-header sort-disabled">{{ seqtemplate_index }}</li>
+              <li class="tube tube-sm tube-sm-header tube-sm-row-header sort-disabled">{{ seqtemplate_index }}
+                <button type="button" id="toggole-barcode-button" class="btn btn-info btn-xs pull-left">
+                  <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                </button>
+              </li>
               {% for indexA, oligobarcodeA in oligobarcodeAs %}
-                <li id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}"
-                    class="tube tube-sm tube-sm-header tube-sm-col-header sort-disabled">{{ oligobarcodeA.o.name }}
-                  <br>{{ oligobarcodeA.o.barcode_seq }}</li>
+                {% if seqtemplate_count[oligobarcodeA.o.id] is not defined %}
+                  <li id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}"
+                      class="tube tube-sm tube-sm-header tube-sm-col-header sort-disabled tube-collapse">{{ oligobarcodeA.o.name }}
+                    <br>{{ oligobarcodeA.o.barcode_seq }}</li>
+                {% else %}
+                  <li id="oligobarcodeA_id_{{ oligobarcodeA.o.id }}"
+                      class="tube tube-sm tube-sm-header tube-sm-col-header sort-disabled">{{ oligobarcodeA.o.name }}
+                    <br>{{ oligobarcodeA.o.barcode_seq }}</li>
+                {% endif %}
               {% endfor %}
             </ul>
           {% endif %}
-          <ul class="tube-list-row" id="oligobarcodeB_id_{{ oligobarcodeB.o.id }}">
+          {% if seqtemplate_count[oligobarcodeB.o.id] is not defined %}
+            {% set oligobarcodeB_tube_collapse = "tube-collapse" %}
+          {% else %}
+            {% set oligobarcodeB_tube_collapse = "" %}
+          {% endif %}
+          <ul class="tube-list-row {{ oligobarcodeB_tube_collapse }}" id="oligobarcodeB_id_{{ oligobarcodeB.o.id }}">
             <ul class="tube-list-col">
-              <li class="tube tube-sm tube-sm-header tube-sm-row-header sort-disabled">{{ oligobarcodeB.o.name }}
+              <li class="tube tube-sm tube-sm-header tube-sm-row-header sort-disabled {{ oligobarcodeB_tube_collapse }}">{{ oligobarcodeB.o.name }}
                 : {{ oligobarcodeB.o.barcode_seq }}</li>
             </ul>
             {% for indexA, oligobarcodeA in oligobarcodeAs %}
@@ -139,7 +154,11 @@
                     </li>
                   {% endif %}
                 {% else %}
-                  <li class="tube tube-sm tube-empty"></li>
+                  {% if seqtemplate_count[oligobarcodeA.o.id] is not defined or seqtemplate_count[oligobarcodeB.o.id] is not defined %}
+                    <li class="tube tube-sm tube-empty tube-collapse"></li>
+                  {% else %}
+                    <li class="tube tube-sm tube-empty"></li>
+                  {% endif %}
                 {% endif %}
               </ul>
             {% endfor %}
@@ -209,18 +228,29 @@
      *  It is used with #add-seqtemplate-button.
      */
     function addSeqtemplate() {
-      $('#seqtemplate-matrix-header').find('li[id^=seqtemplate_index_]').filter(':last').html(function () {
-        var new_seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_', '');
-        new_seqtemplate_index++;
+      $('#seqtemplate-matrix-header')
+          .find('li[id^=seqtemplate_index_]')
+          .filter(':last')
+          .html(function () {
+            var new_seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_', '');
+            new_seqtemplate_index++;
 
-        //Add new column header with new_seqtemplate_index.
-        $(this).after('<li id="seqtemplate_index_' + new_seqtemplate_index + '" class="tube tube-sm-header">' + new_seqtemplate_index + '</li>');
-        //console.log(this);
-      });
-      $('#seqtemplate-matrix-body').find('ul').each(function () {
-        //Add new column with new_seqtemplate_index for each row.
-        $(this).append('<li class="tube tube-sm tube-empty"></li>');
-      });
+            //Add new column header with new_seqtemplate_index.
+            $(this).after('<li id="seqtemplate_index_' + new_seqtemplate_index + '" class="tube tube-sm-header">' + new_seqtemplate_index + '</li>');
+            //console.log(this);
+          });
+      $('#seqtemplate-matrix-body')
+          .find('ul')
+          .each(function () {
+            //Check tube-collapse on previous tubes.
+            tube_collapse_on = $(this).find('.tube-collapse').length;
+            //Add new column with new_seqtemplate_index for each row.
+            if (tube_collapse_on) {
+              $(this).append('<li class="tube tube-sm tube-empty tube-collapse"></li>');
+            } else {
+              $(this).append('<li class="tube tube-sm tube-empty"></li>');
+            }
+          });
 
       $('li.tube').filter("li:not(.tube-sm-row-header)").css("width", final_multiplex_sortable_max_len);
     }
@@ -426,7 +456,7 @@
     /*
      * Toggle unused barcode row
      */
-    $('#toggole-barcode-button').click(function(){
+    $('#toggole-barcode-button').click(function () {
       $('.tube-collapse').toggleClass('tube-in');
       $(this)
           .children('i')

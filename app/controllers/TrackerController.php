@@ -490,6 +490,7 @@ class TrackerController extends ControllerBase
              */
             $seqlibs_in_barcode = array();
             $seqtemplates = array();
+            $seqtemplate_count = array();
             foreach ($oligobarcodeBs as $oligobarcodeB) {
                 $oligobarcodeB_id = $oligobarcodeB->o->id;
                 foreach ($oligobarcodeAs as $oligobarcodeA) {
@@ -504,6 +505,8 @@ class TrackerController extends ControllerBase
                             }
 
                             $seqlibs_in_barcode[$seqtemplate_index][$oligobarcodeB_id][$oligobarcodeA_id] = $seqlib;
+                            $seqtemplate_count[$oligobarcodeA_id]++;
+                            $seqtemplate_count[$oligobarcodeB_id]++;
                         }
                     }
                 }
@@ -514,8 +517,7 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public
-    function multiplexSetSessionAction()
+    public function multiplexSetSessionAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -543,8 +545,7 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public
-    function multiplexSetupConfirmAction($step_id)
+    public function multiplexSetupConfirmAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Multiplex Confirm ');
@@ -602,8 +603,7 @@ class TrackerController extends ControllerBase
         $this->view->setVar('step_id', $step_id);
     }
 
-    public
-    function multiplexSaveAction($step_id)
+    public function multiplexSaveAction($step_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -703,8 +703,7 @@ class TrackerController extends ControllerBase
         return $this->response->redirect("tracker/multiplexCandidates/$step_id");
     }
 
-    public
-    function flowcellSetupCandidatesAction($step_id)
+    public function flowcellSetupCandidatesAction($step_id)
     {
         $request = $this->request;
         // Check whether the request was made with method POST
