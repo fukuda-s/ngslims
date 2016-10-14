@@ -19,7 +19,7 @@
 <button type="button" id="confirm-seqtemplate-button" class="btn btn-primary pull-right">Confirm &raquo;</button>
 <br>
 <br>
-{# @TODO Following 'if' phrase is necessary because of bug? If the if is not used the include is changed to the partial function #}
+{# @TODO Following 'if' phrase is necessary because of bug? If the if is not used, then the include is changed to the partial function. #}
 {% if step.step_phase_code == 'MULTIPLEX' %}
   {% include 'tracker/multiplexSetupMULTIPLEX.volt' %}
 {% elseif step.step_phase_code == 'DUALMULTIPLEX' %}
