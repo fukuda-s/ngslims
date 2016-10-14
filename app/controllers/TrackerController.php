@@ -326,6 +326,8 @@ class TrackerController extends ControllerBase
             } else {
                 $this->flashSession->error("Undefined view_type: " . $view_type);
             }
+        } else {
+            $this->flashSession->error("Undefined step_phase_code: " . $step_phase_code);
         }
     }
 
@@ -414,7 +416,8 @@ class TrackerController extends ControllerBase
 
                         if ($seqlibs_per_seqtemplate) { //Case $seqlibs_per_seqtemplate is indicated.
                             if ($seqlib_count_in_seqtemplate[$seqtemplate_index] == $seqlibs_per_seqtemplate
-                                or isset($seqlibs_in_barcode[$oligobarcodeA_id][$seqtemplate_index])) {
+                                or isset($seqlibs_in_barcode[$oligobarcodeA_id][$seqtemplate_index])
+                            ) {
                                 $seqtemplate_index++;
                             }
                             $seqlibs_in_barcode[$oligobarcodeA_id][$seqtemplate_index] = $seqlib;
@@ -422,7 +425,7 @@ class TrackerController extends ControllerBase
                             $seqtemplate_count = $seqtemplate_index + 1;
                         } else {
                             $seqlibs_in_barcode[$oligobarcodeA_id][] = $seqlib;
-                            if ( $seqtemplate_count < count($seqlibs_in_barcode[$oligobarcodeA_id]) ) {
+                            if ($seqtemplate_count < count($seqlibs_in_barcode[$oligobarcodeA_id])) {
                                 $seqtemplate_count = count($seqlibs_in_barcode[$oligobarcodeA_id]);
                             }
                         }
@@ -514,6 +517,8 @@ class TrackerController extends ControllerBase
             $this->view->setVar('seqlibs_in_barcode', $seqlibs_in_barcode);
             $this->view->setVar('seqtemplate_count', $seqtemplate_count);
             $this->view->setVar('seqtemplates', $seqtemplates);
+        } else {
+            $this->flashSession->error("Undefined step_phase_code: " . $step_phase_code);
         }
     }
 
@@ -779,8 +784,7 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public
-    function flowcellSetupSetSessionAction()
+    public function flowcellSetupSetSessionAction()
     {
         $this->view->disable();
         $request = $this->request;
@@ -813,8 +817,7 @@ class TrackerController extends ControllerBase
 
     }
 
-    public
-    function flowcellSetupAction($step_id)
+    public function flowcellSetupAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Flowcell Setup Confirm');
@@ -875,8 +878,7 @@ class TrackerController extends ControllerBase
     }
 
 
-    public
-    function flowcellSetupConfirmAction($step_id)
+    public function flowcellSetupConfirmAction($step_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
 
@@ -906,8 +908,7 @@ class TrackerController extends ControllerBase
         $this->view->setVar('lane_index', $lane_index);
     }
 
-    public
-    function flowcellSetupSaveAction($step_id)
+    public function flowcellSetupSaveAction($step_id)
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -1002,8 +1003,7 @@ class TrackerController extends ControllerBase
         }
     }
 
-    public
-    function sequenceAction()
+    public function sequenceAction()
     {
         Tag::appendTitle(' | Sequencing Run Setup ');
         $this->view->setVar('instrument_types', InstrumentTypes::find(array(
@@ -1012,8 +1012,7 @@ class TrackerController extends ControllerBase
         )));
     }
 
-    public
-    function sequenceSetupCandidatesAction($instrument_type_id)
+    public function sequenceSetupCandidatesAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Sequencing Run Setup ');
@@ -1103,8 +1102,7 @@ class TrackerController extends ControllerBase
          */
     }
 
-    public
-    function sequenceSetupConfirmAction($instrument_type_id)
+    public function sequenceSetupConfirmAction($instrument_type_id)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Sequencing Run Setup Confirm ');
@@ -1209,8 +1207,7 @@ class TrackerController extends ControllerBase
 
     }
 
-    public
-    function sequenceSetupSaveAction()
+    public function sequenceSetupSaveAction()
     {
         $this->view->disable();
         $request = $this->request;
