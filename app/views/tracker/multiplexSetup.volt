@@ -88,9 +88,10 @@
           .html(function () {
             var new_seqtemplate_index = $(this).attr('id').replace('seqtemplate_index_', '');
             new_seqtemplate_index++;
+            var new_seqtemplate_num = new_seqtemplate_index + 1;
 
             //Add new column header with new_seqtemplate_index.
-            $(this).after('<li id="seqtemplate_index_' + new_seqtemplate_index + '" class="tube tube-sm-header">' + new_seqtemplate_index + '</li>');
+            $(this).after('<li id="seqtemplate_index_' + new_seqtemplate_index + '" class="tube tube-sm-header">' + new_seqtemplate_num + '</li>');
             //console.log(this);
           });
       $('#seqtemplate-matrix-body')
