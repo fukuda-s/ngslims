@@ -1,7 +1,9 @@
 <?php
 
 
-use Phalcon\Mvc\Model\Validator\Email as EmailValidation;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\Email as Email;
+use Phalcon\Validation\Validator\Uniqueness as Uniqueness;
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class Labs extends \Phalcon\Mvc\Model
@@ -71,15 +73,20 @@ class Labs extends \Phalcon\Mvc\Model
 
     const NOT_ACTIVE = 'N';
 
-    public function validation()
+    public function validator()
     {
-        $this->validate(new EmailValidation(array(
-            "field" => "email",
-            'allowEmpty' => true
-        )));
-        if ($this->validationHasFailed() == true) {
-            return false;
-        }
+        $validator = new Validation();
+
+        $validator->add(
+            "email",
+            new Email(
+                [
+                    "message" => "The e-mail is not valid",
+                ]
+            )
+        );
+
+        return $this->validate($validator);
     }
 
     /**

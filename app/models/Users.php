@@ -1,6 +1,7 @@
 <?php
-use Phalcon\Mvc\Model\Validator\Email as EmailValidator;
-use Phalcon\Mvc\Model\Validator\Uniqueness as UniquenessValidator;
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\Email as Email;
+use Phalcon\Validation\Validator\Uniqueness as Uniqueness;
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 use Phalcon\Mvc\Model\Behavior\Timestampable;
 use Phalcon\Db\RawValue;
@@ -73,23 +74,39 @@ class Users extends \Phalcon\Mvc\Model
 
     const NOT_ACTIVE = 'N';
 
-    public function validation()
+    public function validator()
     {
-        $this->validate(new EmailValidator(array(
-            'field' => 'email',
-            'allowEmpty' => false
-        )));
-        $this->validate(new UniquenessValidator(array(
-            'field' => 'email',
-            'message' => 'Sorry, The email was registered by another user'
-        )));
-        $this->validate(new UniquenessValidator(array(
-            'field' => 'username',
-            'message' => 'Sorry, That username is already taken'
-        )));
-        if ($this->validationHasFailed() == true) {
-            return false;
-        }
+        $validator = new Validation();
+
+        $validator->add(
+            "email",
+            new Email(
+                [
+                    "message" => "The e-mail is not valid",
+                ]
+            )
+        );
+
+        $validator->add(
+            "username",
+            new Uniqueness(
+                [
+                    "message" => "The username must be unique"
+                ]
+            )
+        );
+
+        $validator->add(
+            "email",
+            new Uniqueness(
+                [
+                    'message' => 'Sorry, The email was registered by another user'
+                ]
+            )
+        );
+
+
+        return $this->validate($validator);
     }
 
     public function columnMap()
