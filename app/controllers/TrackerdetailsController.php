@@ -863,14 +863,16 @@ class TrackerdetailsController extends ControllerBase
             // Check whether the request was made with Ajax
             if ($request->isAjax() == true) {
                 $instrument_id = $this->request->getPost("instrument_id", "int");
+                $three_month_before = date("Y-m-d", strtotime("-3 month"));
                 $run_number = Flowcells::findFirst(array(
-                    "instrument_id = :instrument_id:",
+                    "instrument_id = :instrument_id: AND run_started_date >= :run_started_date:",
                     "columns" => array(
                         "MAX(run_number) AS max_run_number"
                     ),
                     "group" => "instrument_id",
                     "bind" => array(
-                        "instrument_id" => $instrument_id
+                        "instrument_id" => $instrument_id,
+                        "run_started_date" => $three_month_before
                     )
                 ));
                 echo $run_number->max_run_number;
