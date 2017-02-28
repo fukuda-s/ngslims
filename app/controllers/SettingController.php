@@ -2265,17 +2265,17 @@ class SettingController extends ControllerBase
 
                 $flowcell_id = $request->getPost('flowcell_id', 'int');
                 $name = $request->getPost('name', array('striptags', 'name_filter'));
-                $target_conc = $request->getPost('target_conc', 'float');
-                $target_vol = $request->getPost('target_vol', 'float');
-                $target_dw_vol = $request->getPost('target_dw_vol', 'float');
-                $initial_conc = $request->getPost('initial_conc', 'float');
-                $initial_vol = $request->getPost('initial_vol', 'float');
-                $final_conc = $request->getPost('final_conc', 'float');
-                $final_vol = $request->getPost('final_vol', 'float');
-                $final_dw_vol = $request->getPost('final_dw_vol', 'float');
-                $started_at = ($request->getPost('started_at', 'striptags')) ? $request->getPost('started_at', 'striptags') : null;
-                $finished_at = ($request->getPost('finished_at', 'striptags')) ? $request->getPost('finished_at', 'striptags') : null;
-                $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
+                $seq_run_type_scheme_id = ($request->getPost('seq_run_type_scheme_id', 'int')) ? $request->getPost('seq_run_type_scheme_id', 'int') : null;
+                $seq_run_type_scheme = SeqRunTypeSchemes::findFirst($seq_run_type_scheme_id);
+                $seq_runmode_type_id = ($seq_run_type_scheme) ? $seq_run_type_scheme->seq_runmode_type_id : null;
+                $run_number = ($request->getPost('run_number', 'int')) ? $request->getPost('run_number', 'int') : null;
+                $instrument_id = ($request->getPost('instrument_id', 'int')) ? $request->getPost('instrument_id', 'int') : null;
+                $side = ($request->getPost('side', 'striptags')) ? $request->getPost('side', 'striptags') : null;
+                $dirname = ($request->getPost('dirname', 'striptags')) ? $request->getPost('dirname', 'striptags') : null;
+                $run_started_date = ($request->getPost('run_started_date', 'striptags')) ? $request->getPost('run_started_date', 'striptags') : null;
+                $run_finished_date = ($request->getPost('run_finished_date', 'striptags')) ? $request->getPost('run_finished_date', 'striptags') : null;
+                $notes = ($request->getPost('notes', 'striptags')) ? $request->getPost('notes', 'striptags') : null;
+                $active = ($request->getPost('active', 'striptags')) ? $request->getPost('active', 'striptags') : null;
 
                 if (empty($flowcell_id)) {
                     return $this->flashSession->error('ERROR: Undefined $flowcell_id value ' . $flowcell_id . '.');
@@ -2290,30 +2290,28 @@ class SettingController extends ControllerBase
                         $flowcell->delete(); //Not soft-delete.
                     } else {
                         $flowcell->name = $name;
-                        $flowcell->target_conc = $target_conc;
-                        $flowcell->target_vol = $target_vol;
-                        $flowcell->target_dw_vol = $target_dw_vol;
-                        $flowcell->initial_conc = $initial_conc;
-                        $flowcell->initial_vol = $initial_vol;
-                        $flowcell->final_conc = $final_conc;
-                        $flowcell->final_vol = $final_vol;
-                        $flowcell->final_dw_vol = $final_dw_vol;
-                        $flowcell->started_at = $started_at;
-                        $flowcell->finished_at = $finished_at;
+                        $flowcell->seq_run_type_scheme_id = $seq_run_type_scheme_id;
+                        $flowcell->seq_runmode_type_id = $seq_runmode_type_id;
+                        $flowcell->run_number = $run_number;
+                        $flowcell->instrument_id = $instrument_id;
+                        $flowcell->side = $side;
+                        $flowcell->dirname = $dirname;
+                        $flowcell->run_started_date = $run_started_date;
+                        $flowcell->run_finished_date = $run_finished_date;
+                        $flowcell->notes = $notes;
                     }
                 } else {
                     $flowcell = new Flowcells();
                     $flowcell->name = $name;
-                    $flowcell->target_conc = $target_conc;
-                    $flowcell->target_vol = $target_vol;
-                    $flowcell->target_dw_vol = $target_dw_vol;
-                    $flowcell->initial_conc = $initial_conc;
-                    $flowcell->initial_vol = $initial_vol;
-                    $flowcell->final_conc = $final_conc;
-                    $flowcell->final_vol = $final_vol;
-                    $flowcell->final_dw_vol = $final_dw_vol;
-                    $flowcell->started_at = $started_at;
-                    $flowcell->finished_at = $finished_at;
+                    $flowcell->seq_run_type_scheme_id = $seq_run_type_scheme_id;
+                    $flowcell->seq_runmode_type_id = $seq_runmode_type_id;
+                    $flowcell->run_number = $run_number;
+                    $flowcell->instrument_id = $instrument_id;
+                    $flowcell->side = $side;
+                    $flowcell->dirname = $dirname;
+                    $flowcell->run_started_date = $run_started_date;
+                    $flowcell->run_finished_date = $run_finished_date;
+                    $flowcell->notes = $notes;
                 }
 
                 /*
@@ -2437,9 +2435,9 @@ class SettingController extends ControllerBase
                 }
                 foreach ($slots_array as $key => $slot) {
                     if ($slot == $side) {
-                        echo '<option value="' . $key . '" selected>' . $slot . '</option>';
+                        echo '<option value="' . $slot . '" selected>' . $slot . '</option>';
                     } else {
-                        echo '<option value="' . $key . '">' . $slot . '</option>';
+                        echo '<option value="' . $slot . '">' . $slot . '</option>';
                     }
                 }
                 echo '</select>';

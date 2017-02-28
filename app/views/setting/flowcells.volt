@@ -82,7 +82,7 @@
           {% set flowcell_seqlane_count = flowcell.Seqlanes|length %}
           <td class="text-center">
             <a href="javascript:void(0)" style="font-size: 9pt"
-               onclick="flowcellEdit('{{ flowcell.id }}', '{{ flowcell.name }}', '{{ flowcell.seq_runmode_type_id }}', '{{ flowcell.seq_run_type_scheme_id }}', '{{ flowcell.run_number }}', '{{ flowcell.instrument_id }}', '{{ flowcell.side }}', '{{ flowcell.dirname }}', '{{ run_started_date }}', '{{ run_finished_date }}', '{{ flowcell.notes }}', '{{ flowcell_seqlane_count }}'); return false;">
+               onclick="flowcellEdit('{{ flowcell.id }}', '{{ flowcell.name }}', '{{ flowcell.seq_run_type_scheme_id }}', '{{ flowcell.run_number }}', '{{ flowcell.instrument_id }}', '{{ flowcell.side }}', '{{ flowcell.dirname }}', '{{ run_started_date }}', '{{ run_finished_date }}', '{{ flowcell.notes }}', '{{ flowcell_seqlane_count }}'); return false;">
               <span class="fa fa-pencil"></span>&ensp;
             </a>
             {{ link_to('setting/flowcellSeqlanes/' ~ flowcell.id, "<i class='fa fa-user-plus'></i>&ensp;") }}
@@ -232,14 +232,13 @@
   /**
    * Open modal window with filling values.
    */
-  function flowcellEdit(flowcell_id, name, seq_runmode_type_id, seq_run_type_scheme_id, run_number, instrument_id, side, dirname, run_started_date, run_finished_date, notes, flowcell_seqlane_count) {
+  function flowcellEdit(flowcell_id, name, seq_run_type_scheme_id, run_number, instrument_id, side, dirname, run_started_date, run_finished_date, notes, flowcell_seqlane_count) {
 
     createSeqRunTypeSchemesSelect(seq_run_type_scheme_id, instrument_id)
     createFlowcellSideSelect(side, instrument_id);
 
     $('#modal-flowcell_id').val(flowcell_id);
     $('#modal-name').val(name);
-    $('#modal-seq_runmode_type_id').val(seq_runmode_type_id);
     $('#modal-seq_run_type_scheme_id').val(seq_run_type_scheme_id);
     $('#modal-run_number').val(run_number);
     $('#modal-instrument_id').val(instrument_id);
@@ -278,7 +277,6 @@
 
     var flowcell_id = $('#modal-flowcell_id').val();
     var name = $('#modal-name').val();
-    var seq_runmode_type_id = $('#modal-seq_runmode_type_id').val();
     var seq_run_type_scheme_id = $('#modal-seq_run_type_scheme_id').val();
     var run_number = $('#modal-run_number').val();
     var instrument_id = $('#modal-instrument_id').val();
@@ -293,7 +291,6 @@
       data: {
         flowcell_id: flowcell_id,
         name: name,
-        seq_runmode_type_id: seq_runmode_type_id,
         seq_run_type_scheme_id: seq_run_type_scheme_id,
         run_number: run_number,
         instrument_id: instrument_id,
