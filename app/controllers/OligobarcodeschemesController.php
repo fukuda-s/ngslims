@@ -19,7 +19,7 @@ class OligobarcodeschemesController extends ControllerBase
             if ($request->isAjax() == true) {
                 // echo "Request was made using POST and AJAX";
 
-                $oligobarcodeschemes = OligobarcodeSchemes::find();
+                $oligobarcodeschemes = OligobarcodeSchemes::find("active = 'Y'");
                 echo json_encode($oligobarcodeschemes->toArray());
             }
         }

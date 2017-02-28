@@ -62,7 +62,7 @@ class OligobarcodesController extends ControllerBase
                     $oligobarcodes = $this->modelsManager->createBuilder()
                         ->columns(array('o.id', 'o.name', 'o.barcode_seq', 'o.sort_order', 'o.oligobarcode_scheme_id', 'o.active', 'os.is_oligobarcodeB'))
                         ->addFrom('Oligobarcodes', 'o')
-                        ->join('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id', 'os')
+                        ->leftJoin('OligobarcodeSchemes', 'os.id = o.oligobarcode_scheme_id', 'os')
                         ->groupBy('o.id')
                         ->orderBy('os.id ASC, o.sort_order ASC')
                         ->getQuery()

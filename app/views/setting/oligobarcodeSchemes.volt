@@ -10,7 +10,7 @@
     {{ flashSession.output() }}
 
     <button type="button" class="btn btn-xs btn-primary pull-left"
-            onclick="oligobarcodeSchemeEdit(-1, '', '', 'Y', '0', '0')"
+            onclick="oligobarcodeSchemeEdit(-1, '', '', 'N', 'Y', '0')"
             style="margin: 10px 0; width: 261px ">
       <i class="fa fa-plus" aria-hidden="true"></i>&ensp;
       Create New Oligobarcode Scheme

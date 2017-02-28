@@ -1145,34 +1145,37 @@ class SettingController extends ControllerBase
                     $this->view->disable();
                     $changes = $request->getPost('changes');
                     foreach ($changes as $oligobarcode_id => $rowValues) {
+
+                        $oligobarcode = Oligobarcodes::findFirst($oligobarcode_id);
+                        if (!$oligobarcode) {
+                            $oligobarcode = new Oligobarcodes();
+                        }
+
                         foreach ($rowValues as $colNameToChange => $valueChangeTo) {
 
                             if (empty($valueChangeTo)) {
                                 $valueChangeTo = null;
-                            }
-
-                            // @TODO this alert could not display..
-                            if ($colNameToChange == "barcode_seq") {
-                                if (preg_match('/[^AGCTN]/', $valueChangeTo)) {
+                            } elseif ($colNameToChange == "barcode_seq") {
+                                $valueChangeTo = strtoupper($valueChangeTo);
+                                if (!preg_match('/[AGCTN]/', $valueChangeTo)) {
                                     $this->flashSession->error("Could not use except [AGCTN] string on barcode_seq.");
                                     return;
                                 }
-                            }
-
-                            if ($colNameToChange == "oligobarcode_scheme_id") {
-                                $oligobarcode_scheme_id = OligobarcodeSchemes::findFirstByName($valueChangeTo)->id;
+                            } elseif ($colNameToChange == "oligobarcode_scheme_id") {
+                                $oligobarcode_scheme = OligobarcodeSchemes::findFirstByName($valueChangeTo);
+                                $oligobarcode_scheme_id = ($oligobarcode_scheme) ? $oligobarcode_scheme->id : null;
                                 $valueChangeTo = $oligobarcode_scheme_id;
                             }
 
-                            $oligobarcode = Oligobarcodes::findFirst($oligobarcode_id);
                             $oligobarcode->$colNameToChange = $valueChangeTo;
 
-                            if (!$oligobarcode->save()) {
-                                foreach ($oligobarcode->getMessages() as $message) {
-                                    $this->flashSession->error((string)$message);
-                                }
-                                return;
+                        }
+
+                        if (!$oligobarcode->save()) {
+                            foreach ($oligobarcode->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
                             }
+                            return;
                         }
                     }
                     // Something return is necessary for frontend jQuery Ajax to find success or fail.
