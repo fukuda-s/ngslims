@@ -1,7 +1,0 @@
-syntax: glob
-.DS_Store
-cache
-\.DS_Store
-\.idea
-make_schema\.sh
-rsync\.sh
