@@ -294,7 +294,7 @@ class OrderController extends ControllerBase
                         'COUNT(DISTINCT sl.id) AS seqlib_count'
                     ))
                     ->addFrom('Protocols', 'p')
-                    ->join('Seqlibs', 'sl.protocol_id = p.id', 'sl')
+                    ->leftJoin('Seqlibs', 'sl.protocol_id = p.id', 'sl')
                     ->where('step_id = :step_id:', array('step_id' => $step_id))
                     ->andWhere('p.active = "Y"')
                     ->groupBy('p.id')
