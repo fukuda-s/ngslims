@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.14, for osx10.11 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for osx10.12 (x86_64)
 --
 -- Host: localhost    Database: ngslims
 -- ------------------------------------------------------
--- Server version	5.7.14-log
+-- Server version	5.7.17-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -203,6 +203,7 @@ CREATE TABLE `oligobarcode_scheme_allows` (
   `protocol_id` int(11) NOT NULL,
   `has_oligobarcodeB` char(1) NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `oligobarcode_scheme_allows_protocol_id_oligobarcode_scheme_id_pk` (`protocol_id`,`oligobarcode_scheme_id`),
   KEY `fk_oligobarcode_scheme_allows_oligobarcode_schemes_idx` (`oligobarcode_scheme_id`),
   KEY `fk_oligobarcode_scheme_allows_protocols_idx` (`protocol_id`),
   KEY `oligobarcode_scheme_allows_has_oligobarcodeB_idx` (`has_oligobarcodeB`),
@@ -1066,4 +1067,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-04 10:40:38
+-- Dump completed on 2017-03-24 16:15:55
