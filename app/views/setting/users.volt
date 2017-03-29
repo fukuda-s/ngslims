@@ -2,7 +2,7 @@
   <div class="col-md-12">
     <ol class="breadcrumb">
       <li>{{ link_to('setting', 'Setting') }}</li>
-      <li class="active">Labs</li>
+      <li class="active">Users</li>
     </ol>
 
     {{ content() }}
