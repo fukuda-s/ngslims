@@ -204,10 +204,18 @@
                                         tubeCloseToggle(this)
                                     });
                             }
-                            $('#seqtemplate_assoc_seqlibs_holder')
-                                .find('.tube:last')
-                                .after(this);
+                            if($('#seqtemplate_assoc_seqlibs_holder')
+                                    .find('.tube').length) {
+                                $('#seqtemplate_assoc_seqlibs_holder')
+                                    .find('.tube:last')
+                                    .after(this);
+                            } else {
+                                $('#seqtemplate_assoc_seqlibs_holder')
+                                    .append(this)
+                            }
                         });
+
+                        $('#seqtemplate_assoc_seqlibs_save').removeAttr('disabled')
                 });
 
 
