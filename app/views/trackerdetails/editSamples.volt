@@ -126,28 +126,37 @@
           }
       );
 
-      var sampleTypeRenderer = function (instance, td, row, col, prop, value, cellProperties) {
-          Handsontable.TextCell.renderer.apply(this, arguments);
-          //alert("renderer: "+sampleTypeAr[value]);
-          $(td).text(sampleTypeAr[value]);
-      };
+      (function (Handsontable) {
 
-      var organismRenderer = function (instance, td, row, col, prop, value, cellProperties) {
-          Handsontable.TextCell.renderer.apply(this, arguments);
-          //alert("renderer: "+sampleTypeAr[value]);
-          $(td).text(organismAr[value]);
-      };
+          function sampleTypeRenderer(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.BaseRenderer.apply(this, arguments);
+              $(td).text(sampleTypeAr[value]);
+          }
 
-      var protocolRenderer = function (instance, td, row, col, prop, value, cellProperties) {
-          Handsontable.TextCell.renderer.apply(this, arguments);
-          $(td).text(protocolAr[value]);
-      };
+          Handsontable.renderers.registerRenderer('sampleTypeRenderer', sampleTypeRenderer);
 
-      var sampleLocationRenderer = function (instance, td, row, col, prop, value, cellProperties) {
-          Handsontable.TextCell.renderer.apply(this, arguments);
-          //alert("renderer: "+sampleTypeAr[value]);
-          $(td).text(sampleLocationAr[value]);
-      };
+          function organismRenderer(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.BaseRenderer.apply(this, arguments);
+              $(td).text(organismAr[value]);
+          }
+
+          Handsontable.renderers.registerRenderer('organismRenderer', organismRenderer);
+
+          function protocolRenderer(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.BaseRenderer.apply(this, arguments);
+              $(td).text(protocolAr[value]);
+          }
+
+          Handsontable.renderers.registerRenderer('protocolRenderer', protocolRenderer);
+
+          function sampleLocationRenderer(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.BaseRenderer.apply(this, arguments);
+              $(td).text(sampleLocationAr[value]);
+          }
+
+          Handsontable.renderers.registerRenderer('sampleLocationRenderer', sampleLocationRenderer);
+
+      })(Handsontable);
 
     /*
      * Cleaved edited row from whole data of handsontable.
@@ -160,14 +169,12 @@
       var isDirtyAr = Object();
 
       function integrateIsDirtyAr(changes) {
-          //for (var i = 0; i < changes.length; i++) {
           $.each(changes, function (key, value) {
               if (value) {
                   var rowNumToChange = value[0];
                   var columnToChange = value[1];
                   var valueChangeTo = value[3];
-                  var rowData = $handsontable.getDataAtRow(rowNumToChange);
-                  var sample_id = rowData[0];
+                  var sample_id = hot.getDataAtRowProp(rowNumToChange, 's.id');
                   if (!isDirtyAr[sample_id]) {
                       isDirtyAr[sample_id] = Object();
                   }
@@ -207,7 +214,6 @@
     /*
      * Setting of Handsontable;
      */
-      //$container.handsontable({
       var hot = new Handsontable($container, {
           stretchH: 'all',
           height: 500,
@@ -230,13 +236,17 @@
           columns: [
               {data: "s.id", title: "ID", type: 'numeric', editor: false},
               {data: "s.name", title: "Sample Name", editor: false},
-              {data: "s.sample_type_id", title: "Sample Type", editor: false, renderer: sampleTypeRenderer},
+              {
+                  data: "s.sample_type_id",
+                  title: "Sample Type",
+                  editor: false,
+                  renderer: 'sampleTypeRenderer'
+              },
               {
                   data: "s.taxonomy_id",
                   title: "Organism",
                   editor: false,
-                  renderer: organismRenderer,
-                  source: organismRenderer
+                  renderer: 'organismRenderer'
               },
               {data: "s.qual_concentration", title: "Conc. (ng/uL)", type: 'numeric', format: '0.000'},
               {data: "s.qual_od260280", title: "A260/A280", type: 'numeric', format: '0.00'},
@@ -261,7 +271,7 @@
                   title: "Sample Repos.",
                   editor: "select",
                   selectOptions: sampleLocationDrop,
-                  renderer: sampleLocationRenderer
+                  renderer: 'sampleLocationRenderer'
               },
             {% for sample_property_type in sample_property_types %}
               {
@@ -277,7 +287,7 @@
                   title: "Protocol",
                   editor: "select",
                   selectOptions: protocolDrop,
-                  renderer: protocolRenderer
+                  renderer: 'protocolRenderer'
               }
             {% endif %}
           ],
@@ -325,8 +335,6 @@
 
           }
       });
-      //var $handsontable = $container.data('handsontable');
-      var $handsontable = hot;
 
       function loadData() {
           $.ajax({
@@ -355,7 +363,7 @@
                       value["to_prep"] = "false";
                       value["to_prep_protocol_name"] = '';
                   });
-                  $handsontable.loadData(data);
+                  hot.loadData(data);
 
                   var changedColWidths = $defaultColWidths;
                   //console.log(changedColWidths);
@@ -374,7 +382,7 @@
                   //console.log($samplePropertyTypesChecked);
 
                   //Change column width (Show checked sample_property_types column) on handsontable.
-                  $handsontable.updateSettings({'colWidths': changedColWidths});
+                  hot.updateSettings({'colWidths': changedColWidths});
                   //console.log(changedColWidths);
               });
       }
@@ -382,7 +390,7 @@
       loadData(); // loading data at first.
 
       $toolbar.find('#save').click(function () {
-          //alert("save! "+$handsontable.getData());
+          //alert("save! "+hot.getData());
           $.ajax({
               url: '{{ url("trackerdetails/saveSamples") }}',
               data: {changes: isDirtyAr},
@@ -406,17 +414,17 @@
       });
 
       $toolbar.find('#undo').click(function () {
-          // alert("undo! "+$handsontable.isUndoAvailable()+"
-          // "+$handsontable.isRedoAvailable())
-          $handsontable.undo();
+          // alert("undo! "+hot.isUndoAvailable()+"
+          // "+hot.isRedoAvailable())
+          hot.undo();
           // $console.text('Undo!');
-          if ($handsontable.isUndoAvailable()) {
+          if (hot.isUndoAvailable()) {
               $toolbar.find("#undo").removeClass("disabled");
           } else {
               $toolbar.find("#undo").addClass("disabled");
           }
 
-          if ($handsontable.isRedoAvailable()) {
+          if (hot.isRedoAvailable()) {
               $toolbar.find("#redo").removeClass("disabled");
           } else {
               $toolbar.find("#redo").addClass("disabled");
@@ -424,17 +432,17 @@
       });
 
       $toolbar.find('#redo').click(function () {
-          // alert("redo! "+$handsontable.isUndoAvailable()+"
-          // "+$handsontable.isRedoAvailable());
-          $handsontable.redo();
+          // alert("redo! "+hot.isUndoAvailable()+"
+          // "+hot.isRedoAvailable());
+          hot.redo();
           // $console.text('Redo!');
-          if ($handsontable.isUndoAvailable()) {
+          if (hot.isUndoAvailable()) {
               $toolbar.find("#undo").removeClass("disabled");
           } else {
               $toolbar.find("#undo").addClass("disabled");
           }
 
-          if ($handsontable.isRedoAvailable()) {
+          if (hot.isRedoAvailable()) {
               $toolbar.find("#redo").removeClass("disabled");
           } else {
               $toolbar.find("#redo").addClass("disabled");
@@ -486,7 +494,7 @@
               //console.log($samplePropertyTypesChecked);
 
               //Change column width (Show checked sample_property_types column) on handsontable.
-              $handsontable.updateSettings({'colWidths': changedColWidths});
+              hot.updateSettings({'colWidths': changedColWidths});
               //console.log(changedColWidths);
           }
       });

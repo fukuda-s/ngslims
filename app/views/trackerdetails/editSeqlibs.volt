@@ -130,40 +130,53 @@
               getOligobarcodeAr(data);
           });
 
-      var sampleNameRenderer = function (instance, td, row, col, prop, value, cellProperties) {
-          Handsontable.TextCell.renderer.apply(this, arguments);
-          $(td).text(sampleNameAr[value]);
-      };
 
-      var oligobarcodeARenderer = function (instance, td, row, col, prop, value, cellProperties) {
-          Handsontable.TextCell.renderer.apply(this, arguments);
-          $(td).text(oligobarcodeAAr[value]);
-      };
+      (function (Handsontable) {
 
-      var oligobarcodeBRenderer = function (instance, td, row, col, prop, value, cellProperties) {
-          Handsontable.TextCell.renderer.apply(this, arguments);
-          $(td).text(oligobarcodeBAr[value]);
-      };
+          function sampleNameRenderer(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.BaseRenderer.apply(this, arguments);
+              $(td).text(sampleNameAr[value]);
+          }
 
-      var protocolRenderer = function (instance, td, row, col, prop, value, cellProperties) {
-          Handsontable.TextCell.renderer.apply(this, arguments);
-          $(td).text(protocolAr[value]);
-      };
+          Handsontable.renderers.registerRenderer('sampleNameRenderer', sampleNameRenderer);
 
-    /*
-     * Integrate 'changes' on handsontable, because editor can change same cell at several times.
-     */
+          function oligobarcodeARenderer(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.BaseRenderer.apply(this, arguments);
+              $(td).text(oligobarcodeAAr[value]);
+          }
+
+          Handsontable.renderers.registerRenderer('oligobarcodeARenderer', oligobarcodeARenderer);
+
+          function oligobarcodeBRenderer(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.BaseRenderer.apply(this, arguments);
+              $(td).text(oligobarcodeBAr[value]);
+          }
+
+          Handsontable.renderers.registerRenderer('oligobarcodeBRenderer', oligobarcodeBRenderer);
+
+          function protocolRenderer(instance, td, row, col, prop, value, cellProperties) {
+              Handsontable.renderers.BaseRenderer.apply(this, arguments);
+              $(td).text(protocolAr[value]);
+          }
+
+          Handsontable.renderers.registerRenderer('protocolRenderer', protocolRenderer);
+
+
+      })(Handsontable);
+
+
+      /*
+      * Integrate 'changes' on handsontable, because editor can change same cell at several times.
+      */
       var isDirtyAr = Object();
 
-      function integrateIsDirtyAr(changes) {
-          //for (var i = 0; i < changes.length; i++) {
+      function integrateIsDirtyAr(hot, changes) {
           $.each(changes, function (key, value) {
               if (value) {
                   var rowNumToChange = value[0];
                   var columnToChange = value[1];
                   var valueChangeTo = value[3];
-                  var rowData = $handsontable.getDataAtRow(rowNumToChange);
-                  var seqlib_id = rowData[0];
+                  var seqlib_id = hot.getDataAtRowProp(rowNumToChange, 'sl.id');
                   if (!isDirtyAr[seqlib_id]) {
                       isDirtyAr[seqlib_id] = Object();
                   }
@@ -172,6 +185,7 @@
           });
           //console.log(isDirtyAr);
       }
+
 
       // Construct handsontable
       //var $container = $("#handsontable-editSeqlibs-body");
@@ -203,13 +217,18 @@
           columns: [
               {data: "sl.id", title: "Seqlib ID", editor: false, type: 'numeric'},
               {data: "sl.name", title: "Seqlib Name"},
-              {data: "sl.sample_id", title: "Sample Name", editor: false, renderer: sampleNameRenderer},
+              {
+                  data: "sl.sample_id",
+                  title: "Sample Name",
+                  editor: false,
+                  renderer: 'sampleNameRenderer'
+              },
               {
                   data: "sl.protocol_id",
                   title: "Protocol",
                   editor: "select",
                   selectOptions: protocolDrop,
-                  renderer: protocolRenderer
+                  renderer: 'protocolRenderer'
               },
               {
                   data: "sl.oligobarcodeA_id",
@@ -218,7 +237,7 @@
                   //selectOptions: oligobarcodeADrop,
                   editor: "dropdown",
                   source: oligobarcodeADrop,
-                  renderer: oligobarcodeARenderer
+                  renderer: 'oligobarcodeARenderer'
               },
               {
                   data: "sl.oligobarcodeB_id",
@@ -227,7 +246,7 @@
                   //selectOptions: oligobarcodeBDrop,
                   editor: "dropdown",
                   source: oligobarcodeBDrop,
-                  renderer: oligobarcodeBRenderer
+                  renderer: 'oligobarcodeBRenderer'
               },
               {data: "sl.concentration", title: "Conc. (nmol/L)", type: 'numeric', format: '0.000'},
               {data: "sl.stock_seqlib_volume", title: "Volume (uL)", type: 'numeric', format: '0.00'},
@@ -265,7 +284,7 @@
                   // alert("afterEdit");
                   $toolbar.find("#save, #undo, #clear").removeClass("disabled");
                   $console.text('Click "Save" to save data to server').removeClass().addClass("alert alert-info");
-                  integrateIsDirtyAr(changes);
+                  integrateIsDirtyAr(hot, changes);
 
                   // Show alert dialog when this page moved before save.
                   $(window).on('beforeunload', function () {
@@ -298,7 +317,7 @@
           afterSelectionByProp: function (r, p, r2, c2) {
               //console.log(p);
               if (p === 'sl.oligobarcodeA_id' || p === 'sl.oligobarcodeB_id') {
-                  var protocol_id = $handsontable.getDataAtRowProp(r, 'sl.protocol_id').toString();
+                  var protocol_id = hot.getDataAtRowProp(r, 'sl.protocol_id');
                   $.ajax({
                       url: '{{ url("oligobarcodes/loadjson/") }}',
                       dataType: "json",
@@ -313,8 +332,6 @@
               }
           }
       });
-      //var $handsontable = $container.data('handsontable');
-      var $handsontable = hot;
 
       function loadData() {
           $.ajax({
@@ -339,7 +356,7 @@
                   //alert(location.href);
                   //console.log(data);
                   //$container.handsontable("loadData", data);
-                  $handsontable.loadData(data);
+                  hot.loadData(data);
               });
       }
 
@@ -372,15 +389,15 @@
       $toolbar.find('#undo').click(function () {
           // alert("undo! "+handsontable.isUndoAvailable()+"
           // "+handsontable.isRedoAvailable())
-          $handsontable.undo();
+          hot.undo();
           // $console.text('Undo!');
-          if ($handsontable.isUndoAvailable()) {
+          if (hot.isUndoAvailable()) {
               $toolbar.find("#undo").removeClass("disabled");
           } else {
               $toolbar.find("#undo").addClass("disabled");
           }
 
-          if ($handsontable.isRedoAvailable()) {
+          if (hot.isRedoAvailable()) {
               $toolbar.find("#redo").removeClass("disabled");
           } else {
               $toolbar.find("#redo").addClass("disabled");
@@ -390,15 +407,15 @@
       $toolbar.find('#redo').click(function () {
           // alert("redo! "+handsontable.isUndoAvailable()+"
           // "+handsontable.isRedoAvailable());
-          $handsontable.redo();
+          hot.redo();
           // $console.text('Redo!');
-          if ($handsontable.isUndoAvailable()) {
+          if (hot.isUndoAvailable()) {
               $toolbar.find("#undo").removeClass("disabled");
           } else {
               $toolbar.find("#undo").addClass("disabled");
           }
 
-          if ($handsontable.isRedoAvailable()) {
+          if (hot.isRedoAvailable()) {
               $toolbar.find("#redo").removeClass("disabled");
           } else {
               $toolbar.find("#redo").addClass("disabled");
