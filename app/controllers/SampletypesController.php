@@ -3,6 +3,12 @@
 class SampleTypesController extends ControllerBase
 {
 
+    public function initialize()
+    {
+        $this->view->disable();
+        parent::initialize();
+    }
+
     public function indexAction()
     {
         echo "This is index of SampleTypesController";
