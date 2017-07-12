@@ -144,8 +144,7 @@ class TrackerdetailsController extends ControllerBase
             ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
             ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
             ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
-            ->addCss('js/handsontable/dist/handsontable.full.min.css')
-            ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
+            ->addCss('js/handsontable/dist/handsontable.full.min.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
@@ -365,8 +364,7 @@ class TrackerdetailsController extends ControllerBase
             ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
             ->addJs('js/numeral.min.js')
             ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
-            ->addCss('js/handsontable/dist/handsontable.full.min.css')
-            ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
+            ->addCss('js/handsontable/dist/handsontable.full.min.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));
         $project_id = $this->filter->sanitize($project_id, array("int"));
@@ -464,7 +462,7 @@ class TrackerdetailsController extends ControllerBase
                                 $seqlib_step_entries->protocol_id = $seqlib_protocol->id;
 
 
-                            } elseif (preg_match("/^oligobarcode[AB]_id$/", $colNameToChange, $columnName)) {
+                            } elseif (preg_match("/^oligobarcode[AB]_id$/", $colNameToChange)) {
                                 $oligobarcodeStr = preg_split("/ : /", $valueChangeTo);
                                 $oligobarcodeABSeq = preg_split("/-/", $valueChangeTo);
                                 if (count($oligobarcodeStr) > 1) { //Case if oligobarcode_id selected from dropdown (then $valueToChange should be "<barcode_name : barcode_seq>" ex) AD001 : ATCACG ).
@@ -478,7 +476,7 @@ class TrackerdetailsController extends ControllerBase
                                         )
                                     ));
 
-                                    $seqlib->$columnName[0] = $oligobarcode->id;
+                                    $seqlib->$colNameToChange = $oligobarcode->id;
 
                                 } else if (count($oligobarcodeABSeq) > 1) { //Case if oligobarcodeA/B is direct inputted (then $valueToChange should be "<oligobarcodeA_seq-oligobarcodeB_seq>" ex) TAAGGCGA-TAGATCGC).
                                     $oligobarcodeA_seq = $oligobarcodeABSeq[0];
@@ -500,17 +498,9 @@ class TrackerdetailsController extends ControllerBase
                                     $seqlib->oligobarcodeA_id = $oligobarcodeA->id;
                                     $seqlib->oligobarcodeB_id = $oligobarcodeB->id;
 
-                                } else { //Case if oligobarcode_id is direct inputted (then $valueToChange should be "<barcode_name>" or "<barcode_seq>" ex) AD001 or ATCACG ).
-                                    $oligobarcode_name = $oligobarcodeStr[0];
-                                    $oligobarcode_seq = $oligobarcodeStr[0];
-                                    $oligobarcode = Oligobarcodes::findFirst(array(
-                                        "( name = :name: OR barcode_seq = :barcode_seq: ) AND active = 'Y'",
-                                        'bind' => array(
-                                            'name' => $oligobarcode_name,
-                                            'barcode_seq' => $oligobarcode_seq
-                                        )
-                                    ));
-                                    $seqlib->$columnName[0] = $oligobarcode->id;
+                                } else { //Case if oligobarcode_id is direct inputted (then $valueChangeTo should be "<barcode_id>").
+                                    $oligobarcode = Oligobarcodes::findFirstById($valueChangeTo);
+                                    $seqlib->$colNameToChange = $oligobarcode->id;
                                 }
                             } elseif ($tblNameToChange === 'ste') { //'ste' is alias of StepEntries on SeqlibsController->loadjson()
                                 $seqlib_step_entries->$colNameToChange = $valueChangeTo;
@@ -628,7 +618,8 @@ class TrackerdetailsController extends ControllerBase
 
                 if ($project_id) {
                     $seqlibs_tmp = $seqlibs_tmp
-                        ->where('sl.project_id = :project_id:', array("project_id" => $project_id));
+                        ->where('sl.project_id = :project_id:', array("project_id" => $project_id))
+                        ->andWhere('sta.seqlib_id IS NULL');
                 }
 
                 if ($cherry_picking_id) {

@@ -1187,8 +1187,7 @@ class SettingController extends ControllerBase
             $this->assets
                 ->addJs('js/handsontable/dist/handsontable.full.min.js')
                 ->addJs('js/numeral.min.js')
-                ->addCss('js/handsontable/dist/handsontable.full.min.css')
-                ->addCss('js/handsontable/plugins/bootstrap/handsontable.bootstrap.css');
+                ->addCss('js/handsontable/dist/handsontable.full.min.css');
         }
     }
 
