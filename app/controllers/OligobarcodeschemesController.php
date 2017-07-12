@@ -2,6 +2,11 @@
 
 class OligobarcodeschemesController extends ControllerBase
 {
+    public function initialize()
+    {
+        $this->view->disable();
+        parent::initialize();
+    }
 
     public function indexAction()
     {
