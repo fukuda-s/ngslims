@@ -498,6 +498,14 @@ class TrackerdetailsController extends ControllerBase
                                     $seqlib->oligobarcodeA_id = $oligobarcodeA->id;
                                     $seqlib->oligobarcodeB_id = $oligobarcodeB->id;
 
+                                } else if (preg_match("/^[AGCT]+$/i", $valueChangeTo)) {
+                                    $oligobarcode = Oligobarcodes::findFirst(array(
+                                        "barcode_seq = :barcode_seq: AND active = 'Y'",
+                                        'bind' => array(
+                                            'barcode_seq' => $valueChangeTo
+                                        )
+                                    ));
+                                    $seqlib->$colNameToChange = $oligobarcode->id;
                                 } else { //Case if oligobarcode_id is direct inputted (then $valueChangeTo should be "<barcode_id>").
                                     $oligobarcode = Oligobarcodes::findFirstById($valueChangeTo);
                                     $seqlib->$colNameToChange = $oligobarcode->id;
@@ -538,7 +546,8 @@ class TrackerdetailsController extends ControllerBase
         }
     }
 
-    public function editSeqlanesAction($type, $step_id, $project_id)
+    public
+    function editSeqlanesAction($type, $step_id, $project_id)
     {
         $project_id = $this->filter->sanitize($project_id, array(
             "int"
@@ -552,7 +561,8 @@ class TrackerdetailsController extends ControllerBase
         }
     }
 
-    public function saveSeqlanesAction()
+    public
+    function saveSeqlanesAction()
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
@@ -587,7 +597,8 @@ class TrackerdetailsController extends ControllerBase
         }
     }
 
-    public function showTubeSeqlibsAction()
+    public
+    function showTubeSeqlibsAction()
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
@@ -640,7 +651,8 @@ class TrackerdetailsController extends ControllerBase
         }
     }
 
-    public function showTableSeqlibsAction()
+    public
+    function showTableSeqlibsAction()
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
@@ -687,7 +699,8 @@ class TrackerdetailsController extends ControllerBase
         }
     }
 
-    public function showTableSeqlanesAction($flowcell_name)
+    public
+    function showTableSeqlanesAction($flowcell_name)
     {
         //$this->view->cleanTemplateAfter()->setLayout('main');
 
@@ -782,7 +795,8 @@ class TrackerdetailsController extends ControllerBase
         $this->view->setVar('seqlanes', $seqlanes);
     }
 
-    public function showTubeSeqtemplatesAction()
+    public
+    function showTubeSeqtemplatesAction()
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
@@ -845,7 +859,8 @@ class TrackerdetailsController extends ControllerBase
         }
     }
 
-    public function getMaxRunNumberAction()
+    public
+    function getMaxRunNumberAction()
     {
         $this->view->disable();
         $request = new \Phalcon\Http\Request();
