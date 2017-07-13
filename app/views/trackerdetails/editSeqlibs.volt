@@ -134,29 +134,49 @@
       (function (Handsontable) {
 
           function sampleNameRenderer(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.BaseRenderer.apply(this, arguments);
-              $(td).text(sampleNameAr[value]);
+              var escaped = Handsontable.helper.stringify(value);
+              td.innerHTML = sampleNameAr[escaped];
+
+              return td;
           }
 
           Handsontable.renderers.registerRenderer('sampleNameRenderer', sampleNameRenderer);
 
           function oligobarcodeARenderer(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.BaseRenderer.apply(this, arguments);
-              $(td).text(oligobarcodeAAr[value]);
+              var escaped = Handsontable.helper.stringify(value);
+              var oligobarcodeAStr = oligobarcodeAAr[escaped];
+              if (oligobarcodeAStr !== undefined) {
+                  td.innerHTML = oligobarcodeAStr;
+              } else {
+                  td.innerHTML = escaped;
+              }
+              return td;
           }
 
           Handsontable.renderers.registerRenderer('oligobarcodeARenderer', oligobarcodeARenderer);
 
           function oligobarcodeBRenderer(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.BaseRenderer.apply(this, arguments);
-              $(td).text(oligobarcodeBAr[value]);
+              var escaped = Handsontable.helper.stringify(value);
+              var oligobarcodeBStr = oligobarcodeBAr[escaped];
+              if (oligobarcodeBStr !== undefined) {
+                  td.innerHTML = oligobarcodeBStr;
+              } else {
+                  td.innerHTML = escaped;
+              }
+              return td;
           }
 
           Handsontable.renderers.registerRenderer('oligobarcodeBRenderer', oligobarcodeBRenderer);
 
           function protocolRenderer(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.BaseRenderer.apply(this, arguments);
-              $(td).text(protocolAr[value]);
+              var escaped = Handsontable.helper.stringify(value);
+              var protocolStr = protocolAr[escaped];
+              if (protocolStr !== undefined) {
+                  td.innerHTML = protocolStr;
+              } else {
+                  td.innerHTML = escaped;
+              }
+              return td;
           }
 
           Handsontable.renderers.registerRenderer('protocolRenderer', protocolRenderer);
@@ -165,9 +185,9 @@
       })(Handsontable);
 
 
-      /*
-      * Integrate 'changes' on handsontable, because editor can change same cell at several times.
-      */
+    /*
+     * Integrate 'changes' on handsontable, because editor can change same cell at several times.
+     */
       var isDirtyAr = Object();
 
       function integrateIsDirtyAr(hot, changes) {
@@ -233,8 +253,6 @@
               {
                   data: "sl.oligobarcodeA_id",
                   title: "OligoBarcode A",
-                  //editor: "select",
-                  //selectOptions: oligobarcodeADrop,
                   editor: "dropdown",
                   source: oligobarcodeADrop,
                   renderer: 'oligobarcodeARenderer'
@@ -242,8 +260,6 @@
               {
                   data: "sl.oligobarcodeB_id",
                   title: "OligoBarcode B",
-                  //editor: "select",
-                  //selectOptions: oligobarcodeBDrop,
                   editor: "dropdown",
                   source: oligobarcodeBDrop,
                   renderer: 'oligobarcodeBRenderer'
@@ -317,6 +333,7 @@
           afterSelectionByProp: function (r, p, r2, c2) {
               //console.log(p);
               if (p === 'sl.oligobarcodeA_id' || p === 'sl.oligobarcodeB_id') {
+                  //if (p === 'sl.protocol_id') {
                   var protocol_id = hot.getDataAtRowProp(r, 'sl.protocol_id');
                   $.ajax({
                       url: '{{ url("oligobarcodes/loadjson/") }}',

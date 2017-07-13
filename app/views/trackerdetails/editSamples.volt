@@ -129,29 +129,45 @@
       (function (Handsontable) {
 
           function sampleTypeRenderer(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.BaseRenderer.apply(this, arguments);
-              $(td).text(sampleTypeAr[value]);
+              var escaped = Handsontable.helper.stringify(value);
+              td.innerHTML = sampleTypeAr[escaped];
+
+              return td;
           }
 
           Handsontable.renderers.registerRenderer('sampleTypeRenderer', sampleTypeRenderer);
 
           function organismRenderer(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.BaseRenderer.apply(this, arguments);
-              $(td).text(organismAr[value]);
+              var escaped = Handsontable.helper.stringify(value);
+              td.innerHTML = organismAr[escaped];
+
+              return td;
           }
 
           Handsontable.renderers.registerRenderer('organismRenderer', organismRenderer);
 
           function protocolRenderer(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.BaseRenderer.apply(this, arguments);
-              $(td).text(protocolAr[value]);
+              var escaped = Handsontable.helper.stringify(value);
+              var protocolStr = protocolAr[escaped];
+              if (protocolStr !== undefined) {
+                  td.innerHTML = protocolStr;
+              } else {
+                  td.innerHTML = escaped;
+              }
+              return td;
           }
 
           Handsontable.renderers.registerRenderer('protocolRenderer', protocolRenderer);
 
           function sampleLocationRenderer(instance, td, row, col, prop, value, cellProperties) {
-              Handsontable.renderers.BaseRenderer.apply(this, arguments);
-              $(td).text(sampleLocationAr[value]);
+              var escaped = Handsontable.helper.stringify(value);
+              var sampleLocationStr = sampleLocationAr[escaped];
+              if (sampleLocationStr !== undefined) {
+                  td.innerHTML = sampleLocationStr;
+              } else {
+                  td.innerHTML = escaped;
+              }
+              return td;
           }
 
           Handsontable.renderers.registerRenderer('sampleLocationRenderer', sampleLocationRenderer);
