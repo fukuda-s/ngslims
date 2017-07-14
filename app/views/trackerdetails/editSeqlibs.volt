@@ -222,8 +222,8 @@
           minSpareCols: 0,
           minSpareRows: 0,
           fillHandle: {
-              autoInsertRow: false,
-              direction: 'vertical'
+              direction: 'vertical',
+              autoInsertRow: false
           },
           contextMenu: false,
           columnSorting: true,
@@ -460,12 +460,11 @@
     /*
      * Set up search function.
      */
-      $('#search_field').on('keyup', function (event) {
-          var queryStr = event.target.value;
-          var hot = $container.handsontable('getInstance');
-          var queryResult = hot.search.query(queryStr);
-          //console.log(queryResult);
+      var searchFiled = document.getElementById('search_field');
+      Handsontable.dom.addEvent(searchFiled, 'keyup', function (event) {
+          var queryResult = hot.search.query(this.value);
 
+          console.log(queryResult);
           hot.render();
       });
 
