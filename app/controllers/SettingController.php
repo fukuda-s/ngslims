@@ -2235,7 +2235,9 @@ class SettingController extends ControllerBase
                     ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta');
 
                 if ($query) {
-                    $seqlibs_tmp = $seqlibs_tmp->where('s.name LIKE :query:', array("query" => '%' . $query . '%'));
+                    $seqlibs_tmp = $seqlibs_tmp
+                        ->where('s.name LIKE :query:', array("query" => '%' . $query . '%'))
+                        ->orWhere('sl.name LIKE :query:', array("query" => '%' . $query . '%'));
                 } elseif ($cherry_picking_id) {
                     $seqlibs_tmp = $seqlibs_tmp
                         ->leftJoin('CherryPickingSchemes', 'cps.seqlib_id = sl.id', 'cps')
@@ -2243,7 +2245,8 @@ class SettingController extends ControllerBase
                 } else {
                     return false;
                 }
-                $seqlibs = $seqlibs_tmp->groupBy('sl.id, se.id, pt.id, sta.id')
+                $seqlibs = $seqlibs_tmp
+                    ->groupBy('sl.id, se.id, pt.id, sta.id')
                     ->orderBy('sl.name ASC')
                     ->getQuery()
                     ->execute();
