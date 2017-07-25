@@ -630,7 +630,8 @@ class TrackerdetailsController extends ControllerBase
                 if ($project_id) {
                     $seqlibs_tmp = $seqlibs_tmp
                         ->where('sl.project_id = :project_id:', array("project_id" => $project_id))
-                        ->andWhere('sta.seqlib_id IS NULL');
+                        //->andWhere('sta.seqlib_id IS NULL')
+                    ;
                 }
 
                 if ($cherry_picking_id) {
