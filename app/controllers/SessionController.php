@@ -84,6 +84,30 @@ class SessionController extends ControllerBase
             $password = $this->request->getPost('password');
             //$password = sha1($password);
 
+            $user_count = Users::find();
+            if (!count($user_count)) {
+                $user = new Users();
+                $user->username = 'admin';
+                //$user->password = sha1($password);
+                $user->password = $this->security->hash('ngslims');
+                $user->firstname = 'admin';
+                $user->lastname = 'ngslims';
+                $user->email = 'ngslims_admin@example.com';
+                $user->created_at = new Phalcon\Db\RawValue('now()');
+                $user->active = 'Y';
+                if ($user->save() == false) {
+                    foreach ($user->getMessages() as $message) {
+                        $this->flash->error((string)$message);
+                    }
+                } else {
+                    $this->flash->error('Password is set with "ngslims". Please update admin password.');
+
+                    $this->_registerSession($user);
+                    $this->view->setVar('login', is_array($this->session->get('auth')));
+                    return $this->forward('index');
+                }
+            }
+
             $user = Users::findFirst("email='$email' AND active='Y'");
             if ($user != false) {
                 if ($this->security->checkHash($password, $user->password)) {
@@ -107,7 +131,7 @@ class SessionController extends ControllerBase
                 }
             }
 
-            $this->flash->error('Wrong email/password');
+            $this->flash->error('Wrong email/password ');
         }
 
         return $this->forward('session/index');
