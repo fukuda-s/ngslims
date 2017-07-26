@@ -19,7 +19,7 @@ class SessionController extends ControllerBase
                 Tag::setDefault('email', '');
                 Tag::setDefault('password', '');
             } else {
-                $this->flash->success('Please login with user: "admin", password: "ngslims"');
+                $this->flash->success('This is first setup. Please login with user: "admin", password: "ngslims"');
                 Tag::setDefault('email', 'admin');
                 Tag::setDefault('password', 'ngslims');
             }
@@ -114,7 +114,7 @@ class SessionController extends ControllerBase
                         $this->flash->error((string)$message);
                     }
                 } else {
-                    $this->flash->error('Password is set with "ngslims". Please update admin password.');
+                    $this->flash->error('This is first set up. Password is set with "ngslims". Please update admin password.');
 
                     $this->_registerSession($user);
                     $this->view->setVar('login', is_array($this->session->get('auth')));
