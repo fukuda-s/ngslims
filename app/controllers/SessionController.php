@@ -14,8 +14,15 @@ class SessionController extends ControllerBase
     public function indexAction()
     {
         if (!$this->request->isPost()) {
-            Tag::setDefault('email', '');
-            Tag::setDefault('password', '');
+            $user_count = Users::find();
+            if (count($user_count)) {
+                Tag::setDefault('email', '');
+                Tag::setDefault('password', '');
+            } else {
+                $this->flash->success('Please login with user: "admin", password: "ngslims"');
+                Tag::setDefault('email', 'admin');
+                Tag::setDefault('password', 'ngslims');
+            }
         }
     }
 
@@ -86,15 +93,22 @@ class SessionController extends ControllerBase
 
             $user_count = Users::find();
             if (!count($user_count)) {
+
                 $user = new Users();
                 $user->username = 'admin';
-                //$user->password = sha1($password);
                 $user->password = $this->security->hash('ngslims');
                 $user->firstname = 'admin';
                 $user->lastname = 'ngslims';
                 $user->email = 'ngslims_admin@example.com';
                 $user->created_at = new Phalcon\Db\RawValue('now()');
                 $user->active = 'Y';
+
+                $labUsers = array();
+                $labUsers[0] = new LabUsers();
+                $labUsers[0]->lab_id = '1'; //Genome Science
+
+                $user->LabUsers = $labUsers;
+
                 if ($user->save() == false) {
                     foreach ($user->getMessages() as $message) {
                         $this->flash->error((string)$message);
