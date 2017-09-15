@@ -58,7 +58,7 @@ class TrackerController extends ControllerBase
         //$this->view->setLayout('main');
         Tag::appendTitle(' | Experiments ');
 
-        $view_type = $this->request->get('view_type');
+        $view_type = $this->request->get('view_type', 'striptags');
         $this->view->setVar('view_type', $view_type);
 
         $step_id = $this->filter->sanitize($step_id, array("int"));
@@ -242,7 +242,7 @@ class TrackerController extends ControllerBase
         //$this->view->setLayout('main');
         Tag::appendTitle(' | Experiments ');
 
-        $view_type = $this->request->get('view_type');
+        $view_type = $this->request->get('view_type', 'striptags');
         $this->view->setVar('view_type', $view_type);
 
         $step_id = $this->filter->sanitize($step_id, array("int"));
@@ -641,14 +641,14 @@ class TrackerController extends ControllerBase
             $calculator_used = $request->getPost('calculator_used-' . $selected_seqtemplate_index);
 
             if ((int)$calculator_used === 1) {
-                $seqtemplate->target_conc = $request->getPost('target_conc-' . $selected_seqtemplate_index);
-                $seqtemplate->target_vol = $request->getPost('target_vol-' . $selected_seqtemplate_index);
-                $seqtemplate->target_dw_vol = $request->getPost('dw_for_dilution_vol-' . $selected_seqtemplate_index);
-                $seqtemplate->final_dw_vol = $request->getPost('added_dw_vol-' . $selected_seqtemplate_index);
-                $seqtemplate->initial_vol = $request->getPost('library_vol_total-' . $selected_seqtemplate_index);
-                $seqtemplate->initial_conc = $request->getPost('seqtemplate_initial_conc-' . $selected_seqtemplate_index);
-                $seqtemplate->final_vol = $request->getPost('seqtemplate_final_vol-' . $selected_seqtemplate_index);
-                $seqtemplate->final_conc = $request->getPost('seqtemplate_final_conc-' . $selected_seqtemplate_index);
+                $seqtemplate->target_conc = $request->getPost('target_conc-' . $selected_seqtemplate_index, 'striptags');
+                $seqtemplate->target_vol = $request->getPost('target_vol-' . $selected_seqtemplate_index, 'striptags');
+                $seqtemplate->target_dw_vol = $request->getPost('dw_for_dilution_vol-' . $selected_seqtemplate_index, 'striptags');
+                $seqtemplate->final_dw_vol = $request->getPost('added_dw_vol-' . $selected_seqtemplate_index, 'striptags');
+                $seqtemplate->initial_vol = $request->getPost('library_vol_total-' . $selected_seqtemplate_index, 'striptags');
+                $seqtemplate->initial_conc = $request->getPost('seqtemplate_initial_conc-' . $selected_seqtemplate_index, 'striptags');
+                $seqtemplate->final_vol = $request->getPost('seqtemplate_final_vol-' . $selected_seqtemplate_index, 'striptags');
+                $seqtemplate->final_conc = $request->getPost('seqtemplate_final_conc-' . $selected_seqtemplate_index, 'striptags');
             }
 
             $seqtemplate_step_entries = array();
