@@ -1319,7 +1319,8 @@ class TrackerController extends ControllerBase
                 $this->session->remove("run_started_date");
                 $this->session->remove("seq_runmode_type");
             }
-            return $this->response->redirect("tracker/sequenceSetupCandidates/" . $instrument_type->id);
+            //return $this->response->redirect("tracker/sequenceSetupCandidates/" . $instrument_type->id);
+            return $this->response->redirect("summary/instrument/" . $instrument_type->id);
         }
     }
 
