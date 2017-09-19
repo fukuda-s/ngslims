@@ -3,7 +3,12 @@
   <div class="col-md-12">
     <ol class="breadcrumb">
       <li>{{ link_to('setting', 'Setting') }}</li>
-      <li class="active">Sequence Templates</li>
+      {% if query is empty %}
+        <li class="active">Sequence Templates</li>
+      {% else %}
+        <li>{{ link_to('setting/seqtemplates', 'Sequence Templates') }}</li>
+        <li class="active">Filter: {{ query }}</li>
+      {% endif %}
     </ol>
 
     {{ content() }}
@@ -75,6 +80,9 @@
               <span class="fa fa-pencil"></span>&ensp;
             </a>
             {{ link_to('setting/seqtemplateAssocs/' ~ seqtemplate.id, "<i class='fa fa-user-plus'></i>&ensp;") }}
+            <a href="javascript:void(0)" style="font-size: 9pt"
+               onclick="seqtemplateCopy('{{ seqtemplate.id }}', '{{ seqtemplate.name }}'); return false;"><span
+                  class="fa fa-copy"></span></a>
             {% if seqtemplate_seqlane_count == 0 %}
               <a href="javascript:void(0)" style="font-size: 9pt"
                  onclick="seqtemplateRemove({{ seqtemplate.id }}); return false;"><span class="fa fa-trash"></span></a>
@@ -120,7 +128,8 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-target_vol" class="col-sm-3 control-label" style="font-size: 9pt">Target Vol. (&micro;L)</label>
+          <label for="modal-target_vol" class="col-sm-3 control-label" style="font-size: 9pt">Target Vol.
+            (&micro;L)</label>
           <div class="col-sm-9">
             {{ text_field('modal-target_vol', 'class': 'form-control') }}
           </div>
@@ -132,13 +141,15 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-initial_conc" class="col-sm-3 control-label" style="font-size: 9pt">Initial Conc. (nM)</label>
+          <label for="modal-initial_conc" class="col-sm-3 control-label" style="font-size: 9pt">Initial Conc.
+            (nM)</label>
           <div class="col-sm-9">
             {{ text_field('modal-initial_conc', 'class': 'form-control') }}
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-initial_vol" class="col-sm-3 control-label" style="font-size: 9pt">Initial Vol. (&micro;L)</label>
+          <label for="modal-initial_vol" class="col-sm-3 control-label" style="font-size: 9pt">Initial Vol.
+            (&micro;L)</label>
           <div class="col-sm-9">
             {{ text_field('modal-initial_vol', 'class': 'form-control') }}
           </div>
@@ -150,13 +161,15 @@
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-final_vol" class="col-sm-3 control-label" style="font-size: 9pt">Final Vol. (&micro;L)</label>
+          <label for="modal-final_vol" class="col-sm-3 control-label" style="font-size: 9pt">Final Vol.
+            (&micro;L)</label>
           <div class="col-sm-9">
             {{ text_field('modal-final_vol', 'class': 'form-control') }}
           </div>
         </div>
         <div class="form-group form-group-sm">
-          <label for="modal-final_dw_vol" class="col-sm-3 control-label" style="font-size: 9pt">Final DW Vol. (&micro;L)</label>
+          <label for="modal-final_dw_vol" class="col-sm-3 control-label" style="font-size: 9pt">Final DW Vol.
+            (&micro;L)</label>
           <div class="col-sm-9">
             {{ text_field('modal-final_dw_vol', 'class': 'form-control') }}
           </div>
@@ -186,138 +199,167 @@
 </div>
 
 <script>
-  /**
-   * Open modal window with filling values.
-   */
-  function seqtemplateEdit(seqtemplate_id, name, target_conc, target_vol, target_dw_vol, initial_conc, initial_vol, final_conc, final_vol, final_dw_vol, started_at, finished_at, seqtemplate_seqlane_count) {
+    /**
+     * Open modal window with filling values.
+     */
+    function seqtemplateEdit(seqtemplate_id, name, target_conc, target_vol, target_dw_vol, initial_conc, initial_vol, final_conc, final_vol, final_dw_vol, started_at, finished_at, seqtemplate_seqlane_count) {
 
-    $('#modal-seqtemplate_id').val(seqtemplate_id);
-    $('#modal-name').val(name);
-    $('#modal-target_conc').val(target_conc);
-    $('#modal-target_vol').val(target_vol);
-    $('#modal-target_dw_vol').val(target_dw_vol);
-    $('#modal-initial_conc').val(initial_conc);
-    $('#modal-initial_vol').val(initial_vol);
-    $('#modal-final_conc').val(final_conc);
-    $('#modal-final_vol').val(final_vol);
-    $('#modal-final_dw_vol').val(final_dw_vol);
-    $('#modal-started_at').val(started_at);
-    $('#modal-finished_at').val(finished_at);
+        $('#modal-seqtemplate_id').val(seqtemplate_id);
+        $('#modal-name').val(name);
+        $('#modal-target_conc').val(target_conc);
+        $('#modal-target_vol').val(target_vol);
+        $('#modal-target_dw_vol').val(target_dw_vol);
+        $('#modal-initial_conc').val(initial_conc);
+        $('#modal-initial_vol').val(initial_vol);
+        $('#modal-final_conc').val(final_conc);
+        $('#modal-final_vol').val(final_vol);
+        $('#modal-final_dw_vol').val(final_dw_vol);
+        $('#modal-started_at').val(started_at);
+        $('#modal-finished_at').val(finished_at);
 
-    if (seqtemplate_seqlane_count > 0) {
-      $('#modal-name').prop('disabled', true);
-    } else {
-      $('#modal-name').prop('disabled', false);
-    }
-
-
-    $('#modal-seqtemplate-save')
-        .prop('disabled', true)
-        .addClass('disabled');
-
-    $('#modal-seqtemplate-edit').modal('show');
-
-  }
-
-  /**
-   * Save edit results on modal window.
-   * @returns {boolean}
-   */
-  function seqtemplateSave() {
-    if (!$('#modal-name').val().length) {
-      alert('Please input Sequence Template name.');
-      return false;
-    }
-
-    $('#modal-lab-edit').modal('hide');
-
-    var seqtemplate_id = $('#modal-seqtemplate_id').val();
-    var name = $('#modal-name').val();
-    var target_conc = $('#modal-target_conc').val();
-    var target_vol = $('#modal-target_vol').val();
-    var target_dw_vol = $('#modal-target_dw_vol').val();
-    var initial_conc = $('#modal-initial_conc').val();
-    var initial_vol = $('#modal-initial_vol').val();
-    var final_conc = $('#modal-final_conc').val();
-    var final_vol = $('#modal-final_vol').val();
-    var final_dw_vol = $('#modal-final_dw_vol').val();
-    var started_at = $('#modal-started_at').val();
-    var finished_at = $('#modal-finished_at').val();
-    $.ajax({
-      type: 'POST',
-      url: '/ngsLIMS/setting/seqtemplates',
-      data: {
-        seqtemplate_id: seqtemplate_id,
-        name: name,
-        target_conc: target_conc,
-        target_vol: target_vol,
-        target_dw_vol: target_dw_vol,
-        initial_conc: initial_conc,
-        initial_vol: initial_vol,
-        final_conc: final_conc,
-        final_vol: final_vol,
-        final_dw_vol: final_dw_vol,
-        started_at: started_at,
-        finished_at: finished_at
-      }
-    })
-        .done(function (data) {
-          console.log(data);
-          window.location.reload();  // @TODO It should not be re-loaded.
-        });
-  }
-
-  /**
-   * Delete seqtemplate record. (It will be soft-deleted (active=N).)
-   * @param seqtemplate_id
-   * @returns {boolean}
-   */
-  function seqtemplateRemove(seqtemplate_id) {
-    if (!seqtemplate_id) {
-      alert('Error: Could not found seqtemplate_id value.');
-      return false;
-    }
-
-    if (window.confirm("This Sequence Template will be in-active.\n\nAre You Sure?")) {
-      $.ajax({
-        type: 'POST',
-        url: '/ngsLIMS/setting/seqtemplates',
-        data: {
-          seqtemplate_id: seqtemplate_id,
-          active: 'N'
+        if (seqtemplate_seqlane_count > 0) {
+            $('#modal-name').prop('disabled', true);
+        } else {
+            $('#modal-name').prop('disabled', false);
         }
-      })
-          .done(function () {
-            window.location.reload(); // @TODO It should not be re-loaded.
-          });
+
+
+        $('#modal-seqtemplate-save')
+            .prop('disabled', true)
+            .addClass('disabled');
+
+        $('#modal-seqtemplate-edit').modal('show');
+
+    }
+
+    /**
+     * Save edit results on modal window.
+     * @returns {boolean}
+     */
+    function seqtemplateSave() {
+        if (!$('#modal-name').val().length) {
+            alert('Please input Sequence Template name.');
+            return false;
+        }
+
+        $('#modal-lab-edit').modal('hide');
+
+        var seqtemplate_id = $('#modal-seqtemplate_id').val();
+        var name = $('#modal-name').val();
+        var target_conc = $('#modal-target_conc').val();
+        var target_vol = $('#modal-target_vol').val();
+        var target_dw_vol = $('#modal-target_dw_vol').val();
+        var initial_conc = $('#modal-initial_conc').val();
+        var initial_vol = $('#modal-initial_vol').val();
+        var final_conc = $('#modal-final_conc').val();
+        var final_vol = $('#modal-final_vol').val();
+        var final_dw_vol = $('#modal-final_dw_vol').val();
+        var started_at = $('#modal-started_at').val();
+        var finished_at = $('#modal-finished_at').val();
+        $.ajax({
+            type: 'POST',
+            url: '/ngsLIMS/setting/seqtemplates',
+            data: {
+                seqtemplate_id: seqtemplate_id,
+                name: name,
+                target_conc: target_conc,
+                target_vol: target_vol,
+                target_dw_vol: target_dw_vol,
+                initial_conc: initial_conc,
+                initial_vol: initial_vol,
+                final_conc: final_conc,
+                final_vol: final_vol,
+                final_dw_vol: final_dw_vol,
+                started_at: started_at,
+                finished_at: finished_at
+            }
+        })
+            .done(function (data) {
+                console.log(data);
+                window.location.reload();  // @TODO It should not be re-loaded.
+            });
     }
 
 
-  }
+    /**
+     * Copy seqtemplate record.
+     * @param seqtemplate_id
+     * @param seqtemplate_name
+     * @returns {boolean}
+     */
+    function seqtemplateCopy(seqtemplate_id, seqtemplate_name) {
+        if (!seqtemplate_id) {
+            alert('Error: Could not found seqtemplate_id value.');
+            return false;
+        }
 
-  /**
-   * Show active=N rows function on button.
-   */
-  function showInactive(target) {
-    $('.inactive').toggle();
-    $(target).children('div').toggle();
-  }
+        if (window.confirm("This Sequence Template will be copy.\n\nAre You Sure?")) {
+            $.ajax({
+                type: 'POST',
+                url: '/ngsLIMS/setting/seqtemplateCopy',
+                data: {
+                    seqtemplate_id: seqtemplate_id,
+                }
+            })
+                .done(function (data) {
+                    window.location.replace(window.location + '?q=' + seqtemplate_name);
+                    //window.location.reload(); // @TODO It should not be re-loaded.
+                });
+        }
 
-  /**
-   * DataTables
-   */
-  $(document).ready(function () {
-    $('#seqtemplate-table').DataTable({
-      order: []
-    });
+    }
 
-    $('#modal-seqtemplate-edit')
-        .find('input, select')
-        .change(function () {
-          $('#modal-seqtemplate-save')
-              .prop('disabled', false)
-              .removeClass('disabled');
+    /**
+     * Delete seqtemplate record. (It will be soft-deleted (active=N).)
+     * @param seqtemplate_id
+     * @returns {boolean}
+     */
+    function seqtemplateRemove(seqtemplate_id) {
+        if (!seqtemplate_id) {
+            alert('Error: Could not found seqtemplate_id value.');
+            return false;
+        }
+
+        if (window.confirm("This Sequence Template will be in-active.\n\nAre You Sure?")) {
+            $.ajax({
+                type: 'POST',
+                url: '/ngsLIMS/setting/seqtemplates',
+                data: {
+                    seqtemplate_id: seqtemplate_id,
+                    active: 'N'
+                }
+            })
+                .done(function () {
+                    window.location.reload(); // @TODO It should not be re-loaded.
+                });
+        }
+
+
+    }
+
+    /**
+     * Show active=N rows function on button.
+     */
+    function showInactive(target) {
+        $('.inactive').toggle();
+        $(target).children('div').toggle();
+    }
+
+    /**
+     * DataTables
+     */
+    $(document).ready(function () {
+        $('#seqtemplate-table').DataTable({
+            order: []
         });
 
-  });
+        $('#modal-seqtemplate-edit')
+            .find('input, select')
+            .change(function () {
+                $('#modal-seqtemplate-save')
+                    .prop('disabled', false)
+                    .removeClass('disabled');
+            });
+
+    });
 </script>

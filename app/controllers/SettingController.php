@@ -2034,6 +2034,7 @@ class SettingController extends ControllerBase
                 $this->view->disable();
 
                 $seqtemplate_id = $request->getPost('seqtemplate_id', 'int');
+
                 $name = $request->getPost('name', array('striptags', 'name_filter'));
                 $target_conc = $request->getPost('target_conc', 'float');
                 $target_vol = $request->getPost('target_vol', 'float');
@@ -2056,9 +2057,31 @@ class SettingController extends ControllerBase
                     if (!$seqtemplate) {
                         return $this->flashSession->error('ERROR: Could not get $seqtemplates data values.');
                     }
-                    if (empty($name) and $active == 'N') {
-                        $seqtemplate->delete(); //Not soft-delete.
-                    } else {
+                    if (empty($name) and $active == 'N') { //In the case of delete
+                        $seqtemplate_assocs = SeqtemplateAssocs::find(array(
+                                "seqtemplate_id = :seqtemplate_id:",
+                                "bind" => array(
+                                    "seqtemplate_id" => $seqtemplate_id
+                                )
+                            )
+                        );
+                        foreach ($seqtemplate_assocs as $seqtemplate_assoc) {
+                            if ($seqtemplate_assoc->delete() == false) {
+                                foreach ($seqtemplate_assoc->getMessages() as $message) {
+                                    $this->flashSession->error((string)$message);
+                                }
+                                return false;
+                            }
+                        }
+                        if ($seqtemplate->delete() == false) { //Not soft-delete.
+                            foreach ($seqtemplate->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
+                            }
+                            return false;
+                        }
+                        $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' is deleted.');
+
+                    } else { //In the case of edit.
                         $seqtemplate->name = $name;
                         $seqtemplate->target_conc = $target_conc;
                         $seqtemplate->target_vol = $target_vol;
@@ -2070,8 +2093,19 @@ class SettingController extends ControllerBase
                         $seqtemplate->final_dw_vol = $final_dw_vol;
                         $seqtemplate->started_at = $started_at;
                         $seqtemplate->finished_at = $finished_at;
+                        /*
+                         * Save Seqtemplate data values.
+                         */
+                        if ($seqtemplate->save() == false) {
+                            foreach ($seqtemplate->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
+                            }
+                            return false;
+                        } else {
+                            $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' record is changed.');
+                        }
                     }
-                } else {
+                } else { //In the case of create.
                     $seqtemplate = new Seqtemplates();
                     $seqtemplate->name = $name;
                     $seqtemplate->target_conc = $target_conc;
@@ -2084,25 +2118,19 @@ class SettingController extends ControllerBase
                     $seqtemplate->final_dw_vol = $final_dw_vol;
                     $seqtemplate->started_at = $started_at;
                     $seqtemplate->finished_at = $finished_at;
+                    /*
+                     * Save Seqtemplate data values.
+                     */
+                    if ($seqtemplate->save() == false) {
+                        foreach ($seqtemplate->getMessages() as $message) {
+                            $this->flashSession->error((string)$message);
+                        }
+                        return false;
+                    } else {
+                        $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' is created.');
+                    }
                 }
 
-                /*
-                 * Save SeqRuncycleType data values.
-                 */
-                if ($seqtemplate->save() == false) {
-                    foreach ($seqtemplate->getMessages() as $message) {
-                        $this->flashSession->error((string)$message);
-                    }
-                    return false;
-                } else {
-                    if ($seqtemplate_id == -1) {
-                        $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' is created.');
-                    } elseif ($active == 'N') {
-                        $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' is deleted.');
-                    } else {
-                        $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' record is changed.');
-                    }
-                }
 
             }
         } else {
@@ -2112,16 +2140,96 @@ class SettingController extends ControllerBase
                 ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
                 ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
 
-            $seqtemplates = Seqtemplates::find(array(
-                "order" => "created_at DESC"
-            ));
+            $query = $this->request->get('q', 'striptags');
+            $this->view->setVar('query', $query);
+
+            if ($query) {
+                $seqtemplates = Seqtemplates::find(array(
+                    "name LIKE '%" . $query . "%'",
+                    "order" => "created_at DESC"
+                ));
+            } else {
+                $seqtemplates = Seqtemplates::find(array(
+                    "order" => "created_at DESC"
+                ));
+            }
 
             $this->view->setVar('seqtemplates', $seqtemplates);
 
         }
     }
 
-    public function seqtemplateAssocsAction($seqtemplate_id)
+    public function seqtemplateCopyAction()
+    {
+        $request = $this->request;
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $seqtemplate_id = $request->getPost('seqtemplate_id', 'int');
+                if (empty($seqtemplate_id)) {
+                    return $this->flashSession->error('ERROR: Undefined $seqtemplate_id value ' . $seqtemplate_id . '.');
+                }
+
+                if ($seqtemplate_id > 0) {
+                    $seqtemplate = Seqtemplates::findFirst("id = $seqtemplate_id");
+                    if (!$seqtemplate) {
+                        return $this->flashSession->error('ERROR: Could not get $seqtemplates data values.');
+                    }
+
+                    $seqtemplate_new = new Seqtemplates();
+                    $seqtemplate_new->name = $seqtemplate->name . '_Copy';
+                    $seqtemplate_new->target_conc = $seqtemplate->target_conc;
+                    $seqtemplate_new->target_vol = $seqtemplate->target_vol;
+                    $seqtemplate_new->target_dw_vol = $seqtemplate->target_dw_vol;
+                    $seqtemplate_new->initial_conc = $seqtemplate->initial_conc;
+                    $seqtemplate_new->initial_vol = $seqtemplate->initial_vol;
+                    $seqtemplate_new->final_conc = $seqtemplate->final_conc;
+                    $seqtemplate_new->final_vol = $seqtemplate->final_vol;
+                    $seqtemplate_new->final_dw_vol = $seqtemplate->final_dw_vol;
+
+                    $seqtemplate_assocs = SeqtemplateAssocs::find(array(
+                            "seqtemplate_id = :seqtemplate_id:",
+                            "bind" => array(
+                                "seqtemplate_id" => $seqtemplate_id
+                            )
+                        )
+                    );
+
+                    $seqtemplate_assocs_new = [];
+                    $i = 0;
+                    foreach ($seqtemplate_assocs as $seqtemplate_assoc) {
+                        $seqtemplate_assocs_new[$i] = new SeqtemplateAssocs();
+                        $seqtemplate_assocs_new[$i]->seqtemplate_id = $seqtemplate_new->id;
+                        $seqtemplate_assocs_new[$i]->seqlib_id = $seqtemplate_assoc->seqlib_id;
+                        $seqtemplate_assocs_new[$i]->conc_factor = $seqtemplate_assoc->conc_factor;
+                        $seqtemplate_assocs_new[$i]->input_vol = $seqtemplate_assoc->input_vol;
+                        $i++;
+                    }
+
+                    $seqtemplate_new->SeqtemplateAssocs = $seqtemplate_assocs_new;
+
+                    /*
+                     * Save Seqtemplate data values.
+                     */
+                    if ($seqtemplate_new->save() == false) {
+                        foreach ($seqtemplate_new->getMessages() as $message) {
+                            $this->flashSession->error((string)$message);
+                        }
+                        return false;
+                    } else {
+                        $this->flashSession->success('Seqtemplate: ' . $seqtemplate->name . ' is copied to .' . $seqtemplate->name . '_Copy');
+                    }
+
+                }
+            }
+        }
+    }
+
+    public
+    function seqtemplateAssocsAction($seqtemplate_id)
     {
         $request = $this->request;
         $seqtemplate_assocs = SeqtemplateAssocs::find(array(
@@ -2212,7 +2320,8 @@ class SettingController extends ControllerBase
     }
 
 
-    public function showTubeSeqlibsAction()
+    public
+    function showTubeSeqlibsAction()
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);
@@ -2256,7 +2365,8 @@ class SettingController extends ControllerBase
         }
     }
 
-    public function flowcellsAction()
+    public
+    function flowcellsAction()
     {
         $request = $this->request;
         // Check whether the request was made with method POST
@@ -2365,7 +2475,8 @@ class SettingController extends ControllerBase
         }
     }
 
-    public function createSeqRunTypeSchemesSelectAction()
+    public
+    function createSeqRunTypeSchemesSelectAction()
     {
         $request = $this->request;
         // Check whether the request was made with method POST
@@ -2413,7 +2524,8 @@ class SettingController extends ControllerBase
         }
     }
 
-    public function createFlowcellSideSelectAction()
+    public
+    function createFlowcellSideSelectAction()
     {
         $request = $this->request;
         // Check whether the request was made with method POST
@@ -2447,7 +2559,8 @@ class SettingController extends ControllerBase
         }
     }
 
-    public function flowcellSeqlanesAction($flowcell_id)
+    public
+    function flowcellSeqlanesAction($flowcell_id)
     {
         $request = $this->request;
 
@@ -2611,7 +2724,8 @@ class SettingController extends ControllerBase
     }
 
 
-    public function showTubeSeqtemplatesAction()
+    public
+    function showTubeSeqtemplatesAction()
     {
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_MAIN_LAYOUT);
         $this->view->disableLevel(\Phalcon\Mvc\View::LEVEL_AFTER_TEMPLATE);

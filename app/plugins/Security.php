@@ -174,6 +174,7 @@ class Security extends Plugin
                     'sampleLocations',
                     'steps',
                     'seqtemplates',
+                    'seqtemplateCopy',
                     'seqtemplateAssocs',
                     'showTubeSeqlibs',
                     'flowcells',
@@ -234,7 +235,7 @@ class Security extends Plugin
                 $acl->addResource(new Phalcon\Acl\Resource($resource), $actions);
             }
 
-            // Grant access to public areas to both users and guests
+            // Grant access to public areas to both Users and Guests
             foreach ($roles as $role) {
                 foreach ($publicResources as $resource => $actions) {
                     $acl->allow($role->getName(), $resource, $actions);
@@ -272,7 +273,7 @@ class Security extends Plugin
 
         $acl = $this->getAcl();
 
-        $allowed = $acl->isAllowed($role, $controller, $action);
+        $allowed = ( $acl->isAllowed($role, $controller, $action) ) ? $acl->isAllowed($role, $controller, $action) : 'FALSE';
         if ($allowed != Acl::ALLOW) {
             $this->flash->error("You don't have access to this module with : " . $allowed . ", " . $role . ", " . $controller . ", " . $action);
             $dispatcher->forward(array(
