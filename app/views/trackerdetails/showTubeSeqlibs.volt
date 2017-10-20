@@ -1,18 +1,22 @@
 <div class="tube-group">
-  <div class="tube tube-header">
-    <div class="row">
-      <div class="col-md-3 col-sm-10">Sample Name</div>
-      <div class="col-md-1 col-sm-2">#used</div>
-      <div class="col-md-2">Barcode</div>
-      <div class="col-md-2"></div>
-      <div class="col-md-4">
-        <button type="button" class="btn btn-default btn-xs" id="show-inactive-tube"
-                style="max-height: 25px; min-width: 87px">Show Inactive
-        </button>
-        <input id="tube-filter" type="search" class="form-control input-xs" placeholder="Filtering Search">
-        <button type="button" class="btn btn-default btn-xs pull-right" id="select-all">Select All
-        </button>
-      </div>
+  <div class="row tube">
+    <div class="col-md-3 col-sm-10">Sample Name</div>
+    <div class="col-md-1 col-sm-2">#used</div>
+    <div class="col-md-2">Barcode</div>
+    <div class="col-md-2">Protocol</div>
+    <div class="col-md-3">
+      <!--
+      <button type="button" class="btn btn-default btn-xs" id="show-inactive-tube"
+              style="max-height: 25px; min-width: 87px">Show Inactive
+      </button>
+      <input id="tube-filter" type="search" class="form-control input-xs" placeholder="Filtering Search">
+      -->
+      <form id="pick_form" method="post">
+          {{ text_field('tube-filter', 'class': "form-control input-sm", 'placeholder': 'Search Seqlibs') }}
+      </form>
+    </div>
+    <div class="col-md-1">
+      <button type="button" class="clearfix btn btn-default btn-sm pull-right" id="select-all">Select All</button>
     </div>
   </div>
   {% for seqlib in seqlibs %}
