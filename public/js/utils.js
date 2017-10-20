@@ -87,14 +87,20 @@ $(document).ready(function () {
 /*
  * Change chevron icon with toggle panel
  */
-function toggleChevron(e) {
+function openChevron(e) {
     $(e.target).parents(".panel").find("i.indicator")
-        .toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
+        .removeClass('glyphicon-chevron-right')
+        .addClass('glyphicon-chevron-down');
+}
+function closeChevron(e) {
+    $(e.target).parents(".panel").find("i.indicator")
+        .removeClass('glyphicon-chevron-down')
+        .addClass('glyphicon-chevron-right');
 }
 
 $(document).ready(function () {
-    $('#projectOverview').on('hidden.bs.collapse', toggleChevron);
-    $('#projectOverview').on('shown.bs.collapse', toggleChevron);
+    $('#projectOverview').on('hidden.bs.collapse', closeChevron);
+    $('#projectOverview').on('shown.bs.collapse', openChevron);
 });
 
 /*
