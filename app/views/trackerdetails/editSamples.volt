@@ -407,17 +407,22 @@
 
       $toolbar.find('#save').click(function () {
           //alert("save! "+hot.getData());
+          $(".loading_icon").collapse('show');
           $.ajax({
               url: '{{ url("trackerdetails/saveSamples") }}',
               data: {changes: isDirtyAr},
               dataType: 'text',
               type: 'POST'
           })
+              .always(function(){
+                  $(".loading_icon").fadeIn();
+              })
               .done(function (data, status, xhr) {
                   //alert(status.toString());
                   $console.text('Save success').removeClass().addClass("alert alert-success");
                   $toolbar.find("#save").addClass("disabled");
                   isDirtyAr = Object(); //Clear isDirtyAr
+                  $(".loading_icon").fadeOut();
 
                   loadData(); //Refresh with saved data.
                   // Disable alert dialog when this page is saved.
@@ -425,8 +430,10 @@
               })
               .fail(function (xhr, status, error) {
                   //alert(status.toString());
+                  $(".loading_icon").fadeOut();
                   $console.text('Save error').removeClass().addClass("alert alert-danger");
               });
+          $(".loading_icon").collapse('hide');
       });
 
       $toolbar.find('#undo').click(function () {

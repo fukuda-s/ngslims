@@ -387,11 +387,15 @@
               dataType: 'text',
               type: 'POST'
           })
+              .always(function(){
+                  $(".loading_icon").fadeIn();
+              })
               .done(function () {
                   //alert(status.toString());
                   $console.text('Save success').removeClass().addClass("alert alert-success");
                   $toolbar.find("#save").addClass("disabled");
                   isDirtyAr = Object(); //Clear isDirtyAr
+                  $(".loading_icon").fadeOut();
 
                   loadData(); //Refresh with saved data.
                   // Disable alert dialog when this page is saved.
@@ -399,6 +403,7 @@
               })
               .fail(function (error) {
                   //alert(status.toString());
+                  $(".loading_icon").fadeOut();
                   $console.text('Save error').removeClass().addClass("alert alert-danger");
               });
       });
