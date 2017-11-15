@@ -688,13 +688,13 @@ class OrderController extends ControllerBase
         } else {
             $sample_data_str = str_replace('&#34;', '"', $this->session->get('sample')->name); //replace code &#34 to "(double quotes).
             $sample_data = json_decode($sample_data_str, false);
-            //var_dump($sample_data);
             $name = array();
             $name_exception = 0;
             $count = 0;
             foreach ($sample_data as $row) {
-                $count++;
-                if (empty($row->name)) {
+                if ($row->name) {
+                    $count++;
+                    $name[] = $row->name;
                     /*
                      * @TODO should be skipped null line with checking all columns on $sample_data array.
                      *
@@ -702,9 +702,8 @@ class OrderController extends ControllerBase
                     $warning++;
                     $name_exception++;
                     */
-                    continue;
+                    //continue;
                 }
-                $name[] = $row->name;
             }
             $this->view->setVar('sample_count', $count);
 
@@ -880,6 +879,9 @@ class OrderController extends ControllerBase
 
         $i = 0;
         foreach ($sample_data_arr as $sample_data) {
+            if(!$sample_data->name) { //Skip sample->name is null
+                continue;
+            }
             //Set data to Samples
             $samples[$i] = new Samples();
             $samples[$i]->name = trim($sample_data->name);
