@@ -127,7 +127,11 @@
         <tbody>
         {% for d in seqlanes %}
           <tr id="seqlib_id_{{ d.slib.id }}">
-            <td>{{ link_to('trackerdetails/showTableSamples/' ~ d.p.id, d.slib.Projects.name) }}</td>
+            {% if d.slib.Projects %}
+              <td>{{ link_to('trackerdetails/showTableSamples/' ~ d.p.id, d.slib.Projects.name) }}</td>
+            {% else %}
+              <td></td>
+            {% endif %}
             <td>{{ d.fc.run_number }}</td>
             <td>{{ date('Y-m-d', strtotime(d.fc.run_started_date)) }}</td>
             <td>{{ d.fc.Instruments.instrument_number ~ d.fc.side }}</td>
@@ -138,7 +142,11 @@
             <td>{{ d.srrt.name }}</td>
             <td>{{ d.srct.name }}</td>
             <td>{{ d.slib.name }}</td>
-            <td>{{ d.s.Organisms.name }}</td>
+            {% if d.s.Organisms %}
+              <td>{{ d.s.Organisms.name }}</td>
+            {% else %}
+              <td></td>
+            {% endif %}
             {% if d.slib.oligobarcodeA_id is empty %}
               <td></td>
               <td></td>
@@ -236,27 +244,27 @@
   </div>
 {% endif %}
 <script>
-  /*
-   * DataTables
-   */
-  $(document).ready(function () {
-    $('#seqlaneInfo_table').DataTable({
-      scrollX: true,
-      responsive: true,
-      paging: true,
-      order: [],
-      dom: 'Bfrtip',
-      buttons: [
-        'pageLength',
-        {
-          extend: "excelHtml5",
-          text: "<i class='fa fa-file-excel-o'></i>&ensp;<strong>Excel</strong>"
-        },
-        {
-          extend: 'copyHtml5',
-          text: "<i class='fa fa-clipboard'></i>&ensp;<strong>Copy To Clipboard</strong>"
-        }
-      ]
+    /*
+     * DataTables
+     */
+    $(document).ready(function () {
+        $('#seqlaneInfo_table').DataTable({
+            scrollX: true,
+            responsive: true,
+            paging: true,
+            order: [],
+            dom: 'Bfrtip',
+            buttons: [
+                'pageLength',
+                {
+                    extend: "excelHtml5",
+                    text: "<i class='fa fa-file-excel-o'></i>&ensp;<strong>Excel</strong>"
+                },
+                {
+                    extend: 'copyHtml5',
+                    text: "<i class='fa fa-clipboard'></i>&ensp;<strong>Copy To Clipboard</strong>"
+                }
+            ]
+        });
     });
-  });
 </script>
