@@ -247,6 +247,7 @@
       order: [],
       dom: 'Bfrtip',
       buttons: [
+        'pageLength',
         {
           extend: "excelHtml5",
           text: "<i class='fa fa-file-excel-o'></i>&ensp;<strong>Excel</strong>"
