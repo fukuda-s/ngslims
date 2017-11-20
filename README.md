@@ -28,4 +28,6 @@ Install
 1. Import basic information into ngslims database on MySQL. (ex. mysql -uroot -p ngslims < ngslims/schemes/ngslims.sql) 
 1. Access to 'http://localhost/ngslims' with web browser. Then you will be able to login with 'admin' user.
 
-
+Demo
+-----------
+https://youtu.be/VaezN9AbWIg
