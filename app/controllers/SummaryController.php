@@ -204,7 +204,7 @@ class SummaryController extends ControllerBase
 
     }
 
-    public function overallAction($year, $month)
+    public function overallAction($year = null, $month = null)
     {
         $this->view->cleanTemplateAfter()->setLayout('main');
         Tag::appendTitle(' | Overall');
