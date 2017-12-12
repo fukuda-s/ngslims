@@ -124,7 +124,7 @@ class OrderController extends ControllerBase
                     AND
                       lu.lab_id = :lab_id:
                     AND u.active = 'Y'
-                    ORDER BY u.name";
+                    ORDER BY name";
 
                 $users = $this->modelsManager->executeQuery($phql, array(
                     'lab_id' => $lab_id
