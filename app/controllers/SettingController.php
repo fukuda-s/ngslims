@@ -1,4 +1,5 @@
 <?php
+
 use Phalcon\Tag, Phalcon\Acl, Phalcon\Filter;
 
 //Custom Filter for name value.
@@ -2391,16 +2392,26 @@ class SettingController extends ControllerBase
 
                 if (empty($flowcell_id)) {
                     return $this->flashSession->error('ERROR: Undefined $flowcell_id value ' . $flowcell_id . '.');
-                }
-
-                if ($flowcell_id > 0) {
-                    $flowcell = Flowcells::findFirst("id = $flowcell_id");
+                } else {
+                    $flowcell = Flowcells::findFirst($flowcell_id);
                     if (!$flowcell) {
                         return $this->flashSession->error('ERROR: Could not get $flowcells data values.');
-                    }
-                    if (empty($name) and $active == 'N') {
-                        $flowcell->delete(); //Not soft-delete.
-                    } else {
+                    } else if (empty($name) and $active == 'N') { //Case Delete
+                        $step_entries = StepEntries::findFirst("flowcell_id = $flowcell_id");
+                        if ($step_entries->delete()) {
+                            foreach ($step_entries->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
+                            }
+                        }
+                        if ($flowcell->delete()) { //Not soft delete
+                            foreach ($flowcell->getMessages() as $message) {
+                                $this->flashSession->error((string)$message);
+                            }
+                            return false;
+                        } else {
+                            return $this->flashSession->error('flowcell ' . $flowcell->name . 'is removed.');
+                        }
+                    } else { //Case Edit
                         $flowcell->name = $name;
                         $flowcell->seq_run_type_scheme_id = $seq_run_type_scheme_id;
                         $flowcell->seq_runmode_type_id = $seq_runmode_type_id;
@@ -2412,22 +2423,10 @@ class SettingController extends ControllerBase
                         $flowcell->run_finished_date = $run_finished_date;
                         $flowcell->notes = $notes;
                     }
-                } else {
-                    $flowcell = new Flowcells();
-                    $flowcell->name = $name;
-                    $flowcell->seq_run_type_scheme_id = $seq_run_type_scheme_id;
-                    $flowcell->seq_runmode_type_id = $seq_runmode_type_id;
-                    $flowcell->run_number = $run_number;
-                    $flowcell->instrument_id = $instrument_id;
-                    $flowcell->side = $side;
-                    $flowcell->dirname = $dirname;
-                    $flowcell->run_started_date = $run_started_date;
-                    $flowcell->run_finished_date = $run_finished_date;
-                    $flowcell->notes = $notes;
                 }
 
                 /*
-                 * Save SeqRuncycleType data values.
+                 * Save Flowcell data values.
                  */
                 if ($flowcell->save() == false) {
                     foreach ($flowcell->getMessages() as $message) {
