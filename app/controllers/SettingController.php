@@ -501,7 +501,7 @@ class SettingController extends ControllerBase
                         $project_type->active = $active;
                     }
                 } else {
-                    $project_type = new Projects();
+                    $project_type = new ProjectTypes();
                     $project_type->name = $name;
                     $project_type->description = $description;
                     $project_type->active = $active;

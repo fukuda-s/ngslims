@@ -13,7 +13,7 @@
             onclick="projectTypeEdit(-100, '', '', 'Y', '0')"
             style="margin: 10px 0; width: 261px ">
       <i class="fa fa-plus" aria-hidden="true"></i>&ensp;
-      Create New Project
+      Create New Project Type
     </button>
     <button type="button" class="btn btn-xs pull-right" style="margin: 0 0 10px 0; width: 261px "
             onclick="showInactive(this)">
