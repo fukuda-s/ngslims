@@ -2055,10 +2055,18 @@ class SettingController extends ControllerBase
 
                 if ($seqtemplate_id > 0) {
                     $seqtemplate = Seqtemplates::findFirst("id = $seqtemplate_id");
+                    $step_entries = StepEntries::findFirst("seqtemplate_id = $seqtemplate_id");
                     if (!$seqtemplate) {
                         return $this->flashSession->error('ERROR: Could not get $seqtemplates data values.');
                     }
                     if (empty($name) and $active == 'N') { //In the case of delete
+                        if ($step_entries) {
+                            if ($step_entries->delete()) {
+                                foreach ($step_entries->getMessages() as $message) {
+                                    $this->flashSession->error((string)$message);
+                                }
+                            }
+                        }
                         $seqtemplate_assocs = SeqtemplateAssocs::find(array(
                                 "seqtemplate_id = :seqtemplate_id:",
                                 "bind" => array(
@@ -2084,16 +2092,16 @@ class SettingController extends ControllerBase
 
                     } else { //In the case of edit.
                         $seqtemplate->name = $name;
-                        $seqtemplate->target_conc = $target_conc;
-                        $seqtemplate->target_vol = $target_vol;
-                        $seqtemplate->target_dw_vol = $target_dw_vol;
-                        $seqtemplate->initial_conc = $initial_conc;
-                        $seqtemplate->initial_vol = $initial_vol;
-                        $seqtemplate->final_conc = $final_conc;
-                        $seqtemplate->final_vol = $final_vol;
-                        $seqtemplate->final_dw_vol = $final_dw_vol;
-                        $seqtemplate->started_at = $started_at;
-                        $seqtemplate->finished_at = $finished_at;
+                        $seqtemplate->target_conc = ( $target_conc ) ? $target_conc : null;
+                        $seqtemplate->target_vol = ( $target_vol ) ? $target_vol : null;
+                        $seqtemplate->target_dw_vol = ( $target_dw_vol ) ? $target_dw_vol : null;
+                        $seqtemplate->initial_conc = ( $initial_conc ) ? $initial_conc : null;
+                        $seqtemplate->initial_vol = ( $initial_vol ) ? $initial_vol : null;
+                        $seqtemplate->final_conc = ( $final_conc ) ? $final_conc : null;
+                        $seqtemplate->final_vol = ( $final_vol ) ? $final_vol : null;
+                        $seqtemplate->final_dw_vol = ( $final_dw_vol ) ? $final_dw_vol : null;
+                        $seqtemplate->started_at = ( $started_at ) ? $started_at : null;
+                        $seqtemplate->finished_at = ( $finished_at ) ? $finished_at : null;
                         /*
                          * Save Seqtemplate data values.
                          */
@@ -2109,16 +2117,16 @@ class SettingController extends ControllerBase
                 } else { //In the case of create.
                     $seqtemplate = new Seqtemplates();
                     $seqtemplate->name = $name;
-                    $seqtemplate->target_conc = $target_conc;
-                    $seqtemplate->target_vol = $target_vol;
-                    $seqtemplate->target_dw_vol = $target_dw_vol;
-                    $seqtemplate->initial_conc = $initial_conc;
-                    $seqtemplate->initial_vol = $initial_vol;
-                    $seqtemplate->final_conc = $final_conc;
-                    $seqtemplate->final_vol = $final_vol;
-                    $seqtemplate->final_dw_vol = $final_dw_vol;
-                    $seqtemplate->started_at = $started_at;
-                    $seqtemplate->finished_at = $finished_at;
+                    $seqtemplate->target_conc = ( $target_conc ) ? $target_conc : null;
+                    $seqtemplate->target_vol = ( $target_vol ) ? $target_vol : null;
+                    $seqtemplate->target_dw_vol = ( $target_dw_vol ) ? $target_dw_vol : null;
+                    $seqtemplate->initial_conc = ( $initial_conc ) ? $initial_conc : null;
+                    $seqtemplate->initial_vol = ( $initial_vol ) ? $initial_vol : null;
+                    $seqtemplate->final_conc = ( $final_conc ) ? $final_conc : null;
+                    $seqtemplate->final_vol = ( $final_vol ) ? $final_vol : null;
+                    $seqtemplate->final_dw_vol = ( $final_dw_vol ) ? $final_dw_vol : null;
+                    $seqtemplate->started_at = ( $started_at ) ? $started_at : null;
+                    $seqtemplate->finished_at = ( $finished_at ) ? $finished_at : null;
                     /*
                      * Save Seqtemplate data values.
                      */
@@ -2191,6 +2199,8 @@ class SettingController extends ControllerBase
                     $seqtemplate_new->final_vol = $seqtemplate->final_vol;
                     $seqtemplate_new->final_dw_vol = $seqtemplate->final_dw_vol;
 
+
+
                     $seqtemplate_assocs = SeqtemplateAssocs::find(array(
                             "seqtemplate_id = :seqtemplate_id:",
                             "bind" => array(
@@ -2211,6 +2221,15 @@ class SettingController extends ControllerBase
                     }
 
                     $seqtemplate_new->SeqtemplateAssocs = $seqtemplate_assocs_new;
+
+                    $step_entry = StepEntries::findFirst("seqtemplate_id = $seqtemplate_id");
+                    $step_entries_new = array();
+                    $step_entries_new[0] = new StepEntries;
+                    $step_entries_new[0]->step_phase_code = $step_entry->step_phase_code;
+                    $step_entries_new[0]->step_id = $step_entry->step_id;
+                    $step_entries_new[0]->user_id = $this->session->get('auth')['id'];
+
+                    $seqtemplate_new->StepEntries = $step_entries_new;
 
                     /*
                      * Save Seqtemplate data values.
