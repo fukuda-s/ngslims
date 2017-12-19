@@ -9,6 +9,9 @@
   <div class="form-group">
     <label class="col-sm-2 control-label" for="newPassword">New Password</label>
 
+    <input type="hidden" name="<?php echo $this->security->getTokenKey() ?>"
+           value="<?php echo $this->security->getToken() ?>"/>
+
     <div class="col-sm-3">
       {{ password_field('newPassword', 'class': 'form-control') }}
       <!--

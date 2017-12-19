@@ -9,6 +9,10 @@
       </div>
       {{ form('session/start', 'role': 'form') }}
       <fieldset>
+
+        <input type="hidden" name="<?php echo $this->security->getTokenKey() ?>"
+               value="<?php echo $this->security->getToken() ?>"/>
+
         <div class="form-group">
           <label for="email">Username/Email</label>
           {{ text_field('email', 'size': "30", 'class': "form-control") }}

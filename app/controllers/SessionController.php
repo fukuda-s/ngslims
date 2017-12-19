@@ -86,11 +86,6 @@ class SessionController extends ControllerBase
     {
         if ($this->request->isPost()) {
 
-            $email = $this->request->getPost('email', 'email');
-
-            $password = $this->request->getPost('password');
-            //$password = sha1($password);
-
             $user_count = Users::find();
             if (!count($user_count)) {
 
@@ -122,30 +117,34 @@ class SessionController extends ControllerBase
                 }
             }
 
-            $user = Users::findFirst("email='$email' AND active='Y'");
-            if ($user != false) {
-                if ($this->security->checkHash($password, $user->password)) {
-                    $this->_registerSession($user);
-                    $this->flash->success('Welcome ' . $user->firstname . ' ' . $user->lastname);
+            if ($this->security->checkToken()) {
+                $email = $this->request->getPost('email', 'email');
+                $password = $this->request->getPost('password');
+                $user = Users::findFirst("email='$email' AND active='Y'");
+                if ($user != false) {
+                    if ($this->security->checkHash($password, $user->password)) {
+                        $this->_registerSession($user);
+                        $this->flash->success('Welcome ' . $user->firstname . ' ' . $user->lastname);
 
-                    $this->view->setVar('login', is_array($this->session->get('auth')));
-                    return $this->forward('index');
+                        $this->view->setVar('login', is_array($this->session->get('auth')));
+                        return $this->forward('index');
+                    }
                 }
-            }
 
-            $username = $this->request->getPost('email', 'alphanum');
-            $user = Users::findFirst("username='$username' AND active='Y'");
-            if ($user != false) {
-                if ($this->security->checkHash($password, $user->password)) {
-                    $this->_registerSession($user);
-                    $this->flash->success('Welcome ' . $user->firstname . ' ' . $user->lastname);
+                $username = $this->request->getPost('email', 'alphanum');
+                $user = Users::findFirst("username='$username' AND active='Y'");
+                if ($user != false) {
+                    if ($this->security->checkHash($password, $user->password)) {
+                        $this->_registerSession($user);
+                        $this->flash->success('Welcome ' . $user->firstname . ' ' . $user->lastname);
 
-                    $this->view->setVar('login', is_array($this->session->get('auth')));
-                    return $this->forward('index');
+                        $this->view->setVar('login', is_array($this->session->get('auth')));
+                        return $this->forward('index');
+                    }
                 }
-            }
 
-            $this->flash->error('Wrong email/password ');
+                $this->flash->error('Wrong email/password ');
+            }
         }
 
         return $this->forward('session/index');
