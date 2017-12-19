@@ -13,8 +13,12 @@ class IndexController extends ControllerBase
     {
         if (!$this->request->isPost()) {
             //$this->flash->notice('ngsLIMS is under construction. Thanks');
-            $this->view->setVar('login', is_array($this->session->get('auth')));
-            return $this->forward('session/index');
+            $auth = $this->session->get('auth');
+            if ( is_array($auth) ) {
+                $this->view->setVar('login', is_array($auth));
+            } else {
+                return $this->forward('session/index');
+            }
         }
     }
 }
