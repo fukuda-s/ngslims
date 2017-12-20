@@ -163,6 +163,7 @@ class Security extends Plugin
                     'oligobarcodeSchemeOligobarcodes',
                     'oligobarcodes',
                     'instrumentTypes',
+                    'stepInstrumentTypeSchemes',
                     'instruments',
                     'seqRunTypeSchemes',
                     'seqRunmodeTypes',

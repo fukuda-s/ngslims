@@ -61,6 +61,7 @@
                onclick="instrumentTypesEdit('{{ instrument_type.id }}', '{{ instrument_type.name }}', '{{ instrument_type.platform_code }}', '{{ instrument_type.sort_order }}', '{{ instrument_type.slots_per_run }}', '{{ instrument_type.slots_array_json|e }}', '{{ instrument_type.active }}', '{{ instrument_type_instrument_count }}'); return false;">
               <span class="fa fa-pencil"></span>&ensp;
             </a>
+            {{ link_to('setting/stepInstrumentTypeSchemes/' ~ instrument_type.id, "<i class='fa fa-user-plus'></i>&ensp;") }}
             {% if instrument_type_instrument_count == 0 %}
               <a href="javascript:void(0)" style="font-size: 9pt"
                  onclick="instrumentTypesRemove({{ instrument_type.id }}); return false;"><span class="fa fa-trash"></span></a>

@@ -34,4 +34,10 @@ class StepInstrumentTypeSchemes extends \Phalcon\Mvc\Model
         );
     }
 
+    public function initialize()
+    {
+        $this->belongsTo('step_id', 'Steps', 'id');
+        $this->belongsTo('instrument_type_id', 'InstrumentTypes', 'id');
+    }
+
 }

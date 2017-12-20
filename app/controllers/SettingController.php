@@ -1600,6 +1600,98 @@ class SettingController extends ControllerBase
         }
     }
 
+    public function stepInstrumentTypeSchemesAction($instrument_type_id)
+    {
+        $request = $this->request;
+        $instrument_type = InstrumentTypes::findFirst($instrument_type_id);
+        // Check whether the request was made with method POST
+        if ($request->isPost() == true) {
+            // Check whether the request was made with Ajax
+            if ($request->isAjax() == true) {
+                $this->view->disable();
+
+                $new_step_id_array = $request->getPost('new_step_id_array', array('striptags'));
+                $del_step_id_array = $request->getPost('del_step_id_array', array('striptags'));
+
+                $stepInstrumentTypeSchemes = array();
+                $i = 0;
+                $new_step_instrument_type_scheme_step_name = array();
+                $del_step_instrument_type_scheme_step_name = array();
+                if (count($new_step_id_array)) {
+                    foreach ($new_step_id_array as $step_id) {
+                        $stepInstrumentTypeSchemes[$i] = new StepInstrumentTypeSchemes();
+                        $stepInstrumentTypeSchemes[$i]->step_id = $step_id;
+                        $stepInstrumentTypeSchemes[$i]->instrument_type_id = $instrument_type_id;
+                        $new_step_instrument_type_scheme_step_name[] = Steps::findFirst($step_id);
+                        $i++;
+                    }
+                }
+                if (count($del_step_id_array)) {
+                    foreach ($del_step_id_array as $step_id) {
+                        $stepInstrumentTypeSchemes[$i] = StepInstrumentTypeSchemes::find("instrument_type_id = $instrument_type_id AND step_id = $step_id");
+                        $stepInstrumentTypeSchemes[$i]->delete();
+                        $del_step_instrument_type_scheme_name[] = Steps::findFirst($step_id);
+                        $i++;
+                    }
+                }
+
+                if ($i > 0) {
+                    /*
+                     * Save $oligobarcodeSchemeAllows data values.
+                     */
+                    $instrument_type->StepInstrumentTypeSchemes = $stepInstrumentTypeSchemes;
+                    if ($instrument_type->save() == false) {
+                        foreach ($instrument_type->getMessages() as $message) {
+                            $this->flashSession->error((string)$message);
+                        }
+                        return false;
+                    } else {
+                        if (count($new_step_instrument_type_scheme_step_name)) {
+                            $new_step_instrument_type_scheme_step_name_str = implode(",", $new_step_instrument_type_scheme_step_name);
+                            $this->flashSession->success('Step: ' . $new_step_instrument_type_scheme_step_name_str . ' is added.');
+                        }
+                        if (count($del_step_instrument_type_scheme_step_name)) {
+                            $del_step_instrument_type_scheme_step_name_str = implode(",", $del_step_instrument_type_scheme_step_name);
+                            $this->flashSession->success('Step: ' . $del_step_instrument_type_scheme_step_name_str . ' is removeed.');
+                        }
+
+                    }
+                }
+            }
+        } else {
+            Tag::appendTitle(' | ' . $instrument_type->name . ' | Step - Instrument Type Schemes');
+            $this->view->setVar('instrument_type', $instrument_type);
+
+            $step_instrument_type_schemes = $instrument_type->StepInstrumentTypeSchemes;
+            $this->view->setVar('step_instrument_type_schemes', $step_instrument_type_schemes);
+
+            $step_instrument_type_scheme_step_id = array();
+            foreach ($step_instrument_type_schemes as $step_instrument_type_scheme) {
+                $step_instrument_type_scheme_step_id[] = $step_instrument_type_scheme->step_id;
+            }
+            /*
+             * Create candidate step_id list whom not be joined step_instrument_type_schemes (!=$step_instrument_type_scheme_step_id[])
+             */
+            $step_instrument_type_scheme_candidate_tmp = $this->modelsManager->createBuilder()
+                ->addFrom('Steps', 'st')
+                ->where('st.step_phase_code = "FLOWCELL"');
+
+            if (count($step_instrument_type_scheme_step_id)) {
+                $step_instrument_type_scheme_candidate_tmp = $step_instrument_type_scheme_candidate_tmp
+                    ->notInWhere('st.id', $step_instrument_type_scheme_step_id);
+            }
+
+
+            $step_instrument_type_scheme_candidate = $step_instrument_type_scheme_candidate_tmp
+                ->andWhere('st.active = "Y"')
+                ->getQuery()
+                ->execute();
+            $this->view->setVar('step_instrument_type_scheme_candidate', $step_instrument_type_scheme_candidate);
+
+        }
+
+    }
+
     public function instrumentsAction()
     {
         $request = $this->request;
