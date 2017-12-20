@@ -2,7 +2,7 @@
   <div class="col-md-12">
     <ol class="breadcrumb">
       <li>{{ link_to('setting', 'Setting') }}</li>
-      <li>{{ link_to('setting/instrument_types', 'Instrument Types') }}</li>
+      <li>{{ link_to('setting/instrumentTypes', 'Instrument Types') }}</li>
       <li>{{ instrument_type.name }}</li>
       <li class="active">Step - Instrument Type Schemes</li>
     </ol>
