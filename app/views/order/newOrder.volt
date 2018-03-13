@@ -89,7 +89,7 @@
       </nav>
       <!-- /Handsontable toolbar -->
       <!--<div id="handsontable-orderSamples-body" style="overflow: hidden"></div>-->
-      <div id="handsontable-orderSamples-body"></div>
+      <div id="handsontable-orderSamples-body" style="overflow: scroll"></div>
     </div>
   </div>
   <div class="panel panel-success">
@@ -950,6 +950,7 @@
 
         var hot = new Handsontable($container, {
             stretchH: 'all',
+            height: 500,
             rowHeaders: true,
             contextMenu: false,
             minSpareRows: 1,
