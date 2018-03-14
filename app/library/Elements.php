@@ -236,11 +236,11 @@ class Elements extends Phalcon\Mvc\User\Component
      */
     public function getTrackerSideMenu()
     {
-        $controllerName = $this->view->getControllerName();
-        $actionName = $this->view->getActionName();
+        $controllerName = $this->dispatcher->getControllerName();
+        $actionName = $this->dispatcher->getActionName();
         $paramName = '';
-        if ($this->view->getParams()) {
-            $paramName = $this->view->getParams()[0];
+        if ($this->dispatcher->getParams()) {
+            $paramName = $this->dispatcher->getParams()[0];
         }
         //echo '<ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="50" data-target="#">';
         echo '<ul class="nav nav-stacked affix">';
