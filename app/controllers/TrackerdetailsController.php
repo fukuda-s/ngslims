@@ -611,6 +611,7 @@ class TrackerdetailsController extends ControllerBase
                 $step_id = $this->request->getPost("step_id", "int");
                 $project_id = $this->request->getPost("project_id", "int");
                 $cherry_picking_id = $this->request->getPost("cherry_picking_id", "int");
+                $search_query = $this->request->getPost("search_query", 'striptags');
 
                 $seqlibs_tmp = $this->modelsManager->createBuilder()
                     ->columns(array('sl.*', 'se.*', 'pt.*', 'r.*', 'it.*', 'srmt.*', 'srrt.*', 'srct.*', 'COUNT(sta.id) AS sta_count'))
@@ -625,11 +626,12 @@ class TrackerdetailsController extends ControllerBase
                     ->leftJoin('StepEntries', 'se.seqlib_id = sl.id', 'se')
                     ->leftJoin('Protocols', 'pt.id = sl.protocol_id', 'pt')
                     ->leftJoin('Steps', 'st.step_phase_code = pt.next_step_phase_code', 'st')
-                    ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta');
+                    ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
+                    ->where('st.id = :step_id:', array("step_id" => $step_id));
 
                 if ($project_id) {
                     $seqlibs_tmp = $seqlibs_tmp
-                        ->where('sl.project_id = :project_id:', array("project_id" => $project_id))
+                        ->andWhere('sl.project_id = :project_id:', array("project_id" => $project_id))
                         ->andWhere('sta.seqlib_id IS NULL')
                     ;
                 }
@@ -637,11 +639,16 @@ class TrackerdetailsController extends ControllerBase
                 if ($cherry_picking_id) {
                     $seqlibs_tmp = $seqlibs_tmp
                         ->join('CherryPickingSchemes', 'cps.seqlib_id = sl.id', 'cps')
-                        ->where('cps.cherry_picking_id = :cherry_picking_id:', array("cherry_picking_id" => $cherry_picking_id));
+                        ->andWhere('cps.cherry_picking_id = :cherry_picking_id:', array("cherry_picking_id" => $cherry_picking_id));
+                }
+
+                if ($search_query) {
+                    $seqlibs_tmp = $seqlibs_tmp
+                        ->andWhere('sl.name LIKE :search_query:', array("search_query" => '%' . $search_query. '%'));
+                    $this->view->setVar('search_query', $search_query);
                 }
 
                 $seqlibs = $seqlibs_tmp
-                    ->andWhere('st.id = :step_id:', array("step_id" => $step_id))
                     ->groupBy('sl.id, se.id, it.id, srmt.id, srrt.id, srct.id')
                     ->orderBy('sl.name ASC')
                     ->getQuery()

@@ -323,7 +323,7 @@ class TrackerController extends ControllerBase
                     ->execute();
 
                 $this->view->setVar('cherry_pickings', $cherry_pickings);
-            } else {
+            } else if ($view_type !== 'SP') {
                 $this->flashSession->error("Undefined view_type: " . $view_type);
             }
         } else {

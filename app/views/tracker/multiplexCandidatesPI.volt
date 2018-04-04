@@ -2,6 +2,7 @@
   <li class="active"><a href="#">PI</a></li>
   <li>{{ link_to('tracker/multiplexCandidates/' ~ step.id ~ '?view_type=PJ', 'Project') }}</li>
   <li>{{ link_to('tracker/multiplexCandidates/' ~ step.id ~ '?view_type=CP', 'Cherry Picking') }}</li>
+  <li>{{ link_to('tracker/multiplexCandidates/' ~ step.id ~ '?view_type=SP', 'Search Picking') }}</li>
 </ul>
 <div class="panel-group" id="projectOverview">
   {% for user in pi_users %}
