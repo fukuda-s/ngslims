@@ -98,7 +98,14 @@ li.tube-in {
 .tube-header-list {
   padding-left: 0;
   display: table-header-group;
-  list-style: none
+  list-style: none;
+}
+
+ul.tube-header-list {
+  letter-spacing: -.4em; /* 文字間を詰めて隙間をなくす */
+}
+ul.tube-header-list > li.tube {
+  letter-spacing: normal; /* 文字間を元に戻す */
 }
 
 .tube-sm-row-header {
@@ -112,6 +119,7 @@ ul.tube-list {
 ul.tube-list-row {
   display: table-row-group;
   white-space: nowrap;
+  letter-spacing: -.4em; /* 文字間を詰めて隙間をなくす */
 }
 
 div.tube-list-col {
@@ -122,16 +130,19 @@ div.tube-list-col {
 ul.tube-list-row > ul.tube-list-col {
   padding: 0;
   display: inline-block;
+  letter-spacing: normal; /* 文字間を元に戻す */
 }
 
 ul.tube-list-row > ul > li.tube-sm {
   display: inline-block;
   line-height: 18px !important;
+  letter-spacing: normal; /* 文字間を元に戻す */
 }
 
 ul.tube-list > li.tube-sm {
   display: inline-block;
   line-height: 18px !important;
+  letter-spacing: normal; /* 文字間を元に戻す */
 }
 
 .tube-dualmultiplex > .tube-header-list > .tube-sm-row-header, .tube-sm-col-header {
