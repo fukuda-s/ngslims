@@ -224,6 +224,9 @@ class Security extends Plugin
                     'account',
                     'password'
                 ),
+                'summary' => array(
+                    'instrument'
+                ),
                 'trackerdetails' => array(
                     'showTableSeqlanes'
                 ),
