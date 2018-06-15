@@ -142,9 +142,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Users');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $users = $this->modelsManager->createBuilder()
                 ->columns(array(
@@ -276,9 +275,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Labs');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $labs = Labs::find();
             $this->view->setVar('labs', $labs);
@@ -452,9 +450,8 @@ class SettingController extends ControllerBase
             Tag::appendTitle(' | Projects');
 
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $projects = Projects::find();
             $labs = Labs::find("active = 'Y'");
@@ -532,9 +529,8 @@ class SettingController extends ControllerBase
             Tag::appendTitle(' | Project Types');
 
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $project_types = ProjectTypes::find();
 
@@ -756,9 +752,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Steps');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $steps = $this->modelsManager->createBuilder()
                 ->addFrom('Steps', 's')
@@ -862,9 +857,8 @@ class SettingController extends ControllerBase
             Tag::appendTitle(' | Protocols');
 
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $protocols = Protocols::find();
             $step_prep = Steps::find("step_phase_code = 'PREP'");
@@ -1038,9 +1032,8 @@ class SettingController extends ControllerBase
             Tag::appendTitle(' | OligobarcodeSchemes');
 
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $oligobarcode_schemes = OligobarcodeSchemes::find();
 
@@ -1259,9 +1252,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Sample Types');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $sample_types = SampleTypes::find(array(
                 "order" => "nucleotide_type ASC, sort_order ASC"
@@ -1336,9 +1328,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Sample Property Types');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $sample_property_types = SamplePropertyTypes::find();
 
@@ -1405,9 +1396,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Sample Locations');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $sample_locations = SampleLocations::find();
 
@@ -1487,9 +1477,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Organisms');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $organisms = Organisms::find(array(
                 "order" => "sort_order IS NULL ASC, sort_order ASC"
@@ -1578,9 +1567,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Instrument Types');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $instrument_types = InstrumentTypes::find(array(
                 "order" => "sort_order ASC"
@@ -1761,9 +1749,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Instruments');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $instruments = Instruments::find(array(
                 "order" => "nickname ASC"
@@ -1953,9 +1940,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Seq Run Mode Types');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $seq_runmode_types = SeqRunmodeTypes::find(array(
                 "order" => "sort_order ASC"
@@ -2029,9 +2015,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Seq Run Mode Types');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $seq_runread_types = SeqRunreadTypes::find(array(
                 "order" => "sort_order ASC"
@@ -2104,9 +2089,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Seq Run Mode Types');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $seq_runcycle_types = SeqRuncycleTypes::find(array(
                 "order" => "sort_order ASC"
@@ -2237,9 +2221,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Seqtemplates');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $query = $this->request->get('q', 'striptags');
             $this->view->setVar('query', $query);
@@ -2558,9 +2541,8 @@ class SettingController extends ControllerBase
         } else {
             Tag::appendTitle(' | Flowcells');
             $this->assets
-                ->addJs('js/DataTables/media/js/jquery.dataTables.min.js')
-                ->addJs('js/DataTables/media/js/dataTables.bootstrap.js')
-                ->addCss('js/DataTables/media/css/dataTables.bootstrap.css');
+                ->addJs('js/DataTables/datatables.min.js')
+                ->addCss('js/DataTables/datatables.min.css');
 
             $flowcells = Flowcells::find(array(
                 "order" => "created_at DESC"
