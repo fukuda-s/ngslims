@@ -159,9 +159,9 @@ class TrackerdetailsController extends ControllerBase
     {
         $this->assets
             ->addJs('js/handsontable/dist/handsontable.full.min.js')
-            ->addJs('js/handsontable/demo/js/moment/moment.js')
-            ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
-            ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
+            ->addJs('js/handsontable/dist/moment/moment.js')
+            ->addJs('js/handsontable/dist/pikaday/pikaday.js')
+            ->addCss('js/handsontable/dist/pikaday/pikaday.css')
             ->addJs('js/bootstrap-multiselect/bootstrap-multiselect.js')
             ->addCss('js/handsontable/dist/handsontable.full.min.css');
 
@@ -379,10 +379,10 @@ class TrackerdetailsController extends ControllerBase
     {
         $this->assets
             ->addJs('js/handsontable/dist/handsontable.full.min.js')
-            ->addJs('js/handsontable/demo/js/moment/moment.js')
-            ->addJs('js/handsontable/demo/js/pikaday/pikaday.js')
+            ->addJs('js/handsontable/dist/moment/moment.js')
+            ->addJs('js/handsontable/dist/pikaday/pikaday.js')
             ->addJs('js/numeral.min.js')
-            ->addCss('js/handsontable/demo/js/pikaday/css/pikaday.css')
+            ->addCss('js/handsontable/dist/pikaday/pikaday.css')
             ->addCss('js/handsontable/dist/handsontable.full.min.css');
 
         $type = $this->filter->sanitize($type, array("striptags"));
