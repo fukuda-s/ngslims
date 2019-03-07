@@ -200,6 +200,7 @@ $(document).ready(function () {
   var $container = $("#handsontable-showSeqlibs-body");
 
   $container.handsontable({
+    licenseKey: 'non-commercial-and-evaluation',
     stretchH: 'all',
     height: 400,
     rowHeaders: false,

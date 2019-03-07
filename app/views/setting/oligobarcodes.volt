@@ -141,6 +141,7 @@
         var autosaveNotification = String();
 
         var hot = new Handsontable($container, {
+            licenseKey: 'non-commercial-and-evaluation',
             stretchH: 'all',
             height: 500,
             rowHeaders: false,

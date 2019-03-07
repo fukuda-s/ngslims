@@ -974,6 +974,7 @@
         var $samplePropertyTypesColumnsStartIdx = 10; //@TODO First index number(begin by 0) of sample_property_types
 
         var hot = new Handsontable($container, {
+            licenseKey: 'non-commercial-and-evaluation',
             stretchH: 'all',
             height: 500,
             rowHeaders: true,

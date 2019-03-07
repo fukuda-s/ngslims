@@ -111,6 +111,7 @@ $(document).ready(function () {
   var autosaveNotification = String();
   var isDirtyAr = [];
   $container.handsontable({
+    licenseKey: 'non-commercial-and-evaluation',
     stretchH: 'all',
     rowHeaders: true,
     columns: [
