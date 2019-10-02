@@ -27,6 +27,8 @@ services:
       MYSQL_USER: ngslims
       MYSQL_PASSWORD: ngslims123
       TZ: "Asia/Tokyo"
+    ports:
+      - "33060:3306"
     restart: always
     networks:
       - ngslims-net
@@ -39,6 +41,8 @@ services:
       args:
         buildno: 1
     image: ngslims
+    volumes:
+      - ".:/var/www/html/ngsLIMS"
     environment:
       TZ: "Asia/Tokyo"
     ports:

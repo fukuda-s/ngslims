@@ -56,8 +56,8 @@ COPY build/nginx.conf /etc/nginx/nginx.conf
 COPY build/ngslims_server.conf /etc/nginx/conf.d/ngslims_server.conf
 RUN /bin/mv -f /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.org
 
-ADD . /var/www/html/ngsLIMS
-COPY build/config_docker.ini /var/www/html/ngsLIMS/app/config/config.ini
+#ADD . /var/www/html/ngsLIMS
+#COPY build/config_docker.ini /var/www/html/ngsLIMS/app/config/config.ini
 
 RUN yum clean all
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
