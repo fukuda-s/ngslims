@@ -38,7 +38,7 @@
   </li>
 </ol>
 {{ flashSession.output() }}
-{{ form('tracker/sequenceSetupSave', 'id': 'sequenceSetupForm', 'onbeforesubmit': 'return false') }}
+{{ form_legacy('tracker/sequenceSetupSave', 'id': 'sequenceSetupForm', 'onbeforesubmit': 'return false') }}
 <div class="row">
   <div class="col-md-12">
     <h3>Confrim Sequence Run Setup</h3>

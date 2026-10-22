@@ -32,7 +32,7 @@
 <p>Send us a message and let us know how we can help. Please be as descriptive as possible as it will help us serve you
   better.</p>
 
-{{ form('contact/send', 'class': 'form-horizontal') }}
+{{ form_legacy('contact/send', 'class': 'form-horizontal') }}
 <fieldset>
   <div class="control-group">
     <label class="control-label" for="name">Your Full Name</label>

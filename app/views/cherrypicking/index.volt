@@ -52,7 +52,7 @@
       <div class="col-md-10">
       </div>
       <div class="col-md-2">
-        {{ form('cherrypicking/confirm', 'id': 'pick_result') }}
+        {{ form_legacy('cherrypicking/confirm', 'id': 'pick_result') }}
         <button id="cherrypick-seqlibs-button" type="submit" class="btn btn-primary">Pick Seqlibs &raquo;</button>
         {{ hidden_field('cherrypick-seqlibs') }}
         {{ hidden_field('pick_query_hidden') }}

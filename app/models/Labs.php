@@ -24,9 +24,9 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\Email as Email;
-use Phalcon\Validation\Validator\Uniqueness as Uniqueness;
+use Phalcon\Filter\Validation;
+use Phalcon\Filter\Validation\Validator\Email as Email;
+use Phalcon\Filter\Validation\Validator\Uniqueness as Uniqueness;
 use Phalcon\Mvc\Model\Behavior\SoftDelete;
 
 class Labs extends \Phalcon\Mvc\Model

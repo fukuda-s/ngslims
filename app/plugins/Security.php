@@ -24,19 +24,19 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-use Phalcon\Events\Event, Phalcon\Mvc\User\Plugin, Phalcon\Mvc\Dispatcher, Phalcon\Acl;
+use Phalcon\Events\Event, Phalcon\Di\Injectable, Phalcon\Mvc\Dispatcher, Phalcon\Acl\Enum as AclEnum;
 
 /**
  * Security
  *
  * This is the security plugin which controls that users only have access to the modules they're assigned to
  */
-class Security extends Plugin
+class Security extends Injectable
 {
 
     public function __construct($dependencyInjector)
     {
-        $this->_dependencyInjector = $dependencyInjector;
+        $this->setDI($dependencyInjector);
     }
 
     public function getAcl()
@@ -45,7 +45,7 @@ class Security extends Plugin
 
             $acl = new Phalcon\Acl\Adapter\Memory();
 
-            $acl->setDefaultAction(Phalcon\Acl::DENY);
+            $acl->setDefaultAction(AclEnum::DENY);
 
             // Register roles
             $roles = array(
@@ -218,7 +218,7 @@ class Security extends Plugin
                 )
             );
             foreach ($privateResources as $resource => $actions) {
-                $acl->addResource(new Phalcon\Acl\Resource($resource), $actions);
+                $acl->addComponent(new Phalcon\Acl\Component($resource), $actions);
             }
 
             /*
@@ -229,7 +229,7 @@ class Security extends Plugin
                 "columns" => array("platform_code")
             ));
             foreach ($platforms as $platform) {
-                $acl->addResource(new Phalcon\Acl\Resource('samplesheet'), $platform->platform_code);
+                $acl->addComponent(new Phalcon\Acl\Component('samplesheet'), $platform->platform_code);
                 $acl->allow('Users', 'samplesheet', $platform->platform_code);
             }
 
@@ -261,7 +261,7 @@ class Security extends Plugin
                 )
             );
             foreach ($publicResources as $resource => $actions) {
-                $acl->addResource(new Phalcon\Acl\Resource($resource), $actions);
+                $acl->addComponent(new Phalcon\Acl\Component($resource), $actions);
             }
 
             // Grant access to public areas to both Users and Guests
@@ -303,7 +303,7 @@ class Security extends Plugin
         $acl = $this->getAcl();
 
         $allowed = ( $acl->isAllowed($role, $controller, $action) ) ? $acl->isAllowed($role, $controller, $action) : 'FALSE';
-        if ($allowed != Acl::ALLOW) {
+        if ($allowed != AclEnum::ALLOW) {
             $this->flash->error("You don't have access to this module with : " . $allowed . ", " . $role . ", " . $controller . ", " . $action);
             $dispatcher->forward(array(
                 'controller' => 'index',

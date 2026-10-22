@@ -33,12 +33,12 @@ error_reporting(E_ALL);
  */
 $config = new Phalcon\Config\Adapter\Ini(__DIR__ . '/../app/config/config.ini');
 
-$loader = new \Phalcon\Loader();
+$loader = new \Phalcon\Autoload\Loader();
 
 /**
  * We're a registering a set of directories taken from the configuration file
  */
-$loader->registerDirs(
+$loader->setDirectories(
     array(
         __DIR__ . '/' . $config->application->controllersDir,
         __DIR__ . '/' . $config->application->pluginsDir,
@@ -50,7 +50,7 @@ $loader->registerDirs(
 /**
  * The FactoryDefault Dependency Injector automatically register the right services providing a full stack framework
  */
-$di = new \Phalcon\DI\FactoryDefault();
+$di = new \Phalcon\Di\FactoryDefault();
 
 /**
  * We register the events manager
@@ -98,12 +98,12 @@ $di->set('view', function () use ($config) {
 /**
  * Setting up volt
  */
-$di->set('volt', function ($view, $di) {
+$di->set('volt', function ($view) use ($di) {
 
     $volt = new \Phalcon\Mvc\View\Engine\Volt($view, $di);
 
     $volt->setOptions(array(
-        "compiledPath" => "../cache/volt/"
+        "path" => __DIR__ . "/../cache/volt/"
     ));
 
     $compiler = $volt->getCompiler();
@@ -137,20 +137,22 @@ $di->set('db', function () use ($config) {
 $di->set('modelsMetadata', function () use ($config) {
     if (isset($config->models->metadata)) {
         $metaDataConfig = $config->models->metadata;
-        $metadataAdapter = 'Phalcon\Mvc\Model\Metadata\\' . $metaDataConfig->adapter;
+        $metadataAdapter = 'Phalcon\Mvc\Model\MetaData\\' . $metaDataConfig->adapter;
         return new $metadataAdapter();
     }
-    return new Phalcon\Mvc\Model\Metadata\Memory();
+    return new Phalcon\Mvc\Model\MetaData\Memory();
 });
 
 /**
  * Start the session the first time some component request the session service
  */
-$di->set('session', function () {
-    $session = new Phalcon\Session\Adapter\Files();
-    $session->setOptions(array(
+$di->setShared('session', function () {
+    $session = new Phalcon\Session\Manager(array(
         'uniqueId' => 'ngslims'
     ));
+    $session->setAdapter(new Phalcon\Session\Adapter\Stream(array(
+        'savePath' => ini_get('session.save_path') ?: '/var/lib/php/sessions'
+    )));
     $session->start();
     return $session;
 });
@@ -158,8 +160,9 @@ $di->set('session', function () {
 /**
  * Register the flash service with custom CSS classes
  */
-$di->set('flash', function () {
-    $flash = new \Phalcon\Flash\Direct(array(
+$di->set('flash', function () use ($di) {
+    $flash = new \Phalcon\Flash\Direct($di->getShared('escaper'));
+    $flash->setCssClasses(array(
         'success' => 'alert alert-success',
         'notice' => 'alert alert-info',
         'warning' => 'alert alert-warning',
@@ -171,8 +174,9 @@ $di->set('flash', function () {
 /**
  * Register the flash service with custom CSS classes
  */
-$di->set('flashSession', function () {
-    $flash = new Phalcon\Flash\Session(array(
+$di->set('flashSession', function () use ($di) {
+    $flash = new Phalcon\Flash\Session($di->getShared('escaper'), $di->getShared('session'));
+    $flash->setCssClasses(array(
         'success' => 'alert alert-success',
         'notice' => 'alert alert-info',
         'warning' => 'alert alert-warning',
@@ -191,9 +195,9 @@ $di->set('elements', function () {
 /**
  * Register custom user filter for sanitizing
  */
-$di->set('filter', function () {
-    $filter = new Phalcon\Filter();
-    $filter->add('name_filter', function ($value) {
+$di->setShared('filter', function () {
+    $filter = (new Phalcon\Filter\FilterFactory())->newInstance();
+    $filter->set('name_filter', function ($value) {
         $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
         $value = preg_replace('/\.+/', '.', $value);
         $value = preg_replace('/\.+$/', '', $value);
@@ -204,9 +208,11 @@ $di->set('filter', function () {
 
 $application = new \Phalcon\Mvc\Application($di);
 try {
-    $response = $application->handle();
-    $response->send();
-} catch (Phalcon\Exception $e) {
+    $response = $application->handle($_GET['_url'] ?? '/');
+    if ($response instanceof Phalcon\Http\ResponseInterface) {
+        $response->send();
+    }
+} catch (\Exception $e) {
     echo $e->getMessage();
 } catch (PDOException $e) {
     echo $e->getMessage();

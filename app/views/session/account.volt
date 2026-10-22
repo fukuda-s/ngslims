@@ -29,7 +29,7 @@
   <h2>Account Setting</h2>
 </div>
 
-{{ form('session/account', 'id': 'accountForm', 'class': 'form-horizontal', 'onbeforesubmit': 'return false') }}
+{{ form_legacy('session/account', 'id': 'accountForm', 'class': 'form-horizontal', 'onbeforesubmit': 'return false') }}
 <fieldset>
   <div class="control-group">
     <label class="control-label" for="firstname">Your First Name</label>

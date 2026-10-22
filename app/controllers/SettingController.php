@@ -24,11 +24,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-use Phalcon\Tag, Phalcon\Acl, Phalcon\Filter;
+use Phalcon\Tag, Phalcon\Acl, Phalcon\Filter\Filter;
 
 //Custom Filter for name value.
 $filter = new Filter();
-$filter->add('name_filter', function ($value) {
+$filter->set('name_filter', function ($value) {
     $value = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $value);
     $value = preg_replace('/\.+/', '.', $value);
     $value = preg_replace('/\.+$/', '', $value);
@@ -324,7 +324,7 @@ class SettingController extends ControllerBase
                 $i = 0;
                 $new_users_name = array();
                 $del_users_name = array();
-                if (count($new_users_id_array)) {
+                if (!empty($new_users_id_array)) {
                     foreach ($new_users_id_array as $user_id) {
                         $labUsers[$i] = new LabUsers();
                         $labUsers[$i]->lab_id = $lab->id;
@@ -333,7 +333,7 @@ class SettingController extends ControllerBase
                         $i++;
                     }
                 }
-                if (count($del_users_id_array)) {
+                if (!empty($del_users_id_array)) {
                     foreach ($del_users_id_array as $user_id) {
                         $labUsers[$i] = LabUsers::find("user_id = $user_id AND lab_id = $lab_id");
                         $labUsers[$i]->delete();
@@ -620,7 +620,7 @@ class SettingController extends ControllerBase
                 $i = 0;
                 $new_users_name = array();
                 $del_users_name = array();
-                if (count($new_users_id_array)) {
+                if (!empty($new_users_id_array)) {
                     foreach ($new_users_id_array as $user_id_str) {
                         $user_id_array = explode('-', $user_id_str); // $user_id_str is <lab_id>-<user_id>
                         $projectUsers[$i] = new ProjectUsers();
@@ -630,7 +630,7 @@ class SettingController extends ControllerBase
                         $i++;
                     }
                 }
-                if (count($del_users_id_array)) {
+                if (!empty($del_users_id_array)) {
                     foreach ($del_users_id_array as $user_id_str) {
                         $user_id_array = explode('-', $user_id_str); // $user_id_str is <lab_id>-<user_id>
                         $projectUsers[$i] = ProjectUsers::find("project_id = $project_id AND user_id = $user_id_array[0]");
@@ -712,10 +712,10 @@ class SettingController extends ControllerBase
                 $step_id = $request->getPost('step_id', 'int');
                 $name = $request->getPost('name', array('striptags', 'trim'));
                 $short_name = $request->getPost('short_name', array('striptags', 'name_filter'));
-                $step_phase_code = $request->getPost('step_phase_code', array('striptags', 'alphanum', 'trim', 'upper'));
+                $step_phase_code = $request->getPost('step_phase_code', array('striptags', 'alnum', 'trim', 'upper'));
                 $seq_runmode_type_id = ($request->getPost('seq_runmode_type_id', 'int')) ? $request->getPost('seq_runmode_type_id', 'int') : null;
-                $platform_code = ($request->getPost('platform_code', array('striptags', 'alphanum', 'trim', 'upper'))) ? $request->getPost('platform_code', array('striptags', 'alphanum', 'trim', 'upper')) : null;
-                $nucleotide_type = $request->getPost('nucleotide_type', array('striptags', 'alphanum', 'trim', 'upper'));
+                $platform_code = ($request->getPost('platform_code', array('striptags', 'alnum', 'trim', 'upper'))) ? $request->getPost('platform_code', array('striptags', 'alnum', 'trim', 'upper')) : null;
+                $nucleotide_type = $request->getPost('nucleotide_type', array('striptags', 'alnum', 'trim', 'upper'));
                 $sort_order = $request->getPost('sort_order', 'int');
                 $active = ($request->getPost('active', array('striptags'))) ? $request->getPost('active', array('striptags')) : null;
 
@@ -911,7 +911,7 @@ class SettingController extends ControllerBase
                 $new_oligobarcode_scheme_name = array();
                 $del_oligobarcode_scheme_name = array();
                 $has_oligobarcodeB = ($protocol->next_step_phase_code == 'DUALMULTIPLEX') ? 'Y' : 'N';
-                if (count($new_oligobarcode_scheme_id_array)) {
+                if (!empty($new_oligobarcode_scheme_id_array)) {
                     foreach ($new_oligobarcode_scheme_id_array as $oligobarcode_scheme_id) {
                         $oligobarcodeSchemeAllows[$i] = new OligobarcodeSchemeAllows();
                         $oligobarcodeSchemeAllows[$i]->oligobarcode_scheme_id = $oligobarcode_scheme_id;
@@ -921,7 +921,7 @@ class SettingController extends ControllerBase
                         $i++;
                     }
                 }
-                if (count($del_oligobarcode_scheme_id_array)) {
+                if (!empty($del_oligobarcode_scheme_id_array)) {
                     foreach ($del_oligobarcode_scheme_id_array as $oligobarcode_scheme_id) {
                         $oligobarcodeSchemeAllows[$i] = OligobarcodeSchemeAllows::find("protocol_id = $protocol_id AND oligobarcode_scheme_id = $oligobarcode_scheme_id");
                         $oligobarcodeSchemeAllows[$i]->delete();
@@ -1083,7 +1083,7 @@ class SettingController extends ControllerBase
                 $i = 0;
                 $new_oligobarcode_name = array();
                 $del_oligobarcode_name = array();
-                if (count($new_oligobarcode_id_array)) {
+                if (!empty($new_oligobarcode_id_array)) {
                     foreach ($new_oligobarcode_id_array as $oligobarcode_id) {
                         $oligobarcodeSchemeOligobarcodes[$i] = Oligobarcodes::findFirst($oligobarcode_id);
                         $oligobarcodeSchemeOligobarcodes[$i]->oligobarcode_scheme_id = $oligobarcode_scheme_id;
@@ -1091,7 +1091,7 @@ class SettingController extends ControllerBase
                         $i++;
                     }
                 }
-                if (count($del_oligobarcode_id_array)) {
+                if (!empty($del_oligobarcode_id_array)) {
                     foreach ($del_oligobarcode_id_array as $oligobarcode_id) {
                         $oligobarcode = Oligobarcodes::findFirst($oligobarcode_id);
                         $oligobarcode->oligobarcode_scheme_id = null;
@@ -1629,7 +1629,7 @@ class SettingController extends ControllerBase
                 $i = 0;
                 $new_step_instrument_type_scheme_step_name = array();
                 $del_step_instrument_type_scheme_step_name = array();
-                if (count($new_step_id_array)) {
+                if (!empty($new_step_id_array)) {
                     foreach ($new_step_id_array as $step_id) {
                         $stepInstrumentTypeSchemes[$i] = new StepInstrumentTypeSchemes();
                         $stepInstrumentTypeSchemes[$i]->step_id = $step_id;
@@ -1638,7 +1638,7 @@ class SettingController extends ControllerBase
                         $i++;
                     }
                 }
-                if (count($del_step_id_array)) {
+                if (!empty($del_step_id_array)) {
                     foreach ($del_step_id_array as $step_id) {
                         $stepInstrumentTypeSchemes[$i] = StepInstrumentTypeSchemes::find("instrument_type_id = $instrument_type_id AND step_id = $step_id");
                         $stepInstrumentTypeSchemes[$i]->delete();
@@ -1878,15 +1878,15 @@ class SettingController extends ControllerBase
 
                 if ($seq_run_type_scheme->active == 'Y') {
                     if (empty($checkbox_seq_runmode_type_id_checked[$checkbox_seq_runmode_type_id])) { //Check for duplicates
-                        $this->tag->setDefault($checkbox_seq_runmode_type_id, true);
+                        \Phalcon\Tag::setDefault($checkbox_seq_runmode_type_id, true);
                         $checkbox_seq_runmode_type_id_checked[$checkbox_seq_runmode_type_id] = 1;
                     }
                     if (empty($checkbox_seq_runread_type_id_checked[$checkbox_seq_runread_type_id])) { //Check for duplicates
-                        $this->tag->setDefault($checkbox_seq_runread_type_id, true);
+                        \Phalcon\Tag::setDefault($checkbox_seq_runread_type_id, true);
                         $checkbox_seq_runread_type_id_checked[$checkbox_seq_runread_type_id] = 1;
                     }
                     if (empty($checkbox_seq_runcycle_type_id_checked[$checkbox_seq_runcycle_type_id])) { //Check for duplicates
-                        $this->tag->setDefault($checkbox_seq_runcycle_type_id, true);
+                        \Phalcon\Tag::setDefault($checkbox_seq_runcycle_type_id, true);
                         $checkbox_seq_runcycle_type_id_checked[$checkbox_seq_runcycle_type_id] = 1;
                     }
                 }
@@ -2394,7 +2394,7 @@ class SettingController extends ControllerBase
                                 "seqlib_id" => $seqlib_id
                             )
                         ));
-                        if (count($seqtemplateAssocSeqlib)) {
+                        if ($seqtemplateAssocSeqlib) {
                             if ($seqtemplateAssocSeqlib->delete() == false) {
                                 foreach ($seqtemplateAssocSeqlib->getMessages() as $message) {
                                     $this->flashSession->error((string)$message);
@@ -2694,7 +2694,7 @@ class SettingController extends ControllerBase
                 $i = 0;
                 $new_seqtemplate_name = array();
                 $del_seqlane_name = array();
-                if (count($seqlane_array)) {
+                if (!empty($seqlane_array)) {
                     foreach ($seqlane_array as $seqlane_index => $seqlane_obj) {
                         $id_str = $this->filter->sanitize($seqlane_obj->id_str, 'striptags');
                         $seqlane_id = $this->filter->sanitize($seqlane_obj->seqlane_id, 'int');

@@ -57,7 +57,7 @@ class SessionController extends ControllerBase
 
             $firstname = $request->getPost('firstname', array('string', 'striptags'));
             $lastname = $request->getPost('lastname', array('string', 'striptags'));
-            $username = $request->getPost('username', 'alphanum');
+            $username = $request->getPost('username', 'alnum');
             $email = $request->getPost('email', 'email');
             $password = $request->getPost('password');
             $repeatPassword = $this->request->getPost('repeatPassword');
@@ -155,7 +155,7 @@ class SessionController extends ControllerBase
                     }
                 }
 
-                $username = $this->request->getPost('email', 'alphanum');
+                $username = $this->request->getPost('email', 'alnum');
                 $user = Users::findFirst("username='$username' AND active='Y'");
                 if ($user != false) {
                     if ($this->security->checkHash($password, $user->password)) {
@@ -199,7 +199,7 @@ class SessionController extends ControllerBase
         $user = Users::findFirst($auth['id']);
 
         if ($user == false) {
-            $this->_forward('index/index');
+            $this->dispatcher->forward(array('controller' => 'index', 'action' => 'index'));
         }
 
         if (!$request->isPost()) {

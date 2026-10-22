@@ -32,7 +32,7 @@
       <div class="page-header">
         <h2>Log In</h2>
       </div>
-      {{ form('session/start', 'role': 'form') }}
+      {{ form_legacy('session/start', 'role': 'form') }}
       <fieldset>
 
         <input type="hidden" name="<?php echo $this->security->getTokenKey() ?>"

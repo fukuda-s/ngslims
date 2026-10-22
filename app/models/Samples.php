@@ -149,11 +149,6 @@ class Samples extends \Phalcon\Mvc\Model
      */
     public $description;
 
-    public function getSource()
-    {
-        return 'samples';
-    }
-
     public function columnMap()
     {
         return array(
@@ -182,6 +177,7 @@ class Samples extends \Phalcon\Mvc\Model
 
     public function initialize()
     {
+        $this->setSource('samples');
         $this->hasOne('taxonomy_id', 'Organisms', 'taxonomy_id');
         $this->hasOne('project_id', 'Projects', 'id');
         $this->hasOne('request_id', 'Requests', 'id');

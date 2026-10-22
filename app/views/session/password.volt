@@ -29,7 +29,7 @@
   <h2>Password Setting</h2>
 </div>
 
-{{ form('session/password', 'id': 'passwordForm', 'class': 'form-horizontal', 'onbeforesubmit': 'return false') }}
+{{ form_legacy('session/password', 'id': 'passwordForm', 'class': 'form-horizontal', 'onbeforesubmit': 'return false') }}
 <fieldset>
   <div class="form-group">
     <label class="col-sm-2 control-label" for="newPassword">New Password</label>

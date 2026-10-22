@@ -36,7 +36,7 @@
   </li>
 </ol>
 {{ flashSession.output() }}
-{{ form('tracker/sequenceSetupConfirm/' ~ instrument_type.id, 'id': 'sequenceSetupForm', 'onbeforesubmit': 'return false') }}
+{{ form_legacy('tracker/sequenceSetupConfirm/' ~ instrument_type.id, 'id': 'sequenceSetupForm', 'onbeforesubmit': 'return false') }}
 <div class="row">
 <div class="col-md-12">
   <div class="panel panel-primary" id="sequencer-panel">

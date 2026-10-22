@@ -31,7 +31,7 @@ use Phalcon\Tag, Phalcon\Mvc\Url;
  *
  * Helps to build UI elements for the application
  */
-class Elements extends Phalcon\Mvc\User\Component
+class Elements extends Phalcon\Di\Injectable
 {
 
     private $_headerMenu = array(

@@ -29,7 +29,7 @@
   <h2>Register for ngsLIMS</h2>
 </div>
 
-{{ form('session/register', 'id': 'registerForm', 'class': 'form-horizontal', 'onbeforesubmit': 'return false') }}
+{{ form_legacy('session/register', 'id': 'registerForm', 'class': 'form-horizontal', 'onbeforesubmit': 'return false') }}
 <fieldset>
   <div class="control-group">
     <label class="control-label" for="firstname">Your First Name</label>
