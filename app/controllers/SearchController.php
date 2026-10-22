@@ -76,14 +76,18 @@ class SearchController extends ControllerBase
             ->leftJoin('SeqRuncycleTypes', 'srct.id = srts.seq_runcycle_type_id', 'srct')
             ->leftJoin('SeqDemultiplexResults', 'sdr.seqlib_id = sl.id AND sdr.seqlane_id = slane.id', 'sdr');
 
-        foreach ($terms as $term) {
-            $result_tmp = $result_tmp
-                ->orWhere('p.name LIKE :query:', array("query" => '%' . $term . '%'))
-                ->orWhere('s.name LIKE :query:', array("query" => '%' . $term . '%'))
-                ->orWhere('sl.name LIKE :query:', array("query" => '%' . $term . '%'))
-                ->orWhere('st.name LIKE :query:', array("query" => '%' . $term . '%'))
-                ->orWhere('fc.name LIKE :query:', array("query" => '%' . $term . '%'));
-        }
+	foreach ($terms as $term) {
+	    $result_tmp = $result_tmp
+		->orWhere("p.name LIKE :query:
+        	        OR s.name LIKE :query:
+                 	OR sl.name LIKE :query:
+                  	OR st.name LIKE :query:
+                  	OR fc.name LIKE :query:",
+		[
+			"query" => '%' . $term . '%'
+		]
+	    );
+	}
         $result = $result_tmp->orderBy(array(
             'p.name',
             'fc.run_started_date',

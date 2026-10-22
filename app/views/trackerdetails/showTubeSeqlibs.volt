@@ -42,7 +42,7 @@
       <button type="button" class="clearfix btn btn-default btn-sm pull-right" id="select-all">Select All</button>
     </div>
   </div>
-  {% if seqlibs|length > 300 %}
+  {% if seqlibs|length > 400 %}
     <div class="alert alert-danger" role="alert">
       {{ seqlibs|length }} of seqlibs. Too long!
     </div>

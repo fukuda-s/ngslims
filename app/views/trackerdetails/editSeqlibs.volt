@@ -115,7 +115,7 @@
           });
 
       function getOligobarcodeAr(data) {
-          //console.log("stringified:"+JSON.stringify(data));
+          console.log("stringified:"+JSON.stringify(data));
           var parseAr = JSON.parse(JSON.stringify(data));
           //alert(parseAr);
           oligobarcodeAAr.length = 0;

@@ -646,7 +646,8 @@ class TrackerdetailsController extends ControllerBase
                     ->leftJoin('Protocols', 'pt.id = sl.protocol_id', 'pt')
                     ->leftJoin('Steps', 'st.step_phase_code = pt.next_step_phase_code', 'st')
                     ->leftJoin('SeqtemplateAssocs', 'sta.seqlib_id = sl.id', 'sta')
-                    ->where('st.id = :step_id:', array("step_id" => $step_id));
+                    ->where('st.id = :step_id:', array("step_id" => $step_id))
+                    ->andWhere('se.status != :status:', array("status" => "On Hold"));
 
                 if ($project_id) {
                     $seqlibs_tmp = $seqlibs_tmp
@@ -669,7 +670,7 @@ class TrackerdetailsController extends ControllerBase
 
                 $seqlibs = $seqlibs_tmp
                     ->groupBy('sl.id, se.id, it.id, srmt.id, srrt.id, srct.id')
-                    ->orderBy('sl.name ASC')
+                    ->orderBy('sl.id ASC')
                     ->getQuery()
                     ->execute();
 

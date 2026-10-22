@@ -66,15 +66,13 @@
         <th>Total</th>
         <th>PF</th>
         <th>PF(%)</th>
+	<th>Sample Status</th>
+	<th>Seqlib Status</th>
       </tr>
       </thead>
       <tbody>
       {% for data in datas %}
-        {% if data.sample_status == 'On Hold' or data.seqlib_status == 'On Hold' %}
-          {% continue %}
-        {% else %}
-          <tr id="sample_id_{{ data.sample_id }}">
-        {% endif %}
+      <tr id="sample_id_{{ data.sample_id }}">
         <td>{{ data.sample_name }}</td>
         <td>{{ data.sample_type }}</td>
         <td>{{ data.cell_type }}</td>
@@ -120,6 +118,8 @@
           <td></td>
           <td></td>
         {% endif %}
+          <td>{{ data.sample_status }}</td>
+          <td>{{ data.seqlib_status }}</td>
         </tr>
       {% endfor %}
       </tbody>
