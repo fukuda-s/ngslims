@@ -29,4 +29,21 @@ class LegacyFunctions
 
         return str_replace(array('"', "'"), array('&#34;', '&#39;'), strip_tags($value));
     }
+
+    /**
+     * "int" filter of Phalcon 3: a string of digits, "+" and "-" ("" for empty or non-numeric input).
+     * Phalcon 5 casts to int, so "" and null become 0 (ex. is_numeric() checks change).
+     */
+    public static function sanitizeInt($value): string
+    {
+        return filter_var((string)$value, FILTER_SANITIZE_NUMBER_INT);
+    }
+
+    /**
+     * "float" filter of Phalcon 3: a string of digits, "+", "-" and "." ("" for empty input).
+     */
+    public static function sanitizeFloat($value): string
+    {
+        return filter_var((string)$value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+    }
 }
