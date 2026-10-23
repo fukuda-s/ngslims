@@ -24,5 +24,5 @@
   -->
 
 <footer>
-  <p>Copyright &copy; 2014-2019 Genome Science Division, RCAST, Univ.Tokyo. All Rights Reserved.</p>
+  <p>Copyright &copy; 2014-2026 Genome Science &amp; Medicine Division, RCAST, Univ.Tokyo. All Rights Reserved</p>
 </footer>
