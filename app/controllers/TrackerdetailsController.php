@@ -728,7 +728,7 @@ class TrackerdetailsController extends ControllerBase
     }
 
     public
-    function showTableSeqlanesAction($flowcell_name)
+    function showTableSeqlanesAction($flowcell_name = '')
     {
         //$this->view->cleanTemplateAfter()->setLayout('main');
 

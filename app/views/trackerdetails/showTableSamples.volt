@@ -84,7 +84,7 @@
         <td>{{ data.oligobarcodeA_seq }}</td>
         <td>{{ data.oligobarcodeB_name }}</td>
         <td>{{ data.oligobarcodeB_seq }}</td>
-        <td>{{ link_to('trackerdetails/showTableSeqlanes/' ~ data.flowcell_name, data.flowcell_name ) }}</td>
+        <td>{% if data.flowcell_name is not empty %}{{ link_to('trackerdetails/showTableSeqlanes/' ~ data.flowcell_name, data.flowcell_name ) }}{% endif %}</td>
         <td>{{ data.seqlane_num }}</td>
         {% if data.qual_date is defined %}
           <td>{{ date('Y-m-d', strtotime(data.qual_date)) }}</td>
