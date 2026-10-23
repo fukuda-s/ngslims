@@ -120,6 +120,14 @@ $di->set('volt', function ($view) use ($di) {
         return 'LegacyTag::linkTo([' . $resolvedArgs . '])';
     });
 
+    // Phalcon 5 does not wrap the arguments of select()/select_static() in an array,
+    // so named arguments ('class': ...) compile to invalid PHP
+    foreach (array('select' => 'select', 'select_static' => 'selectStatic') as $function => $method) {
+        $compiler->addFunction($function, function ($resolvedArgs) use ($method) {
+            return '\Phalcon\Tag::' . $method . '([' . $resolvedArgs . '])';
+        });
+    }
+
     return $volt;
 }, true);
 
