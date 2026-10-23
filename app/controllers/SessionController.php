@@ -248,12 +248,12 @@ class SessionController extends ControllerBase
 
             if ($this->security->checkHash($newPassword, $user->password)) {
                 $this->flash->error('The password does not change');
-                return false;
+                return;
             };
 
             if ($newPassword != $repeatPassword) {
                 $this->flash->error('Passwords are different');
-                return false;
+                return;
             }
 
             $user->password = $this->security->hash($newPassword);

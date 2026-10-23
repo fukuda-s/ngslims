@@ -62,6 +62,7 @@ var SignUp = {
             return false;
         }
         $("#registerForm")[0].submit();
+        return false;
     }
 };
 
@@ -81,6 +82,7 @@ var Account = {
             return false;
         }
         $("#accountForm")[0].submit();
+        return false;
     }
 };
 
@@ -100,6 +102,7 @@ var Password = {
             return false;
         }
         $("#passwordForm")[0].submit();
+        return false;
     }
 };
 

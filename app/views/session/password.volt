@@ -38,7 +38,7 @@
            value="<?php echo $this->security->getToken() ?>"/>
 
     <div class="col-sm-3">
-      {{ password_field('newPassword', 'class': 'form-control') }}
+      {{ password_field('newPassword', 'class': 'form-control', 'autocomplete': 'new-password') }}
       <!--
       <p class="help-block">(minimum 8 characters)</p>
       -->
@@ -48,7 +48,7 @@
     <label class="col-sm-2 control-label" for="repeatPassword">Repeat Password</label>
 
     <div class="col-sm-3">
-      {{ password_field('repeatPassword', 'class': 'form-control') }}
+      {{ password_field('repeatPassword', 'class': 'form-control', 'autocomplete': 'new-password') }}
       <div class="alert" id="repeatPassword_alert">
         <strong>Warning!</strong> The password does not match
       </div>
