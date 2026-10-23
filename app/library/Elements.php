@@ -219,7 +219,7 @@ class Elements extends Phalcon\Di\Injectable
                             echo '<li class="divider">';
                         } else {
                             echo '<li class="' . $d_menu['class'] . '">';
-                            echo Tag::linkTo($d_menu['controller'] . '/' . $d_menu['action'], $d_menu['caption']);
+                            echo LegacyTag::linkTo($d_menu['controller'] . '/' . $d_menu['action'], $d_menu['caption']);
                         }
                         echo '</li>';
                     }
@@ -231,7 +231,7 @@ class Elements extends Phalcon\Di\Injectable
                     } else {
                         echo '<li>';
                     }
-                    echo Tag::linkTo($controller . '/' . $option['action'], $option['caption']);
+                    echo LegacyTag::linkTo($controller . '/' . $option['action'], $option['caption']);
                     echo '</li>';
                 }
             }
@@ -251,7 +251,7 @@ class Elements extends Phalcon\Di\Injectable
             } else {
                 echo '<li>';
             }
-            echo Tag::linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
+            echo LegacyTag::linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
         }
         echo '</ul>';
     }
@@ -287,7 +287,7 @@ class Elements extends Phalcon\Di\Injectable
                 }
             }
 
-            echo Tag::linkTo($option['controller'] . '/' . $option['action'] . '/' . $option['param'], $caption), '<li>';
+            echo LegacyTag::linkTo($option['controller'] . '/' . $option['action'] . '/' . $option['param'], $caption), '<li>';
         }
         echo '</ul>';
     }
@@ -310,7 +310,7 @@ class Elements extends Phalcon\Di\Injectable
                 echo '<li class="list-group-item">';
                 echo '	<div class="row">';
                 echo '		<div class="col-md-6">';
-                echo Tag::linkTo(array(
+                echo LegacyTag::linkTo(array(
                     "trackerdetails/showTableSamples/" . $project->id . "?pre_action=projectPi",
                     $project->name
                 ));
@@ -395,7 +395,7 @@ class Elements extends Phalcon\Di\Injectable
             echo '<li class="list-group-item">';
             echo '	<div class="row">';
             echo '		<div class="col-md-8">';
-            echo Tag::linkTo(array(
+            echo LegacyTag::linkTo(array(
                 "trackerdetails/" . $this->_stepPhaseCodeAction[$step_phase_code]['edit'] . '/' . $step_phase_code . '/' . $step_id . '/' . $project->id . '/' . $status_str,
                 $project->name
             ));
@@ -497,7 +497,7 @@ class Elements extends Phalcon\Di\Injectable
             ->execute();
 
         foreach ($cherry_pickings as $cherry_picking) {
-            echo '<li class="list-group-item">' . Tag::linkTo(array("trackerdetails/editSeqlibs/PICK/0/" . $cherry_picking->cp_id, $cherry_picking->cp_name)) . '</li>';
+            echo '<li class="list-group-item">' . LegacyTag::linkTo(array("trackerdetails/editSeqlibs/PICK/0/" . $cherry_picking->cp_id, $cherry_picking->cp_name)) . '</li>';
         }
 
     }

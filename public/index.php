@@ -115,6 +115,11 @@ $di->set('volt', function ($view) use ($di) {
     $compiler->addFunction('number_format', 'number_format');
     $compiler->addFunction('round', 'round');
 
+    // Phalcon 5 escapes the link text of link_to(). Keep Phalcon 3 behavior (see LegacyTag)
+    $compiler->addFunction('link_to', function ($resolvedArgs) {
+        return 'LegacyTag::linkTo([' . $resolvedArgs . '])';
+    });
+
     return $volt;
 }, true);
 
@@ -155,6 +160,13 @@ $di->setShared('session', function () {
     )));
     $session->start();
     return $session;
+});
+
+/**
+ * Session bag used by $this->persistent (Phalcon 5 FactoryDefault does not register it)
+ */
+$di->set('sessionBag', function ($name) use ($di) {
+    return new Phalcon\Session\Bag($di->getShared('session'), $name);
 });
 
 /**

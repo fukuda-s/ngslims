@@ -27,7 +27,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  {{ get_title() }}
+  <title>{{ get_title() }}</title>
   {{ stylesheet_link('bootstrap/css/bootstrap.css') }}
   {{ stylesheet_link('js/jquery-ui-dist/jquery-ui.min.css') }}
   {{ stylesheet_link('css/font-awesome.css') }}
