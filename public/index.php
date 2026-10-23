@@ -168,9 +168,9 @@ $di->setShared('session', function () {
     $session = new Phalcon\Session\Manager(array(
         'uniqueId' => 'ngslims'
     ));
-    $session->setAdapter(new Phalcon\Session\Adapter\Stream(array(
-        'savePath' => ini_get('session.save_path') ?: '/var/lib/php/sessions'
-    )));
+    // PHP's native files handler (as Phalcon 3 used). Phalcon\Session\Adapter\Stream does not
+    // lock the session file, so concurrent Ajax requests overwrite each other's session values.
+    $session->setAdapter(new \SessionHandler());
     $session->start();
     return $session;
 });
