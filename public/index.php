@@ -111,8 +111,13 @@ $di->set('volt', function ($view) use ($di) {
     /*
      * Bind PHP function into VOLT.
      */
-    $compiler->addFunction('strtotime', 'strtotime');
-    $compiler->addFunction('number_format', 'number_format');
+    // strtotime() / number_format() accept null like PHP 7 (see LegacyFunctions)
+    $compiler->addFunction('strtotime', function ($resolvedArgs) {
+        return 'LegacyFunctions::strtotime(' . $resolvedArgs . ')';
+    });
+    $compiler->addFunction('number_format', function ($resolvedArgs) {
+        return 'LegacyFunctions::numberFormat(' . $resolvedArgs . ')';
+    });
     $compiler->addFunction('round', 'round');
 
     // Phalcon 5 escapes the link text of link_to(). Keep Phalcon 3 behavior (see LegacyTag)
