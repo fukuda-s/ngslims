@@ -53,6 +53,14 @@ $loader->setDirectories(
 $di = new \Phalcon\Di\FactoryDefault();
 
 /**
+ * "string" filter as in Phalcon 3 (see LegacyFunctions::sanitizeString). Phalcon 5's one is
+ * htmlspecialchars(), which breaks values decoded later (ex. sample JSON in OrderController)
+ */
+$di->getShared('filter')->set('string', function ($value) {
+    return LegacyFunctions::sanitizeString($value);
+});
+
+/**
  * We register the events manager
  */
 $di->set('dispatcher', function () use ($di) {
