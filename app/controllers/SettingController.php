@@ -2364,11 +2364,11 @@ class SettingController extends ControllerBase
             if ($request->isAjax() == true) {
                 $this->view->disable();
 
-                $new_seqlib_id_array = $request->getPost('new_seqlib_id_array', array('striptags'));
+                $new_seqlib_id_array = (array)$request->getPost('new_seqlib_id_array', array('striptags')); // null when nothing is added (jQuery omits empty arrays)
                 $new_seqlib_id_array = array_unique($new_seqlib_id_array); //to unique seqlib_id on array
                 $new_seqlib_id_array = array_values($new_seqlib_id_array); //re-indexed array
 
-                $del_seqlib_id_array = $request->getPost('del_seqlib_id_array', array('striptags'));
+                $del_seqlib_id_array = (array)$request->getPost('del_seqlib_id_array', array('striptags')); // null when nothing is removed
                 $del_seqlib_id_array = array_unique($del_seqlib_id_array); //to unique seqlib_id on array
                 $del_seqlib_id_array = array_values($del_seqlib_id_array); //re-indexed array
 
